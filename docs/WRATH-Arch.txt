@@ -1,0 +1,265 @@
+                                        Kevin Rogovin
+                                        Nomovok 
+                                        WRATH Architecture
+                                        Feb 8 2013
+
+Modules are stated as WRATH/module_name. You can 
+see the header files in the WRATH repo at inc/WRATH/module_name
+Classes and namespaces within in modules are listed in parentesis .
+
+
+
+Module Overview
+-----------------------------------
+
+Basic utilities module: WRATH/util that defines various helpers 
+                        used throughout WRATH. The less obvious one is
+                        (WRATHTripleBufferEnabler) which syncs data
+                        in an almost lock free fashion so that 
+                        changes to node values can be done in a seperate
+                        thread than the rendering thread. 
+
+
+I. WRATH/gl: WRATH interface to GL
+  A. for GLSL program and shader creation (WRATHGLProgram and WRATHGLShader)
+  B. specification of GL state vector (WRATHRawDrawData and WRATHRawDrawDataElement)
+    1. active textures (WRATHTextureChoice)
+    2. uniform values (WRATHUniformData)
+    3. buffer object (WRATHBufferObject and WRATHBufferAllocator)
+    4. binding state (WRATHBufferBindingPoint)
+    5. draw command (WRATHDrawCommand)
+ 
+II. WRATH/drawgroup: Mid-level interface for specifiyng GL state vectors 
+                     to pack multiple visual items into one draw call. 
+                     The main idea behind this module is the following: a 
+                     visual item type specifies how it wants to draw
+                     itself (shader and GL state vector) and is returned
+                     a handle from which it can allocate index and attribute
+                     data. The interface is defined in WRATHCanvas which
+                     is a pure virtual base class.  
+  A. Attribute allocation (WRATHAttributeStore)
+  B. GL state vector specification (WRATHCanvas, WRATHDrawGroup)
+  C. User shader interface (WRATHShaderSpecifier)
+  D. Shader assembly (WRATHShaderSpecifier, WRATHDrawGroupDrawerFactory)
+  E. Attribute packing, base class interface (WRATHAttributePacker)
+
+III. WRATH/layer: Provides an implementation of WRATHCanvas. It defines the 
+                  a base node with which one can create new node types.
+                  Values that are per-node (for example transformation)
+                  can be changed WITHOUT changing any attribute data.
+                  Many items of the same type with different nodes are drawn
+                  in single calls (up to 255 items are drawn in one draw call)
+  A. Implementation of WRATHCanvas (WRATHLayerBase) which is derived from WRATHCanvas
+  B. Implementation of actual drawing with clipping (WRATHLayer). WRATHLayer 
+     is derived from WRATHLayerBase. 
+   1. Specification of clipping
+      a. Custom (WRATHLayerClipDrawer),
+      b. items both clip in and clip out 
+   2. transformation between WRATHLayer objects (WRATHLayerIntermediateTransformation)
+   3. shader assembly. A final GL program pulls in how to draw the item from
+      WRATHShaderSpecifier combines it with:
+      a. data from a node type that specifies how to transform coordinates
+         from item-coordiantes to layer coordinate via (interface in 
+         WRATHLayerItemNodeBase) along with additional per-node values
+         1. User defined (easy to make)
+         2. translate-scale-clip (WRATHLayerItemNodeTranslate)
+         3. rotate-translate (WRATHLayerItemNodeRotateTranslate)
+      b. how to pack per-node values (WRATHLayerNodeValuePackerBase)
+         1. use textures (WRATHLayerNodeValuePackerTexture)
+         2. use uniform arrays (WRATHLayerNodeValuePackerUniformArrays)
+         3. hybrid (WRATHLayerNodeValuePackerHybrid)
+         4. planned: texture buffer objects, uniform buffer objects    
+
+ NOTES:
+   When assembling a shader there are 3 interchangeable parts:
+    - transformation from item to layer and/or screen coordinates encoded
+      essentially by the node type which is derived from (WRATHLayerItemNodeBase)
+    - how per-node values are packed derived type of (WRATHLayerNodeValuePackerBase)
+    - actual GLSL code specific to an item (text, image, etc) specified with
+      a (WRATHShaderSpecifier)
+   
+IV. WRATH/image is used to define image data, gradient data and gradient
+    computation
+  A. Images stored in texture atlas (WRATHImage)
+  B. Large images, i.e beyond max texture size in WRATHCompoundImage
+  C. Gradients
+   1. Color stop specification (WRATHGradient) 
+   2. Interpolate computation (WRATHGradientSourceBase). Different gradient
+      color stops and different gradient interpolate computes does NOT
+      break a draw call batch.
+    a. Linear Gradient (WRATHLinearGradientValue)
+    b. Radial Gradient (WRATHRadialGradientValue)
+    c. Repeat tiled gradient, works with any gradient type (WRATHRepeatGradientValue)
+  D. Built in image item attribute packing (WRATHImageAttributePacker)
+
+V. WRATH/shape is used to define shapes (i.e. paths) for filling and stroking
+ A. Shape definition (WRATHShape, WRATHOutline, WRATHOutlineStream)
+ B. Tessellation (WRATHShapeSimpleTessellator)
+ C. Stroking (WRATHShapePreStroker)
+ D. Triangulation (WRATHTriangulation) based off of poly2tri and
+    (WRATHTessGLU) based off of a modification of the tessellator
+    of GLU that allows for arbitary fill rules. GLU is NOT a 
+    dependency, the modfication is built into WRATH in the 3rd party
+    module WRATH/3rd_party/wrath-glu-tess
+ E. Attribute packing 
+  1. Generic interface (WRATHShapeAttributePacker)
+  2. Stroking (WRATHDefaultStrokeAttributePacker) and 
+     (WRATHDynamicStrokeAttributePacker). Customizable interface
+     provived via (WRATHGenericStrokeAttributePacker) which
+     inherits from WRATHShapeAttributePacker. Note that 
+     both WRATHDefaultStrokeAttributePacker and 
+     WRATHDynamicStrokeAttributePacker
+     inherit from WRATHGenericStrokeAttributePacker
+  3. Filling (WRATHDefaultFillShapeAttributePacker) which 
+     inherits from WRATHShapeAttributePacker
+ F. GPU accellerated distance field creation (WRATHShapeDistanceFieldGPU)
+
+V. WRATH/text
+ A. Text specifix utils
+  1. Freetype helper (WRATHFreeTypeSupport) 
+  2. Font merging and tracking (WRATHFontDatabase)
+   a. using font config (WRATHFontConfig)
+   b. android (WRATHFontDatabaseAndroid)
+  3. UTF decoding
+   a. UTF8 (WRATHUTF8)
+   b. UTF16 (WRATHUTF16)
+ B. Text specifcation (WRATHTextDataStream). Provides a C++ iostream
+    compatible interface to specify text. In particular for any object
+    type T and character type C where the function 
+       std::basic_ostream<C>& operator<<(std::basic_ostream<C>&, const T &)
+    can be used. Additionally, via WRATHUTF8 and WRATHUTF16 text data
+    can be added with UTF8 and UTF16 streams.
+   1. Stream manipulators to change font, color, size, etc 
+     a. including custom data inserted into the stream (WRATHStateStreamManipulators 
+        and WRATHStateStream)
+ C. Text formatting interface (WRATHFormatter)
+  1. Column with spill over formatting, allowing for left-to-right, right-to-left, etc
+      (WRATHColumnFormatter)
+ D. Text attribute packing (WRATHTextAttributePacker) base class. Each glyph
+    is drawn as a quad.
+  1. Generic interface for custom packing (WRATHGenericTextAttributePacker)
+     inherits from WRATHTextAttributePacker
+  2. Default/built in packer (WRATHDefaultTextAttributePacker)
+ E. Font presentation (WRATHFontShaderSpecifier) relying on WRATHShaderSpecifier 
+    provides an interface for a user of WRATH to disctate how a font
+    is to be presented (i.e. add special effects like that see in the text-viewer
+    demo transition). Also provided are default presenters.
+ F. Font types, base class is (WRATHTextureFont). A font type
+    provides GLSL shader code to specify how to compute coverage
+    values, these coverage values are then used by the shader code within
+    a WRATHFontShaderSpecifier to compute a blending factor.
+  1. (WRATHTextureFontFreeType_Coverage) simple coverage font from a bit
+     map generated by freetype
+  2. (WRATHTextureFontFreeType_Distance) distance field font where font
+     can be scaled in without loss of rendering quality. Distance field
+     computation is a propietary original algorithm that is seperable
+     in each dimension and fast enough (easily) to generate distance
+     fields on device at run-time.
+  3. (WRATHTextureFontFreeType_Analytic) font where relatively simple
+     analytic data is stored in textures. Used significantly more memory
+     than WRATHTextureFontFreeType_Distance but keeps corners sharp 
+  4. (WRATHTextureFontFreeType_CurveAnalytic) font where more complicated
+     analyitc data is stored in textures. Uses _LESS_ memory that
+     (WRATHTextureFontFreeType_Distance), curve features are still curved
+     at all zoom levels. However shader is expensive.
+  5. (WRATHTextureFontFreeType_Mix) hybrid font solution where different
+     font rendering is active at different zoom factors.
+     
+ NOTES: 
+   The text "pipeline" is as follows:
+   - First specify text with a WRATHTextDataStream, as simple as:
+    <code>
+      WRATHTextDataStream str;
+
+      str.stream() << "Using default font: HelloWorld"
+                   << WRATHText::set_color(1.0f, 0.0f, 0.0f)
+                   << "the text in red";
+
+    </code>
+     WRATHTextDataStream provides interface to add text using char, wchar_t,
+     UTF8, UTF16 and raw character code data. Moreover, interface is
+     provided to specify defualt font (i.e Seriff, DejaVu, etc) default
+     font type (WRATHTextureFontFreeType_Distance, WRATHTextureFontFreeType_Analytic,
+     etc). Moreover, a single text stream can have both the font and font
+     type change mid-stream.
+
+  - Second specify how the text is to be formatted, by specifying a WRATHFormatter
+    object
+
+  - Then the formatted text is fetched and fed to a WRATHTextAttributePacker
+    to generate attribute data for the text
+  
+  
+
+VI. WRATH/items provides 
+  A. Item types that are presented to the screen, 
+     all item types are derived from (WRATHBaseItem).
+     An item type is node type agnostic and does NOT
+     carry node information (i.e. transformation data
+     from item coordinates to screen or layer coordinates)
+   1. WRATHImageItem for rectangles with images and/or gradients
+      applied to them
+   2. WRATHCompoundImageItem for images that are
+      larger than the maximum texture size. Built from
+      WRATHImage
+   3. WRATHNinePieceImageItem built from WRATHCompoundImageItem.
+   4. WRATHShapeItem for stroked and filled shapes
+   5. WRATHTextItem for text
+
+ B. Widgets. A widget is essentially an item together
+    with a node. All widget types are template classes. A Widget
+    has the node data that is free to change frame by frame
+    (and such changing does NOT change attribute data). 
+  1. Widget types (WRATHWidget)
+  2. Widget Family and Family set (WRATHFamily and WRATHFamilySet)
+  3. Widget generator (WRATHWidgetGenerator) provides an interface
+     to create and modify widgets in a more procedural way so that
+     items are stacked by the ordered they are handled/modified by
+     the WRATHWidgetGenerator. The class is template class. Clipping
+     in-side and outside with shapes, rectangles and even text
+     is supported out of the box. Additionally supports out of the 
+     box: text, images, shapes with both shapes and images ability 
+     to have linear, radial, repeat-linear and repeat-radial gradients 
+     applied to them. Text with gradients applied to them is also 
+     coming when I have the time. This is essentially the interface
+     used for implementing WRATHWebKit
+
+
+V. Qt minor support classes for Qt interaction
+ A. Create a WRATH font from a Qt font (WRATHQTFontSupport)
+ B. Create a WRATHImage from a QImage (WRATHQTImageSupport)
+
+VI. SDL minor support classed for SDL-interaction
+ A. Create a WRATHImage from an SDL_Surface (WRATHSDLImageSupport)
+
+
+--------------------------------------------------------------------
+
+How anti-aliasing is done:
+
+  A font type carries withit GLSL code that specifies
+  a function to compute a coverage value. A font
+  presented code chunk (WRATHFontShaderSpecifier) uses
+  that coverage value to generate an alpha with which
+  it uses as a blend value. 
+
+
+WRATH requirements:
+  GLES2 or higher. All of the following are fine: OpenGL2.1, OpenGL3.x, OpenGL4.x and GLES3.
+ 
+  GL_OES_standard_derivatives: for font anti-aliasing
+  GL_OES_texture_half_float: for (WRATHTextureFontFreeType_Analytic) and
+                             (WRATHTextureFontFreeType_CurveAnalytic)
+  GL_OES_texture_float: for WRATHLayerNodeValuePackerTexture
+
+ 
+Note that both SGX and Tegra support all of the above (assuming
+reasonably up to date drivers). Additionally each of these extensions
+is core in OpenGL3.x, OpenGL4.x and GLES3.
+
+Additional advanced features, under development, will require GLES3/OpenGL3.x
+[features include post-proess AA, texture buffer object packing and uniform
+buffer object packing].
+
+
+  

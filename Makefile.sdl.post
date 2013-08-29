@@ -1,0 +1,130 @@
+
+# Generate binary names for sdl-built demos
+$(foreach demoname,$(DEMOS),$(eval SDL_DEMOS_RELEASE += sdl-$(demoname)))
+$(foreach demoname,$(DEMOS),$(eval SDL_DEMOS_DEBUG += sdl-$(demoname)-debug))
+
+# Make the `all' targets built the proper demos
+release-all: $(SDL_DEMOS_RELEASE)
+debug-all: $(SDL_DEMOS_DEBUG)
+.PHONY: sdl-demos sdl-demos-debug
+
+# Add demos to target list
+$(foreach demoname,$(SDL_DEMOS_RELEASE) $(SDL_DEMOS_DEBUG),$(call addtargetname, $(demoname)))
+
+# How to build the demos
+
+define makesdldemorules
+$(eval 
+
+THISDEMO_$(1)_SDL_SOURCES = $$($(1)_SOURCES) $$(COMMON_SDL_DEMO_SOURCES)
+THISDEMO_$(1)_DEPS = $$(patsubst %.cpp,%.d,$$(patsubst %.c,%.d,$$(THISDEMO_$(1)_SDL_SOURCES)))
+THISDEMO_$(1)_OBJS = $$(patsubst %.cpp,%.o,$$(patsubst %.c,%.o,$$(THISDEMO_$(1)_SDL_SOURCES)))
+THISDEMO_$(1)_RELEASE_DEPS = $$(addprefix release/.depend/,$$(THISDEMO_$(1)_DEPS))
+THISDEMO_$(1)_DEBUG_DEPS = $$(addprefix debug/.depend/,$$(THISDEMO_$(1)_DEPS))
+THISDEMO_$(1)_RELEASE_OBJS = $$(addprefix release/,$$(THISDEMO_$(1)_OBJS))
+THISDEMO_$(1)_DEBUG_OBJS = $$(addprefix debug/,$$(THISDEMO_$(1)_OBJS))
+THISDEMO_$(1)_SHADER_SOURCES = $$(addsuffix .cpp,$$($(1)_SHADERS))
+THISDEMO_$(1)_RELEASE_SHADERS = $$(addprefix release/,$$(THISDEMO_$(1)_SHADER_SOURCES))
+THISDEMO_$(1)_DEBUG_SHADERS = $$(addprefix debug/,$$(THISDEMO_$(1)_SHADER_SOURCES))
+THISDEMO_$(1)_RELEASE_SHADER_OBJS = $$(THISDEMO_$(1)_RELEASE_SHADERS:.cpp=.o)
+THISDEMO_$(1)_DEBUG_SHADER_OBJS = $$(THISDEMO_$(1)_DEBUG_SHADERS:.cpp=.o)
+THISDEMO_$(1)_RELEASE_SHADER_DEPS = $$(patsubst release/%,release/.depend/%,$$(THISDEMO_$(1)_RELEASE_SHADERS:.cpp=.d))
+THISDEMO_$(1)_DEBUG_SHADER_DEPS = $$(patsubst debug/%,debug/.depend/%,$$(THISDEMO_$(1)_DEBUG_SHADERS:.cpp=.d))
+
+THISDEMO_$(1)_RELEASE_OBJS += $$(THISDEMO_$(1)_RELEASE_SHADER_OBJS)
+THISDEMO_$(1)_DEBUG_OBJS += $$(THISDEMO_$(1)_DEBUG_SHADER_OBJS)
+
+DEPS += $$(THISDEMO_$(1)_RELEASE_DEPS)
+DEPS += $$(THISDEMO_$(1)_RELEASE_SHADER_DEPS)
+DEPS += $$(THISDEMO_$(1)_DEBUG_DEPS)
+DEPS += $$(THISDEMO_$(1)_DEBUG_SHADER_DEPS)
+EXTRA_CLEAN += $$(THISDEMO_$(1)_RELEASE_OBJS) $$(THISDEMO_$(1)_DEBUG_OBJS)
+EXTRA_CLEAN += $$(THISDEMO_$(1)_RELEASE_SHADERS) $$(THISDEMO_$(1)_DEBUG_SHADERS)
+EXTRA_CLEAN += sdl-$(1) sdl-$(1)-debug
+
+$$(THISDEMO_$(1)_RELEASE_OBJS) $$(THISDEMO_$(1)_DEBUG_OBJS): CXXFLAGS += $$($(1)_CXXFLAGS)
+$$(THISDEMO_$(1)_RELEASE_OBJS): CXXFLAGS_RELEASE += $$($(1)_CXXFLAGS_RELEASE)
+$$(THISDEMO_$(1)_DEBUG_OBJS): CXXFLAGS_DEBUG += $$($(1)_CXXFLAGS_DEBUG)
+$$(THISDEMO_$(1)_RELEASE_DEPS) $$(THISDEMO_$(1)_DEBUG_DEPS) $$(THISDEMO_$(1)_RELEASE_OBJS) $$(THISDEMO_$(1)_DEBUG_OBJS): CPPFLAGS += $$(DEMOS_INCLUDES) $$($(1)_CPPFLAGS) $$(LIBSDL_CXXFLAGS)
+
+sdl-$(1): release/libwrath_release.so $$(THISDEMO_$(1)_RELEASE_OBJS)
+	$$(CXX) -o $$@ $$(THISDEMO_$(1)_RELEASE_OBJS) -Lrelease -lwrath_release $$(LDFLAGS) $$($(1)_LDFLAGS) $$(LIBSDL_LDFLAGS)
+
+sdl-$(1)-debug: debug/libwrath_debug.so $$(THISDEMO_$(1)_DEBUG_OBJS)
+	$$(CXX) -o $$@ $$(THISDEMO_$(1)_DEBUG_OBJS) -Ldebug -lwrath_debug $$(LDFLAGS) $$($(1)_LDFLAGS) $$(LIBSDL_LDFLAGS)
+)
+endef
+
+# And here we call the above huge function for each demo name
+$(foreach demoname,$(DEMOS),$(call makesdldemorules,$(demoname)))
+
+# How to build the library
+
+RELEASE_SHADER_OBJS := $(RELEASE_SHADERS:.cpp=.o)
+DEBUG_SHADER_OBJS := $(DEBUG_SHADERS:.cpp=.o)
+RELEASE_SHADER_DEPS := $(patsubst release/%,release/.depend/%,$(RELEASE_SHADERS:.cpp=.d))
+DEBUG_SHADER_DEPS := $(patsubst debug/%,debug/.depend/%,$(DEBUG_SHADERS:.cpp=.d))
+
+SDL_LIB_SOURCES += $(LIB_SOURCES)
+
+SDL_DEPS += $(patsubst %.cpp,%.d,$(patsubst %.c,%.d,$(SDL_LIB_SOURCES)))
+SDL_DEPS_RELEASE += $(addprefix release/.depend/,$(SDL_DEPS))
+SDL_DEPS_DEBUG += $(addprefix debug/.depend/,$(SDL_DEPS))
+
+DEPS += $(RELEASE_SHADER_DEPS) $(DEBUG_SHADER_DEPS) $(SDL_DEPS_RELEASE) $(SDL_DEPS_DEBUG)
+
+SDL_OBJS = $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(SDL_LIB_SOURCES)))
+
+SDL_LIB_RELEASE_OBJS = $(addprefix release/,$(SDL_OBJS))
+SDL_LIB_DEBUG_OBJS = $(addprefix debug/,$(SDL_OBJS))
+
+SDL_LIB_RELEASE_OBJS += $(RELEASE_SHADER_OBJS)
+SDL_LIB_DEBUG_OBJS += $(DEBUG_SHADER_OBJS)
+
+EXTRA_CLEAN += $(SDL_LIB_RELEASE_OBJS) $(SDL_LIB_DEBUG_OBJS)
+EXTRA_CLEAN += release/libwrath_release.so debug/libwrath_debug.so
+EXTRA_CLEAN += release/libwrath_release.a debug/libwrath_debug.a
+EXTRA_CLEAN += wrath-config
+
+$(SDL_LIB_RELEASE_OBJS) $(SDL_LIB_DEBUG_OBJS): CXXFLAGS += -fPIC
+$(SDL_LIB_RELEASE_OBJS) $(SDL_LIB_DEBUG_OBJS): CPPFLAGS += $(LIBSDL_CXXFLAGS)
+$(SDL_DEPS_RELEASE) $(SDL_DEPS_DEBUG): CPPFLAGS += $(LIBSDL_CXXFLAGS)
+
+release/libwrath_release.so: $(SDL_LIB_RELEASE_OBJS)
+	$(CXX) -shared -Wl,-soname,libwrath_release.so -o release/libwrath_release.so $^ $(WRATHLIB_LDFLAGS)
+
+debug/libwrath_debug.so: $(SDL_LIB_DEBUG_OBJS)
+	$(CXX) -shared -Wl,-soname,libwrath_debug.so -o debug/libwrath_debug.so $^ $(WRATHLIB_LDFLAGS)
+
+release/libwrath_release.a: $(SDL_LIB_RELEASE_OBJS)
+	ar rcs $@ $^
+
+debug/libwrath_debug.a: $(SDL_LIB_DEBUG_OBJS)
+	ar rcs $@ $^
+
+wrath-config: wrath-config.in
+	echo Generating $@
+	@cp $< $@
+	@sed -i 's!@AUTOGENWARNING@!# This is an autogenerated file. Edit $< instead.!' $@
+	@sed -i 's!@INCLUDES@!$(subst -I,-I$$WRATH_SOURCES/,$(INCLUDES))!' $@
+	@sed -i 's!@EXTRACFLAGS@!$(DEFINE_FLAGS) $(FREETYPE_CXXFLAGS) $(LIBSDL_CXXFLAGS)!' $@
+	@sed -i 's!@LDFLAGS_RELEASE_DYNAMIC@!-L$$WRATH_SOURCES/release -lwrath_release!' $@
+	@sed -i 's!@LDFLAGS_DEBUG_DYNAMIC@!-L$$WRATH_SOURCES/debug -lwrath_debug!' $@
+	@sed -i 's!@LDFLAGS_RELEASE_STATIC@!-Wl,--whole-archive $$WRATH_SOURCES/release/libwrath_release.a -Wl,--no-whole-archive $(LIBSDL_LDFLAGS) $(WRATHLIB_LDFLAGS)!' $@
+	@sed -i 's!@LDFLAGS_DEBUG_STATIC@!-Wl,--whole-archive $$WRATH_SOURCES/debug/libwrath_debug.a -Wl,--no-whole-archive $(LIBSDL_LDFLAGS) $(WRATHLIB_LDFLAGS)!' $@
+	@chmod +x $@
+
+release-all: wrath-config
+
+# Targets for command-line invocations
+wrath-lib-sdl: release/libwrath_release.so wrath-config
+wrath-lib-sdl-debug: debug/libwrath_debug.so wrath-config
+wrath-lib-static: release/libwrath_release.a wrath-config
+wrath-lib-static-debug: debug/libwrath_debug.a wrath-config
+.PHONY: wrath-lib-sdl wrath-lib-sdl-debug wrath-lib-static wrath-lib-static-debug
+
+# Add to target list
+$(call addtargetname, wrath-lib-sdl)
+$(call addtargetname, wrath-lib-sdl-debug)
+$(call addtargetname, wrath-lib-static)
+$(call addtargetname, wrath-lib-static-debug)

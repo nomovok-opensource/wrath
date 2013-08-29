@@ -1,0 +1,60 @@
+
+\cmd{font_size 32}
+Font Size 32\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 30}
+Font Size 30\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 28}
+Font Size 28\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 26}
+Font Size 26\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 24}
+Font Size 24\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 22}
+Font Size 22\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 20}
+Font Size 20\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 18}
+Font Size 18\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 16}
+Font Size 16\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 14}
+Font Size 14\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 12}
+Font Size 12\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 10}
+Font Size 10\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 8}
+Font Size 8\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 6}
+Font Size 6\n\n
+\cmd{include_file ALPHABET}\n\n
+
+\cmd{font_size 4}
+Font Size 4\n\n
+\cmd{include_file ALPHABET}\n\n

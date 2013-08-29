@@ -1,0 +1,251 @@
+TODO list:
+
+1) Post process AA-fuzz. Basic idea is that we use MRT:
+    Buffer0 : holds color values
+    Buffer1 : holds an ID tuple: (itemID, drawCallId, shaderID, other?)
+    
+    where itemID is essentially the ID used in the index lookup of per-item-uniorms. 
+    Then we say two items are different if the Buffer1 values are different and adapt 
+
+    http://www.humus.name/index.php?page=3D "Second-Depth Anti-Aliasing"
+
+    where the "second depth buffer and edge detection" are done via 
+    Buffer1 values being different.
+
+    Another very simple approach for post process AA-fuzz is to
+    just use the depth buffer, if the depth values are different
+    then blend the neighbor texels. 
+
+    Regardless of how we detect if a pixel comes from a different
+    UI item, we can dramatically simplify Humas' techinique for us
+    as follows:
+      We need to only look up 2 depth values, the texel
+      we are at and the one on the left.
+      If the depth values are different, then the UI
+      item is different and we simply then output the
+      color as the average of the pixel on the left
+      and the current pixel. If same, we just output
+      the current pixel. 
+
+2) For both curve analytic and analytic fonts, use multi-resolution texture
+   structure. Essentially the look up is as follows:
+
+   T0=tex
+   I1=level0(T0);
+   T1= I1.xy + I1.zw*tex;
+   I2=level1(T1);
+   T2= L2.xy + I2.zw*text
+   .
+   .
+   .
+   Data=data(TN);
+
+   Likely N=1 or 2 is enough. Note that the above allows for that different portions      
+   of the font are stored at different resolutions. For line analytic
+   this can dramactially cut down on storage since most of the glyph is
+   empty of any lines. For curve analytic, we can have those regions where
+   the curve density is high to be more dense, cutting down on rendering
+   issues from too low resolution data.
+
+3) Better nodes. There is a really big chance that node-cache misses are 
+   killing our perforamnce wehn there are tens of thousands of nodes. 
+   Considering that the whole point of WRATH is to have lots and lots 
+   of items this is a serious issue. For example: 
+
+./qt-image-demo fullscreen=true image_dir=images/blob count=2000 draw_text=false ignore_time=true v_x=500 v_y=500 draw_text=false item_font_scale_factor=0.4 text_renderer=2 -geometry 800x480 number_z_perspective_layers=3 font_pow2=true text="30000 images" item_size_x=3 item_size_y=3 fullscreen=false count=30000 
+
+
+gives:
+
+102 frames in 11839 ms
+Res=( 800, 480 )
+N=30000 [116.069 ms per frame, 8.61559 FPS]
+stats per frame:
+	 m_draw_count=306
+	 m_program_count=2
+	 m_texture_choice_count=4
+	 m_gl_state_change_count=1
+	 m_attribute_change_count=44
+	 m_buffer_object_bind_count=320
+	 m_clip_container_count=1
+	 atlas size=( 2048, 2048 )
+
+thus the bottleneck is either the GPU load itself, or whatever is done on a 
+per-node basis... I am concerned about a cache-miss fiasco....
+
+4) Derived classes to WRATHLayerNodeValuePackerBase:
+    a) Finish implementing WRATHLayerNodeValuePackerTextureFixed
+    b) uniform buffer object packer
+    c) texture buffer object packer
+
+5) WRATHTiledImage and WRATHTiledImageItem. Basic idea is that a 
+   WRATHTiledImage breaks an image into chunks (say 32x32 or something) 
+   which are put as is into a large texture atlast. Then in addition 
+   to those chunks, it has an index texture to "convert" texture 
+   coordinate relative to the original image into texture coordinates 
+   of chunks. The catches to do this are:
+        a) the chunks all need to be on the same texture. 
+           This is not an issue with GL_TEXTURE_2D_ARRAY or GL_TEXTURE_3D, 
+           but an issue for non-extended GLES2.
+        b) OR we bite the bullet and somehow allow multiple textures?!!
+        c) OR we bite the bullet and use cube map texture as a 6 layer 2d texture
+   For WRATHWebKit, also include an option that tiles have a hash value
+   attached to them and when hashes match, not to recreate a tile, but to 
+   reuse it. The use case is that many webpages send a few large images
+   which have all their image data, but the large image has large amounts
+   of empty.
+
+6) Related to (5), update WRATHBrush and related classes so that the
+   sampling from the texture(s) can be customized (now it is always
+   texture(2D) and the sampler is always exactly one sampler2D).
+   Along similiar lines, one can then changing filtering for example,   
+   bi-cubic filtering as well.
+
+7) WRATHAttributeStoreAllocator: Make the class singleton, so that the
+   look up of getting a suitable WRATHAttributeStore is global rather 
+   than per WRATHCanvas
+
+8) Implement Blinn-Loop Fonts. This requires the following infrastructure changes:
+  a) WRATHTextAttributePacker is expected to interpret non-texture fonts correctly.
+     The best way to handle this is the following:
+      i) in WRATHGenericTextAttributePacker check if the font is an SVG font,
+         and if so always use the sub quad packing since that is just triangles
+         anyways
+      ii) either hide the attributes from an attribute packer or allow for
+          multiple different attribute packing for WRATHDefaultTextAttributePacker
+          depending upon if the font is pure SVG, pure texture or hybrid
+      iii) either have that WRATHFontShaderSpecifier either has multiple 
+           vertex shaders (for each of SVG, texture or both), OR define 
+	   symbols so that shaders can auto adjust themselves via #ifdef 
+	   hell.
+  b) rename WRATHTextureFont to WRATHFont. Add an enumeration declaring if a font
+     is a texture font, SVG font or both. 
+
+  c) crazily enought, mix fonts is still possible!
+
+
+9) Transparent WRATHLayer:  
+   a) via render to texture
+   OR
+   b) via double render of opaque items:
+     i) first render to depth buffer only with color writes off
+     ii) second render to color buffer, with depth test as GL_EQUAL with blending on
+   The ugly with b) is that if there is a transparent item within a transparent WRATHLayer
+   the above gets much more complicated to do.
+
+10) WRATHGLProgram: have a set of operations that the program
+    executes when it is unbound [for example disabling clip planes],    
+    along those lines also finish implementing for WRATHLayerItemNodeTranslate
+    per-node clipping using gl_ClipDistance and/or gl_ClipVertex
+
+11) update all shaders to obey the macros: 
+    - WRATH_DEPTH_STENCIL_ONLY_DRAW
+    - WRATH_POST_DEPTH_COLOR_ONLY_DRAW
+
+12) figure out a scheme to avoid running the fragment shader twice
+    on glyphs without saying "just draw them as transparent".
+
+    Non-text transparent draws also hit the depth buffer, and only front most
+    transparent element is seen and then draw text after those transparent
+    draws as "pure transparent", i.e. two pass rendering. Then after
+    those non-text transparent items are drawn, then draw the text
+    with not writing to depth buffer and blending on. This assumes 
+    that text is not-transparent and "always on top". 
+
+    The issue is that a post-AA is not good enough for text because
+    we cannot just discard at <0.5 for when glyphs are small.
+
+13) Plumbing issues:
+    a) Rather than use virtual functions for the interface of adding
+       per-node values, pass along a type instead. For the actual
+       adding is not an issue, the main issue is checking if a shader
+       stage supports per-node values. Ideally this is determined
+       statically at compile time and the things that add the per-node
+       values, will use the type tag to figure out what to do.
+       The main reason is that what shader to use dramatically
+       depends on what stages the values can be added. Admittedly,
+       one can make the shaders have macro defines to handle it
+       correctly anyways though. OR just dictate that a valid
+       node packer must support all shader stages. On a related note,
+       when shader source's can be layered (for example repeat gradient
+       ontop of Linear or Radial gradient), it should be possible
+       to provide a "hint" for the add per-node value method, via
+       an overload so that if the values are only needed in the 
+       fragment shader, then they are only there.
+    b) shader stages outside of GL_VERTEX_SHADER and GL_FRAGMENT_SHADER
+       are not well supported in the plumbing:
+       - WRATHShaderBrushSourceHoard does not forward the brush coordinates,
+         or for that matter other needed values at all except between
+         vertex and fragment shader
+       - WRATHLayerItemDrawerFactory does not correctly forward the item index
+         correctly between stages beyond vertex to fragment [fails to note that
+         in geometry shader the value is an array, fails to note it's natrure
+         correctly in tesselation shaders]
+    c) The precision tag for all classes derived from WRATHBaseSource
+       should likely be dropped. Instead, those classes just report
+       what precision they use. Ditto for WRATHShaderBrushSourceHoard 
+    d) WRATHLayerItemDrawState should include state do buffer bindings
+       (for example for uniform buffer objects). Those bindings
+       should not just be WRATHBufferObjects, but something that
+       just implements some kind of bind method (or returns arguments
+       to feed to GL bind functions). The use case is for streaming
+       data to GL via triple buffering where the data is written
+       in the simulation thread and the actual bind object has 3 buffer
+       objects where the two not mapped to memory are read and written 
+       to by the simulation thread.
+    e) Change interface for node packing stuff so that it can be used
+       even in the non-Node setting. Additionally, tweak the source
+       of the array that are written to allow better streaming.
+    f) Tweak WRATHLayerItemNodeBase::extract_values() interface to
+       also pack a derivative value for each value. Then add to
+       the implementation of WRATHLayerNodeValuePackerBase to
+       add to the values the derivative mutliplied by time.
+       Doing so will allow one to run a simulation thread much slower 
+       than the rendering thread. The main caveat is that some values
+       (like entries of a rotation matrix) are highly non-linear
+       and therefore their interpolation needs to be done differently.
+ 
+
+14) WRATHShapeAttributePacker uses the WRATHAbstractSink interface, as such
+    it is not possible from the function declarations to say if the index data 
+    is GLushort, GLubyte or GLuint. Currently there all are unsigned short,
+    but perhaps an extra argument to specify the index type would make it
+    "better". Ditto for WRATHTextAttributePacker
+
+15) WRATHRawDrawData: the kernel API essentially says the only drawing
+    command that WRATH understands is glDrawElements. To get other kinds
+    of glDrawFoo commands, we need create another class "DrawCommandExecutor"
+    where DrawCommand classes append "index ranges" to the DrawCommandExecutor
+    which in turn then does the draw command as needed.
+
+16) There is a dangerous API inconsitency in the pointer<T>(int, int) methods
+    for WRATHAttributeStore, WRATHBufferAllocator, WRATHAbstractDataSink
+        - WRATHAttributeStore the first argument is an offset in units of sizeof(T)
+        - WRATHBufferAllocator and WRATHAbstractDataSink the first argument is an offset in units of _BYTES_
+    Should we somehow make this consistent?
+    
+16) Finish implementing:
+   - WRATHShapeDistanceField (inc/WRATH/shape/WRATHShapeDistanceField.hpp, -Implement.tcc, -Types.tcc)
+   - WRATHAntiAliasFillShapeAttributePacker (inc/WRATH/shape/WRATHAntiAliasFillShapeAttributePacker.hpp)
+   - WRATHSVGFont (inc/WRATH/text/WRATHSVGFont.hpp)
+   - WRATHLayerNodeValuePackerTextureFixed (inc/WRATH/layer/node_packers/WRATHLayerNodeValuePackerTextureFixed.hpp)
+   - stroking, right now only solid or no stroking are supported (i.e. dotted/dashed stroking is missing)
+
+17) WRATHFontDatabase is far from complete and should be regarded as a rough sketch. The following are missing:
+  - Recording what unicode pages a font supports or for that matter requesting a font based off of
+    required unicode pages
+  - Font propertiet bold should not be a flag but a value (like those used in CSS) 
+  - Font selection should be font selection as specified in CSS/HTML
+  - Font merging can be quite off at times, likely from that unicode page
+    support missing.
+  - Relying on Freetype into the API is going to comeback to haunt me; it would 
+    be better to have an API wrap around it to:
+      -- query glyph properties: placement, kerning, etc
+      -- request font geometry
+      -- request font coverage map
+    In addition the kerning query requires a lock on the font,	
+    which is silly; it would be best to get that table out from
+    the font source and use it directly without needing a lock.
+    A nice bonus would be to have font shaping support, but that
+    opens an entire new can of ugly worms.
+     

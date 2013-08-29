@@ -1,0 +1,16 @@
+
+
+\cmd{COL 
+         count:2 
+         space:10.0
+
+         file0:../../images/screenshot.png
+         type0:image 
+         width0:1000 
+
+         reset1:false
+         type1:spill
+         width1:300
+}
+
+\cmd{include_utf8 abbrev_revlations.wutf8}

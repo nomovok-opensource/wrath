@@ -1,0 +1,18 @@
+
+dir := ngl_generator
+include $(dir)/Rules.mk
+dir := ngl
+include $(dir)/Rules.mk
+dir := inc
+include $(dir)/Rules.mk
+dir := src
+include $(dir)/Rules.mk
+dir := demos
+include $(dir)/Rules.mk
+
+
+SHADER_SOURCES := $(addsuffix .cpp,$(SHADERS))
+RELEASE_SHADERS := $(addprefix release/,$(SHADER_SOURCES))
+DEBUG_SHADERS := $(addprefix debug/,$(SHADER_SOURCES))
+
+DEPS :=

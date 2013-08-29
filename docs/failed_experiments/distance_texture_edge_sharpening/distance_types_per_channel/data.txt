@@ -1,0 +1,20 @@
+Another approach as follows was tried:
+ 
+For each texel we store independently:
+channel 0:
+  a) signed dsitance to the closest test point (i.e. end points of Bezier curves and points where a curve is at a 45 degree angle)
+
+  b) the usual value, i.e. the min-L1 signed distance value
+
+channel 1: the smallest signed distance value to a point with the same x coordinate
+channel 2: the smallest signed distance value to a point with the same y coordinate
+
+Results for using a) for Channel 0:
+  if(raw.x<0.5 || (raw.y<0.5 && raw.z<0.5)) discard; : horrible render results
+  if(raw.x<0.5 || (raw.y<0.5 || raw.z<0.5)) discard; : horrible render results
+  if(raw.x<0.5 && (raw.y<0.5 && raw.z<0.5)) discard; : horrible render results
+
+Results for using b) for Channel 0:
+  if(raw.x<0.5 && (raw.y<0.5 && raw.z<0.5)) discard; : slightly inferior to usual way render results
+  if(raw.x<0.5 || (raw.y<0.5 && raw.z<0.5)) discard; : very similart to usual, several glyphs inferior
+  if(raw.x<0.5 || (raw.y<0.5 || raw.z<0.5)) discard; : some glyphs don't look so good, corners not sharpened anyways	     

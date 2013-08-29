@@ -1,0 +1,10 @@
+\cmd{link revel_green.txt}
+\cmd{strike on}
+\cmd{color r:255 g:100 b:100}
+\cmd{include_utf8 abbrev_revlations.wutf8}
+\n\n
+\cmd{strike off}
+\cmd{color r:255 g:100 b:100}
+\cmd{PP raw:false}
+\cmd{include_utf8 abbrev_revlations.wutf8}
+

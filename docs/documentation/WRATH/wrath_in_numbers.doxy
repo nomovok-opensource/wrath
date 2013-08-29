@@ -1,0 +1,196 @@
+/*! 
+ * \file wrath_in_numbers.doxy
+ * \brief file wrath_in_numbers.doxy
+ * 
+ * Copyright 2013 by Nomovok Ltd.
+ * 
+ * Contact: info@nomovok.com
+ * 
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with
+ * this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ * 
+ * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
+ * 
+ */
+
+
+/*!
+\page wrath_in_numbers WRATH in Numbers
+
+\section purpose PURPOSE
+
+The WRATH UI library is only to _DRAW_ UI elements using hardware acceleration
+in a way that allows for heavy UI scenes to be drawn more quickly than current
+UI rendering strategies. It exhibits very low CPU usage and is not bottlenecked
+by CPU performance.
+
+Definitions:
+-# CPU: (Central Processing Unit). Examples: ARM Cortex A9, Intel Core Duo
+-# GPU: (Graphics Processing Unit). This unit is the hardware behind hardware
+accelerated graphics. Examples: PowerVR SGX 535, GeForce 465.
+
+
+\section hardware_trend CURRENT and FUTURE STATE of HARDWARE ACCELERATED GRAPHICS:
+
+Although CPU speeds increase each generation, GPU speeds increase much faster.
+As a prototypical example examine the iPad vs the iPad2 source:
+(http://en.wikipedia.org/wiki/List_of_iOS_devices#iPad)
+
+- iPad1 CPU: 1 GHz ARM Cortex-A8 Apple A4 SoC
+- iPad2 CPU: 1 GHz dual-core ARM Cortex-A9 Apple A5 SoC
+
+Apple states the iPad2's CPU is 2 times as powerful
+as the CPU of the iPad1, essentially because iPad2
+2 cores and the iPad1 has 1 core.
+
+Now the GPUs:
+
+- iPad1 GPU: PowerVR SGX535 GPU
+- iPad2 GPU: PowerVR SGX543 GPU
+
+Apples states the iPad2's GPU is up to _NINE_ times
+more powerful than that of the iPad1.
+
+What we find in just one generation, the hardware acceleration for
+rendering increased by a factor of 9 where as the CPU at a factor
+of two. This trend where the hardware acceleration for rendering
+increases at a much more dramatic rate than CPU's will continue,
+as it has on the desktop. Note that saying the CPU power increased
+by a factor of 2 is giving more credit to the CPU increase than
+deserved. Indeed, most GL implementations need to serialize the
+draw commands and as such a GL implementation will not "process"
+2 draw commands at once, as such for typical application that 2nd
+core will not improve the performance of UI rendering.
+
+
+\section rendering WRATH RENDERING
+
+
+The WRATH UI rendering library minimizes the CPU load for
+rendering UI's. As an example of how much CPU load affects
+performance for UI rendering consider the following benchmark
+of drawing 1056 imaged rectangles: (Hardware U8500 CPU@800Mhz)
+
+WRATH renderer:
+- (528 different images): 81.8FPS
+- (2 different high resolution images):  70.1FPS
+
+Traditional UI renderer(such as Qt Scene Graph):
+- (528 different images): 20.9FPS
+- (2 different high resolution images): 22.8FPS
+
+
+GL2 backed QPainter:
+- (2 different high resolution images): 5FPS
+
+
+The display on the screen is the _same_. The difference is how each
+uses GL. The WRATH renderer is able to render many elements with
+a handful of draw calls. A traditional UI renderer will use one draw
+call per UI item. Lastly, QPainter for each scene draw recomputes values
+which are typically constant, using the CPU much more than needed.
+The bottlenecks for the Traditional UI renderer and the QPainter demo
+is the _CPU_, not the hardware acceleration implementation.
+
+As GPU performance increases continue to outpace CPU
+performance increases the need to use the exposed hardware
+acceleration API without being bottlenecked by the CPU
+grows with each generation of hardware.
+
+WRATH UI rendering features:
+- Data driven API with renderer intelligently batching draws
+- Data can be dynamic, change from frame to frame.
+- GPU optimized text rendering capable of handling
+minification and extreme magnification without loss of
+rendering quality.
+- 3D transformations for UI elements
+- Application defined custom clipping with intelligent overlap
+
+\section appendix APPENDIX (benchmark sources)
+
+\verbatim
+WRATH renderer(528 different images each drawn twice)
+./demo.sb fullscreen=true time=12000 rotatexy=true draw_text=false image=images/512.512.png image2=images/1024x1024.png count=1056 item_size_x=50 item_size_y=50  text="" image_dir=../blob_gfx/
+Res=( 864, 480 )
+N=1056 [12.2238 ms per frame, 81.8076 FPS]
+stats per frame:
+     m_draw_count=14
+     m_program_count=2
+     m_texture_choice_count=4
+     m_gl_state_change_count=1
+     m_attribute_change_count=44
+     m_buffer_object_bind_count=28
+     m_clip_container_count=1
+     atlas size=2048
+
+---------------------------------------------------------------
+
+WRATH renderer(2 different high resolution images each drawn 528 times):
+./demo.sb fullscreen=true time=12000 rotatexy=true draw_text=false image=images/512.512.png image2=images/1024x1024.png count=1056 item_size_x=50 item_size_y=50  text=""
+Res=( 864, 480 )
+N=1056 [14.2562 ms per frame, 70.1448 FPS]
+stats per frame:
+     m_draw_count=12
+     m_program_count=2
+     m_texture_choice_count=2
+     m_gl_state_change_count=1
+     m_attribute_change_count=38
+     m_buffer_object_bind_count=24
+     m_clip_container_count=1
+     atlas size=2048
+
+--------------------------------------------------------------
+
+Traditional UI renderer(528 different images each drawn twice):
+./demo.sb fullscreen=true time=12000 rotatexy=true draw_text=false image=images/512.512.png image2=images/1024x1024.png count=1056 item_size_x=50 item_size_y=50 text= image_dir=../blob_gfx/ max_tr=1 max_vis=2 use_atlas=false
+Res=( 864, 480 )
+N=1056 [47.8611 ms per frame, 20.8938 FPS]
+stats per frame:
+     m_draw_count=1057
+     m_program_count=2
+     m_texture_choice_count=529
+     m_gl_state_change_count=1
+     m_attribute_change_count=3173
+     m_buffer_object_bind_count=2114
+     m_clip_container_count=1
+     atlas size=2048
+
+--------------------------------------------------------------------
+
+
+
+Traditional UI renderer(2 different high resolution images each drawn 528 times):
+./demo.sb fullscreen=true time=12000 rotatexy=true draw_text=false image=images/512.512.png image2=images/1024x1024.png count=1056 item_size_x=50 item_size_y=50  text="" max_tr=1 max_vis=2 use_atlas=false
+Res=( 864, 480 )
+N=1056 [43.7826 ms per frame, 22.8401 FPS]
+stats per frame:
+     m_draw_count=1057
+     m_program_count=2
+     m_texture_choice_count=3
+     m_gl_state_change_count=1
+     m_attribute_change_count=3173
+     m_buffer_object_bind_count=2114
+     m_clip_container_count=1
+     atlas size=2048
+
+---------------------------------------------------------------------------
+
+QPainter (2 different images rendered 528 times each)
+./qpainter_image_demo -graphicssystem opengl width=480 height=864 time=12000 rotatexy=true draw_text=false image=images/512.512.png image2=images/1024x1024.png count=1056 item_size_x=50 item_size_y=50 text=""
+Res=480x864
+55 frames in 11015 ms
+N=1056 [200.273 ms per frame, 4.99319 FPS]
+\endverbatim
+*/
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,38 @@
+/*! 
+ * \file kernel.doxy
+ * \brief file kernel.doxy
+ * 
+ * Copyright 2013 by Nomovok Ltd.
+ * 
+ * Contact: info@nomovok.com
+ * 
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with
+ * this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ * 
+ * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
+ * 
+ */
+
+
+
+/*! \addtogroup Kernel
+  Kernel is a very small and low level module in WRATH.
+  Its main purpose is to specify draw commands and to 
+  send those commands to GL. Specification of draw commands
+  is embodied by \ref WRATHDrawCallSpec. A draw command
+  is an actual object embodied by \ref WRATHRawDrawDataElement.
+  Lastly the objects are inserted into a \ref WRATHRawDrawData
+  object that stores the draw commands ordered to reduce
+  GL state changes and so forth. To force a draw command to
+  come before or after, there is \ref WRATHDrawOrder
+  (see also WRATHDrawCallSpec::m_force_drawer_order)
+  and their sorting \ref WRATHDrawOrderComparer
+  (see \ref WRATHRawDrawData::draw_order_sorter(const WRATHDrawOrderComparer::const_handle &)
+
+*/
+
+
+#error "Include of " __FILE __ " which is a documentation files"

@@ -1,0 +1,128 @@
+Coding Conventions for WRATH
+Kevin Rogovin
+Nomovok
+
+Coding Conventions for WRATH
+---------------------------------
+
+1) "My adaption" of GNU style formatting, No tabs. Spaces only. 
+
+
+return_type
+scope::
+function(arguments)
+{
+  int foo, bar;
+  for(int i=1;i<10;++i)
+    {
+      foobar();
+    }
+}
+
+class MyClass
+{
+public:
+  MyClass(arguments);
+
+  ~MyClass();
+
+  int
+  some_public_method(void);
+
+  int
+  some_public_other_method(int foo, int bar);
+
+
+protected:
+  
+  int
+  some_protected_method(void);
+
+  int
+  some_protected_other_method(int foo, int bar);
+
+private:
+  
+};
+
+Note that functions with no arguments explitly
+have void in their declaration (but not deconstrcutors).
+
+
+2) file naming conventions:
+   .cpp --> C++ source
+   .hpp --> C++ header
+   .c --> C source
+   .h --> C header
+ 
+3) Naming conventions:
+  Biggish object type are named PascalCase, i.e "MyBigClass".
+  Small object types _may_ be named C-style "my_small_type".
+  Member variables are ALWAYS prefixed with m_ .
+  Static member variables are ALWAYS prefixed with sm_ .
+  Function names are C-style: "some_method"
+
+4) All classes, public and protected members and methods 
+must have a doxytag describing them. Do not commit code 
+until such tags are in place (with atleast some description).
+
+5) Classes within classes are fully acceptable.
+
+6) STL and Boost are encouraged, i.e. use either/both when
+it will save work. Other dependencies on a case by case 
+basis.
+
+7) Use anonymous namespace in place of static in source
+files
+
+8) Use WRATHNew and WRATHDelete (macros defined in WRATHNew.hpp)
+for allocation and deallocation of objects. Under debug
+builds objects allocated with WRATHNew/WRATHDelete are fully tracked:
+location of allocation, when and if deleted, etc. On a related
+note, use WRATHmalloc, WRATHfree and WRATHrealloc (defined in
+WRATHmalloc.hpp) as these "raw" allocations are also fully
+tracked.
+
+9) Use NULL to check for "null pointers", i.e. please
+do not do either:
+  if(ptr) or if(ptr!=0).
+NULL is preferred because it maps to the g++'s native "null type".
+
+10) As a general rule of thumb, prefer error checking over
+exceptions. This is not a hard rule, but generally speaking
+exceptions usually make code more subtle to debug. A simple
+type in type_tags.hpp enumerates routine_success and routine_fail
+for when a function succeeds or fails (and you do not need
+to know a why).
+
+11) do-while, for, while, if, else blocks must have braces.
+I.e. 
+
+ if(foo)
+   bar();
+
+is NOT allowed, it must be:
+
+ if(foo)
+   {
+     bar();
+   }
+ 
+
+12) Use WRATHassert inplace of assert. Use WRATHassert() whenever
+a function assumes a set of values has a property. It not only
+makes debugging faster it also implicitly comments assumptions
+in the code.
+
+
+13) WRATH is not under a global namespace, as such public classes
+for WRATH need to be named prefixed with WRATH. However, if there 
+is a set of functionality, create a namespace (prefixed with WRATH),
+then such classes do not need the WRATH prefix, for example, there
+is WRATHUtil namespace which has the function is_power_2(). On a related
+note classes defined within classes also do NOT need the WRATH prefix
+since the scop they are within already has the WRATH prefix.
+
+14) avoid "using namespace" in your source code, as it usually pulls
+into scope more than one usually realizes (for example using namespace boost
+and using namespace std are particularly offensive). 

@@ -1,0 +1,11 @@
+\cmd{PP}
+\cmd{strike on}
+\cmd{underline off}
+\cmd{color r:255 g:255 b:255 a:255}
+Strike Hit\n
+\cmd{color r:200 g:200 b:255 a:255} 
+Strike Hit\n
+\cmd{color r:200 g:200 b:255 a:255} 
+GIGGLES
+\cmd{underline on}
+Double Hit\n 

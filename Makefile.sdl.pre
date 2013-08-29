@@ -1,0 +1,11 @@
+
+SDL_LIB_SOURCES :=
+
+LIBSDL_CXXFLAGS = `sdl-config --cflags`
+LIBSDL_LDFLAGS = `sdl-config --libs` -lSDL_image
+
+# Link SDL builds to libX11 for GLES2 builds
+ifeq ($(GL_TYPE),0)
+LIBSDL_LDFLAGS += -lX11
+endif
+

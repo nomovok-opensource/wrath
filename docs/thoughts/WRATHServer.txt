@@ -1,0 +1,125 @@
+Kevin Rogovin
+Jan 11, 2012
+Nomovok
+WRATH Server
+
+
+
+WRATH Server
+----------------------------------------
+
+WRATH uses GL to draw text and images. The drawing
+of each has that the relevant data is stored in GL 
+textures. However, for a given system, many programs
+are likely to use the same fonts and with respect to
+theme data, the same image data for common UI components.
+Ideally, the font and image data of the UI theme would
+be stored once in RAM and shared across multiple WRATH
+programs.
+
+For image data, we can, in theory, store that image data
+in pixmaps (for example under X11, XPixmaps) and use
+a EGL/GLX extension (GLX_texture_from_pixmap for OpenGL,
+or EGL_KHR_image_pixmap with GL_OES_EGL_image) to use those
+images in GL. However, these extensions _APPEAR_ to only
+support RGB565 and RGB8 and RGBA8 surfaces. This is fine
+for image data but NOT good enough for font data. Indeed,
+some font's use floating point textures (for example
+some versions of WRATHTextureFontFreeType_Analytic and
+the not-yet-completed WRATHTextureFontFreeType_CurveAnalytic)
+and others use 1 channel textures (both WRATHTextureFontFreeType_Distance
+and WRATHTextureFontFreeType_Coverage). We can hack around
+the 1-channel issue (at possible performance cost) by
+having a fixed 4-channel texture hold multiple fonts, or
+allow to distribute the glyphs across different channels
+(at a possible cost to performance).
+
+Another issue for using GL to draw is that for those platforms
+whose GPU uses a tiled based rendering architecture, a 
+GL context, even with no texture and buffer object data
+allocated, can take up quite a bit of memory for the tile
+buffer. Additionally, GLSL programs (i.e. vertex and fragment
+shaders) need to be recompiled if the platform does not support
+binary shaders (or if the platform's binary shader API is very
+painful to use).
+
+One way around these issues is as follows: the device's compositor
+is also a WRATHServer. A WRATHServer will accept connection from
+WRATHClient's. A WRATHClient will have available to it the following:
+- the ability to command the WRATHServer to load/compile GLSL programs
+- the ability to command the WRATHServer to load fonts
+- the ability to command the WRATHServer to load immutable images
+- the ability to allocate attribute data
+- the ability to specify draw commands
+- the ability to create mutable images
+
+The latter 2, allocate attribute data and specify draw commands
+is essentially the core API of WRATH (WRATHCanvas
+and WRATHDrawGroup). The other commands would be simple messages
+to the WRATHServer to load (if not already loaded) the named resources.
+
+The basic WRATHClient API is as follows:
+
+1) request to WRATHServer to create a mutable image buffer
+2) request to WRATHServer various resources to be loaded: GLSL programs, fonts and immutable images
+3) request to WRATHServer to create WRATHCanvas objects
+4) request to WRATHServer to create DataHandle objects from a WRATHCanvas created in (3)
+5) Allocate and set index and attribute data of DataHandles made in step (4).
+6) request refresh of drawing to mutable image buffer made in step (1).
+
+Items (1)-(4) would be very simple messages to the WRATHServer (i.e. essentially
+the arguments as found in the WRATH API) which is very few bytes.
+
+Indices and attribute allocations and assigning will NOT be directly sent
+to the WRATHServer, rather they will be tracked by the WRATHClient API and
+sent with the message (6), request to refresh drawing. The actual
+allocation of buffer object data would be done on message recieve in
+the WRATHServer. A message for request for refresh would then issue
+the "WRATH draw" call to update the contents of the buffer to which
+the WRATHClient is given (essentially it's window). Another nice benefit
+is that a WRATHClient's window will not need to be double or triple
+buffered, which will save even more memory (but on the downside, all
+GL commands for all WRATHClient's are done in the WRATHServer which
+may or may not have a performance impact, depending on the CPU overhead
+of the GL implementation and the number of CPU cores of the device)
+
+It is worth noting that a WRATHClient will NOT be able to issue any GL
+commands itself, only WRATHClient API commands (as such the WRATHClient API will
+need to be complete enough to satisfy application needs).
+
+Data that is changeable by a WRATHClient (i.e. mutable image buffers,
+WRATHCanvass, DataHandles, index and attribute data of such
+DataHandles) would not be mixed between different WRATHClient's. However,
+immutable data (namely GLSL programs, font data and immutable image data)
+would be. 
+
+A WRATHClient will need to issue a regular heart beat to the WRATHServer
+to keep it's mutable data (i.e. it's WRATHCanvass, DataHandles,
+attribute data, index data and mutable image data) from being deleted.
+I.e. if a WRATHClient fails to issue a heart beat message in time since
+it's last heart beat, the WRATHServer will delete it's data (and possibly
+kill the WRATHClient process too if that process is still alive).
+
+
+The main benefits of the WRATHServer/WRATHClient idea are as follows:
+-Memory savings for common UI data: fonts and theme data
+-Faster WRATH application startup as an application does not need to
+ load common font or theme image data, since it will likely already be in
+ use by the compositor.
+-Similar for many common shaders to render text and images
+-Memory savings for not needing to create a GL context for each WRATHClient
+
+Lastly, because the WRATHClient API calls are verified to be valid by
+the WRATHServer, a rogue WRATHClient application will not bring down
+the WRATHServer. This last point brings up another issue: if we make a
+QML backend using this (not yet made) WRATHClient API. Such QML applications
+would not be able to issue GL calls themselves (but can specify shaders, etc).
+Since common shaders and resources (theme data and fonts) are shared, 
+such QML applications will also startup faster than those using QtQuick2
+(Qt Scene Graph). There is a way to make QML application also share resources:
+namely one process creates QWidget derived objects to display and run
+QML apps. The problem with that approach is that a rogue QML application
+will then bring down that process and all other running QML applications.
+
+
+

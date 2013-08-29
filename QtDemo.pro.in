@@ -1,0 +1,31 @@
+TEMPLATE = app
+DESTDIR = ..
+
+#CONFIG+=HARMATTAN
+HARMATTAN {
+###############################
+# GRAB them volume keys on N9
+INCLUDEPATH+=/usr/include/resource/qt4 \
+/usr/include/dbus-1.0 \
+/usr/lib/dbus-1.0/include \
+/usr/include/resource  
+LIBS+=-lresourceqt    
+
+#############################
+## also N9's GPU does not like branching 
+## in the fragment shader for texture lookup.
+DEFINES+=HARMATTAN MIX_SHADER_AVOID_BRANCHING    
+}
+
+DEFINES += WRATH_QT
+
+QT += opengl
+CONFIG += qt warn_on exceptions stl rtti
+
+debug {
+DEFINES +=
+}
+
+release {
+DEFINES += NDEBUG
+}

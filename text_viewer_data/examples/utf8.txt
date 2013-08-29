@@ -1,0 +1,15 @@
+\cmd{color 0:255 g:0 b:0}
+\cmd{PP raw:true}
+From:
+\cmd{push_color r:0 b:255 g:0}
+\cmd{push_underline true}
+ http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-demo.txt
+\cmd{pop_underline}
+\cmd{pop_color}\n\n
+Formatting is not w3c conforming, since using a formatter
+of WRATH with kerning and variable width formatting 
+and all those joys.
+
+\cmd{include_raw_utf8 UTF-8-demo.wutf8}
+\cmd{strike off}
+\n\n

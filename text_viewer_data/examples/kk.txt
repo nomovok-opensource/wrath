@@ -1,0 +1,47 @@
+
+
+\cmd{strike on}
+\cmd{underline on}
+Double Hit
+\cmd{color 200 200 255 255}
+Double Hit
+
+\cmd{strike off}
+\cmd{color 255 255 255 255}
+UNDERLINE
+\cmd{color 200 200 255 255}
+UNDERLINE
+
+\cmd{strike on}
+\cmd{underline off}
+\cmd{color 255 255 255 255}
+STRIKE
+\cmd{color 200 200 255 255}
+STRIKE
+
+\cmd{strike on}
+\cmd{underline on}
+\cmd{color 255 255 255 255}
+Double Hit \cmd{color 200 200 255 255} Double Hit
+\cmd{strike on}
+SOME-junk-text.txt
+
+\cmd{link junk-text.txt LinkTojunk-text}
+
+\cmd{link revel_red RevelationsInRed}
+
+\cmd{link revel_green RevelationsInGreen}
+
+
+\cmd{color 255 255 255 255}
+\cmd{underline off}
+Another Strike
+\cmd{underline on}
+\cmd{strike off}
+UNDERLINE
+
+
+\cmd{push_font_size 30}
+Directory listing for "./"
+\cmd{pop_font_size 30}
+\cmd{directory_listing ./}

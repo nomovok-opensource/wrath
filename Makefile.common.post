@@ -1,0 +1,135 @@
+
+# Target that builds the proper ngl files
+# This target exists for wrathwebkit builds, not needed with pure wrath builds
+ngl: ngl/$(NGL).cpp
+.PHONY: ngl
+
+# =====================
+# Actual worker targets
+# =====================
+
+# Generate shader .cpp files under release/
+release/%.glsl.cpp: %.glsl
+	@echo Generating $@
+	@mkdir -p $(dir $@)
+	@$(SHADERCC) $< $(notdir $<) $(dir $@)
+
+# Generate shader .cpp files under debug/
+debug/%.glsl.cpp: %.glsl
+	@echo Generating $@
+	@mkdir -p $(dir $@)
+	@$(SHADERCC) $< $(notdir $<) $(dir $@)
+
+# Mark the shader .cpp files as secondary so they don't get generated twice
+.SECONDARY: release/%.glsl.cpp debug/%.glsl.cpp
+
+# .o:s built from .cpp in the same path, aka shaders
+release/%.o: release/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CXXFLAGS_RELEASE) -c $< -o $@
+
+# same, for debug/
+debug/%.o: debug/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CXXFLAGS_DEBUG) -c $< -o $@
+
+# .o built from proper sources
+release/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CXXFLAGS_RELEASE) -c $< -o $@
+
+# Same, but .c files
+release/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CXXFLAGS) $(CXXFLAGS_RELEASE) -c $< -o $@
+
+# Same under debug/
+debug/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CXXFLAGS_DEBUG) -c $< -o $@
+
+# .c, under debug/
+debug/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CXXFLAGS) $(CXXFLAGS_DEBUG) -c $< -o $@
+
+# .d from proper sources in release/
+release/.depend/%.d: %.cpp
+	@echo 'Generating $@'
+	@mkdir -p $(dir $@)
+	@./makedepend.sh "$(CXX)" "$(CPPFLAGS)" release "$*" "$<" "$@"
+
+# .d from proper sourcesin release/, for .c files
+release/.depend/%.d: %.c
+	@echo 'Generating $@'
+	@mkdir -p $(dir $@)
+	@./makedepend.sh "$(CXX)" "$(CPPFLAGS)" release "$*" "$<" "$@"
+
+# .d from .cpp in same path, aka shaders
+release/.depend/%.d: release/%.cpp
+	@echo 'Generating $@'
+	@mkdir -p $(dir $@)
+	@./makedepend.sh "$(CXX)" "$(CPPFLAGS)" release "$*" "$<" "$@"
+
+# .d from .cpp in debug/
+debug/.depend/%.d: %.cpp
+	@echo 'Generating $@'
+	@mkdir -p $(dir $@)
+	@./makedepend.sh "$(CXX)" "$(CPPFLAGS)" debug "$*" "$<" "$@"
+
+# .d from .c in debug
+debug/.depend/%.d: %.c
+	@echo 'Generating $@'
+	@mkdir -p $(dir $@)
+	@./makedepend.sh "$(CXX)" "$(CPPFLAGS)" debug "$*" "$<" "$@"
+
+# .d from .cpp in same path (shaders)
+debug/.depend/%.d: debug/%.cpp
+	@echo 'Generating $@'
+	@mkdir -p $(dir $@)
+	@./makedepend.sh "$(CXX)" "$(CPPFLAGS)" debug "$*" "$<" "$@"
+
+# Make dependency files depend on ngl to be present
+$(DEPS): ngl/$(NGL).hpp
+
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),clean-all)
+ifneq ($(MAKECMDGOALS),targets)
+-include $(DEPS)
+endif
+endif
+endif
+
+all: release-all debug-all
+
+.DEFAULT_GOAL := all
+
+release-all:
+debug-all:
+
+docs:
+	$(MAKE) -C docs docs
+targets:
+	@echo Targets available:
+	@printf "%s\n" $(TARGETLIST)
+
+list-shaders:
+	@printf "%s\n" $(SHADERS)
+
+# Add above targets to the list
+$(call addtargetname, all)
+$(call addtargetname, release-all)
+$(call addtargetname, debug-all)
+$(call addtargetname, docs)
+$(call addtargetname, list-shaders)
+
+clean:
+	-rm -f $(DEPS) $(RELEASE_SHADERS) $(DEBUG_SHADERS) $(EXTRA_CLEAN)
+	@[ -d release ] && find release -depth -type d -exec rmdir --ignore-fail-on-non-empty "{}" ";" || true
+	@[ -d debug ] && find debug -depth -type d -exec rmdir --ignore-fail-on-non-empty "{}" ";" || true
+
+clean-all: clean
+	-rm -fr release debug
+	-find . -name "*~" -exec rm {} \;
+
+.PHONY: all release-all debug-all docs targets list-shaders clean clean-all

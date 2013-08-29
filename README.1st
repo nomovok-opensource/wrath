@@ -1,0 +1,81 @@
+
+Getting Started:
+
+Building
+-------------------
+ 
+  See README.build.txt
+
+Using 
+---------------------
+
+ For the SDL variants of WRATH a script is created at WRATH root
+ called wrath-config, how to use that script is documented in
+ comments at the top of the script.
+
+ For the Qt variant, a .pri file is created for debug and release;
+ the debug .pri file is located in debug/QtLibConf.pri and
+ the release .pri file is located in release/QtLibConf.pri.
+ The .pri files specify paths and various compile options, they
+ do NOT add the necessary LIBS+= option to use the WRATH library,
+ your .pro file will need to do that as well.
+
+ Any source file of a project that uses WRATH must have their 
+ very first include as "WRATHConfig.hpp". This is required 
+ because WRATH uses STL as part of its API and the debug
+ build of WRATH adds _GLIBCXX_DEBUG to make use of debug
+ iterators. In particular, WRATH debug and WRATH release
+ are NOT binary compatible AND when using WRATH one
+ must not define _GLIBCXX_DEBUG yourself ever; instead rely
+ on WRATHConfig.hpp to do the right thing for you.
+
+
+Documentation
+-----------------------
+  WRATH has doxygen documentation complete with tutorials and overview text,
+build the documentation with:
+
+ #cd docs; make  
+
+and find it at docs/doxy/html/index.html
+
+
+Porting WRATH 
+-----------------------------
+
+Most of WRATH's source code is standard vanilla C/C++ code.
+The main issues of which to be aware are:
+  - GL version and GL header files. This is the NGL system. You will
+    need to hack ngl/Rules.ml for a new target to where the GL/GLES
+    header files are located In addition, you will need to set 
+    correctly the GL/GLES version, in Makefile.settings,
+    the variable GL_VERSION 
+  
+  - Every GL implementation has bugs and limitations, the source
+    file src/WRATH/gl/WRATHGPUConfig.cpp implements various
+    functions to provide hints to WRATH on the GPU
+
+  - Fonts. WRATH relies on fontconfig to get a listing of fonts
+    from the system that it will use. For systems that do not
+    use font config you will need to populate the font database.
+    The functions of namespace WRATHFontDatabase is used to 
+    populate the database (essentially just feed in filenames).
+    The fonts need to be loadable by Freetype AND must be
+    scalable vector fonts as well. Look to WRATHFontConfig as
+    an example of populating the database and hack/replace that
+    file as your target requires.
+
+  - WRATHReferenceCountedObject by default uses atomic increment
+    and decrement; one can use Mutex instead (see doxygen documentaion
+    on how) or change/port inc/WRATH/util/WRATHatomic.hpp to your platform
+
+  - WRATHThreadID and WRATHMutex are implemented via pthreads. When porting
+    to a new target you will likely want to change their implementation
+    accordingly.
+ 
+  - WRATHTime uses Unix <sys/time.h> to do its work; if not available
+    on your platform change it too.
+
+  - c_array and vecN make use of __gnu_cxx::__normal_iterator 
+    to implement their iterator types. In a pinch one can simply
+    typedef the iterator type to the pointer type

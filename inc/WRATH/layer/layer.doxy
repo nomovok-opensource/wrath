@@ -1,0 +1,995 @@
+/*! 
+ * \file layer.doxy
+ * \brief file layer.doxy
+ * 
+ * Copyright 2013 by Nomovok Ltd.
+ * 
+ * Contact: info@nomovok.com
+ * 
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with
+ * this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ * 
+ * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
+ * 
+ */
+
+
+
+/*
+  NOTE: this is a source free header file,
+  it contains documentation only.
+ */
+
+
+/*! \addtogroup Layer
+  
+Layer is a collection of classes that implement WRATHCanvas
+and provides a framework so that one can easily create one's
+own transformation types and, on a more advanced level,
+also custom implement the drawing the contents of a canvas.
+In addition, Layer provides template-machinery to augment
+one's node types with additional data such as gradient, texture
+mapping an so forth (see \ref WRATHLayerItemNodeColorValue, 
+\ref WRATHLayerItemNodeLinearGradient, \ref WRATHLayerItemNodeRadialGradient
+and \ref WRATHLayerItemNodeRepeatGradient). Also, Layer provides
+a conveniante, easy, means to create node types where the z-ordering
+is flat or relative to a node's siblings, see \ref WRATHLayerItemNodeDepthOrder
+Lastly, Layer provides two transformation node types: WRATHLayerItemNodeTranslateT
+and WRATHLayerItemNodeRotateTranslateT.
+
+\section Concepts
+
+The Layer framework has the following concepts
+- nodes embodied by \ref WRATHLayerItemNodeBase,
+- per-node values embodied by \ref WRATHLayerItemNodeBase, 
+and specifically \ref WRATHLayerItemNodeBase::extract_values() and WRATHLayerItemNodeBase::functions()
+- node value packers embodied by \ref WRATHLayerNodeValuePackerBase
+- layers that draw items embodied by \ref WRATHLayer and to a lesser extent \ref WRATHLayerBase
+
+A node is just an element in a hierarchy; nodes can have children, etc. An item
+is to use the values stored in a node when being drawing. The most obvious 
+example is when the node contains position data, that data is used to
+transform from local item coordinates to screen coordinates. Other examples
+include that a node might also store a color value which applies to the
+item. The per-node values are stored in a node, NOT in the attributes
+that draw the item. If each item was a seperate draw call, that value would
+be stored in a GLSL uniform. However, the main point of WRATH is that multiple
+items are drawn with a single GL draw call. To this end node values are packed
+by a \ref WRATHLayerNodeValuePackerBase derived object in such a way that
+the per-node values of a fixed node are present and sent to GL in such a
+way that different nodes can share the same draw call. For how to create
+custom node types see \ref Layer_CustomNode and \ref Layer_AugmentNode.
+
+\ref WRATHLayerBase implements \ref WRATHCanvas but does NOT implement any drawing
+routine to draw the items that are on it. It does, however, provide an interface
+(see \ref WRATHLayerBase::render_raw_datas() ) to get the raw GL draw commands
+to draw the items. The class \ref WRATHLayer implements drawing and provides:
+ - hierarch of \ref WRATHLayer objects and their transformations
+ - drawing of opaque items,
+ - drawing of transparent items,
+ - clip-in (see \ref clip_example) and
+ - clip-out (see \ref clip2_example).
+
+For how to use the Layer module to create and draw items see \ref Layer_MakeItem
+
+Lastly, the Layer module provides a support to work with the 
+Widgets module to define widget types, see \ref Layer_Widgets. 
+
+\page Layer_MakeItem Creating Items and Using WRATHLayer objects
+
+The class \ref WRATHLayer implements \ref WRATHCanvas and can be
+used directly as a canva for items. Additionally, the Layer framework
+provides a template class \ref WRATHLayerItemDrawerFactory
+to define the WRATHDrawerFactory type to pass to item consructors.
+
+
+An example using existing node types with \ref WRATHLayer to 
+draw items is as follows:
+\code
+WRATHTripleBufferEnable::handle tr;
+.
+//init tr, either by creating or getting it from somewhere else
+.
+typedef WRATHLayerItemNodeTranslateT<WRATHLayerItemNodeDepthType::hierarchical_ordering> Node;
+WRATHLayer *my_layer, *my_child_layer;
+Node *my_node, *my_child_node;
+
+//create a root WRATHLayer
+my_layer=WRATHNew WRATHLayer(tr); 
+
+//create a child layer, the parent will
+//delete the child when the parent is deleted
+my_child_layer=WRATHNew WRATHLayer(my_layer);
+
+//create a node on which items maybe placed:
+my_node=WRATHNew Node(tr);
+
+//creae a child node of my_node, the parent
+//will delete all it's child node when it
+//is deleted
+my_child_node=WRATHNew Node(my_node);
+
+//now use these nodes to generate subkeys for items
+WRATHLayerBase::SubKey node_key(my_node), child_node_key(my_child_node);
+
+//define the factory type suitable for the node type Node:
+//the first template argument names the node type we are using
+//and the second template argument must be derived from WRATHLayerNodeValuePackerBase
+//and provides a mechanism to transfer the value held in a node to GL
+typedef NodeValuePacker WRATHLayerNodeValuePackerUniformArrays;
+WRATHLayerItemDrawerFactory<Node, NodeValuePacker> factory;
+
+//since text is drawn with quads, we can use quad-quad clipping
+int subdrawer_id=WRATHLayerItemDrawerFactoryCommon::quad_clipping;
+
+//now start making items, for example lets make a text item:
+WRATHTextDataStream some_text; 
+WRATHTextItem *my_text_item, *my_other_text_item;
+
+//fill some_text
+some_text.stream() << "Hello world!";
+
+//text item is "on" the layer my_layer.
+my_text_item=WRATHNew WRATHTextItem(factory, subdrawer_id,
+                                    my_layer, node_key,
+                                    WRATHTextItemTypes::text_opaque);
+
+
+//another text item can be made using my_child_node:
+my_other_text_item=WRATHNew WRATHTextItem(factory, subdrawer_id,
+                                          my_layer, child_node_key,
+                                          WRATHTextItemTypes::text_opaque);
+
+//we can now move the my_other_text_item through 
+//my_child_node that was used to generate it's subkey
+//these calls move my_other_text_item relative to my_text_item
+my_child_node->translation(vec2(12.0f, 13.0f));
+my_child_node->scaling_factor(4.0f);
+
+//since my_node is a parent to my_child_node
+//it's transformation applies to my_child_node, these
+//move my_text_item and keep the placement/scale
+//between my_text_item and my_other_text_item the same
+my_node->translation(vec2(-12.0f, -313.0f));
+my_node->scaling_factor(0.25f);
+
+//note that the total scaling applied to my_other_text_item
+//is 1.0 (i.e. the product of 0.25 and 4.0).
+
+// WRATHLayerItemNodeTranslateT<WRATHLayerItemNodeDepthType::hierarchical_ordering>
+// and any class derived from WRATHLayerItemNodeDepthOrder<WRATHLayerItemNodeDepthType::hierarchical_ordering, T>
+// has that the global z-ordering value is generated from
+// local z-ordering so that
+//  1) children are infront of parents
+//  2) children a are ordered relative to their siblings
+// i.e. hierarichal ordering
+// if one needs finer control to the z-ordering, then one
+// will want to have that the global z-ordering value
+// is the same as the local z-ordering value, in this case
+// one will enforce whatever z-ordering policy one wishes
+// by directly setting the local z-order values
+// (see WRATHLayerItemNodeDepthOrder::z_order() ),
+// for that case use a node derived from 
+// WRATHLayerItemNodeDepthOrder<WRATHLayerItemNodeDepthType::flat_ordering, T>
+
+\endcode
+
+Drawing the contents of a \ref WRATHLayer heirarchy is is done by simply issuing:
+
+\code
+WRATHLayer *my_layer;
+
+my_layer->draw();
+\endcode
+
+However, Layer is built for multi-threaded application where one
+thread changes node values (and deletes and constructs items)
+and another dedicated thread draws. Values in a node may only
+be changed in the simulation thread. The framework of \ref Layer
+(specifically the mechanics of \ref WRATHLayerNodeValuePackerBase)
+copy the value from the node to a triple buffered array.
+To that end, at the end of each simulation thread, one must:
+
+\code
+tr->signal_complete_simulation_frame();
+\endcode
+
+and before drawing one does
+
+\code
+tr->signal_begin_presentation_frame();
+\endcode
+
+For a single threaded application one will likely do as follows:
+\code
+WRATHLayer *my_layer;
+.
+.
+.
+tr->signal_complete_simulation_frame();
+tr->signal_begin_presentation_frame();
+my_layer->draw();
+\endcode
+\n
+\ref WRATHLayer also allows for clipping (both in and out)  
+to be specified by items, see the examples \ref clip_example
+and \ref clip2_example.
+
+\page Layer_CustomNode Defining Custom Node Types in Layer
+
+One of the main powers provided by the \ref Layer module
+is the ability to define new node types which can in
+turn then be used to draw any item with the transformation
+of the node type applied to the item. Defining a new 
+transformation node type requires:
+ - a definition of a transformation hierarchy
+ - desclaration of the values that represent the transformation
+   from local item coordinates to \ref WRATHLayer coordinates
+ - necessary GLSL code to do the transformation in a shader
+ - necessary plumbing to send the values that do the transformation
+   to GL to be used by a GLSL shader
+
+A new node type will need to implement the pure virtual
+functions in \ref WRATHLayerItemNodeBase and in doing so
+also implement a \ref WRATHLayerItemNodeBase::node_function_packet
+derived class. The full list of what we need to implement and
+define and redefine are:
+ - WRATHLayerItemNodeBase::extract_values(reorder_c_array<float>)
+ - WRATHLayerItemNodeBase::node_functions(void) const
+ - WRATHLayerItemNodeBase::compute_values(void)
+ - WRATHLayerItemNodeBase::functions(void) 
+ - WRATHLayerItemNodeBase::number_per_node_values
+
+Our example will be slightly contrived: the transformation
+held by the node will be -exactly- a translation (x,y).
+We will have that the class \ref WRATHLayerItemNodeDepthOrder
+will handle the z-ordering for us, but we will still need
+to pack that value. 
+
+First we define the transformation hierarchy:
+\code
+class CustomNodeExampleValues
+{
+public:
+  vec2 m_translation;
+  bool m_visible;
+
+  CustomNodeExampleValues(void):
+    m_translation(0.0f, 0.0f),
+    m_visible(true)
+  {}
+
+  bool
+  operator!=(const CustomNodeExampleValues &rhs) const
+  {
+     return m_visible!=rhs.m_visible or 
+       m_translation!=rhs.m_translation;
+  }
+
+  void
+  compose(const CustomNodeExampleValues &lhs, 
+          const CustomNodeExampleValues &rhs)
+  {
+    m_visible=lhs.m_visible and rhs.m_visible;
+    m_translation=lhs.m_translation + rhs.m_translation;
+  }
+};
+\endcode
+
+The class CustomNodeExampleValues contains a boolean to indicate
+if it is visible and a translation value. The composition
+of a parent value a local value is in the compose() function
+which assigns composition to the calling object.
+
+Now lets define our node example:
+\code
+class CustomNodeExample:
+      public WRATHLayerItemNodeDepthOrder<WRATHLayerItemNodeDepthType::hierarchical_ordering, CustomNodeExample>
+{
+public:
+
+  enum
+    {
+      // Our CustomNodeExample has 3 values sent to GL per node
+      number_per_node_values=3
+    };
+
+  explicit
+  CustomNodeExample(CustomNodeExample *pparent):
+     WRATHLayerItemNodeDepthOrder<WRATHLayerItemNodeDepthType::hierarchical_ordering, CustomNodeExample>(pparent)
+  {}
+
+  explicit
+  CustomNodeExample(const WRATHTripleBufferEnabler::handle &tr):
+     WRATHLayerItemNodeDepthOrder<WRATHLayerItemNodeDepthType::hierarchical_ordering, CustomNodeExample>(tr)
+  {}
+
+  void
+  set_value(const CustomNodeExampleValues &v)
+  {
+    //since the translation of visibility change
+    //a hierarhcy walk is needed to the children to correctly
+    //compose, in addition, since our local value changed,
+    //we need to get to this node as well to update the
+    //global value holding the transformation from the
+    //WRATHLayer to the node local coordinates. 
+    mark_dirty(m_local!=v);
+
+    m_local=v;
+  }
+
+  void
+  visible(bool v)
+  {
+    mark_dirty(v!=m_local.m_visible); //only mark dirty if the value changed
+    m_local.m_visible=v;     
+  }
+
+  void
+  translation(const vec2 &v)
+  {
+    mark_dirty(m_local.m_translation!=v); //only mark dirty if the value changed
+    m_local.m_translation=v;
+  }
+
+  //returns translation and visibity relative to parent
+  const CustomNodeExampleValues&
+  value(void) const
+  {
+    return m_local;
+  }
+ 
+  //return translation and visibity relative to root
+  const CustomNodeExampleValues&
+  global_value(void) const
+  {
+    return m_global;
+  }
+
+  static
+  const WRATHLayerItemNodeBase::node_function_packet&
+  function(void);
+
+  virtual
+  void
+  extract_values(reorder_c_array<float> out_values);
+
+  virtual
+  const WRATHLayerItemNodeBase::node_function_packet&
+  node_functions(void) const
+  {
+     return functions();
+  }
+
+protected:
+
+  virtual
+  void
+  compute_values(void)
+  {
+     //we need to compute the coordinate transformation
+     //from WRATHLayer to this local coordinates.
+     //compute_values() is called AFTER the parent node
+     //of this, thus we can use the parent node value
+     //also we need to call WRATHLayerItemNodeDepthOrder::compute_z_values()
+     //in compute_values() since we derived from WRATHLayerItemNodeDepthOrder
+     this->compute_z_values();
+     if(parent()!=NULL)
+       {
+         m_global.compose(parent()->m_global, m_local);
+       }
+     else
+       {
+         m_global=m_local;
+       }      
+  }
+
+private:
+  //m_local holds the transformation
+  //from the parent node local coordinates
+  //to this node's local coordinates	
+  CustomNodeExampleValues m_local;
+
+  //m_global is to hold the transformation
+  //from the WRATHLayer coordinates
+  //to this node's local coordinates.
+  //Note that then the value of m_global 
+  //is just the composition of parent()->m_global 
+  //with this->m_local  
+  CustomNodeExampleValues m_global;
+};
+
+\endcode
+
+We still need to implement how the values stored in the
+member m_global is transmitted to GL, that will come
+in the implementation of WRATHLayerItemNodeBase::extract_values() and
+in the implemention of the static function, functions() which is
+what our implementation of WRATHLayerItemNodeBase::node_functions()
+calls. It is required that there is a static function
+for a node type called functions() that returns the exact
+same value that the implementation of node_functions() returns.
+We do this by just making the virtual method call the
+static method. The return value of node_functions() and functions()
+is associated to the node type, not a node.
+
+To implement how and what data is transmitted to GL
+we need to implement \ref WRATHLayerItemNodeBase::node_function_packet
+class. In doing so we will also need to implement GLSL
+shader code for performing the transformation from
+item local coordinates to OpenGL clip coordinates
+(not just WRATHLayer coordinates). 
+
+For this example, each node will send 3 values to GL for their transformation data:
+ - a translation x-coordinate (from m_global.m_translation.x() )
+ - a translation y-coordinate (from m_global.m_translation.y() )
+ - a normalized depth value representing the z-ordering (from WRATHLayerItemNodeDepthOrder::normalized_z())
+the normalized depth value represents what value we will write to
+the depth buffer when drawing an item; for nodes that have m_global.m_visible
+false, we will use a value outside of [-1,1] so that the GL pipeline
+will not draw the primitives from the item.
+
+Lets create our GLSL code first for doing the transformation
+task. The GLSL code we need to implement is specified by
+the documentation to \ref WRATHItemDrawerFactory.
+
+First is the GLSL code for the vertex shader; this codes
+provides the necessary GLSL functions to tranform
+from item coordiantes to clip coordinates.
+\code
+
+// We have 3 per-node values
+//  CustomNodeExample_x
+//  CustomNodeExample_y 
+//  CustomNodeExample_Normalized_z
+// fetching a node value is done by the macro function fetch_node_value,
+// this macro-function is provided by WRATH when it assembles the final 
+// shader to send to GL
+
+// projection-model view matrix set by WRATHLayer,
+// the name must be clip_matrix_layer
+uniform mediump mat4 clip_matrix_layer;
+
+
+//compute_gl_position() computes the clip coordinates
+//to feed GL given an input point p. The input point's
+//z-coordinate is used for perspective transformation only
+vec4 compute_gl_position(in vec3 p)
+{
+   vec2 q;
+   vec4 return_value;
+
+   //apply our 2D transformation
+   q=p.xy + vec2(fetch_node_value(CustomNodeExample_x),
+                 fetch_node_value(CustomNodeExample_y));
+
+   //apply the projection matrix
+   return_value=clip_matrix_layer * vec4(q, p.z, 1.0);
+
+   //make so that z-value written to the depth buffer is fetch_node_value(CustomNodeExample_Normalized_z)
+   return vec4(return_value.xy, 
+               return_value.w*fetch_node_value(CustomNodeExample_Normalized_z), 
+               return_value.w);
+}
+
+//compute_gl_position_and_apply_clipping() is required by WRATHItemDrawerFactory
+//for this example since the node does not provide any clipping it
+//just does the same thing as compute_gl_position
+vec4 compute_gl_position_and_apply_clipping(in vec3 p)
+{
+   return compute_gl_position(p);
+}
+
+//compute_clipped_normalized_coordinate purpose is that
+//if a node provides clipping in 2D coordiantes and if it
+//clips to a rectangle parallel to the local coordinate axis
+//it is to compute what portion of a rectangle is not clipped
+//our node does not do any clipping so we return the input
+//normalized value
+vec2 compute_clipped_normalized_coordinate(in vec2 normalized_coordinate,
+                                           in vec2 quad_top_left,
+                                           in vec2 quad_size)
+{
+   return normalized_coordinate;
+}
+\endcode
+
+We also need to provide a small amount of fragment source code,
+this code would not be empty if our node type implemented clipping.
+
+\code
+void
+discard_if_clipped(void)
+{}
+
+mediump float
+discard_via_alpha(void)
+{
+  return 1.0;
+}
+\endcode
+
+
+Now that we have our GLSL code, we now need to send the shader code to
+WRATH to be used by \ref WRATHShaderSpecifier to construct the
+GLSL shader to be fed to OpenGL. This is handled by implementing
+WRATHLayerItemNodeBase::node_function_packet for our node type:
+
+\code
+
+const char *vertex_source_code= // GLSL code above implementing the transformation code
+const char *fragment_source_code= //GLSL code above implementing the empty discard methods
+
+class CustomNodeExampleFunctionPacket:public WRATHLayerItemNodeBase::node_function_packet
+{
+public:
+  //this function is used by WRATHLayer to create a node that will never be visible
+  virtual
+  WRATHLayerItemNodeBase*
+  create_completely_clipped_node(const WRATHTripleBufferEnabler::handle &r) const
+  {
+    CustomNodeExample *return_value;
+    return_value=WRATHNew CustomNodeExample(r);
+    return_value->visible(false);
+    return return_value;
+  }
+
+  //this function is where we declare to WRATH what values are transmitted
+  //to shader code and which shader stagets.
+  virtual
+  void
+  add_per_node_values(WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
+                      const WRATHLayerNodeValuePackerBase::function_packet &) const
+  {
+    // The first parameter is to where in the value is written
+    // in our implementation of extract_values() for CustomNodeExample.
+    // The second parameter is the name of it that it will take in the shader.
+    // The third parameter is what shader stages the value appears.
+    spec
+     .add_source(0, "CustomNodeExample_x", GL_VERTEX_SHADER)
+     .add_source(1, "CustomNodeExample_y", GL_VERTEX_SHADER)
+     .add_source(2, "CustomNodeExample_Normalized_z", GL_VERTEX_SHADER);     
+  }
+
+  //this last function appends out custom shader code
+  virtual
+  void
+  append_shader_source(std::map<GLenum, WRATHGLShader::shader_source> &src,
+                       const WRATHLayerNodeValuePackerBase::function_packet &) const
+  {
+    src[GL_VERTEX_SHADER].add_source(vertex_source_code);
+    src[GL_FRAGMENT_SHADER].add_source(fragment_source_code);
+  }
+};
+
+const WRATHLayerItemNodeBase::node_function_packet&
+CustomNodeExample::
+function(void)
+{
+  //note that the funtion is to return a _reference_
+  //also it should always return the same reference
+  //so we just make a static local variable or type
+  //CustomNodeExampleFunctionPacket and return it.
+
+  WRATHStaticInit(); //needed in WRATH for any local static variables in a function
+  static CustomNodeExampleFunctionPacket R;
+  return R;
+}
+
+\endcode
+
+Lastly, we need to write the values from a CustomNodeExample
+object to an array. Note that indices to where we write our
+values matches with our implementation of \ref
+WRATHLayerItemNodeBase::node_function_packet::add_per_node_values()
+above.
+
+\code
+void 
+CustomNodeExample::
+extract_values(reorder_c_array<float> out_values)
+{
+  out_values[0]=m_global.m_translation.x();
+  out_values[1]=m_global.m_translation.y();
+
+  
+  if(m_global.m_visible)
+    {
+      //we use WRATHLayerItemNodeDepthOrder::normalized_z()
+      //to compute/get the noralized-z value for use
+      out_values[2]=normalized_z();
+    }
+  else
+    {
+      // if the node is not visible we want to 
+      // make GL not draw a polygon whose vertices
+      // are transformed by the node, so all we need
+      // to do is that if it is not visible to
+      // set the normalized-z value to outside of
+      // [-1,1] to make GL clip it.
+      out_values[2]=-100.0f;
+    }
+}
+\endcode
+
+We now have our own custom node example that can be used  
+to generate \ref WRATHLayerBase::SubKey values which in
+turn can be used to construct items.
+
+To complete our CustomNodeExample class we need to
+implement one more function. This function is only
+used by \ref WRATHWidgetGeneratorT. That function
+to implement, which is a non-virtual, member function
+has the following signature and description,
+for example see \ref WRATHLayerItemNodeTranslateT::canvas_as_child_of_node().
+
+\code
+// Set so that the indicated WRATHLayer is
+// drawn as if it was a child of this, i.e.
+// when the WRATHLayer is drawn it has the
+// clipping and transformation of this
+// node pre-applied to it's contents
+void
+canvas_as_child_of_node(WRATHLayer *c);
+\endcode
+
+\ref WRATHLayer prodives a means to apply
+additional transformations to it during rendering,
+that is represented and implemented by \ref 
+WRATHLayerIntermediateTransformation. There are a
+number of gotcha's for implementing \ref
+WRATHLayerIntermediateTransformation :
+- the virtual function that does the work is called only in the 
+  rendering thread, but reading node values can only be done
+  in the simulation thread
+- the WRATHLayerIntermediateTransformation object may be
+  alive longer than the node that it uses to compute
+  transformation values.
+
+The solution to the first issue is to triple buffer
+copy the values from CustomNodeExample object 
+after the node hierachy walk and the solution to
+the second issue is to catch a signal when the
+node goes out of scope. Here is an implementation 
+for \ref WRATHLayerIntermediateTransformation
+for our CustomNodeExample class
+\code
+class CustomNodeExampleTransformer:public WRATHLayerIntermediateTransformation
+{
+public:
+   explicit
+   CustomNodeExampleTransformer(const CustomNodeExample *n):
+     m_n(n),
+     m_tr(n->triple_buffer_enabler())
+   {
+     //the default group order for the connection is 0
+     //where as the hierarchy walk has group order quite negative,
+     //see WRATHLayerItemNodeBase::HierarchyNodeWalk
+     //we want to get teh global value after hierachy walk,
+     //so 0 for group order is just fine
+     m_sig=m_tr->connect(WRATHTripleBufferEnabler::on_complete_simulation_frame,
+                         WRATHTripleBufferEnabler::pre_update_no_lock,
+                         boost::bind(&CustomNodeExampleTransformer::on_complete_simulation_frame, this));
+   }
+
+   ~CustomNodeExampleTransformer(void)
+   {
+     m_sig.disconnect();
+   }
+
+   void 
+   unhook(void) 
+   { 
+     m_sig.disconnect();
+     m_n=NULL; 
+   }
+
+   virtual
+   void
+   modify_matrix(float4x4& in_out_matrix)
+   {
+     vec2 tr(m_values[m_tr->present_ID()]);
+
+     //recall that float4x4 init's matrix as
+     //1 on diagnol and zero off the diagnol
+     //we want to create a matrix representing
+     //translating by tr:
+     float4x4 as_mat4;
+     as_mat4(0,3)=tr.x();
+     as_mat4(1,3)=tr.y();
+
+     //insert the transformation between the
+     //parent layer and the layer to which it
+     //applies:
+     in_out_matrix=as_mat4*in_out_matrix;
+   }
+
+private:
+
+  void
+  on_complete_simulation_frame(void)
+  {
+    //note that on_complete_simulation_frame() is only
+    //executed in the simulation frame and that
+    //nodes are only deleted from there too, in particular
+    //m_n is only modified my unhook() and that will
+    //happens when m_n is delete which only happens
+    //in the simulation frame.
+    if(m_n!=NULL)
+      {
+        m_values[m_tr->current_simulation_ID()]=m_n->global_values().m_transformation;
+      }
+    else
+      {
+        m_values[m_tr->current_simulation_ID()]=vec2(0.0f, 0.0f);
+      }
+  }
+
+  vecN<vec2, 3> m_values;
+  const CustomNodeExample *m_n;
+  WRATHTripleBufferEnabler::handle m_tr;
+  WRATHTripleBufferEnabler::connect_t m_sig;
+};
+
+\endcode
+
+Now we need to augment out CustomNodeExample class to hold
+a handle to the above object and correctly use it.
+
+\code
+class CustomNodeExample
+{
+public:
+  .
+  .
+  .
+  .
+  
+  //new code
+  ~CustomNodeExample();
+
+  void
+  canvas_as_child_of_node(WRATHLayer *);
+
+private:
+  .
+  .
+  .
+  
+  //new value
+  CustomNodeExampleTransformer::handle m_intermediate_transformer;  
+
+};
+
+CustomNodeExample::
+~CustomNodeExample()
+{
+  if(m_intermediate_transformer.valid())
+    {
+      m_intermediate_transformer->unhook();
+    }
+}
+
+void
+CustomNodeExample::
+canvas_as_child_of_node(WRATHLayer *L)
+{
+  if(!m_intermediate_transformer.valid())
+   {
+     m_intermediate_transformer=WRATHNew CustomNodeExampleTransformer(this);
+   }
+  //set m_intermediate_transformer=WRATHNew as the element to transform
+  //the transformations of L during rendering. Note that the same object
+  //can be used by multiple WRATHLayer objects.
+  L->simulation_transformation_modifier(WRATHLayer::modelview_matrix, m_intermediate_transformer);
+}
+
+\endcode
+
+With those additions, our CustomNodeExample class can be used to create items,
+create widgets and be used in \ref WRATHWidgetGeneratorT.\n\n\n\n
+
+\page Layer_AugmentNode Augmenting Existing Node Type
+
+We can expand upon the concepts used in \ref Layer_CustomNode
+to augment an existing node type. Our example will be quite contrived:
+we will augment an existing node type to have an additional per-node
+value called <B>foo</B>. That value's purpose is not for transformation
+but typically for a specific shader to draw something (for example
+a color value that changes often). The additional value is to be used
+typically for specific item shaders. One real example is to augment
+a node type to include a color value, this is already
+implemented in \ref WRATHLayerItemNodeColorValue.
+
+We want to define a class that will allow us
+to augment <I>any</I> node type, to that end our node augmentation example
+will be a template type. Just as in \ref Layer_CustomNode,
+we will need to define and redefine:
+ - WRATHLayerItemNodeBase::extract_values(reorder_c_array<float>)
+ - WRATHLayerItemNodeBase::node_functions(void) const
+ - WRATHLayerItemNodeBase::compute_values(void)
+ - WRATHLayerItemNodeBase::functions(void) 
+ - WRATHLayerItemNodeBase::number_per_node_values
+but in a way that augments the base node type. The basic strategy
+is that the new node value, <B>foo</B>, will be packed
+after the values of the base node class; the implementation
+of the \ref WRATHLayerItemNodeBase::node_function_packet derived
+object will use the return value of the base class as well.
+
+
+\code
+template<typename BaseNode>
+class AugmentNodeExample:public BaseNode
+{
+public:
+  enum
+    {
+      //AugmentNodeExample has one more per-node value than BaseNode
+      number_per_node_values=BaseNode::number_per_node_values + 1
+    };
+
+  //note that we allow the parent of a AugmentNodeExample
+  //to be another type, The reason being that augmented
+  //nodes are ofen used in conjuction with specific shaders.
+  //additionally, the type BaseNode type might itself be
+  //another augmented node type, so we let template recursion
+  //into the eventual base node class specify what is
+  //an allowable parent class
+  template<typename S>
+  explicit
+  AugmentNodeExample(S *pparent):
+    BaseNode(pparent),
+    m_foo(0.0f)
+  {}
+
+  explicit
+  AugmentNodeExample(const WRATHTripleBufferEnabler &tr):
+    BaseNode(tr),
+    m_foo(0.0f)
+  {}
+
+  static
+  const WRATHLayerItemNodeBase::node_function_packet&
+  functions(void);
+
+  const WRATHLayerItemNodeBase::node_function_packet&
+  node_functions(void)
+  {
+    return functions();
+  }
+
+  void
+  extract_values(reorder_c_array<float> out_values)
+  {
+    //call the BaseNode's extract_values() 
+    BaseNode::extract_values(out_values.sub_array(0, BaseNode::number_per_node_values));
+
+    //place our value after BaseNode values
+    out_values[BaseNode::number_per_node_values + 0] = m_foo;
+  }
+
+  //in our contrived example m_foo will be public
+  float m_foo;
+};
+
+\endcode
+
+All that remains is to implement the WRATHLayerItemNodeBase::node_function_packet
+object returned by functions(), for that we will need to define a class
+dependent on the BaseNode template parameter.
+
+\code
+template<typename BaseNode>
+class AugmentNodeExampleFunctionPacket:public WRATHLayerItemNodeBase::node_function_packet
+{
+public:
+  virtual
+  WRATHLayerItemNodeBase*
+  create_completely_clipped_node(const WRATHTripleBufferEnabler::handle &r) const
+  {
+     //we will let the BaseNode class make the non-visible node.
+     return BaseNode::functions().create_completely_clipped_node(r);
+  }
+
+  virtual
+  void
+  add_per_node_values(WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
+                      const WRATHLayerNodeValuePackerBase::function_packet &fp) const
+  {
+    //add the per_node_values from the BaseNode type
+    BaseNode::functions().add_per_node_values(spec, fp);
+
+    //now add our value, make it available to the vertex shader
+    //and if possible, to the fragment shader too.
+    spec.add_source(BaseNode::number_per_node_values + 0, "foo", GL_VERTEX_SHADER);
+    if(fp.supports_per_node_value(GL_FRAGMENT_SHADER))
+      {
+        spec.add_source(BaseNode::number_per_node_values + 0, "foo", GL_FRAGMENT_SHADER);
+      }
+  }
+  
+  virtual
+  void
+  append_shader_source(std::map<GLenum, WRATHGLShader::shader_source> &src,
+                       const WRATHLayerNodeValuePackerBase::function_packet &fpt) const
+  {
+     //our custom example does not add any additional shader code, but
+     //we do need to let BaseNode add it's code
+     BaseNode::functions().append_shader_source(src, fpt);
+  }
+};
+
+template<typename BaseNode>
+const WRATHLayerItemNodeBase::node_function_packet&
+AugmentNodeExample<BaseNode>::
+functions(void)
+{
+  WRATHStaticInit();
+  static AugmentNodeExampleFunctionPacket R;
+  return R;
+}
+\endcode
+
+Now we have defined a class that can augment <I>any</I> node type 
+so that in item shader code the new per-node value foo is available.
+
+A fully fleshed out example of augmenting node type can be found
+in the example \ref augmented_node_example.
+
+\page Layer_Widgets Using Layer and Widgets modules together
+
+The main template class to use to define widgets
+from Layer module node types in \ref WRATHLayerItemWidget.
+Below is a simple example using \ref WRATHLayerItemNodeTranslate
+as the transformation type and \ref WRATHLayerNodeValuePackerUniformArrays
+as the node value packer type.
+
+\code
+typedef WRATHLayerItemNodeTranslate Node;
+typedef WRATHLayerNodeValuePackerUniformArrays NodePacker;
+typedef WRATHLayerItemWidget<Node, NodePacker>::FamilySet FamilySet;
+typedef WRATHLayerItemWidget<Node, NodePacker>::Generator WidgetGenerator;
+
+.
+.
+
+//
+// example to make a text widget directly 
+//
+FamilySet::PlainFamily::TextWidget*
+make_text_widget(WRATHLayer *layer)
+{
+  FamilySet::PlainFamily::TextWidget *text;
+
+  text=WRATHNew FamilySet::PlainFamily::TextWidget(layer, WRATHTextItemTypes::text_opaque);
+
+  WRATHTextDataStream stream;
+  stream.stream() << "\nHello World";
+
+  text->add_text(stream);
+  return text;
+}
+
+// example to make a text widget with WRATHWidgetGenerator
+void
+make_text_widget(FamilySet::PlainFamily::DrawnText &text_widget_handle,
+                 WidgetGenerator &pgenerator)
+{
+  WRATHTextDataStream stream;
+  stream.stream() << "\nHello World";
+  pgenerator.add_text(text_widget_handle, 
+                      WRATHWidgetGenerator::Text(stream),
+                      WRATHWidgetGenerator::text_opaque);
+}
+
+\endcode
+
+
+ */
+
+
+
+#error "Include of " __FILE __ " which is a documentation files"

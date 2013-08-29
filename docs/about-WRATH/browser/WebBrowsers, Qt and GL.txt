@@ -1,0 +1,256 @@
+Kevin Rogovin
+Feb 22, 2011
+WebBrowsers, QML and GL
+
+
+
+Using the OpenGL API family
+-------------------------------------
+
+The OpenGL API (here I will concentrate on OpenGL ES2) consists of:
+ 0) clearing the screen and setting how to clear the screen
+ 1) Setting GL state to affect how data is drawn
+ 2) Draw command (glDrawElements and glDrawArrays) to draw primitives (points, lines or triangles).
+
+GL State includes the following:
+ 1) From where to source attribute data. Attribute data is the raw per vertex data of a primitive.
+ 2) Active GLSL Program which consists of:
+    a) Vertex shader. A Vertex shader is a small block of code responsible for transforming
+       the raw per vertex data from the attribute data. The thought to keep in mind is that
+       the attribute data is a stream of numbers which the vertex shader processes to produce
+       a stream of positions and per-vertex-data.
+    b) Fragment shader. A fragment shader is a small block of code responsible
+       for taking interpolated values along a primitive to produce a color to display
+    c) Uniforms for shaders. Uniforms are values that are fixed per draw call.
+ 3) Active textures, i.e. sources of image data that a fragment shader uses.
+ 4) Blending state. If and how pixels drawn are composited with previous drawn pixels
+ 5) Per pixel testing state (depth and stencil test). Pixel wise tests determine
+    if a pixel is drawn on a pixel by pixel basis.
+
+ Roughly speaking, in order from most expensive to cheapest the expense
+ of state changes is as follows:
+  1) change of active GLSL program
+  2) change of active textures
+  3) change of per pixel testing state
+  4) change of blending state
+  5) change of attribute source
+  6) change of uniform values
+
+ Note that the order of (3), (4), (5) are highly dependent on GPU.
+ Typically, per-pixel testing state and blending state change very
+ rarely anyways though.
+
+ Lets give a simple example: draw 1 triangle. A triangle consists of 3 vertices.
+ The attribute data for a triangle then is set of data _per_ vertex of the triangle.
+ A vertex shader processes each attribute data to produce:
+   a) a position on (or off) the screen
+   b) per-vertex data that the hardware interpolates across the triangle.
+
+ A fragment shader runs (simplifying and ignoring MSAA) on pixels. It's input
+ is the interpolate value of (b) above. It's job is to produce an RGBA color
+ value. 
+
+ For one glDraw* call, the values of the GL state are fixed. The attribute 
+ _sources_ are also fixed. As such, each change of a uniform value forces a 
+ new draw call. For 3D simulations, one typically has for each mesh, set
+ the uniforms and then draw. The expectation is that each mesh consists
+ of many triangles and there are not that many meshes to draw. In contrast
+ a UI, each element is very few triangles (an image is 2 triangles and a 
+ string of text is 2 triangles per letter). The number of draw calls possible
+ per time unit is mostly determined by the CPU. The GPU determines how
+ many vertices and pixels can be processed.  
+
+ Below is a table of test of drawing imaged rectangles at a size of 50x50
+ pixels on href2:
+
+ #images     #images_per_call   #draw_calls  time_in_ms(lower is better)  FramesPerSecond (higher is better)
+  1000           1                1001            49.9ms                      (20FPS) 
+  1000           2                 501            29.9ms                      (33FPS)
+  1000           3                 335            23.8ms                      (42FPS)
+  1000           5                 201            18.8ms                      (53FPS)
+  1000          10                 101            15.0ms                      (66FPS)
+  1000          25                  41            12.9ms                      (77FPS)
+  1000          50                  21            12.1ms                      (82FPS)
+  1000         100                  11            11.8ms                      (85FPS)
+
+  2000           1                2001            94.5ms                      (11FPS) 
+  2000           2                1001            58.2ms                      (17FPS)
+  2000           5                 401            34.1ms                      (29FPS) 
+  2000          10                 201            28.2ms                      (35FPS) 
+  2000          25                  81            24.0ms                      (42FPS) 
+  2000          50                  41            22.5ms                      (45FPS) 
+  2000          75                  29            22.3ms                      (45FPS) 
+  2000         100                  21            22.3ms                      (45FPS) 
+
+  Command on device run is: 
+
+   ./demo fullscreen=true rotatexy=true time=10000 image2=images/512.512.rgba text="" font_lazy_z=false item_size_x=50 item_size_y=50 draw_text=false v_x=800 v_y=300 text_renderer=1 count=C image=images/1024x1024.rgba max_tr=TR
+   where C=#images, TR=#images_per_call.
+
+
+  On Href2 we see from the above numbers that the number of draw calls possible
+  per frame is hovering around 100 if we wish to maintain 60FPS. 
+
+  Qt's QML-scene-graph generates one draw call per UI item. On Href2 to maintain
+  a 60Hz refresh rate, then likely no more than 100 items are allowed. This
+  limit does not address the number of vertices per item or for that matter
+  the number of pixels that each item occupies. It only addresses the CPU
+  overhead of doing a glDraw* call. Both QML Scene Graph and KAN schedule
+  drawing with an attempt to reduce the most expensive GL state changes.
+
+  The experimental renderer I have made batches draw calls together by rather
+  that having a uniform to have an array of uniforms, where the index into
+  the array is the "virtual element ID". This is possible because the shaders
+  used for UI are simple and consume very few uniforms. There is also a balance
+  between placing a value as a uniform or as an attribute value to address.
+
+
+
+Qt Rendering
+-------------------------------------------------
+
+The historical API to use in Qt for drawing is QPainter. In all brutal
+honesty it is the wrong API for drawing using a GPU. There are tweaks
+possible to improve it, but they are a wasted effort in my opinion.
+
+However, QML presents an opportunity. A QML viewer takes as input a file, 
+creates data structures and draws. Here is where we can change how to draw
+dramatically. This observation is also behind QML Scene Graph. It creates
+that data to feed to GL and saves it (roughly). The main difference between
+QML Scene Graph and KAN is that KAN draws many elements with one call where
+as QML Scene Graph draws one element per call. QML Scene Graph is much more
+sensitive to CPU speed and consumes more CPU power, where as the KAN 
+rendering strategy consumes minimal CPU during drawing and is almost 
+entirely dependent on GPU speed.
+
+The technical strategy is simple: implement our own qmlviewer using
+the rendering strategy research explored in KAN. Along those lines,
+we can also generate an infrastructure to make custom drawing plugins
+easier to create. This custom qmlviewer will need to make use of 
+Qt internal header files. Additionally, just as for QMLSceneGraph's
+viewer, the starting import command will need to be different. 
+Specifically:
+
+QPainter viewer: "import QtQuick 1.0"
+QML Scene Graph Viewer: "import QtQuick 2.0"
+
+The code for the Nomovok viewer would be, outside of major
+Qt internal changes, possible to maintain as a self contained
+module. The dependencies that affect the custom Nomovok viewer are
+
+1) QML interpreter. If it's API or nature changes, these changes
+make changes to the Nomovok renderer.
+
+2) Graphics API. Currently, the renderer targets GL ES2, if the platform
+has a different drawing API, then an analysis needs to be done
+if that API provides enough features for the Nomovok QML renderer
+to be possible. OpenGL ES1 does NOT provide enough features, but
+OpenGL2.1, OpenGL3.x, OpenGL4.x, Direct3D9.x, Direct3D10.x and
+Direct3D11.x all do provide enough features. The change of 
+graphics API is a big thing and dramatically affects the
+implementation. Fortunately, OpenGL2.1, OpenGL3.x and OpenGL4.x
+are all strict supersets of OpenGL ES2, but each of these API's 
+do present additional optimization opportunities. We should
+expect that if we pursue and maintain a Nomovok qmlviewer that
+as the GPU's of portable devices increase in functionality that
+qmlviewer will be improved and significantly changed with new 
+API generations (i.e. GL ES2 -> GL3 --> GL4) to better take advantage
+of the hardware. We could not update it and leave it to stay
+tied to OpenGL ES2, but I suspect that 3 hardware generations
+from now, significantly more optimization strategies will open
+up and each being a potential game changer in rendering strategy.
+Additionally, likely that each GPU will require that we tweak
+the Nomovok renderer to the GPU.
+
+
+
+WebBrowsing and WebKit.
+---------------------------------------
+
+Where as Qt and QML are the third party developer story, that story
+only matters once enough products have been sold for developers to
+bother developing for it. From a user point of view, the most
+used application is usually the web browser and by a large margin.
+
+For this discussion I will concentrate only on WebKit as that 
+is the only browser engine I am familiar with. 
+
+Currently WebKit renders through a class called
+GraphicsContext (located in WebCore/platform/graphics/).
+It's API looks quite similar to QPainter and as such uses
+a great deal of CPU and maps poorly to GL.
+
+The code that uses GraphicsContext to draw is located
+in the directory WebCore/rendering/ consists of 240 files
+and an additional 59 files in WebCore/rendering/style/.
+
+The basic idea is the following: add to each of the classes
+(as needed) so that rather than drawing through a 
+GraphicsContext, the objects "register" themselves
+to a drawer and request attribute memory. The registration
+function takes as arguments the expected attribute format and 
+GL state required to draw. The drawer, as is done for the
+experimental KAN renderer, will retrieve a "bucket" for
+that GL state. This way elements that are drawn with common
+GL state are drawn together in one call. As in the KAN
+renderer some state, such as transformation state (and possibly
+screen aligned clipping) will be packed into uniform arrays
+so that elements which share attribute and shader state
+but different transformation state can be drawn together.
+
+One big issue for browsers on portable devices is "smooth zoom".
+Currently, as far as I know (but I want to verify this!) portable
+browsers render to a surface. When the user is doing a zoom gesture
+that surface is scaled up (or down). The results is that zooming
+in makes the content blurry. When the zoom gesture ends, the browser
+then re-renders the contents to the surface, this is why there is a
+short pause for the content to sharpen.
+
+Image data comes from the webpage being viewed and as such, 
+it is still blurry once the user zooms in beyond the images 
+resolution even after browser re-renders. The core issue is
+text. In order for the text to stay sharp during render, one
+needs a way to render text that stays sharp even after severe
+magnification. The core technical challenge is to harness GL in
+such a way that algorithm used to render text gives good
+render results regardless of the magnification factor. Currently,
+Qt (and others) use a coverage value for the pixel stores of
+text. Drawing this magnified gives terrible rendering results.
+Mush of work done in KAN has been devoted to text rendering where
+text renders well under severe magnification using the exact same
+texture and attribute data. 
+
+With these different text rendering algorithms together with 
+a GL friendly way of drawing, I foresee that we can implement
+zoom without the blurriness and, in contrast to other platforms,
+even if the user scrolls quickly over a large webpage, the user
+will not need to wait for the browser to render the contents.
+
+To do this, we will need to FORK Webkit. The changes we are making
+are mostly isolated to WebCore/rendering/ and as such, for changes
+to Webkit where the interfaces to those classes does not change the 
+patching effort should not be large. Indeed, if a patch for WebKit 
+comes which does not touch WebCore/rendering/ we _should_ be able to
+absorb that patch with almost zero effort. Patches to files
+within WebCore/rendering/ will present issues and need to be absorbed
+with care. For those patches that do not affect the "public API" of
+those classes, absorbing those patches should not be a big challenge.
+Absorbing patches that affect those public API's are problematic
+and need to be handled with care (some might be trivial, some might
+be challenging).
+
+The same rules of graphics and hardware evolution of the Nomovok QML 
+viewer apply to this fork of WebKit. Additionally, likely that each 
+GPU will require that we tweak to the GPU. These changes are to be
+_TWEAKS_ not major changes (tweaks include changing attribute format
+and shader source code).
+
+
+
+
+
+ 
+
+
+
+

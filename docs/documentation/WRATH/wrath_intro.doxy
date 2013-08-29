@@ -1,0 +1,126 @@
+/*! 
+ * \file wrath_intro.doxy
+ * \brief file wrath_intro.doxy
+ * 
+ * Copyright 2013 by Nomovok Ltd.
+ * 
+ * Contact: info@nomovok.com
+ * 
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with
+ * this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ * 
+ * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
+ * 
+ */
+
+
+/*!
+\page wrath_intro An Introduction to WRATH
+
+\section what_is WHAT IS WRATH ?
+
+WRATH is a GL/GLES2 based graphics engine for building very fast and highly customizable UIs. WRATH is not a widget set, it doesn't provide an event model, or any higher level features other graphic libraries you are familiar with might offer.
+WRATH allows you to render fast UI primitives: images, text, shapes, and your own custom widgets.
+
+\section what_do WHAT CAN YOU DO WITH WRATH?
+
+- Create predefined text, image and shape widgets
+- Create your own shader based custom widgets
+- Customize predefined widgets
+- Define widget hierarchies
+
+\section fast WHY IS IT SO FAST?
+
+The secret behind WRATH's performance is a technique called "Batching", where instead of making one (or more) draw call(s) (e.g. glDrawArrays, glDrawElements) and an associated number of GL state changes (e.g. setting Textures, Uniforms, Attributes, etc) for each widget every frame, widgets with similar characteristics are packed in batches that can be rendered together, effectively reducing the number of draw calls and GL state changes made each frame. The whole idea is based on this concept, and relies on one simple observation:
+
+The bottleneck in a GL/GLES2 GUI application typically lies in the CPU and not the GPU. In fact, the trend in the last few and apparently in the upcoming years is that GPU performance has been and will be increasing at a faster pace than CPU performance, each generation widening the gap between the two. In particular, this bottleneck can be observed when the number of GL draw calls per frame (DC/F) (and it's associated GL state changes), reaches a certain threshold. It has been observed that reducing the DC/F improves performance greatly. For more details about this topic please check \ref wrath_in_numbers
+
+
+\section general_concepts GENERAL CONCEPTS
+The following is a description of various concepts that might help understand WRATH.
+
+\subsection widget_properties What is a Widget?
+A widget is an abstract concept that refers roughly to a visual component within a UI that performs a certain function (e.g. a button, a scrollbar, a background image, a listbox, a block of text) Widgets can be composed of other simpler widgets. For example a button widget could be composed of two simpler widgets, a rectangle widget and a text label widget, and so on.
+
+\subsection gl_state_configuration What do you mean with "GL State Configuration/Requirements"?
+OpenGL is a finite state machine, as it has a predetermined and countable number of different states.
+An OpenGL state is the exact configuration of the system at any particular time. Anything that changes a persistent option in OpenGL is a state change. You might enable or disable an option, perhaps using glEnable(GL_DEPTH), or set a specific change, such as glLineWidth() whereas you explicitly indicate a value. If you set a state, you know it will remain that way until you change it.
+
+So a "GL State configuration/requirements" within this documentation refers to all the GL options that need to be enabled, disabled or set in order to render something. Among the most important options
+that define a GL state we have:
+
+    - the GL textures that need to be binded,
+    - the GL uniforms that have to be set,
+    - the GL program and shaders that need to be set up.
+    - the vertex attribute arrays that need to be enabled (glEnableVertexAttribArray)
+    - the vertex buffer and index buffer objects that need to be binded (glBindBuffer)
+    - the vertex attribute pointers that need to be specified (glVertexAttribPointer)
+
+\subsection batching_details What is Batching?
+To describe what batching is, we will make use of a useful concept we will call a "chunk". A chunk is
+a block of vertex attribute data with some GL state requirements, that can be rendered in one draw call.
+
+In a traditional HW accelerated graphics library, the rendering strategy is to assume each simple widget as the rendering unit, this is, the rendering task of rendering a whole UI is broken up in smaller tasks of 1 widget each. Since a leaf widget(no children) is composed of one or more chunks, the number of draw calls required to render the widget would be the same as the number of chunks within it.
+
+Now, in a typical UI context, there are usually many relatively simple widgets, with a high rate of repetition (same type of widgets with slight differences between them). Picture for instance the scrollable contact list in your smarthphone: 99% of what is there is pretty much just the same item repeated hundreds of times, a contact widget that contains the following 3 chunks:
+    - a solid color background rectangle
+    - a thumbnail
+    - some text
+
+Let's assume for simplicities' sake that each of these subitems are all 1 single chunk each.
+
+In our example, you can see that if you render each contact widget separately, GL would need 3 draw calls per frame per widget.If the number of contacts in your contact list is 100, then GL would need to make 300 draw calls per frame. This would bring performance down in any platform. In many embedded system this could render your application unusable.
+
+\image html traditional_renderer.png "Traditional Renderer"
+
+WRATH's strategy on the other hand, is different. Instead of breaking up the rendering task in units of individual widgets, WRATH breaks the task into groups. A group is a chunk containing ALL geometry in a UI with common GL state requirements. Batching is the process of grouping
+together smaller chunks into a single bigger chunk. In our example, WRATH could potentially group all the thumbnails together in one group, all the rectangles in another, and all the text in another. Reducing the load of the CPU from 300 draw calls per frame to 3.
+
+If you think about it though, the fact that the contact widgets are almost the same doesn't mean they have exactly the same GL state requirements. In fact the thumbnails are different, the position of the widgets are different, the colors of some rectangles might vary, etc.
+
+Some of these details can be defined in the vertex attribute data (e.g. rectangle color) and not pose a problem, but others, like the thumbnails, which normally would be stored as a GL texture,
+would impede WRATH to batch the widgets together, since a different texture is already different GL state. The same issue would arise if the shaders used for rendering a widget define a uniform, say the rectangle widget instead of passing its position as a vertex attribute it uses a vec2 uniform. Since all rectangles have a unique position then batching them would be impossible because it would require setting the uniform with different values for each rectangle everytime. Again different GL state.
+
+Indeed under normal circumstances, the chances that 2 widgets would have exactly the same GL state requirements can be small. In order to avoid some of these limitations, and to optimize the batching process, WRATH makes use of 2 techniques:
+
+-# Atlasing: where many images are put together in a single GL texture. This considerably reduces the amount of state changes related to unbinding/binding textures.
+-# Per-node values: a trick where single uniform requirements across different widgets are assembled together into a single GL uniform (be it a uniform array or texture, or something else). This allows for items to have values that are not attributes and still allowing different items to share the draw call.
+
+\image html wrath_renderer.png "WRATH Renderer"
+
+
+\subsection intro_canvas Canvases
+A \ref WRATHCanvas can be thought of as an object that holds the attribute and index
+data, keyed by GL state vector, to draw the items on the canvas.
+
+
+\subsection sub_textures Images and Texture Atlasing:
+WRATH offers a simple interface to create images. By means of the Texture Atlasing technique described above, WRATH automagically packs as many images as it can in full sized GL textures, in order to optimize the batching process.
+
+\subsection sub_shaders Shaders:
+One of the highlights of WRATH is its ability to use GLSL shaders to render content.
+In WRATH a user provides a shader -fragment-, not the entire shader code for a shader
+stage. WRATH assembles a complete shader for each active shader stage. The complete
+shader will implement various GLSL functions that a user shader fragment uses
+(for example a vertex shader needs to produce a clip position, <B>gl_ClipPosition</B>,
+and one of the functions provided to the vertex shader computes that value
+from item coordinate values).
+
+\section CreateItemTypes Creating your own item types: Creating your own custom widgets
+Although a considerable (and possibly the most complex) part of WRATH provides some pre-defined widgets for the creation of images, text, and shapes, most of WRATH logic is related to  the machinery that makes batching possible. When creating your own custom widgets you will need to get familiar with this machinery. In a nut shell to create your own item type, one does:
+-# Specify properties of item (for example a regular polygon would be the number of sides)
+-# Derive from \ref WRATHAttributePacker to create the attribute data from property of an item
+-# Create an item type that gets a WRATHCanvas::DrawData value from a canvas.
+-# Write vertex shader code implementing <B>shader_main</B> that computes
+interpolates for the fragment shader and computes <B>gl_ClipPosition</B>. Typically one will use the 
+GLSL functions provided by WRATH to compute <B>gl_ClipPosition</B>, see \ref WRATHItemDrawerFactory for
+those GLSL functions
+-# Write fragment shader code implementing <B>shader_main</B> that compute <B>gl_FragColor</B>
+
+See the tutorial sequence \ref item_example_example, \ref item_example2_example and \ref brush_example_example
+for details.
+
+*/

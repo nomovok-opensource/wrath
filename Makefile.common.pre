@@ -1,0 +1,11 @@
+
+# Initialize these variables to be simply-expanded types
+LIB_SOURCES :=
+SHADERS :=
+INCLUDES :=
+DEMOS :=
+DEMOS_INCLUDES :=
+EXTRA_CLEAN :=
+
+RELEASE_ALL_TARGETS =
+DEBUG_ALL_TARGETS =

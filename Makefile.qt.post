@@ -1,0 +1,168 @@
+
+# Generate binary names for qt-built demos
+$(foreach demoname,$(DEMOS),$(eval QT_DEMOS_RELEASE += qt-$(demoname)))
+$(foreach demoname,$(DEMOS),$(eval QT_DEMOS_DEBUG += qt-$(demoname)-debug))
+
+# Make the `all' targets built the proper demos
+release-all: $(QT_DEMOS_RELEASE)
+debug-all: $(QT_DEMOS_DEBUG)
+.PHONY: qt-demos qt-demos-debug
+
+# Add demos to target list
+$(foreach demoname,$(QT_DEMOS_RELEASE) $(QT_DEMOS_DEBUG),$(call addtargetname, $(demoname)))
+
+QMAKE_CMD=qmake
+
+# How to build the demos
+
+define makeqtdemorules
+$(eval 
+
+THISDEMO_$(1)_QT_SOURCES = $$($(1)_SOURCES) $$(COMMON_QT_DEMO_SOURCES)
+THISDEMO_$(1)_SHADER_SOURCES = $$(addsuffix .cpp,$$($(1)_SHADERS))
+THISDEMO_$(1)_RELEASE_SHADERS = $$(addprefix release/,$$(THISDEMO_$(1)_SHADER_SOURCES))
+THISDEMO_$(1)_DEBUG_SHADERS = $$(addprefix debug/,$$(THISDEMO_$(1)_SHADER_SOURCES))
+
+EXTRA_CLEAN += $$(THISDEMO_$(1)_RELEASE_SHADERS) $$(THISDEMO_$(1)_DEBUG_SHADERS)
+EXTRA_CLEAN += release/qt-$(1).Makefile debug/qt-$(1)-debug.Makefile
+EXTRA_CLEAN += release/qt-$(1).pro debug/qt-$(1)-debug.pro
+EXTRA_CLEAN += release/qt_obj_$(1)/*.o debug/qt_obj_$(1)/*.o
+EXTRA_CLEAN += qt-$(1) qt-$(1)-debug
+
+qt-$(1): release/qt-$(1).Makefile wrath-lib-qt
+	$$(MAKE) -C release -f qt-$(1).Makefile
+
+qt-$(1)-debug: debug/qt-$(1)-debug.Makefile wrath-lib-qt-debug
+	$$(MAKE) -C debug -f qt-$(1)-debug.Makefile
+
+release/qt-$(1).Makefile: release/qt-$(1).pro
+	cd release && $(QMAKE_CMD) qt-$(1).pro
+
+debug/qt-$(1)-debug.Makefile: debug/qt-$(1)-debug.pro
+	cd debug && $(QMAKE_CMD) qt-$(1)-debug.pro
+
+release/qt-$(1).pro: QtDemo.pro.in $(MAKEFILE_LIST) | $$(THISDEMO_$(1)_RELEASE_SHADERS)
+	@echo Generating $$@
+	@printf "CONFIG += release\nCONFIG -= debug\n" > $$@
+	@printf "TARGET = qt-$(1)\n" >> $$@
+	@printf "OBJECTS_DIR = qt_obj_%s\n" $(1) >> $$@
+	@printf "SOURCES += %s\n" $$(addprefix ../, $$(THISDEMO_$(1)_QT_SOURCES)) >> $$@
+	@printf "SOURCES += %s\n" $$(addprefix ../, $$(THISDEMO_$(1)_RELEASE_SHADERS)) >> $$@
+	@printf "INCLUDEPATH += %s\n" $$(addprefix ../, $$(subst -I,,$$(INCLUDES))) >> $$@
+	@printf "INCLUDEPATH += %s\n" $$(addprefix ../, $$(subst -I,,$$(DEMOS_INCLUDES))) >> $$@
+	@printf "DEPENDPATH += %s\n" $$(addprefix ../, $$(subst -I,,$$(INCLUDES))) >> $$@
+	@printf "DEPENDPATH += %s\n" $$(addprefix ../, $$(subst -I,,$$(DEMOS_INCLUDES))) >> $$@
+	@printf "QMAKE_CXXFLAGS = \n" >> $$@
+	@printf "QMAKE_CXXFLAGS += %s\n" $$(DEFINE_FLAGS) $$(LIBRARY_CXXFLAGS) $$(CXXFLAGS) $$($(1)_CPPFLAGS) $$($(1)_CXXFLAGS) >> $$@
+	@printf "QMAKE_CXXFLAGS_RELEASE += %s\n" $$(CXXFLAGS_RELEASE) $$($(1)_CXXFLAGS_RELEASE) >> $$@
+	@printf "LIBS += %s\n" $$(LDFLAGS) >> $$@
+	@printf "LIBS += libWRATH_Qt_Release.so\n" >> $$@
+	@printf "MAKEFILE = qt-$(1).Makefile\n" >> $$@
+	@printf "QMAKE_CXX = %s\n" "$(CXX)" >> $$@
+	@printf "QMAKE_CC = %s\n" "$(CC)" >> $$@
+	@cat $$< >> $$@
+
+debug/qt-$(1)-debug.pro: QtDemo.pro.in $(MAKEFILE_LIST) | $$(THISDEMO_$(1)_DEBUG_SHADERS)
+	@echo Generating $$@
+	@printf "CONFIG -= release\nCONFIG += debug\n" > $$@
+	@printf "TARGET = qt-$(1)-debug\n" >> $$@
+	@printf "OBJECTS_DIR = qt_obj_%s\n" $(1) >> $$@
+	@printf "SOURCES += %s\n" $$(addprefix ../, $$(THISDEMO_$(1)_QT_SOURCES)) >> $$@
+	@printf "SOURCES += %s\n" $$(addprefix ../, $$(THISDEMO_$(1)_DEBUG_SHADERS)) >> $$@
+	@printf "INCLUDEPATH += %s\n" $$(addprefix ../, $$(subst -I,,$$(INCLUDES))) >> $$@
+	@printf "INCLUDEPATH += %s\n" $$(addprefix ../, $$(subst -I,,$$(DEMOS_INCLUDES))) >> $$@
+	@printf "DEPENDPATH += %s\n" $$(addprefix ../, $$(subst -I,,$$(INCLUDES))) >> $$@
+	@printf "DEPENDPATH += %s\n" $$(addprefix ../, $$(subst -I,,$$(DEMOS_INCLUDES))) >> $$@
+	@printf "QMAKE_CXXFLAGS = \n" >> $$@
+	@printf "QMAKE_CXXFLAGS += %s\n" $$(DEFINE_FLAGS) $$(LIBRARY_CXXFLAGS) $$(CXXFLAGS) $$($(1)_CPPFLAGS) $$($(1)_CXXFLAGS) >> $$@
+	@printf "QMAKE_CXXFLAGS_DEBUG += %s\n" $$(CXXFLAGS_DEBUG) $$($(1)_CXXFLAGS_DEBUG) >> $$@
+	@printf "LIBS += %s\n" $$(LDFLAGS) >> $$@
+	@printf "LIBS += libWRATH_Qt_Debug.so\n" >> $$@
+	@printf "MAKEFILE = qt-$(1)-debug.Makefile\n" >> $$@
+	@printf "QMAKE_CXX = %s\n" "$(CXX)" >> $$@
+	@printf "QMAKE_CC = %s\n" "$(CC)" >> $$@
+	@cat $$< >> $$@
+)
+endef
+
+# And here we call the above huge function for each demo name
+$(foreach demoname,$(DEMOS),$(call makeqtdemorules,$(demoname)))
+
+# How to build the library
+
+QT_LIB_SOURCES += $(LIB_SOURCES)
+
+release/QtLib.Makefile: release/QtLib.pro
+	cd release && $(QMAKE_CMD) QtLib.pro
+
+debug/QtLib.Makefile: debug/QtLib.pro
+	cd debug && $(QMAKE_CMD) QtLib.pro
+
+release/QtLib.pro: QtLib.pro.in $(MAKEFILE_LIST) | $(RELEASE_SHADERS) ngl/$(NGL).cpp
+	@echo Generating $@
+	@printf "CONFIG += release\nCONFIG -= debug\n" > $@
+	@printf "TARGET = WRATH_Qt_Release\n" >> $@
+	@printf "SOURCES += %s\n" $(addprefix ../, $(QT_LIB_SOURCES)) >> $@
+	@printf "SOURCES += %s\n" $(addprefix ../, $(RELEASE_SHADERS)) >> $@
+	@printf "INCLUDEPATH += %s\n" $(addprefix ../, $(subst -I,,$(INCLUDES))) >> $@
+	@printf "DEPENDPATH += %s\n" $(addprefix ../, $(subst -I,,$(INCLUDES))) >> $@
+	@printf "QMAKE_CXXFLAGS = \n" >> $@
+	@printf "QMAKE_CXXFLAGS += %s\n" $(DEFINE_FLAGS) $(LIBRARY_CXXFLAGS) $(CXXFLAGS) >> $@
+	@printf "QMAKE_CXXFLAGS_RELEASE += %s\n" $(CXXFLAGS_RELEASE) >> $@
+	@printf "LIBS += %s\n" $(LDFLAGS) >> $@
+	@printf "QMAKE_CXX = %s\n" "$(CXX)" >> $@
+	@printf "QMAKE_CC = %s\n" "$(CC)" >> $@
+	@cat $< >> $@
+
+debug/QtLib.pro: QtLib.pro.in $(MAKEFILE_LIST) | $(DEBUG_SHADERS) ngl/$(NGL).cpp
+	@echo Generating $@
+	@printf "CONFIG -= release\nCONFIG += debug\n" > $@
+	@printf "TARGET = WRATH_Qt_Debug\n" >> $@
+	@printf "SOURCES += %s\n" $(addprefix ../, $(QT_LIB_SOURCES)) >> $@
+	@printf "SOURCES += %s\n" $(addprefix ../, $(DEBUG_SHADERS)) >> $@
+	@printf "INCLUDEPATH += %s\n" $(addprefix ../, $(subst -I,,$(INCLUDES))) >> $@
+	@printf "DEPENDPATH += %s\n" $(addprefix ../, $(subst -I,,$(INCLUDES))) >> $@
+	@printf "QMAKE_CXXFLAGS = \n" >> $@
+	@printf "QMAKE_CXXFLAGS += %s\n" $(DEFINE_FLAGS) $(LIBRARY_CXXFLAGS) $(CXXFLAGS) >> $@
+	@printf "QMAKE_CXXFLAGS_DEBUG += %s\n" $(CXXFLAGS_DEBUG) >> $@
+	@printf "LIBS += %s\n" $(LDFLAGS) >> $@
+	@printf "QMAKE_CXX = %s\n" "$(CXX)" >> $@
+	@printf "QMAKE_CC = %s\n" "$(CC)" >> $@
+	@cat $< >> $@
+
+release/QtLibConf.pri: QtLibConf.pri.in $(MAKEFILE_LIST)
+	@echo Generating $@
+	@printf "INCLUDEPATH += %s\n" $(addprefix \$$\$$\{PWD\}/../, $(subst -I,,$(INCLUDES))) > $@
+	@printf "DEPENDPATH += %s\n" $(addprefix \$$\$$\{PWD\}/../, $(subst -I,,$(INCLUDES))) >> $@
+	@printf "QMAKE_CXXFLAGS += %s\n" $(DEFINE_FLAGS) $(LIBRARY_CXXFLAGS) $(CXXFLAGS) >> $@
+	@printf "QMAKE_CXXFLAGS_RELEASE += %s\n" $(CXXFLAGS_RELEASE) >> $@
+	@printf "LIBS += %s\n" $(LDFLAGS) >> $@
+	@cat $< >> $@
+
+debug/QtLibConf.pri: QtLibConf.pri.in $(MAKEFILE_LIST)
+	@echo Generating $@
+	@printf "INCLUDEPATH += %s\n" $(addprefix \$$\$$\{PWD\}/../, $(subst -I,,$(INCLUDES))) > $@
+	@printf "DEPENDPATH += %s\n" $(addprefix \$$\$$\{PWD\}/../, $(subst -I,,$(INCLUDES))) >> $@
+	@printf "QMAKE_CXXFLAGS += %s\n" $(DEFINE_FLAGS) $(LIBRARY_CXXFLAGS) $(CXXFLAGS) >> $@
+	@printf "QMAKE_CXXFLAGS_DEBUG += %s\n" $(CXXFLAGS_DEBUG) >> $@
+	@printf "LIBS += %s\n" $(LDFLAGS) >> $@
+	@cat $< >> $@
+
+EXTRA_CLEAN += release/QtLib.Makefile debug/QtLib.Makefile
+EXTRA_CLEAN += release/QtLib.pro debug/QtLib.pro
+EXTRA_CLEAN += release/QtLibConf.pri debug/QtLibConf.pri
+EXTRA_CLEAN += release/libWRATH_Qt_Release.so* debug/libWRATH_Qt_Debug.so*
+EXTRA_CLEAN += release/qt_obj/*.o debug/qt_obj/*.o
+
+# Targets for command-line invocations
+wrath-lib-qt: release/QtLib.Makefile release/QtLibConf.pri
+	$(MAKE) -C release -f QtLib.Makefile
+
+wrath-lib-qt-debug: debug/QtLib.Makefile debug/QtLibConf.pri
+	$(MAKE) -C debug -f QtLib.Makefile
+
+.PHONY: wrath-lib-sdl wrath-lib-sdl-debug
+
+# Add to target list
+$(call addtargetname, wrath-lib-qt)
+$(call addtargetname, wrath-lib-qt-debug)

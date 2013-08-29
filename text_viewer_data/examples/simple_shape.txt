@@ -1,0 +1,24 @@
+Some Example Shapes:\n\n
+
+\cmd{set_tess_params max_recurse:6 curve_tess:100}
+
+
+
+\cmd{create_shape triangle [ (60 60) (100 300)  (300 300) ]  }
+
+
+\n\nStroking:
+Curvy Triangle:\n
+\cmd{stroke shape:triangle 
+            width:4     
+            close:true         
+            cap_style:flat
+            stroke_curves:true
+            join_style:round miter_limit:10}
+
+\cmd{fill shape:triangle width:15  }
+
+
+
+
+That is all folks!

@@ -1,0 +1,36 @@
+For this demo to work, one will need to soft link (or copy)
+the image resources of the open source game blobwars
+into images/blob. For Ubuntu, if the game is installed, the
+files are located at  /usr/share/games/blobwars, i.e.
+at WRATH root do:\n\n
+\cmd{push_font family=DefaVuSerif}
+#ln -s /usr/share/games/blobwars/gfx/ images/blob/blobwars\n\n
+\cmd{pop_font}
+
+
+\cmd{image name:../../images/blob/blobwars/common/1.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/2.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/3.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/196.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/197.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/198.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/199.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/200.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/201.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/202.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/203.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/204.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/207.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/208.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/209.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/210.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/211.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/212.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/214.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/215.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/216.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/217.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/218.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/219.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/220.png w:100}
+\cmd{image name:../../images/blob/blobwars/common/3.png w:100}

@@ -1,0 +1,23 @@
+\cmd{font_size 6}
+6:Hello World
+
+\cmd{font_size 8}
+8:Hello World
+
+\cmd{font_size 10}
+10:Hello World
+
+\cmd{font_size 12}
+12:Hello World
+
+\cmd{font_size 24}
+24:Hello World
+
+\cmd{font_size 36}
+36:Hello World
+
+\cmd{font_size 48}
+48:Hello World
+
+\cmd{font_size 64}
+64:Hello World

@@ -1,0 +1,14 @@
+\cmd{image name:../../images/image_cp1.png}
+\cmd{image name:../../images/image_cp2.png}
+\cmd{image name:../../images/image_cp3.png}
+\cmd{image name:../../images/image_cp4.png}
+\cmd{image name:../../images/image_cp5.png}
+\cmd{image name:../../images/image_cp5.png}
+\cmd{image name:../../images/512.512.diagonal.png}
+
+\cmd{image name:../../images/white.png}
+\cmd{image name:../../images/512.512.png}
+\cmd{image name:../../images/1024x1024.png}
+\cmd{image name:../../images/screenshot.png}
+
+\cmd{link jj.txt}

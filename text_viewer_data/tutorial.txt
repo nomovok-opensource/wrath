@@ -1,0 +1,865 @@
+
+\cmd{PP}
+\cmd{push_font_size 88}
+\cmd{underline on}
+TextViewer Tutorial
+\cmd{pop_font_size}
+\cmd{underline off}
+\cmd{PP width:800}\n
+\t\t\cmd{named_link label:Overview tag:Overview r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:directory_listing tag:directory_listing r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:bgcolor tag:bgcolor r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:PP tag:PPCommand r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:COL tag:COL r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:include_file tag:include_file r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:include_utf8 tag:include_utf8 r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:include_utf16 tag:include_utf16 r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:include_raw_utf8 tag:include_raw_utf8 r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:include_raw_utf16 tag:include_raw_utf16 r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:color tag:color r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:font_size tag:font_size r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:font_qt tag:font_qt r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:font_file tag:font_file r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:font tag:font r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:link tag:link r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:tag tag:tag r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:named_link tag:named_link r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:underline tag:underline r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:strike tag:strike r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:image tag:image r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:super_and_subscripts tag:super_and_subscripts r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:glyph_dump tag:glyph_dump r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:create_shape tag:create_shape r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:tess_params tag:tess_params r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:stroke tag:stroke r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:create_distance_field tag:create_distance_field r:0 b:255 b:255 a:255}\n
+\t\t\cmd{named_link label:dist_image tag:dist_image r:0 b:255 b:255 a:255}\n
+
+\cmd{push_font_size 48}
+\cmd{underline on}
+Overview
+\cmd{tag Overview}
+\cmd{pop_font_size}
+\cmd{underline off}
+\nTo see how to use 
+\cmd{named_link label:qt_text_viewer target:qt_text_viewer_commandline.txt r:255 g:127 b:0 a:255 underline:off}, see \cmd{named_link target:using_qt_text_viewer.txt label:using_qt_text_viewer}.
+The TextViewer demo accepts ASCII text files
+and performs formatting and obeys commands
+within the text files. All commands are given as:\n
+\cmd{PP}
+\cmd{push_color r:127 g:127 b:0 a:255}
+\\cmd{COMMANDNAME argument1 argument2 ... }\n
+\cmd{pop_color}
+\cmd{PP width:800 }
+the number of arguments passed may be zero.
+if one wishes to display the character '\\', simply
+have '\\\\', i.e. double back slash.  Some commands
+(such as 
+\cmd{named_link label:PP tag:PPCommand}
+accept multiple named arguments. For
+such commands, the order is not important, but the
+arguments are named and specified as in the
+following example:\n
+\cmd{PP}
+\cmd{push_color r:127 g:127 b:0 a:255}
+\\cmd{COMMAND GAMMA=false ALPHA=0 BETA=34}\n
+\cmd{pop_color}
+\cmd{PP width:800}
+in the above, the argument \cmd{push_color r:127 g:127 b:0 a:255}
+GAMMA\cmd{pop_color} is given the value "false",
+the argument  \cmd{push_color r:127 g:127 b:0 a:255}
+ALPHA\cmd{pop_color} is given the value 0, etc. 
+Additionally, \n
+\cmd{PP}
+\cmd{push_color r:127 g:127 b:0 a:255}
+\\cmd{COMMAND GAMMA:false ALPHA:0 BETA:34}\n
+\cmd{pop_color}
+\cmd{PP width:800 }
+is equivalent, i.e. \cmd{push_color r:127 g:127 b:0 a:255}:
+\cmd{pop_color}'s are treated the same
+as \cmd{push_color r:127 g:127 b:0 a:255}=\cmd{pop_color}'s
+Also note that there must \cmd{push_underline on}
+NOT \cmd{pop_underline} be a white space between the
+argument name and value. Many commands accept filenames.
+If a filename begins with a '/', then the path of the
+filename is interpreted as absolute, otherwise
+the filename is relative to the file from which
+the command is read, i.e. just as the #include C-preprocessor
+directive. Additionally, the control sequences \\n, \\t 
+and \\\\ are obeyed, corresponding to add an end of line, tab
+and \\. These control sequences are obeyed \cmd{push_underline on}
+ALWAYS\cmd{pop_underline} regardless if the nature of the file
+inclusion is to observe \\cmd{} commands.
+
+The following commands are supported:\n\n
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{directory_listing PATH}
+\cmd{tag directory_listing}
+\cmd{pop_color}
+\cmd{PP width:800 }
+Creates a series of links of the directory contents
+named by PATH. Directories are drawn 
+\cmd{push_color r:0 g:187 b:187 a:255}blue-green
+\cmd{pop_color}, images
+ \cmd{push_color r:127 g:127 b:32 a:255}yellow 
+\cmd{pop_color} and all other files as a 
+\cmd{push_color r:155 g:127 b:1000 a:255}deep blue purple \cmd{pop_color}. 
+Clicking on a directory
+link brings up a directory listing of that directory,
+clicking on a file which is an image brings up
+a display of the image. Files with the one of 
+\cmd{push_color r:127 g:127 b:32 a:255}bmp\cmd{pop_color},
+ \cmd{push_color r:127 g:127 b:32 a:255}gif\cmd{pop_color},
+ \cmd{push_color r:127 g:127 b:32 a:255}jpg\cmd{pop_color},
+ \cmd{push_color r:127 g:127 b:32 a:255}jpeg\cmd{pop_color},
+ \cmd{push_color r:127 g:127 b:32 a:255}png\cmd{pop_color},
+ \cmd{push_color r:127 g:127 b:32 a:255}pbm\cmd{pop_color},
+ \cmd{push_color r:127 g:127 b:32 a:255}pgm\cmd{pop_color},
+ \cmd{push_color r:127 g:127 b:32 a:255}ppm\cmd{pop_color},
+ \cmd{push_color r:127 g:127 b:32 a:255}tiff\cmd{pop_color},
+ \cmd{push_color r:127 g:127 b:32 a:255}xbm\cmd{pop_color}
+or \cmd{push_color r:127 g:127 b:32 a:255}xpm\cmd{pop_color} 
+as an extension is considered an image file. 
+The following extensions are handled as follow:
+\n\t \cmd{push_color r:155 g:127 b:1000 a:255}txt\cmd{pop_color}:
+are treated as interpreted ascii files, i.e. analogous to
+ \cmd{named_link tag:named_link label:named_link},
+
+\n\t \cmd{push_color r:155 g:127 b:1000 a:255}wutf8\cmd{pop_color}:
+are treated as interpreted UTF8 encoded files,
+
+\n\t \cmd{push_color r:155 g:127 b:1000 a:255}wutf16\cmd{pop_color}:
+are treated as interpreted UTF16 encoded files,
+
+\n\t \cmd{push_color r:155 g:127 b:1000 a:255}utf8\cmd{pop_color}:
+are treated as uninterpreted (i.e. \\cmd directives are ignored)
+UTF8 encoded files and
+
+\n\t \cmd{push_color r:155 g:127 b:1000 a:255}utf16\cmd{pop_color}:
+are treated as treated as uninterpreted (i.e. \\cmd directives are ignored)
+UTF16 encoded files.\n
+All other file extensions are loaded "raw", i.e. no
+width for formatting \\cmd{} commands and all control
+sequence commands (\\n, \\t and \\\\) are ignored,
+i.e. the contents of the file are directly displayed.
+An example of a directory listing can be found 
+\cmd{named_link target:directoy_listing_example.txt label:here}. 
+\n\n\n
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{bgcolor [r=red] [g=green] [b=blue] [a=alpha]}
+\cmd{tag bgcolor}
+\cmd{pop_color}
+\cmd{PP width:800 raw=false}
+Changes the background color of the page. 
+Can be placed anywhere within a file or included
+file. The default background color of a page is
+set by the command line arguments passed in
+calling 
+\cmd{named_link label:qt_text_viewer target:qt_text_viewer_commandline.txt r:255 g:127 b:0 a:255 underline:off}.
+\n\n
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{PP [width=X] [raw=true/false] [alignment=V] [break_words=B]}
+\cmd{tag PPCommand}
+\cmd{pop_color}
+\cmd{PP width:800 raw=false left:0}
+Indicates to begin new formatting. if raw is
+present and true, then end of lines from the input 
+file become end of lines in the display. Moreover,
+if raw is false (or not present), the formatter
+will eat leading white spaces from lines.
+If width is present, the text is formatted 
+to \cmd{underline on}try\cmd{underline off} 
+to fit within the constrained width. 
+Additionally, if the value left is present the formatter
+will offset the position of the text by the amount indicated
+by left, this distance eats into the value specified by
+width, i.e the horizontal room for the text then becomes 
+\cmd{push_font family=DejaVu%Sans slant=normal weight=bold}width-left\cmd{pop_font}.
+The formatter will only break a word if the
+argument break_words is present and has the value of "true".
+If a word cannot fit on one line and word breaking
+is not allowed, then the word will leak over the width.
+The argument alignment can be one of left, right or center
+corresponding to formatting the text left justified, right
+justified and center justified. If the argument alignment
+is not present then the alignment is left justified.
+Note that one can have
+a width present and for raw to be true, in
+this case the formatter will obsever the end
+of lines within the text and add end of lines
+to fit within the width. If the formatting is 
+of unconstained width, then the value of alignment
+is also ignored. The value of raw is ignored
+if the file is part of a column, see \cmd{named_link label:COL tag:COL}.
+\n\n\n
+
+\cmd{PP}
+\cmd{tag COL}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{COL\n
+\t\t\tcount:N\n
+\t\t\tspace:W\n\n
+\t\t\ttype0:T0\n
+\t\t\tfile0:F0\n
+\t\t\twidth0:W0\n
+\t\t\tspace0:S0\n
+\t\t\treset0:R0\n
+\t\t\talignment0:A0\n
+\t\t\tbreak_words0:B0\n
+\n
+\t\t\ttype1:T1\n
+\t\t\tfile1:F1\n
+\t\t\twidth1:W1\n
+\t\t\tspace1:S1\n
+\t\t\treset1:R1\n\n
+\t\t\talignment1:A1\n
+\t\t\tbreak_words1:B1\n
+\t\t\t.\n\n\t\t\t.\n\n\t\t\t.\n\n
+\t\t\ttype(N-1):T(N-1)\n
+\t\t\tfile(N-1):F(N-1)\n
+\t\t\twidth(N-1):W(N-1)\n
+\t\t\tspace(N-1):S(N-1)\n
+\t\t\treset(N-1):R(N-1)\n
+\t\t\talignment(N-1):A(N-1)\n
+\t\t\tbreak_words(N-1):B(N-1)\n\n
+
+}
+\cmd{pop_color}
+\cmd{PP width:800 raw=false}
+Creates a column formatting chunk. 
+The named argument count specifies
+how many columns. For each column, K,
+with 0<=K<N the content of the column
+is determined by typeK and fileK and
+the spacing and width of the column are
+determined by space, spaceK and widthK.
+The content of the K'th column is formatted
+to fit within the value widthK. The spacing
+from the K'th to the (K+1)'th column is
+given by (space+spaceK). If resetK is true
+(the default) then the font, color,
+font size, underline and strikethrough
+style is reset to the defaults for column K, 
+if false, the current values are used for
+column K. The value of alignmentK can be one
+of left, right, center corresponding to
+the content of the column being left justified, 
+right justified or centered. The default value 
+for alignmentK is left. The value of break_wordsK
+controls if the formatter is allowed to break words
+to fit within the columnt, it can have the value true or
+false corresponding to allow and to forbid repsectively.
+The default value is false, i.e. words are not broken. 
+The value of typeK
+names the file content types and the value
+of fileK names the source for column.
+Accepted values for the typeK are:\n
+
+\cmd{push_color r:244 g:244 b:0}
+\tfile\cmd{pop_color} 
+(same convention as \cmd{named_link label:include_file 
+     tag:include_file}  command),\n
+
+\cmd{push_color r:244 g:244 b:0}
+\tutf8\cmd{pop_color} 
+(same convention as 
+\cmd{named_link label:include_utf8 
+     tag:include_utf8} command),\n
+
+\cmd{push_color r:244 g:244 b:0}
+\tutf16\cmd{pop_color} 
+(same convention as \cmd{named_link label:include_utf16 
+     tag:include_utf16} command),\n
+
+\cmd{push_color r:244 g:244 b:0}
+\traw_utf8\cmd{pop_color} 
+(same convention as \cmd{named_link label:include_raw_utf8 
+     tag:include_raw_utf8} command),\n
+
+\cmd{push_color r:244 g:244 b:0}
+\traw_utf16\cmd{pop_color} 
+(same convention as \cmd{named_link label:include_raw_utf16 
+     tag:include_raw_utf16} command) and \n
+
+\cmd{push_color r:244 g:244 b:0}
+\timage\cmd{pop_color} (explained below).\n\n
+
+The \cmd{push_color r:244 g:244 b:0}
+image\cmd{pop_color} command displays the
+image stored in the named file stretched with
+its aspect ratio preseverd so that it fills
+the width of the column.
+
+In addition to the above commands, up to
+one column may be a "spill" column.
+A "spill" column is formatted so that
+it spreads out when it's neighboring columns
+end. The following commands are spill commands
+which mark the column as a spill column:\n\
+
+\cmd{push_color r:244 g:244 b:0}
+\tspill_file\cmd{pop_color} 
+(same convention as \cmd{named_link label:include_file 
+     tag:include_file}  command),\n
+
+\cmd{push_color r:244 g:244 b:0}
+\tspill_utf8\cmd{pop_color} 
+(same convention as \cmd{named_link label:include_utf8 
+     tag:include_utf8} command),\n
+
+\cmd{push_color r:244 g:244 b:0}
+\tspill_utf16\cmd{pop_color} 
+(same convention as \cmd{named_link label:include_utf16 
+     tag:include_utf16} command),\n
+
+\cmd{push_color r:244 g:244 b:0}
+\tspill_raw_utf8\cmd{pop_color} 
+(same convention as \cmd{named_link label:include_raw_utf8 
+     tag:include_raw_utf8} command),\n
+
+\cmd{push_color r:244 g:244 b:0}
+\tspill_raw_utf16\cmd{pop_color} 
+(same convention as \cmd{named_link label:include_raw_utf16 
+     tag:include_raw_utf16} command) and\n
+
+
+\cmd{push_color r:244 g:244 b:0}
+\tspill\cmd{pop_color} (explained below).\n\n
+For the \cmd{push_color r:244 g:244 b:0}
+spill\cmd{pop_color} command, the content of 
+the column is not the named file for the content,
+rather it is the remainder of the current file.
+Of critical important is that the 
+\cmd{push_color r:244 g:0 b:0}
+count\cmd{pop_color} parameter comes before
+any other parameters, failure to do so will
+have undefined results. Finally, nested columns
+are possible by using a file which itself
+has column commands, see \cmd{link examples/jj.txt} 
+for an example of nested formatting.
+
+\cmd{pop_color}
+
+\n\n
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{include_file FILENAME}
+\cmd{tag include_file}
+\cmd{pop_color}
+\cmd{PP width:800 }
+includes the named file into the document, like C
+preprocessor #include directive. Such included 
+files will obey the commands within them. The included
+file is expected be an ASCII file, as such characters
+are interpreted byte for byte, hence values of
+the range [128,255] are displayed.\n\n
+
+
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{include_utf8 FILENAME}
+\cmd{tag include_utf8}
+\cmd{pop_color}
+\cmd{PP width:800 }
+includes the named UTF8 encoded file into the document,
+like C preprocessor #include directive. Such included 
+files will obey the commands within them. The file 
+must be UTF8 encoded! \n\n
+
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{include_utf16 FILENAME}
+\cmd{tag include_utf16}
+\cmd{pop_color}
+\cmd{PP width:800 }
+includes the named UTF16 encoded file into the document,
+like C preprocessor #include directive. Such included 
+files will obey the commands within them. The file must
+be UTF16 encoded! \n\n
+
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{include_raw_utf8 FILENAME}
+\cmd{tag include_raw_utf8}
+\cmd{pop_color}
+\cmd{PP width:800 }
+include a UTF8 encoded
+file, such an included file will NOT obey commands
+and will NOT observe control sequences,
+i.e. all \\cmd{}, \\n, \\t and \\\\ will be printed 
+as is. As the file is directly
+included, the current formatting, color, font, etc
+are active on the included text.
+\n\n
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{include_raw_utf16 FILENAME}
+\cmd{tag include_raw_utf16}
+\cmd{pop_color}
+\cmd{PP width:800 }
+include a UTF16 encoded
+file, such an included file will NOT obey commands,
+and will NOT observe control sequences,
+i.e. all \\cmd{}, \\n, \\t and \\\\ will be printed 
+as is. As the file is directly
+included, the current formatting, color, font, etc
+are active on the included text.\n\n
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{color [r=red] [g=green] [b=blue] [a=alpha]}\n
+\\cmd{push_color [r=red] [g=green] [b=blue] [a=alpha]}\n
+\\cmd{pop_color}
+\cmd{tag color}
+\cmd{pop_color}
+\cmd{PP width:800 }
+changes the active color, each of the values is given
+as an integer in base 10, in the range [0,255].
+The push version changes the value and pushes it
+onto the color stack, and the pop restores
+the value before the previous push. If the stack 
+is empty, the pop command is ignored. The default 
+color is set by the command line arguments passed in
+calling 
+\cmd{named_link label:qt_text_viewer target:qt_text_viewer_commandline.txt r:255 g:127 b:0 a:255 underline:off}.
+\n\n
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{font_size size}\n
+\\cmd{push_font_size size}\n
+\\cmd{pop_font_size}
+\cmd{tag font_size}
+\cmd{pop_color}
+\cmd{PP width:800 }
+changes the current font size to specified size 
+in \cmd{underline on}pixels\cmd{underline off}.
+The push version changes the value and pushes it
+onto the font size stack, and the pop restores
+the value before the previous push. If the stack 
+is empty, the pop command is ignored. The default 
+font display size is set by the command line 
+arguments passed in calling 
+\cmd{named_link label:qt_text_viewer target:qt_text_viewer_commandline.txt r:255 g:127 b:0 a:255 underline:off}.
+\n\n
+
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{font_qt FONT [II]}\n
+\\cmd{push_font_qt FONT [II]}\n
+\\cmd{pop_font}
+\cmd{tag font_qt}
+\cmd{pop_color}
+\cmd{PP width:800 }
+changes the current font to the named font using Qt to fetch the font 
+(which usually uses font-config). The optional parameter 
+II, if present should be "italic" to indicate to use the 
+font italicized. Lastly, as font family names have spaces and the
+parser is so basic, to encode a space use %, thus\n 
+\cmd{push_color r:155 g:155 b:140 a:255}
+\t\\cmd{font_qt DejaVu%Sans}
+\cmd{pop_color}
+\n
+directs to use the font family "DejaVu Sans".
+The push version changes the value and pushes it
+onto the font stack, and the pop restores
+the value before the previous push. If the stack 
+is empty, the pop command is ignored.
+The default font is set by the command line arguments passed in
+calling 
+\cmd{named_link label:qt_text_viewer target:qt_text_viewer_commandline.txt r:255 g:127 b:0 a:255 underline:off}. 
+\n\n
+
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{font_file FILENAME [Index]}\n
+\\cmd{push_font_file FILENAME [Index]}\n
+\\cmd{pop_font}
+\cmd{tag font_file}
+\cmd{pop_color}
+\cmd{PP width:800 }
+changes the current font to the font in the specified
+filename. The file must be a font file readable by FreeType
+and a scalable font (examples are .ttf and .otf).
+The push version changes the value and pushes it
+onto the font stack, and the pop restores
+the value before the previous push.
+Note that changing the font with the Qt or direct
+file versions affect the same value and stack. The default 
+font is set by the command line arguments passed in
+calling 
+\cmd{named_link label:qt_text_viewer target:qt_text_viewer_commandline.txt r:255 g:127 b:0 a:255 underline:off}.
+\n\n
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{font [family=F] [foundry=O] [style=S] [slant=L] [weight=W]}\n
+\\cmd{push_font  }\n
+\\cmd{pop_font}
+\cmd{tag font}
+\cmd{pop_color}
+\cmd{PP width:800 }
+changes the current font to a font selected by FontConfig.
+The value for F names the font family (such as Serif).
+The value for O names the foundary (i.e. the organization
+that crated the font), as a note, for many fonts, Fontconfig
+lists the organization as "unknown". The value for S names the
+style and is to be one of normal, italic or oblique.
+The value for W names the weight and is to be one
+of normal, bold or light. Values not assigned are not
+used to select the font (as such it is highly recommneded that
+O is not chosen), and values that are incorrect (for example 
+style is not one of normal, italic or oblique) are ignored
+as well. Lastly, as font family names have spaces and the
+parser is so basic, to encode a space use %, thus\n 
+\cmd{push_color r:155 g:155 b:100 a:255}
+\t\\cmd{font_qt DejaVu%Sans}
+\cmd{pop_color}
+\n
+directs to use the font family "DejaVu Sans".
+The push version changes the value and pushes it
+onto the font stack, and the pop restores
+the value before the previous push. If the stack 
+is empty, the pop command is ignored.
+The default  font is set by the command line arguments passed in
+calling 
+\cmd{named_link label:qt_text_viewer target:qt_text_viewer_commandline.txt r:255 g:127 b:0 a:255 underline:off}. 
+\n\n
+
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\cmd{tag link}
+\\cmd{link FILENAME [LINKNAME]}
+\cmd{pop_color}
+\cmd{PP width:800 }
+inserts a link (like a hyperlink in HTML). If LINKNAME is not
+given then the displayed text is the FILENAME. In both
+cases the link is displayed blue and underlined.\n\n
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{tag TAGNAME}
+\cmd{tag tag}
+\cmd{pop_color}
+\cmd{PP width:800 }
+Creates a "tag" with the label TAGNAME at the pen position
+of the formatted text within the text stream. A tag
+has no visible appearance, rather it is used to mark
+a location to link that jumps the location of the tag, 
+see \cmd{named_link label:named_link 
+     tag:named_link}.\n\n
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\cmd{tag named_link}
+\\cmd{
+\n\tnamed_link target:filename 
+\n\tlabel:linkname 
+\n\ttag:tagname 
+\n\tr:red g:green b:blue a:alpha
+\n\tunderline:v
+\n}
+\cmd{tag named_link}
+\cmd{pop_color}
+\cmd{PP width:800 }
+inserts a link (like a hyperlink in HTML) to
+the file named by the argument target. In contrast
+to the \cmd{named_link tag:link label:link}
+command, it can also have the viewpoint jump
+if the tag agument is set. If so, when the user
+clicks on the link, then the viewpoint jumps to
+the location of the tag named tagname of the link target.
+Additionally, if the argument target is not present,
+then the target is assumed to be the current file, as
+such \cmd{named_link tag:named_link label:named_link}
+allow one to insert jumps into a document. The values
+of r,g,b and a set the color to which to display the 
+link, if a channel is not set, then the value for
+that channel of defualt link color is used for that channel.
+If the named argument underline is not present then
+the link is underlined, otherwise if the value is "off"
+or "false" the link is not underlined.
+\n\n
+
+
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{underline [MODE]}\n
+\\cmd{push_underline [MODE]}\n
+\\cmd{pop_underline}
+\cmd{pop_color}
+\cmd{tag underline}
+\cmd{PP width:800 }
+If MODE is the string "on", then the following
+text is underlined (i.e. with a line below the text:
+\cmd{push_underline on}underline text\cmd{pop_underline}). 
+If MODE is the string 
+"off", then the following text is not underlined.
+If MODE is neither the string "on" or "off"
+or is not present then underlining is toggled.
+The push version changes the value and pushes it
+onto the underline state stack, and the pop restores
+the value before the previous push. If the stack 
+is empty, the pop command is ignored.\n\n
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{strike [MODE]}\n
+\\cmd{push_strike [MODE]}\n
+\\cmd{pop_strike}
+\cmd{tag strike}
+\cmd{pop_color}
+\cmd{PP width:800 }
+If MODE is the string "on", then the following
+text is sriked (i.e. with a strike through:
+\cmd{push_strike on} striked text\cmd{pop_strike}). 
+If MODE is the string "off", then the following text 
+is not striked. If MODE is neither the string "on" or "off"
+or is not present then sriking is toggled.
+The push version changes the value and pushes it
+onto the strike through state stack, and the pop restores
+the value before the previous push. If the stack 
+is empty, the pop command is ignored.\n\n
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{image name:FILENAME w:display_width h:display_height red:red green:green blue:blue alpha:alpha}
+\cmd{pop_color}
+\cmd{tag image}
+\cmd{PP width:800 }
+Inserts an image. If both optional arguments
+display_width and display_height are present,
+them the image is displayed at that resolution.
+If only display_width is present, then the image
+is displayed at the specified width with the
+source's aspect ratio. If display_width is not
+present, then the image is displayed unscaled.\n\n
+
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{begin_super_script}\n
+\\cmd{begin_sub_script}\n
+\\cmd{end_super_script}\n
+\\cmd{end_sub_script}\n
+\cmd{tag super_and_subscripts}
+\cmd{pop_color}
+\cmd{PP width:800 }
+Text between a \cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{begin_super_script}\cmd{pop_color}-
+ \cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{end_super_script}\cmd{pop_color} is drawn as a
+superscript, i.e.\n\n\t
+base\cmd{begin_super_script}super_script\cmd{end_super_script}\n\n
+and text between a \cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{begin_sub_script}\cmd{pop_color}-
+ \cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{end_sub_script}\cmd{pop_color} is drawn as a
+superscript, i.e.\n\n\t
+base\cmd{begin_sub_script}sub_script\cmd{end_sub_script}\n\n
+Internally, \cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{end_super_script}\cmd{pop_color} and
+\cmd{push_color r:255 g:0 b:0 a:255} \\cmd{end_sub_script}
+\cmd{pop_color} are equivalent, i.e. one can end
+a block of subscript text with \cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{end_super_script}\cmd{pop_color} and vica-versa.
+Moreover, internally, the subscript and superscript
+commands affect the scale stack (specifically, the begin_
+commands push the scale stack and the end_ commands pop it).
+Additionally, it is possible
+to nest subscripts and superscrips:
+\cmd{include_file nested_script_example.txt}.
+Finally, end of lines, i.e. \\n control sequence
+within a superscript or subscript are accepted,
+but the status of superscript and/or subscript
+does NOT reset at end of lines.
+\n\n
+
+
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{glyph_dump [start=ST] [end=END] [character_codes=BOOL]}
+\cmd{tag glyph_dump}
+\cmd{pop_color}
+\cmd{PP width:800 }
+Has a range of glyphs of the current font (drawn in the
+current color and style) drawn. Note that using
+the command will force KAN to prepare the image
+data for each as yet unused glyph. For fonts with 
+a large number of glyphs this can dramatically
+increase the loading time of the file.
+The value of start defaults to 0, the value
+of end defaults to the index of the last
+glyph. If character_codes is set to true,
+then uses character codes and not raw glyph
+indices, only those character codes supported
+by the font are cosidered. NOTE: the defualt
+value is the case where character_codes is true
+is 2,147,483,647.\n\n\n
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{create_shape shape_name shape_points }
+\cmd{tag create_shape}
+\cmd{pop_color}
+\cmd{PP width:800 }
+Will create a shape object with the name \cmd{push_color r:255 g:0 b:0 a:255}
+shape_name \cmd{pop_color}. The geometry of a shape is specified
+as a list of numbers, with 2 consecutive numbers determining
+a point location on the plane. A shape consists of a set of outlines,
+and each outline is a sequence of points. An outline is delimitted by
+the tokens \cmd{push_color r:255 g:0 b:0 a:255} '[' \cmd{pop_color} and ']'.
+Each two numbers within a \cmd{push_color r:255 g:0 b:0 a:255}'['\cmd{pop_color}-
+\cmd{push_color r:255 g:0 b:0 a:255}']''\cmd{pop_color} names a point of the outline.
+For example:\n\n
+\cmd{push_color r:255 g:0 b:0 a:255}
+\n[ 0 0 100 0 0 100]
+\cmd{pop_color}\n\n
+names 3 points: (0,0), (100,0) and (0,100). 
+To ease in reading '(' and ')' are viewed as white space, thus
+ \cmd{push_color r:255 g:0 b:0 a:255}[ 0 0 100 0 0 100]\cmd{pop_color} is treated the
+same as \cmd{push_color r:255 g:0 b:0 a:255} [ (0 0) (100 0) (0 100)]\cmd{pop_color}
+The points of an outline can be joined by straight edges, Bezier curves or arcs. Joining by edges
+is the default. To joint two points by a Bezier curve, one needs to
+supply the control points of the curve. A set of control points are marked by 
+being delimited by a \cmd{push_color r:255 g:0 b:0 a:255}'[['\cmd{pop_color}-
+\cmd{push_color r:255 g:0 b:0 a:255}']]''\cmd{pop_color} pair. For example::\n\n
+\cmd{push_color r:255 g:0 b:0 a:255}
+\n[ (0 0) [[(-50 50) ]] (100 0) (0 100)]
+\cmd{pop_color}\n\n
+indicates that the points (0,0) and (100,0) are linked by a quadratic
+Bezier curve whose off curve control point is (-50,50). Similarly,
+
+\n[ (0 0) [[(-25 25) (25 50) (-25 75)]] (100 0) (0 100)] indicates that the points 
+(0,0) and (100,0) are linked by a quartic Bezier curve whose off curve control points
+are (-25,25), (25,50) and (-25, 75). Connecting two points be an arc is determined
+by the angle of arc and direction as follows:
+\cmd{push_color r:255 g:0 b:0 a:255}
+\n\n[ (0 0) CW 50 (100 0) (0 100)]\n\n
+\cmd{pop_color}
+indicates to join (0,0) to (100,0) by an arc of 50 degrees
+going clockwise from (0,0) to (100,0). Similarly,
+\cmd{push_color r:255 g:0 b:0 a:255}
+\n\n[ (0 0) CCW 50 (100 0) (0 100)]\n\n
+\cmd{pop_color}
+indicates to join (0,0) to (100,0) by an arc of 50 degrees
+going counter-clockwise from (0,0) to (100,0).\n\n
+
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{set_tess_params max_recurse:MR curve_tess:CT}\n
+\cmd{tag tess_params}
+\cmd{pop_color}
+\cmd{PP width:800 }
+Sets the tessellation parameters for subsequent created shapes.
+When drawing curves
+(for example arcs or Bezier curves), the parameter curve_tess specifies
+is an integer value to specify how finely to tessellate curves.
+A value of N indicates to tessellate a circel with N points 
+(mathematically the value 2*PI/N represents how much curvature 
+accumulates before another point is added to the tessellation.
+The parameter max_recurse sets an upper bound
+to the depth of recursion for dividing a curve. In particular the total
+number of segments a curve is broken into is no more than 2\cmd{begin_super_script}
+max_recurse\cmd{end_super_script}. The default value is 8.
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{stroke\n 
+\t\t\tshape:name \n
+\t\t\twidth:w \n
+\t\t\tclose:true/false\n
+\t\t\tcap_stype:rounded/flat/square\n
+\t\t\tstroke_curves:true/false\n 
+\t\t\tjoin_style:round/miter/bevel/none\n
+\t\t\tmiter_limit:m\n}\n
+\cmd{tag stroke}
+\cmd{pop_color}
+\cmd{PP width:800 }
+Indicates to stroke the shape named \cmd{push_color r:255 g:0 b:0 a:255}
+name \cmd{pop_color} that was previously created with  
+\cmd{named_link tag:create_shape label:create_shape}. If close is
+true (the default) then outlines of the shape are closed (i.e. the
+last point of each outline is joined to the first point, and such
+joining can be via Bezier curves or arcs). If close is false,
+then the outlines are not closed and caps are drawn in one of three styles
+indicated by cap_stype: rounded, flat or square. The default cap style is
+square. Join style is determined by the value of joint_style with
+being one of miter, bevel, round or none. The default value is
+bevel. The value of none indicates to not draw joins (which can be ugly).
+If the join style is miter, then the miter limit is determined by the
+value of miter_limit, the default value is 2.0.
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{create_distance_field\n
+\t\t\tshape:shape_to_use\n
+\t\t\tname:name_for_created_image\n
+\t\t\twidth:w\n
+\t\t\theight:h\n
+\t\t\tpixel_dist:p\n
+\t\t\tuse_point_sprites:true/false\n
+\t\t\tskip_corners:true/false\n
+}\n
+\cmd{tag create_distance_field}
+\cmd{pop_color}
+\cmd{PP width:800 }
+Creates a distance field image of a shape.
+The source shape is given by \cmd{push_color r:255 g:0 b:0 a:255}
+shape\cmd{pop_color} that was previously created with  
+\cmd{named_link tag:create_shape label:create_shape} and the created distance field
+image is given by \cmd{push_color r:255 g:0 b:0 a:255}name\cmd{pop_color}.
+The dimensions of the image are given by
+\cmd{push_color r:255 g:0 b:0 a:255}width\cmd{pop_color}
+and \cmd{push_color r:255 g:0 b:0 a:255}height\cmd{pop_color}
+whose default values are both 256. The parameter 
+\cmd{push_color r:255 g:0 b:0 a:255}pixel_dist\cmd{pop_color}
+specifies the clamping distance of the signed distance
+field, in \cmd{push_font style:italic} pixels\cmd{pop_font}.
+The default value is 1.5. If \cmd{push_color r:255 g:0 b:0 a:255}
+skip_corners\cmd{pop_color} is true, then the distance field rendering
+only uses edges of the shape (and ignores the corners of the edges) when
+generating the distance field. The default value is false. If \cmd{push_color r:255 g:0 b:0 a:255}
+skip_corners\cmd{pop_color} is true, then \cmd{push_color r:255 g:0 b:0 a:255}
+use_point_sprites\cmd{pop_color} determines how the corners are used in rendering.
+When true, indicates to try to "draw" a distance rectangle for each corner,
+which requires ability to specify the depth value in the fragment shader
+(always available under OpenGL and available under GLES2 if GL_EXT_frag_depth
+is in the extension string) or the NVIDIA extension GL_NV_framebuffer_fetch.\n\n
+
+
+\cmd{PP}
+\cmd{push_color r:255 g:0 b:0 a:255}
+\\cmd{dist_image name:source red:r green:g blue:b alpha:a w:w h:h}\n
+\cmd{tag dist_image}
+\cmd{pop_color}
+\cmd{PP width:800 }
+Draws an image from a distance field created with 
+\cmd{named_link tag:create_distance_field label:create_distance_field}.
+Like \cmd{named_link tag:image label:image}, the color is dispalyed
+is controlled by the tuple r,g,b,a and the display size is
+set by w and h in the same fashion.
+
+\n\n\n\n
+The contents that generated this tutorial are
+below:\cmd{push_color r:127 g:255 b:127}\n\n
+cmd{PP raw:true}
+\n\n\cmd{include_raw_utf8 tutorial.txt}
+\cmd{pop_color}

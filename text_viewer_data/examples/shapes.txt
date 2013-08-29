@@ -1,0 +1,94 @@
+Some Example Shapes:\n\n
+
+\cmd{set_tess_params max_recurse:6 curve_tess:100}
+
+\cmd{create_shape funkyiness [(0 0) [[ (100 -100) (200 100) ]] (300 0) CW 233 (500 0) (500 100) CW 212 (500 300) [[ (250 200) (125 400) ]] (90 120) CW 290 (20 150) (-40 160)]  
+}
+
+\cmd{create_shape bowtie [ (0 0) (100 0) (0 100) (100 100) ] }
+                       
+
+\cmd{create_shape simple 
+ [(0 0) (0 200) (200 200) (200 0)]
+ [(100 -100) (300 -100) (300 100) (100 100)   ]
+ } 
+
+\cmd{create_shape triangle [ (60 60) (100 300) CCW 90 (300 300) ]  }
+
+\cmd{create_shape flat_triangle [ (60 60) (100 300) (300 300) ]  }
+
+\cmd{create_shape insane
+  [ (460 60) (644 134) (544 367)  ]
+  [ (560 60) (644 367) (744 134) ]
+
+  [(0 0) [[ (100 -100) (200 100) ]] (300 0) CW 233 (500 0) (500 100) CW 212 (500 300) [[ (250 200) (125 400) ]] (90 120) CW 290 (20 150) (-40 160)]  
+
+  [(59 9) (59 -209) (519 -209) (519 9) CCW 180 ] 
+
+  [ (160 60) (344 134) (244 367)  ]
+  [ (260 60) (344 367) (444 134) ]
+  [ (360 60) (544 134) (444 367)  ]
+
+  [ (-60 -60) (-100 300) (60 500) (200 570) (300 100)  CW 80 ]
+  }
+
+\cmd{create_shape triangle_in_triangle 
+   [ (0 0) (100 0) (0 100) ]
+   [ (-100 -100) (-100 300) (300 -100) ]
+}
+
+\n\nStroking:
+Curvy Triangle:\n
+\cmd{stroke shape:triangle 
+            width:4     
+            close:true         
+            cap_style:flat
+            stroke_curves:true
+            join_style:round miter_limit:10}
+
+\n\nQuad:\n
+\cmd{stroke shape:simple
+            width:4             
+            close:true         
+            cap_style:flat
+            stroke_curves:true
+            join_style:round miter_limit:10}
+
+
+
+Insane:
+\cmd{stroke shape:insane
+            width:4     
+            close:true         
+            cap_style:flat
+            stroke_curves:true
+            join_style:round miter_limit:10}
+
+
+
+
+
+\n\nFilling:
+\cmd{fill shape:triangle_in_triangle}
+
+\cmd{fill shape:flat_triangle}
+
+\cmd{fill shape:insane}
+
+\cmd{fill shape:simple}
+
+\cmd{fill shape:triangle}
+
+\cmd{fill shape:bowtie}
+
+%\cmd{create_distance_field shape:bowtie name:bowtie_distance width:64 height:64}
+%\cmd{dist_image name:bowtie_distance blue:255 green:0 red:0 }
+
+%\cmd{create_distance_field shape:insane name:insane use_point_sprites:true skip_corners:true width:1024 height:1024}
+%\cmd{dist_image name:insane blue:255 green:0 red:0 }
+
+
+
+
+
+That is all folks!

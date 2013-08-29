@@ -1,0 +1,100 @@
+/*! 
+ * \file image.doxy
+ * \brief file image.doxy
+ * 
+ * Copyright 2013 by Nomovok Ltd.
+ * 
+ * Contact: info@nomovok.com
+ * 
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with
+ * this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ * 
+ * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
+ * 
+ */
+
+
+
+/*! \addtogroup Imaging
+  The Imaging module of WRATH embodies:
+  - handling image data see \ref WRATHImage,
+  - gradients data see \ref Image_Gradients,  
+  - brushes with which to color see \ref Image_Brush and
+  - attribute packers and shader for \ref WRATHRectItem object,the motivation
+  being that rectangles are usually what draws images, see
+  \ref WRATHRectAttributePacker, \ref WRATHDefaultRectAttributePacker
+  and \ref WRATHDefaultRectShader
+
+ \section Image_Gradients Gradients in WRATH
+
+ A gradient in WRATH is embodied by \ref WRATHGradient,
+ which embodies storing the color stops of a gradient.
+ The computation to produce the interpolate to fetch
+ a color stop is orthogonal to the color stops themselves.
+ Under WRATH one can use the same set of color stops
+ stored in a \ref WRATHGradient to do radial, linear
+ and other forms of gradients. 
+ The Imaging module provides the following classes for
+ gradient interpolate computations:
+ - \ref WRATHLinearGradientValue for linear gradients,
+ - \ref WRATHRadialGradientValue for radial gradients,
+ - \ref WRATHRepeatGradientValue for repeating a gradient pattern
+ and 
+ - a framework to create one's own way of computing gradient
+ interpolates: \ref WRATHGradientSourceBase and \ref WRATHGradientSource
+
+ \section Image_Brush Brushes in WRATH
+
+ In WRATH a brush is broken into two parts: the shader
+ code and the data a shader will use. The shader code
+ is embodied by the class \ref WRATHShaderBrush
+ and the shader together with what data to use is
+ embodied by \ref WRATHBrush.
+
+ A brush in WRATH is made of 3 conceptial parts:
+ - a gradient 
+ - an image
+ - a color value
+
+ The shader portion of a gradient is embodied by
+ \ref WRATHGradientSourceBase and the data is
+ a \ref WRATHGradient. The shader portion
+ represents how the gradient interpolate
+ is computed and the image portion represents
+ the actual color stops. 
+
+ The shader portion of an image  is emobodied by a 
+ \ref WRATHTextureCoordinateSourceBase and the data 
+ is a \ref WRATHImage. The shader portion represents
+ how to compute a texture coordinate of the GL texture
+ on which the WRATHImage resides and a WRATHImage
+ is just a portion of a GL texture.
+
+ Lastly, a color value is only emobied by shader code, 
+ \ref WRATHColorValueSource and represents getting a color
+ value.
+
+ The class \ref WRATHShaderBrushSourceHoard provides
+ an easy way to use brushes in WRATH. It creates
+ \ref WRATHShaderSpecifier objects from a user provided
+ shader source code augmenting it with the necessary 
+ GLSL functions to get the color value of the brush
+ at a fragment.
+
+ For an example using \ref WRATHShaderBrushSourceHoard
+ and a brush on a user defined item see 
+ \ref brush_example_example and \ref rect_example.
+
+ Also see \ref rect2_example for an example of 
+ using \ref WRATHShaderBrushSourceHoard for
+ a non-linear brush mapping and using
+ \ref WRATHDefaultRectAttributePacker with
+ one's own shader.
+
+*/
+
+
+#error "Include of " __FILE __ " which is a documentation files"

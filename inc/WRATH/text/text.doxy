@@ -1,0 +1,67 @@
+/*! 
+ * \file text.doxy
+ * \brief file text.doxy
+ * 
+ * Copyright 2013 by Nomovok Ltd.
+ * 
+ * Contact: info@nomovok.com
+ * 
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with
+ * this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ * 
+ * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
+ * 
+ */
+
+
+
+/*! \addtogroup Text
+  The Text module handles the following:
+  - font specification (see \ref WRATHFontDatabase and for 
+    Linux platforms that support fontconfig, \ref WRATHFontConfig), 
+    i.e. specifying the source of font data (be it memory or file)
+  - font realization (see \ref WRATHFontFetch), i.e. creating a
+    WRATH object to realize the font data for the purpose
+    of rendering glyphs. The WRATH objects for realizing font
+    data for the purpose of rendering derive from \ref WRATHTextureFont. 
+    Additionally, the namespaces \ref WRATHFontSupport, \ref
+    WRATHFreeTypeSupport, \ref WRATHTextureFontUtil provide
+    common functions for implementing \ref WRATHTextureFont
+    derived types.
+  - text specification, i.e. specifying what text and how
+    to draw that text. Such specification includes options
+    that affect formatting, what font realization to use
+    and even what font shader to use to draw the text.
+    Text specification is handled by \ref WRATHTextDataStream
+  - text formatting, i.e. preparing data that specifies what
+    glyphs to draw and where from a text specification.
+    Formatting is performed by classed derived from 
+    \ref WRATHFormatter and the formatted text itself
+    is represented by \ref WRATHFormattedTextStream
+  - text attribute packing, classes and functions that 
+    take as input a formatted stream of text (\ref 
+    WRATHFormattedTextStream) and produce attribute data
+    (used by \ref WRATHTextItem). The main classes
+    are \ref WRATHTextAttributePacker, \ref
+    WRATHGenericTextAttributePacker and \ref 
+    WRATHDefaultTextAttributePacker
+  - text drawing, i.e. the means to construct GLSL
+    shaders to draw text. The interface for creating,
+    shaders that work with any \ref WRATHTextureFont
+    font realization is \ref WRATHFontShaderSpecifier. 
+    
+
+  For a simple example using text, see \ref
+  text_example.
+
+ */
+
+
+#error "Include of " __FILE __ " which is a documentation files"
+
+
+
+

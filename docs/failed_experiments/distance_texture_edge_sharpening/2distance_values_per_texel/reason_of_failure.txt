@@ -1,0 +1,91 @@
+The 2 files here are modifications of KANTextureFontTTF.[ch]pp to 
+generate a texture where the texture holds two signed distances 
+for each texel: the closest and 2nd closest signed distances.
+For each texel, we stored a list of what curves and what corners
+where canidates for the distance function. A curve canidate
+is a canidate from when a horizontal or vertical line through
+the texel intersected a curve or when the curve is at a 45degree
+angle. A corner canidate is simply a canidate from one of the points
+of the outline, i.e. an end point for a curve. Curve canidates
+were stored in a std::map<BezierCurve*,float> and corner canidates
+where stored in a std::map<std::pair<BezierCurve*,BezierCurve*>,float>
+
+
+Several experiments where tried:
+
+A) futzing with corner values:
+ (1) if a corner created the closest distance, then
+we set the 2nd closest distance as "NULL" indicating
+that there is no "second" closest distance and thus
+the value in the 2nd closest channel is the same as the
+1st closest value.
+
+ (2) if a corner created the closest distance, then
+search for the a distance from the curve canidates
+with key value as one of the curves from the corner.
+
+B) futzing with curve values
+  (1) if a curve created the closest distance,  then
+we set the 2nd closest distance as "NULL" indicating
+that there is no "second" closest distance and thus
+the value in the 2nd closest channel is the same as the
+1st closest value.
+
+  (2) if a curve created the closest distance,  then
+search for the a distance from the curve canidates
+with a key value as one of the neighbor curves of 
+the curve that did the job.
+
+
+Results/commends:
+ A1 B1 --> loginally same as only one component texture, render results same
+ A2 B1 --> render results appear the same, but debug render did indicate that
+different reults are stored in the texture
+ A1 B2 --> horrible render results
+ A2 B2 --> horrible render results
+
+
+A second method was tried where the closest curve
+and corners were used always as follows:
+
+Method 1: the smallest of the two was stored
+in the first channel, if there was no second,
+then the value was replicated
+
+Method 2: the closest corner was always stored
+in one channel and the closest curve in the 
+other channel
+
+Both methods gave terrible render results.
+
+
+A third method was tried where only the curve
+values where stored (i.e. not the point values)
+with the 2 channels storing the distances to
+the nearest curves. Again render results were poor.
+
+Note: completely skipping using the corners and only
+using the closest curve does give okay-ish render
+results, but near the corners of the glyph, it fills
+it even more than the way of using both.
+
+
+--------------------------------------------
+
+Analysis:
+
+ the main point of failure likely comes from the fact
+that negihboring texels may or maynot use the same
+curve or corners, and thus the interpolation is totally
+thrown off. Storing only the closest distanc works because
+the function
+
+ f(x)=L1-distanct(Outline, x)
+
+is a (mostly) nice function that behaves almost linearly,
+where as if we attempy to seperate out where the results came
+from, we run into troubles as the interpolation will become garbage.
+
+
+ 
+

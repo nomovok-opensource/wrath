@@ -1,0 +1,125 @@
+/*! 
+ * \file drawgroup.doxy
+ * \brief file drawgroup.doxy
+ * 
+ * Copyright 2013 by Nomovok Ltd.
+ * 
+ * Contact: info@nomovok.com
+ * 
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with
+ * this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ * 
+ * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
+ * 
+ */
+
+
+/*
+  NOTE: this is a source free header file,
+  it contains documentation only.
+ */
+
+/*! \addtogroup Group
+
+Group is the heart and soul of WRATH. Group classes implement the mechanisms that facilitate packing
+the geometry of different visual items (e.g. buttons, icons, scrollbars) into one batch that can be
+rendered with a single GL draw call(e.g. glDrawElements).
+
+On a high level the main actors in Group are:
+
+- WRATHCanvas::DataHandle
+    - This class can be thought of as a handle to batch of geometry data from different visual items, with common GL state
+(e.g. uniforms, textures, buffer objects), packed into one unit. The idea is to take advantage of having common GL state,
+and pack the geometry of these visual items in a common set of vertex buffer objects, in such a way that all these
+different visual items can be rendered with a single GL draw call. In particular, this class provides an interface
+to allocate and deallocate space, as well as read and write, vertex attribute and index data.
+
+- WRATHCanvas
+    - This base class is a WRATHCanvas::DataHandle manager. It's in charge of finding existing or creating
+new WRATHCanvas::DataHandle objects into which new geometry can be packed. This is an abstract class and as
+such, most of its methods are to be implemented in its subclasses.
+
+\section batching Batching geometry with common GL state
+Visual Items geometry will be packed together if they have the same GL state requirements. Three Group classes are relevant
+when figuring out what is considered "same GL state":
+
+- WRATHItemDrawState : Defines a subset of the GL State required to render the geometry of a visual item. A
+  WRATHItemDrawState roughly consists of:
+    - Textures (see WRATHTextureChoice)
+    - Uniforms (see WRATHUniformData)
+    - GL Program and its associated shaders (see WRATHItemDrawer)
+    - Primitive type (GL_TRIANGLES, GL_LINES, GL_POINTS, etc)
+    - Buffer Object Hint (GL_STATIC_DRAW, GL_DYNAMIC_DRAW, etc)
+
+- WRATHCanvas::SubKeyBase
+    - This is an abstract class and its characteristics will be dependent on a 
+    \ref WRATHCanvas subclass implementation. Whatever its subclass
+    might end up being, it will define the format and value of one or more "implicit" 
+    (see below) vertex attribute arrays that will be
+    automatically handled as described in the \ref vad section.
+
+- WRATHAttributeStore
+    - Defines the GL glVertexAttribPointer argument values (the set of arguments passed to glVertexAttribPointer) for each
+    vertex attribute array in use in a given WRATHCanvas::DataHandle.
+    - Defines the format of the index data (e.g GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT)
+    - Defines the underlying vertex buffer objects used to store vertex attribute data.
+
+\section vad Vertex Attribute Data
+An important part of Group is concerned with Vertex Attribute Data: allocating and deallocating space
+in the underlying vertex buffer objects, and writing to and reading from them.
+
+Group differentiates between 2 types of Vertex Attribute data:
+
+- Explicit Vertex Attribute Data
+    - refers to regular attribute data, specified explicitly by the programmer when creating a visual item.
+      WRATHCanvas::DataHandle offers a set of methods to handle "explicit" vertex attribute data
+      by wrapping an underlying WRATHAttributeStore object (see WRATHCanvas::DataHandle::attribute_store())
+- Implicit Vertex Attribute Data
+    - refers to attribute data that is specified automatically, based on the implementation
+      of a subclass of \ref WRATHCanvas. Think of the implicit attribute
+      data as a value to select what transformation node applied to an item. 
+      WRATHCanvas::DataHandle offers a set of methods to set "implicit" vertex attribute data by
+      wrapping an underlying WRATHCanvas::CustomDataBase object (WRATHCanvas::DataHandle::custom_data())
+      WRATHCanvas::CustomDataBase class is abstract and therefore the actual details about the format,
+      size and interpretation of exactly what the implicit vertex attribute data is, will depend on 
+      the WRATHCanvas subclass.
+
+For more info please check WRATHCanvas::DataHandle's list of attribute data related methods:
+- WRATHCanvas::DataHandle::allocate_attribute_data()
+- WRATHCanvas::DataHandle::fragmented_allocate_attribute_data()
+- WRATHCanvas::DataHandle::proxy_attribute_allocate()
+- WRATHCanvas::DataHandle::deallocate_attribute_data()
+- WRATHCanvas::DataHandle::max_fragmented_allocate_possible()
+- WRATHCanvas::DataHandle::proxy_fragmented_allocate_attribute()
+- WRATHCanvas::DataHandle::set_implicit_attribute_data()
+
+\section indexdata Index Data
+Index data is handled in WRATHCanvas::DataHandle by the WRATHIndexGroupAllocator it
+uses, see WRATHCanvas::DataHandle::index_store(). 
+Check WRATHCanvas::DataHandle 's index related methods for more details on how to allocate and set index data:
+    - WRATHCanvas::DataHandle::allocate_index_group()
+    - WRATHCanvas::DataHandle::allocate_copy_index_group()
+
+
+\section Example Tutorial
+A simple tutorial of using the WRATHCanvas:
+ - \ref item_example_example gives the basics on creating an item
+  -# Specifying attribute format
+  -# Getting the \ref WRATHItemDrawer from \ref WRATHShaderSpecifier,
+     \ref WRATHItemDrawerFactory and \ref WRATHAttributePacker
+     paramaters
+  -# Getting WRATHCanvas::DataHandle for a specified number of attributes
+  -# Writing index and attribute data
+  -# Using \ref WRATHGenericWidget
+ - \ref item_example2_example builds from \ref item_example_example in creating
+   an attribute packer interface for the item class and giving
+   an example of it where the attributes are allocated in potentially
+   multiple chunks
+ */
+
+
+#error "Include of " __FILE __ " which is a documentation files"
+

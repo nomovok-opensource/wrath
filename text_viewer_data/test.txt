@@ -1,0 +1,87 @@
+\cmd{PP}
+
+
+\n\n0 1 2 3 4 5 6 7 8 9
+\nA B C D E F G H I J K L M N O P Q R S T U V W X Y Z  
+\na b c d e f g h i j k l m n o p q r s t u v w x y z
+
+\nhello world KEVIN (plain)
+
+\cmd{push_capitalization title}
+\nhello world KEVIN (title)
+\cmd{pop_capitalization}
+
+\n\n
+\cmd{push_capitalization upper}
+hello world KEVIN (upper)
+\cmd{pop_capitalization}
+
+\n\n
+\cmd{push_capitalization lower}
+hello world KEVIN (lower)
+\cmd{pop_capitalization}
+
+\n\n
+\cmd{push_capitalization title}
+hello world KEVIN (title)
+\cmd{pop_capitalization}
+
+\cmd{push_letter_spacing_type absolute}
+\cmd{push_letter_spacing 8.0}
+\nHello Spacing (Absolute 8.0)
+\cmd{push_letter_spacing 18.0}
+\nHello Spacing (Absolute 18.0)
+\cmd{pop_letter_spacing}
+\cmd{pop_letter_spacing}
+\cmd{pop_letter_spacing_type}
+
+\cmd{push_letter_spacing_type relative}
+\cmd{push_letter_spacing 0.1}
+\nHello Spacing (Relative 0.1)
+\cmd{push_letter_spacing 1.0}
+\nHello Spacing (Relative 1.0)
+\cmd{push_letter_spacing 2.0}
+\nHello Spacing (Relative 2.0)
+\cmd{pop_letter_spacing}
+\cmd{pop_letter_spacing}
+\cmd{pop_letter_spacing}
+\cmd{pop_letter_spacing_type}
+
+\cmd{set_kerning false}
+\nHello World (Kerning false)
+\cmd{set_kerning true}
+\nHello World (Kerning true)
+\n\n
+
+
+
+\cmd{push_word_spacing 5.0}
+\nHello World (word_spacing 5.0)
+\cmd{pop_word_spacing}
+
+\nHello World (word_spacing default)
+
+\cmd{push_word_spacing 15.0}
+\nHello World (word_spacing 15.0)
+\cmd{pop_word_spacing}
+
+\cmd{push_word_spacing 115.0}
+\nHello World (word_spacing 115.0)
+\cmd{pop_word_spacing}
+
+\n\n0123456789ABCDEFGHIJKLMNOPQRSTUVWXZYabcdefghijklmnopqrstuvwxzy
+
+\cmd{push_horizontal_stretch 3.0}
+\n0123456789ABCDEFGHIJKLMNOPQRSTUVWXZYabcdefghijklmnopqrstuvwxzy
+\cmd{pop_horizontal_stretch}
+
+\cmd{push_horizontal_stretch 5.0}
+\n0123456789ABCDEFGHIJKLMNOPQRSTUVWXZYabcdefghijklmnopqrstuvwxzy
+\cmd{pop_horizontal_stretch}
+
+\cmd{push_vertical_stretch -3.0}
+\n0123456789ABCDEFGHIJKLMNOPQRSTUVWXZYabcdefghijklmnopqrstuvwxzy
+\cmd{pop_vertical_stretch}
+\nHello
+
+

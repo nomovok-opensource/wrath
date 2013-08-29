@@ -1,0 +1,61 @@
+/*! 
+ * \file utility.doxy
+ * \brief file utility.doxy
+ * 
+ * Copyright 2013 by Nomovok Ltd.
+ * 
+ * Contact: info@nomovok.com
+ * 
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with
+ * this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ * 
+ * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
+ * 
+ */
+
+
+/*! \addtogroup Utility
+
+  Utility represents a set of functions and classes that are reuseable.
+  The basic categorization of \ref Utility is as follows:
+  - Debug and conveniance macros: \ref WRATHassert, \ref WRATHwarning and \ref WRATHunused
+  - Memory debugging facilities: \ref WRATHMemory together with the macros
+  \ref WRATHNew, \ref WRATHDelete, \ref WRATHDelete_array, 
+  \ref WRATHmalloc, \ref WRATHfree and \ref WRATHrealloc.
+  - Conveniance container types: \ref vecN, \ref c_array,
+  \ref const_c_array, \ref reorder_c_array and \ref reorder_const_c_array
+  - Template odds and ends \ref range_type and \ref type_tag
+  - Conveninace enumerations: \ref file_type, \ref return_code
+  and \ref copy_range_tag_type
+  - Threading support: \ref WRATHTripleBufferEnabler (also see 
+  \ref  WRATHPhasedDelete) \ref WRATHMutex (see also
+  \ref WRATHThreadID,  \ref WRATHLockMutex, \ref WRATHLockMutexIfNonNULL, 
+  \ref WRATHAutoLockMutex, \ref WRATHUnlockMutex,
+  and \ref WRATHUnlockMutexIfNonNULL) \ref WRATHAtomicAddAndFetch
+  and \ref WRATHAtomicSubtractAndFetch
+  - Helper math classes and routines: \ref matrixNxN, 
+  \ref float2x2, \ref matrix3x3, \ref matrix4x4, \ref float3x3,
+  \ref float4x4, \ref projection_params, \ref float_projection_params,
+  \ref orthogonal_projection_params, \ref float_orthogonal_projection_params,
+  \ref WRATHBBox, \ref WRATHUtil::BernsteinPolynomial,
+  \ref WRATHUtil::polynomial_solution_solve, \ref WRATHUtil::normalizer, 
+  \ref WRATHUtil::generate_polynomial_from_bezier, 
+  \ref WRATHUtil::solve_polynomial and their related functions
+  - Transformation classes: \ref WRATH2DRigidTransformation,
+  \ref WRATH2DTransformation, \ref WRATHScaleTranslate and \ref
+  WRATHScaleXYTranslate
+  - Atlasing support \ref WRATHAtlasBase, \ref WRATHPixelStore and \ref WRATHAtlas
+  - Reference counting: \ref WRATHReferenceCountedObject and \ref WRATHReferenceCountedObjectT
+  - Resource management: \ref WRATHResourceManagerBase and \ref WRATHResourceManager,
+    \ref WRATH_RESOURCE_MANAGER_DECLARE and \ref WRATH_RESOURCE_MANAGER_IMPLEMENT
+  - State streams: \ref WRATHStateStream, \ref WRATHStateStreamManipulators,
+    and \ref WRATH_STATE_STREAM_DECLARE_IMPLEMENT_PROPERTY
+  - Miscellaneous:  \ref WRATHTime, \ref WRATHStaticInit and other functions
+    and types found in \ref WRATHUtil
+*/
+
+
+#error "Include of " __FILE __ " which is a documentation files"

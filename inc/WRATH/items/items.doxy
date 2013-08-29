@@ -1,0 +1,57 @@
+/*! 
+ * \file items.doxy
+ * \brief file items.doxy
+ * 
+ * Copyright 2013 by Nomovok Ltd.
+ * 
+ * Contact: info@nomovok.com
+ * 
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with
+ * this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ * 
+ * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
+ * 
+ */
+
+
+
+/*! \addtogroup Items
+
+  The Items module in WRATH provides:
+  - a base class for item types (required by the \ref Widgets module), \ref WRATHBaseItem,
+  - an item type for drawing text, \ref WRATHTextItem,
+  - an item type for drawing shapes, \ref WRATHShapeItem,
+  - an item type for drawing rectangles, \ref WRATHRectItem and
+  - misc items types used by the \ref Widgets module: \ref WRATHEmptyItem and \ref WRATHCanvasItem
+
+  The item types are <i>not</i> dependent on the \ref WRATHCanvas type on which
+  they are placed or more specifically, when using WRATHLayer of the \ref Layer 
+  module, the node type that places them. Each of
+  the item types, \ref WRATHTextItem, \ref WRATHShapeItem and
+  \ref WRATHRectItem have that their constructors have four common
+  arguments:
+  - a reference to a const WRATHItemDrawerFactory,
+  - an integer subdrawer_id,
+  - a pointer to a \ref WRATHCanvas on which to place the item and
+  - a reference to a const \ref WRATHCanvas::SubKeyBase object.
+
+  The subdrawer_id, \ref WRATHItemDrawerFactory are passed to
+  the item specific shader code embodied by a \ref WRATHShaderSpecifier
+  to fetch the \ref WRATHItemDrawer object that will draw the item
+  on \ref WRATHCanvas. 
+
+  The item types \ref WRATHShapeItem and \ref WRATHRectItem
+  each have a constructor which specifies a drawer type
+  (\ref WRATHRectItemTypes::Drawer for \ref WRATHRectItem
+  and \ref WRATHShapeItemTypes::ShapeDrawer for \ref 
+  WRATHShapeItem). These drawer types allow for an
+  item to have multiple draw passes and also define
+  various constructors to use the shaders built into WRATH.
+
+*/
+
+
+#error "Include of " __FILE __ " which is a documentation files"

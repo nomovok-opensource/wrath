@@ -1,0 +1,74 @@
+\cmd{PP}
+\cmd{push_font_size 88}
+\cmd{underline on}
+Using Qt Text Viewer
+\cmd{pop_font_size}
+\cmd{underline off}
+\cmd{PP width:800}
+
+The demo lists it's command line options
+and a terse description of each with:\n\n
+\cmd{push_color r:255 g:127 b:0 a:255}
+./\cmd{named_link label:qt_text_viewer target:qt_text_viewer_commandline.txt r:255 g:127 b:0 a:255 underline:off} -help\cmd{pop_color}\n\n
+The most important options to be aware of are:
+\cmd{push_color r:255 g:255 b:0 a:255}
+text_renderer,
+fullscreen,
+\cmd{pop_color} and \cmd{push_color r:255 g:255 b:0 a:255}
+filename
+\cmd{pop_color}.
+The default value for \cmd{push_color r:255 g:255 b:0 a:255}
+fullscreen \cmd{pop_color} is \cmd{push_color r:0 g:255 b:0 a:255}
+false \cmd{pop_color}. When \cmd{push_color r:255 g:255 b:0 a:255}
+fullscreen \cmd{pop_color} is \cmd{push_color r:0 g:255 b:0 a:255}
+true\cmd{pop_color}, \cmd{named_link label:qt_text_viewer target:qt_text_viewer_commandline.txt r:255 g:127 b:0 a:255 underline:off} is dislayed full screen,
+which is recommended for optimal performance. The parameter
+\cmd{push_color r:255 g:255 b:0 a:255} filename \cmd{pop_color}
+specifies what file for \cmd{named_link label:qt_text_viewer target:qt_text_viewer_commandline.txt r:255 g:127 b:0 a:255 underline:off} to load and display.
+If \cmd{push_color r:255 g:255 b:0 a:255} filename \cmd{pop_color} is
+the name of a path, then a file browser will be shown, see 
+ \cmd{named_link label:directory_listing tag:directory_listing 
+target:tutorial.txt}
+Lastly, \cmd{push_color r:255 g:255 b:0 a:255} text_renderer
+\cmd{pop_color} chooses how to render text. Tests indicate
+that the "analytic AA" renderer, i.e. \cmd{push_color r:255 g:255 b:0 a:255}
+text_renderer=\cmd{color r:0 g:255 b:0 a:255}5
+\cmd{pop_color} gives good render results at reasonable performance
+even on the N900. 
+
+\n\nThe key commands are as follows: the arrow keys scroll,
+the 
+'\cmd{push_color r:255 g:0 b:255 a:255}a\cmd{pop_color}' 
+key zooms in, the 
+'\cmd{push_color r:255 g:0 b:255 a:255}s\cmd{pop_color}' 
+key zooms out, 
+the '\cmd{push_color r:255 g:0 b:255 a:255}r\cmd{pop_color}' key
+reloads the currenlty displayed page and 
+the '\cmd{push_color r:255 g:0 b:255 a:255}b\cmd{pop_color}' key
+goes back one page. Each of these key choices can be changed
+at the command line as well. A mouse press on a link
+bring up the link and the escape key quits.
+\n\n
+
+\n\nSingle touch interface is also supported.
+Scrolling is standard interface where dragging
+your finger scrolls the contents. Zoom is performed
+as follows: touch the interface but do not move
+your finger for 500ms (or more).
+At which point of time, then moving your finger down
+zooms in and moving your finger up zooms out. The pivot
+point of the zoom is where your finger was before
+zooming began. Lastly, one can initiate a zoom gesture
+directly from scrolling without lifting your finger
+from the device by having your finger station for 
+500 ms (or more), after which time, the moving the finger
+down zooms in and up zooms out. The amount of time
+for the figner to stay stationary for the zoom gesture
+to begin can be changed from the default of 500ms by
+setting zoom_time at the command line of starting qt_text_viewer.
+
+
+
+
+
+On how to create formatted text, see the \cmd{link tutorial.txt tutorial}.

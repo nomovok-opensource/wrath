@@ -1,0 +1,13 @@
+\cmd{COL 
+         count:2 
+         space:10.0
+
+         file0:../../images/1024x1024.png
+         type0:image 
+         width0:500 
+
+         file1:abbrev_revlations.wutf8
+         alignment1:left
+         type1:spill_utf8
+         width1:400
+}

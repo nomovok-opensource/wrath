@@ -1,0 +1,64 @@
+Taking advantage of GL3 features in WRATH:
+
+1) Texture Buffer Objects can be used to store per node data,
+as a side note on paper we could also use RGBA_16F and/or
+RGBA_32F for per node data too, but support for these formats
+even when advertised is often spotty on GLES2 current hardware.
+In addition, requires vertex texture fetch.
+
+2) Texture Buffer Objects can also be used in Curve Analytic
+fonts instead of normal textures.
+
+3) Uniform buffer objects: a new system for holding uniform
+data of GLSL programs. This needs to be thought about, but
+likely the best approach is that UBO slot#0 is reserved for
+the transformation system and all others are free to be used
+by the end-user developer. Interface for WRATHRawDrawData to 
+uniforms will need to be reworked.
+
+4) Geometry Shaders for drawing quads (glyphs and images).
+Potentially big savings on attribute and index data consumption.
+
+5) Using integer buffers so that clipping does not break
+batching. Essentially each clipping node "takes a bit" and
+items at a node will have a bit-mask. The clipping test
+passes if the bit-mask matches the integer buffer. That
+integer buffer is rendered first before drawing to framebuffer
+the clipping regions. Main issue with this approach is
+the large memory usage: 16 bytes/pixel to have 128 unique
+clipping nodes allowed. Upping it from 128 unique nodes
+requires another 16 bytes/pixel to have another 128 nodes.
+If resolution is like iPad3 (2Kx1K) we are talking 32MB
+for this integer buffer, ouch!
+
+6) Geometry shaders + shape drawing. A geometry shader can
+start generate anti-aliasing primitives when run. Examples:
+  caps and joins:  triangle [A, B0, B1] into T=[A, A0, A1] + Q=[A0, A1, B0,B1]
+                   where A0=point between A and B0 very near B0
+                   where A1=point between A and B1 very near B1
+                   that quad Q is to draw the "transparent" slime
+                   of the stroking. Big important part: same attribute
+                   data for each pass, but generates very different 
+                   geometry data...
+
+Vendor Specific Features:
+
+1) NVIDIA bindless for buffer object (GL_NV_shader_buffer_load) 
+is like texture buffer objects and uniform buffer objects on 
+steroids. Much more flexible and powerful.
+
+2) NVIDIA bindless for textures (GL_NV_bindless_texture) 
+removes the need for texture atlases entirely. Rumor is
+that the next TEGRA is based off of NVIDIA Kepler which has
+this extension.
+
+3) NVIDIA path rendering (GL_NV_path_rendering) Questionably
+if this is really a good idea as it is somewhat limited
+in how the transformations can be customized per glyph,
+and not clear how well it would perform for saying
+several hundred glyphs. Also, the interface is essentially 
+as follows:
+  a) draw path to stencil buffer
+  b) draw path again to color buffer with stencil test on
+
+so this kind of is not so nice :(

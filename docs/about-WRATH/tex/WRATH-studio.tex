@@ -1,0 +1,289 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\renewcommand*\familydefault{\sfdefault}
+
+\usepackage{fancyhdr}
+
+\usepackage[left=2cm,right=1cm,bottom=3.5cm,top = 2.3cm,a4paper]{geometry}
+
+\pagestyle{fancy}
+
+\usepackage{lastpage}
+
+\usepackage{datetime}
+
+\renewcommand{\dateseparator}{.}
+\newcommand{\todayiso}{\twodigit\day\dateseparator\twodigit\month\dateseparator\the\year}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage[breaklinks,pdftex,
+  pdfauthor={Kevin Rogovin},
+  pdftitle={Concept},
+  pdfsubject={WRATH Studio}]{hyperref}
+\usepackage{html}   %  *always* load this for LaTeX2HTML
+
+% Erase old header and footer
+\fancyhead{}
+\fancyfoot{}
+% Creation of the Nomovok header
+\fancyhead[C]{
+  % Remove cell padding from this tabular
+  % 6pt (2.12mm) is the regular cell padding
+  \addtolength{\tabcolsep}{-6pt}
+  {\small
+  \begin{tabular}{@{}l@{}@{}l@{}l@{}r@{}}
+    % Row 1, with Logo
+    \includegraphics[width=4.1cm]{nomovok_logo_large}&
+    &  & \thepage (\pageref{LastPage}) \\    
+    % Row 2
+    % EDIT as needed
+    N/MOBU & Architecture Concept & DRAFT &\\
+    % Row 3
+    % EDIT as needed
+    \parbox[T]{3.8cm}{CONFIDENTIAL} & WRATH Studio Concept & \todayiso &\\
+    % A phantom row to match that in the .odt -version, used here to
+    % set the column widths to match those in the .odt
+    \multicolumn{1}{p{4.47cm}}{} & 
+    \multicolumn{1}{p{6.5cm}}{} & 
+    \multicolumn{1}{p{3.84cm}}{} & 
+    \multicolumn{1}{p{3.10cm}}{}\\
+  \end{tabular}
+  }
+}
+
+\fancyfoot{
+	\centering
+	\small
+The contents of this document are Copyright \copyright~Nomovok Ltd. 2011.
+}
+
+% Some more setup for the document
+\addtolength{\headsep}{-0.5cm}
+\setlength{\headheight}{75pt}
+
+% Set header to not have a visible line
+\renewcommand{\headrulewidth}{0.0pt}
+
+% Set baselineskip to be one and a half line
+\renewcommand{\baselinestretch}{1.5}
+
+% Setting up hyperref colorings
+\hypersetup{colorlinks=true, urlcolor=blue, linkcolor=black}
+
+%Create own custom environment for indenting plain text:
+\def\indenter#1{\list{}{\leftmargin#1}\item[]}
+\let\endindenter=\endlist
+
+
+% This fixes pdflatex page size, without breaking normal latex usage
+% possibly not needed, but it never hurts to be sure.
+\usepackage{ifpdf}
+\ifpdf
+\setlength{\pdfpagewidth}{210mm}
+\setlength{\pdfpageheight}{297mm}
+\else
+\fi
+
+\hypersetup{colorlinks=true, urlcolor=blue, linkcolor=black}
+
+\begin{document}
+\begin{center}
+
+% Let's align the Title vertically
+\vspace*{105.5pt}
+% EDIT here the heading and type of document
+{\LARGE \bf WRATH Studio}\\
+{\LARGE \bf Architecture Concept}\\
+\vspace{71pt}
+
+% Creation of the title-page table
+% EDIT here the needed information
+{
+\setstretch{1.3}
+\begin{tabular}{lll}
+  &Document Code: & PAGE-????? \\ 
+  &Version: & 0.1 \\ 
+  &Date: & \todayiso \\ 
+  &Author: & Kevin Rogovin \\ 
+  &Owner: & Kevin Rogovin \\ 
+  &Approver: & - \\
+  % Again fix the widths to those in the .odt
+  \multicolumn{1}{p{3.83cm}}{} &
+  \multicolumn{1}{p{4.17cm}}{} & 
+  \multicolumn{1}{p{8.00cm}}{}\\
+\end{tabular}
+}
+
+\small
+This document and its contents are considered as confidential and are to be distributed only to Nomovok personnel. 
+Any unauthorized review, use, disclosure or distribution is prohibited. 
+
+\end{center}
+
+\newpage
+\noindent\textbf{Change History:}
+\label{sec:changelog}
+\begin{table}[h!tbp]
+  \begin{tabular}{rllll}
+    \multicolumn{1}{c}{\textbf{\textit{Version:}}}& 
+    \multicolumn{1}{c}{\textbf{\textit{Date:}}} & 
+    \multicolumn{1}{c}{\textbf{\textit{Author:}}} &
+    \multicolumn{1}{c}{\textbf{\textit{Status:}}} &
+    \multicolumn{1}{c}{\textbf{\textit{Changes made:}}}\\
+    % EDIT: Insert own lines here as version changes
+    0.1 & 2011-11-08 & Kevin Rogovin & DRAFT & Initial version \\
+    %This is just for proper widths to the tabular
+    \multicolumn{1}{p{1.8cm}}{}&
+    \multicolumn{1}{p{2.18cm}}{}&
+    \multicolumn{1}{p{3.42cm}}{}&
+    \multicolumn{1}{p{2.31cm}}{}&
+    \multicolumn{1}{p{6.2cm}}{}\\
+  \end{tabular}
+\end{table}
+
+\newpage
+
+% Use the same name for contents as .odt
+\renewcommand{\contentsname}{Table of Contents}
+% Create TOC
+{
+\singlespacing
+\tableofcontents
+}
+
+\setlength{\parindent}{0pt}
+
+\newpage
+
+% EDIT: Okay, and now starts the actual body of the document.
+
+\section{Backgroud}
+\begin{indenter}{2cm}
+
+WRATH is a performance oriented library for \textit{rendering} user interfaces. It is coded in C++ and provides developers with a C++ interface to create custom widgets and layout which are rendered by WRATH. WRATH's API is data-centric. WRATH widgets do \textit{NOT} have a paint method. Instead, widgets, at their creation, specify a GL state vector and attribute data used to draw them. With strategic use of uniform arrays (or textures possibly) within shaders and a number of other techiniques (such as texture atlasing and scalable texture font rendering), a WRATH scene will present many independently positionable widgets but only issue a handful of GL API calls to render them. 
+
+As stated before WRATH (currently) is a C++ library, as such developing user intrerfaces directly with WRATH is more time consuming that it should be. To that end we propose to create a WRATH Studio so that non-expert developers can creae rich, responsive UIs.
+
+
+\end{indenter}
+\section{Goals}
+\begin{indenter}{2cm}
+ 
+The main goal, as stated before, is to create a tool with which developers can easily create rich UIs with WRATH without needing to deal with the minutia of computing placement values of wiring animations to widgets by hand with C++ code. The tool should be competive in terms of ease of use with existing UI creation tools and allow a developer to use WRATH without needing to understand the details of how WRATH works. 
+
+The WRATH Studio should provide the following capabilities to a user:
+\begin{enumerate}
+\item Visual Creation of user interface. A user should be able to place and resize the widgets and the items within them visually. Additionally, the studion should provide a visual interface for specifying animations, examples:
+\begin{enumerate}
+\item Key frame positioning of items (rotation and position)
+\item Interpolation graphs for custom easing
+\item Gradient brushes and animated gradient brushes
+\item ``Key'' values of items that can be tweaked visiually (via sliders, knobs, etc) so that a developer can instantly see what it will look like 
+\end{enumerate}
+\item Scriptable. Provide scripting support (likely Lua and JavaScript) so that a developer can add programmable behavior to items.
+\item Reverse engineering resistant. We cannot guarantee against reverse engineering, but the studio should ``cook'' the data files to a binary form to be consumed by the WRATH library running on device. 
+\end{enumerate}
+
+The first step for creating a WRATH Studio is to first evaluate what other UI creation toolkits offer and to evaluate if Nomovok can be competive with those toolkit's UI creation tools.
+
+\end{indenter}
+\section{WRATH API's and Roadmap}
+\begin{indenter}{2cm}
+
+In this section we outline a roadmap ovewview for WRATH by API.
+\subsection{WRATH Low Level}
+\begin{indenter}{1cm}
+The WRATH Low Level API is an API targetted for the expert level developer.
+The API provides a means for a devoper to specify GL state and attribute data
+in a fashion so that the WRATH will render with minimal draw calls. To that end
+a user of WRATH Low Level API does as follows: 
+\begin{enumerate}
+\item Create a custom grahpical and positional hierarchy structure. This is achieved via creating classes implementing the WRATHCanvas and WRATHDrawGroupDrawer interfaces. These implementation will goven what clipping and transformation and other properties are supported. 
+\item Create custom shaders and specify attribute layout. These shaders and attribute layout required behavious is determined by the implementation of the WRATHCanvas and WRATHDrawGroupDrawer interfaces.
+\end{enumerate}
+\end{indenter}
+
+Again, WRATH Low Level is meant for \textit{experts} only.
+
+\subsection{WRATH Helper}
+\begin{indenter}{1cm}
+WRATH Helper provides common functionality:
+\begin{enumerate}
+\item Utility
+\begin{enumerate}
+\item Resource management (images for example)
+\item Parallelism (triple buffering state, threads and mutexes) 
+\end{enumerate} 
+\item Layout of text (i.e. formatting), including custom formatting
+\item Font handling 
+\begin{enumerate}
+\item Texture font creation (for example distance field fonts, etc)
+\item Font Config
+\item FreeType helpers 
+\end{enumerate} 
+\item Layout of items (to be written)
+\item Interpolation, sometimes called easing. A set of function to perform non-linear interpolation. (to be written)
+\item Animation (for example animating transformations) (to be written)   
+\end{enumerate}
+\end{indenter}
+
+\subsection{WRATH Widgets}
+\begin{indenter}{1cm}
+The WRATH Widget API of WRATH will provide a developer an API to create instances of widgets and to create custom compound widgets. This API will support several transformation and clipping modes:
+\begin{enumerate} 
+\item Custom2D: In the Custom2D module, different WRATHUIClipContainer (derived from WRATHCanvas) correspond to different (arbitrary) clipping and a full 4x4 transformation matrix. WRATHUIClipContainer are arranged in a hierarchy with clipping and transformation composited from parent to it's children. Widget's themselves have their own 2D transformation consisting of scaling, rotation and translation.
+
+\item Custom3D: (to be written). In the Custom3D module, different WRATHClipContainer (derived from WRATHCanvas) correspond to only different (arbitrary) clipping. WRATHClipContainer are arranged in a hierarchy with clipping composited from parent to it's children. Widget's themselves have their own 3D transformation, i.e. a 4x4 matrix.
+\end{enumerate}
+\end{indenter}
+
+In addition, the shaders for items will also include the ability to add custom functionality in a developer friendly way. Such functionality can include custom varyings, modification of position (in local widget or clip coordinates), and custom fragment processing that works with WRATH's texture atlasing (for example to allow for custom filtering, texture wrap modes, etc).
+
+The WRATH Widget layer will provide a basic set of widgets on to which a developer can create mode complicated compound widgets:
+
+\begin{enumerate} 
+\item Text Item
+\item Image Item
+\item Shape Item (to be written)
+\item Various Composite Widgets
+\begin{enumerate} 
+\item Buttons (to be written)
+\item Menus (to be written)
+\item Sliders (to be written)
+\item Hierarchical Lists (to be written)
+\item More...
+\end{enumerate} 
+\end{enumerate} 
+
+Each of these widgets will be state driven exposing an interface to set that state (for example a text item to change the text it displays, etc). 
+
+\subsection{WRATH Script}
+\begin{indenter}{1cm}
+The main goal for WRATHScript is to create a declarative language for WRATH made widgets and a binding to scriping languages for manipulating those widgets. Currently on the table are creating a binding for JavaScript using V8 and for Lua. One issue that we will need to deal with for such a scripting system is that such an engine will need to move WRATH into the realms of handling events (and passing those events to the scripting language via the items). Likely we will write a WRATH Script launcher, which will have it's own custom event handler to forward to the script engine.
+
+The following are ideas and goals for WRATHScript:
+\begin{enumerate} 
+\item WRATHScript should be well specified, for example by an EBNF grammer and implementation would be via Boost.Spirit.
+\item Getting an existing interpreter to interact with data created by WRATHScript will likely be done that for WRATHScript item methods, the actual code would be delimited by special tokens to indicate to pass the text to script interpreter (V8 or Lua). We will also need a way to bring into scope the WRATHScript data into the interpreter.
+\end{enumerate} 
+\end{indenter}
+
+\subsection{WRATH Studio}
+\begin{indenter}{1cm}
+The WRATH Studio will be the end-user tool to develope UI's using WRATH. The Studio should allow for a developer to:
+\begin{enumerate}
+\item customize visually widget appearance,
+\item create new custom compound widgets, 
+\item customize visually widget animations and
+\item wire code (be it C++ or scripting code) to widget events
+\end{enumerate}
+\end{indenter}
+
+
+\end{indenter}
+\end{document}

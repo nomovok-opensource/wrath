@@ -1,0 +1,63 @@
+/*! 
+ * \file widgets.doxy
+ * \brief file widgets.doxy
+ * 
+ * Copyright 2013 by Nomovok Ltd.
+ * 
+ * Contact: info@nomovok.com
+ * 
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with
+ * this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ * 
+ * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
+ * 
+ */
+
+
+
+/*! \addtogroup Widgets
+  In WRATH, a widget is the composite of node and an item.
+  Recall that an item in WRATH does not know "what
+  transformation" is applied to its contents.
+  That transformation is encoded by a node type,
+  for example classes derived from \ref WRATHLayerItemNodeBase.
+  A widget is an object type publically deriving from
+  the item type it wraps and (essentially) the node type
+  that specifies the transformation applied to the widget.
+  The widget types provide a constructor that will
+  correctly fill the arguments to the item type
+  constructor so that the node transformation of the
+  widget is applied to the item of the widget.
+  In addition, since widget types inherit from their
+  underlying node type, then they also inherit whatever
+  hierarchy type of the node type in terms of parenting
+  and deconstruction.
+
+  The template class \ref WRATHGenericWidget provides
+  a simple way for user created item types to generate
+  widget types.
+
+  The template class \ref WRATHFamily defines a
+  variety of widget and widget handle types
+  from a node type for built in items in 
+  WRATH coming from the \ref Items module. 
+  The template class \ref WRATHFamilySet 
+  provides a means for generating common
+  augmented node types from transformation
+  node types. In addition, it also provides
+  typedefs mapping to \ref WRATHFamily
+  for these augmented node types.
+
+  Lastly, \ref WRATHWidgetGenerator and 
+  \ref WRATHWidgetGeneratorT build from
+  \ref WRATHFamilySet to provide an
+  imperative-like interface to create
+  widgets.
+   
+*/
+
+
+#error "Include of " __FILE __ " which is a documentation files"

@@ -1,0 +1,115 @@
+# toolchain
+CC ?= gcc
+CXX ?= g++
+LINK = $(CXX)
+SHADERCC=shell_scripts/create_cpp_hpp_from_file.sh
+
+# Use boost::locale, requires boost version atleast 1.48.0 
+# 0=Dont use boost::locale
+# 1=Use boost::locale
+USE_BOOST_LOCALE ?=0
+
+# Use atomic ops for reference counting
+# 0= use mutex for the reference count
+# 1= use atomic ops for reference coutned objects
+USE_ATOMIC_OPS_REF_COUNTING ?=1
+
+# GL_VERSION
+#  2 = GLES2 or OpenGL 2.x
+#  3 = GLES3 or OpenGL 3.x Core
+#  4 = GLES4(when it appears) or OpenGL 4.x Core
+GL_VERSION=2
+
+# GL type
+# 0 = GLES
+# 1 = GL
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# GL type is autodetected on arm.
+# If you want to override it,
+# uncomment one of the lines below
+# or set the same variable in environment
+# or make parameters.
+# Example: make all OVERRIDE_GL_TYPE=1
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+# OVERRIDE_GL_TYPE=0  # for GLES
+# OVERRIDE_GL_TYPE=1  # for desktop GL
+
+GL_TYPE=1
+ifeq ($(findstring arm,$(shell uname -m)),arm)
+GL_TYPE=0
+endif
+
+
+
+ifneq ($(origin OVERRIDE_GL_TYPE),undefined)
+GL_TYPE = $(OVERRIDE_GL_TYPE)
+else
+ifeq ($(GL_TYPE),0)
+$(warning !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!)
+$(warning GL MODE HAS BEEN AUTODETECTED TO GLES)
+$(warning IF YOU WISH TO OVERRIDE THIS SELECTION,)
+$(warning SET 'OVERRIDE_GL_TYPE' IN Makefile)
+$(warning OR MAKE PARAMETERS OR THE ENVIRONMENT.)
+$(warning SEE Makefile FOR DETAILS.)
+$(warning !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!)
+endif
+endif
+
+# flags
+WARN_FLAGS = -Wall -Wextra -Wcast-qual -Wwrite-strings
+FREETYPE_CXXFLAGS = `freetype-config --cflags`
+FREETYPE_LDFLAGS = `freetype-config --libs`
+WRATHLIB_LDFLAGS = $(FREETYPE_LDFLAGS) -lpthread -lfontconfig -ldl
+
+# Flags for libraries, common to everything
+LIBRARY_CXXFLAGS =  $(FREETYPE_CXXFLAGS)
+
+ifeq ($(USE_BOOST_LOCALE), 1)
+WRATHLIB_LDFLAGS+= -lboost_locale
+LIBRARY_CXXFLAGS+= -DWRATH_USE_BOOST_LOCALE
+endif
+
+# Work around a build environment bug
+ifeq ($(findstring arm,$(shell uname -m)),arm)
+WRATHLIB_LDFLAGS += -lgcc
+endif
+
+ifeq ($(USE_ATOMIC_OPS_REF_COUNTING), 0)
+LIBRARY_CXXFLAGS+= -DWRATH_DISABLE_ATOMICS
+endif
+
+ifeq ($(GL_TYPE),1)
+  DEFINE_FLAGS += -DWRATH_GL_VERSION=$(GL_VERSION)
+  NGL = ngl_gl
+else
+  DEFINE_FLAGS += -DWRATH_GLES_VERSION=$(GL_VERSION)
+  ifeq ($(GL_VERSION),2)
+    NGL = ngl_gles2
+    WRATHLIB_LDFLAGS += -lGLESv2
+  else
+    NGL = ngl_gles3
+    WRATHLIB_LDFLAGS += -lGLESv3
+  endif
+  WRATHLIB_LDFLAGS += -lEGL
+endif
+
+# Dependency generation will use $(CPPFLAGS)
+# Compiling will use $(CPPFLAGS) $(CXXFLAGS) $(CXXFLAGS_{RELEASE,DEBUG})
+# Linking will use $(LDFLAGS)
+# Target-specific rules will += to those variables
+
+# Note that $(INCLUDES) is expanded when CPPFLAGS is, so the value of
+# $(INCLUDES) at this point doesn't mean anything. Pedantically, this
+# should only have $(DEFINE_FLAGS) and $(INCLUDES) but
+# $(LIBRARY_CXXFLAGS) is there because it might contain -I flags.
+CPPFLAGS = $(DEFINE_FLAGS) $(INCLUDES) $(LIBRARY_CXXFLAGS)
+
+CXXFLAGS = $(WARN_FLAGS)
+CXXFLAGS_RELEASE = -O3 -DNDEBUG -g
+CXXFLAGS_DEBUG = -g
+
+# Common $(LDFLAGS) (lib and demos) contains all libraries
+# wrath lib also links to, intentionally.
+LDFLAGS = $(WRATHLIB_LDFLAGS)

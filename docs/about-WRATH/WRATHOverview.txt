@@ -1,0 +1,90 @@
+Kevin Rogovin
+Nomovok
+
+
+WRATH Overview
+---------------------------
+
+The main purpose of WRATH is to provide a means
+to draw UI's quickly with OpenGL. The main 
+difference between UI rendering and 3D rendering
+from the point of view using OpenGL is that
+in UI rendering there are many elements with
+few triangles each where as in 3D rendering there
+are fewer elements with many triangles each.
+Tests on several devices (N900, U8500 HREF)
+indicate that the CPU overhead of GL draw calls
+becomes an issue once the number of calls exceeds
+100 per frame. The aim of WRATH is to provide a 
+means to draw many UI elements with very few
+calls. 
+
+Another difference between UI and 3D rendering
+is that the shaders for UI use very few uniforms.
+The strategy that WRATH takes is that the transformations
+for UI elements are packed into uniforms so that
+many UI elements can be drawn with one call. The
+depth test is used to that opaque UI elements can 
+be drawn in any order. Creating a WRATH UI drawn element
+can be described as follows:
+
+ 1) Generate a draw key. A draw key consists
+of how the UI element is drawn (shader, GL state
+and attribute format). 
+
+ 2) Request a "draw group" with the key generated
+in the previous step. 
+
+ 3) Allocate attribute and index memory from the 
+draw group, then set the values as appropriate.
+
+In most cases, a UI element has a transformation
+attached to it. Here is where step (2) is not
+trivial. A draw group tracks what transformations
+it is supporting, and as there is limited room for
+uniforms a draw group can only support so many 
+transformations simultaneously. When a draw group
+is requested, the UI element passes an ID 
+(implemented as the pointer of the transformation)
+and the returned draw group handle gives the index
+into the uniform array of where the transformation
+will be stored.
+
+Comments: In OpenGL3 and up, one can use texture
+buffer objects to pack the transformation data
+(and other per UI data). As such, there is no
+_practical_ limit on the number of UI elements
+a fixed draw group could handle. The shift to 
+OpenGL3 will simplify the code of WRATH and increase
+it's performance. OpenGL ES2 specifies that a
+vertex shader must support atleast 256 vec4
+uniforms. If a UI transformation is purely
+a planar rotation, scaling and translation,
+that transformation can be packed into a vec4.
+Clipping information (i.e to draw or not to draw)
+requires another float, which becomes a vec4.
+Hence under GLES2, one draw group can serve atleast
+100 UI elements (more specifically can server
+atleast 100 distinct transformations and clipping).
+If the transformation is as in Qt, a 3x3 matrix,
+we can pack those numbers into 3 vec4's. Taking
+a step further, as the depth value is used to 
+indicate UI drawing order, we can have "generic"
+full 3D transformations realized by 3 vec4's.
+Moreover, if we tactically assume that the .w()
+of the position of a vertex is always 1 (which
+is a practical assumption if we have .xyz), then
+we can set the uniform so that clip.w=-1.0 always
+if we wish to clip an element. With this in mind,
+under GLES2, then we can expect that one draw group
+can serve 80 distinct UI transformations.
+
+
+
+Requirements: The architecture of WRATH requires 
+programmable hardware, thus  OpenGL ES1 and 
+OpenGL 1.x are not suitable. Currently, 
+OpenGL ES2 and OpenGL 2.x, 3.x and 4.x 
+are supported.
+
+

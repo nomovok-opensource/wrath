@@ -1,0 +1,4 @@
+*.o
+Makefile
+moc_*
+qpainter_image_demo

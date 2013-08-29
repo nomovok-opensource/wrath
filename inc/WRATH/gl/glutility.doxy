@@ -1,0 +1,60 @@
+/*! 
+ * \file glutility.doxy
+ * \brief file glutility.doxy
+ * 
+ * Copyright 2013 by Nomovok Ltd.
+ * 
+ * Contact: info@nomovok.com
+ * 
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with
+ * this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ * 
+ * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
+ * 
+ */
+
+
+/*! \addtogroup GLUtility
+
+ The GLUtility module provides an interface for WRATH to issue GL commands. WRATH breaks
+ GL state into:
+ - GL Program uniform state (see \ref WRATHUniformData), i.e. the values to use for
+ uniforms in GLSL code,
+ - buffer object binding (see \ref WRATHBufferBindingPoint),
+ - texture bindings (see \ref WRATHTextureChoice) and
+ - general GL state (see \ref WRATHGLStateChange).
+
+ In addition, WRATH provides an interface to define and create various
+ GL objects:
+ - buffer objects (\ref WRATHBufferObject and \ref WRATHBufferAllocator),
+ - GL shaders (\ref WRATHGLShader and \ref WRATHShaderSourceResource)
+ - GL programs (\ref WRATHGLProgram and its supporting classes:
+   \ref WRATHGLPreLinkAction, \ref WRATHGLBindAttribute, 
+   \ref WRATHGLPreLinkActionArray,
+   \ref WRATHGLProgramInitializer, \ref WRATHGLProgramInitializerArray
+   \ref WRATHGLUniformInitializer, 
+   \ref WRATHGLProgramOnBindAction and \ref WRATHGLProgramOnBindActionArray)
+
+ Lastly GLUtility module provides
+ - GL query overload: \ref WRATHglGet
+ - GL extension query: \ref WRATHGLExtensionList
+ - GL state stack: \ref WRATHGLStateStack
+ - Conveniance overloads for setting uniforms: \ref WRATHglUniform
+ - GL type traits for types: \ref opengl_trait, \ref opengl_trait_value and \ref WRATHInterleavedAttributes
+
+ In addition WRATH provides for GL debugging though the ngl system, see \ref GL_DEBUG
+ for details.
+
+*/
+
+/*
+  Add these defines to glutility.doxy to make
+  Doxygen processing know about them
+*/
+#define WRATH_REMOVE_PRECISION_QUALIFIERS
+#define WRATH_TEGRA_PREC_HACK
+
+#error "Include of " __FILE __ " which is a documentation files"

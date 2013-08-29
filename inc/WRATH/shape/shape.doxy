@@ -1,0 +1,82 @@
+/*! 
+ * \file shape.doxy
+ * \brief file shape.doxy
+ * 
+ * Copyright 2013 by Nomovok Ltd.
+ * 
+ * Contact: info@nomovok.com
+ * 
+ * This Source Code Form is subject to the
+ * terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with
+ * this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ * 
+ * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
+ * 
+ */
+
+
+
+/*! \addtogroup Shape
+ The WRATHShape API offers a set of classes that allow you 
+ to speicfy curves in 2D. These curves can then be filled
+ and stroked.
+
+ The following classes are important to understand it's use:
+
+ \section sec1 Classes that define the geometry of the shape:
+ -# WRATHShape
+ A WRATHShape is a description of a contour of a shape.
+ Is composed of a set of WRATHOutline objects.
+ -# WRATHOutline
+ is composed of a set of WRATHOutline::point values. 
+ -# WRATHOutline::point
+ is defined by a
+    - 2D coordinate (i.e vecN<T,2>)
+    - WRATHOutline::Interpolator
+ -# WRATHOutline::Interpolator
+ defines how to between the current point and the next point. For the last
+ point of a WRATHOutline it describes how to interpolate from the last
+ point to the fist point and is only used. In particular a WRATHOutline
+ does not need to be made (and should not be made) to be explicitely closed
+ by repeating the first point at the end.
+     There are 2 predefined interpolator classes:
+        - WRATHOutline::BezierInterpolator
+        - WRATHOutline::ArcInterpolator
+
+     Finally The WRATHOutline::GenericInterpolator class allows you to define your own
+     custom interpolators
+
+ \section sec2 Classes that generate attribute data for the shape
+   
+ -# Payload classes:
+    Payload classes take the raw geometric information of a WRATHShape and
+    compute more detailed geometry data. This data is usually the "heavy"
+    step for filling and stroking shapes. The payloads themselves are
+    reference counted object AND a WRATHShape stores a handle to one payload per
+    payload type, see WRATHShape::fetch_payload() and WRATHShape::fetch_matching_payload()
+    - WRATHShapeSimpleTessellatorPayload for tessellating the contour defined by a WRATHShape
+    - WRATHShapePreStrokerPayload for holding data to stroke 
+    - WRATHShapeTriangulatorPayload for holding data to fill
+ -# Attribute Packers
+    Pack the data generated in a payload class into the underlying attribute
+    stores. They themselves rely on the payloads to generate the attribute data.
+    - WRATHDefaultStrokeAttributePackerT for stroked shapes 
+    (also see \ref WRATHDefaultStrokeAttributePacker, \ref WRATHGenericStrokeAttributePacker
+    and \ref WRATHDynamicStrokeAttributePacker)
+    - WRATHDefaultFillShapeAttributePackerT for filled shapes (also see \ref WRATHDefaultFillShapeAttributePacker)
+
+ The Shape module provides a set of shaders with which to draw 
+ shapes \ref WRATHDefaultShapeShader
+ 
+ Lastly, the Shape module provides utility functions and classes:
+ - Triangulation: \ref WRATHTessGLU (maps to GLU tessellator) and \ref WRATHTriangulation
+ - Distance field creation: WRATHShapeGPUDistanceFieldCreator
+ 
+ See \ref shape_example for an example of  defining a WRATHShape
+ and creating WRATHShapeWidget objects using it.
+ */
+
+
+#error "Include of " __FILE __ " which is a documentation files"

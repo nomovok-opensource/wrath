@@ -1,0 +1,115 @@
+Kevin Rogovin
+March 9, 2011
+Nomovok
+UI Rendering Library
+
+
+Wrath: Nomovok UI Rendering Library
+--------------------------------------------------
+
+Please refer also to "WebBrowsers, QML and GL",
+section "Using the OpenGL API family".
+
+
+I have proposed 2 distinct projects on using 
+OpenGL effectively to render UIs: one as a
+fork of WebKit and another as a QML rendering
+backend. Mika Reinikainen floated the possibility
+of doing both at the same. At first I was horribly
+concerned, but both projects can share a great 
+deal of implementation (potentially).
+
+I propose making a closed source rendering library,
+which I shall call WRATH whose only purpose is to
+render UI's. It is NOT to handle events, it is ONLY
+to handle the actual raw drawing of a UI.
+
+There are multiple motivations for making a dedicated
+UI rendering library. Firstly let us address WebKit.
+The licensing of WebKit is not straightforward. Indeed,
+the API layer, WebKit, is BSD style where as the
+actual rendering, a part of WebCore, appears to be LGPL. 
+The plan of attack is as follows:
+  
+(1)  We advertise WRATH as a Nomovok only feature, but make
+     public the API. We view the library as a system library
+     which is closed source (such as Microsoft's GDI, Apple's
+     Quartz, QuickDraw and CoreGraphics API's.)
+
+(2)  We modify the the WebCore rendering to use the Nomovok
+     API: this involves *work* but now the high end browser
+     becomes an example of using the WRATH renderer.
+
+
+In regards to a QML backend. Referring to section
+"Using the OpenGL API family" of "WebBrowsers, QML and GL",
+for STE's U8500 we find that the number of draw calls
+possible per frame is around 100 draw calls, higher numbers
+begin to have a heavy CPU load so that once there are
+more than 100 draw calls per frame (about), one cannot
+achieve 60Hz. Additional testing on the N900 show that
+past 100 draw calls, the performance suffers again:
+
+#images     #images_per_call   #draw_calls  time_in_ms(lower is better)  FramesPerSecond (higher is better)
+1000		  1		1001		351.619 ms			 2.8440 FPS
+1000		  2		 501		168.611 ms			 5.9308 FPS		
+1000		  5		 201		 85.605 ms			11.6816 FPS		 		
+1000		 10		 101		 54.539 ms			18.3355 FPS
+1000		 20	          51		 38.466 ms			25.9971 FPS	 
+1000		 50               21 		 34.317 ms    			29.1400 FPS     
+1000		100               11		 33.776 ms 			29.6067 FPS
+
+
+Though the N900 is no where near the performance as the U8500,
+we see from the above numbers that already at 50 draw calls 
+the CPU load becomes a minor issue and at over 100 draw calls, 
+performance is at 63% the performance of 20 draw calls, 
+a loss of one third of performance.
+
+The current implementation of QML Scene Graph, (roughly)
+makes one draw call per UI item. Here a UI item corresponds
+to a chuck of text, a rectangle, or an image, etc. Note that
+a "button" consists of multiple items: an image, text and
+possibly a border. I talked with Kaj Gronholm, he thinks that 
+currently SteelRat does not get above 100 items (this
+is a guess!). Performance is good on Renesas AP4 (at 32-37FPS) 
+and poor under Freescale i.MX51 (the culprit is likely poor 
+GL drivers).
+
+Another issue is that QML Scene Graph is
+a part of Qt 4.8.0 and it's API is still unstable. 
+
+My recommendations: 
+ (1) Run SteelRat on target hardware [this needs to be
+defined!].
+
+ (2) if the performance is consistently above 30FPS, then
+we can delay QML backend. I am NOT saying never do a
+QML backend, but it can likely be delayed until Qt 4.8.0
+is API stable.
+
+
+We will likely need to implement a QML backend once
+we wish to make richer more complicated UI's, then
+the need for a Nomovok custom QML backend comes into
+play. 
+
+Making the custom QML backend will likely NOT require
+a commercial Qt license either. Indeed, just as in the
+WebKit case, we make the backend map to WRATH as an
+example of how great WRATH is.
+
+Lastly, and this is the most critical point: the rendering
+technique of drawing multiple items per draw call reduces 
+_CPU_ load. If the CPU is very fast and the GPU is very
+slow, then WRATH will not help. However, the trend has been
+that the GPU's get faster at rate faster than the CPUs get
+faster. This is the case on the desktop SEVERELY. The number
+of draw calls roughly scales with the CPU speed, but the GPU's 
+performance has risen much faster. 
+
+ 
+
+ 
+
+

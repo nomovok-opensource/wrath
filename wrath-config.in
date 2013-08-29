@@ -1,0 +1,79 @@
+#!/bin/sh -e
+
+@AUTOGENWARNING@
+
+# This script is used for printing command line flags for compiling
+# and linking software that uses WRATH without "installing" it to
+# system directories (pkg-config will be used for that).
+#
+# Usage: The environment variable WRATH_SOURCES must be set and point
+# to the root directory of WRATH sources.
+#
+#   --release | --debug     Select release or debug build (default: release)
+#   --dynamic | --static    Select dynamic or static linking (default: dynamic)
+#                           Caveat: Runtime linking the dynamic library requires
+#                           correctly set LD_LIBRARY_PATH
+#   --cflags                Print the required command line flags for compiling
+#   --libs                  Print the required command line flags for linking
+
+if [ ! -d "$WRATH_SOURCES" ]; then
+   echo WRATH_SOURCES not set >&2
+   exit 1
+fi
+
+if ! options=$(getopt -o- -l release,debug,cflags,libs,static,dynamic -- "$@"); then
+    # getopt already printed an error message
+    exit 1
+fi
+
+eval set -- "$options"
+
+MODE=release
+PRINTCFLAGS=0
+PRINTLIBS=0
+LINKDYN=1
+
+while true; do
+    case "$1" in
+	--release ) MODE=release; shift ;;
+	--debug ) MODE=debug; shift ;;
+	--cflags ) PRINTCFLAGS=1; shift ;;
+	--libs ) PRINTLIBS=1; shift ;;
+	--static ) LINKDYN=0; shift ;;
+	--dynamic ) LINKDYN=1; shift ;;
+	-- ) shift; break ;;
+	* ) break ;;
+    esac
+done
+
+INCLUDES="@INCLUDES@"
+EXTRACFLAGS="@EXTRACFLAGS@"
+RELEASECFLAG=
+if [ "$MODE" = "release" ]; then
+    RELEASECFLAG=-DWRATHRELEASE
+fi
+
+if [ "$PRINTCFLAGS" = "1" ]; then
+    echo $INCLUDES $EXTRACFLAGS $RELEASECFLAG
+fi
+
+LDFLAGS_RELEASE_DYNAMIC="@LDFLAGS_RELEASE_DYNAMIC@"
+LDFLAGS_DEBUG_DYNAMIC="@LDFLAGS_DEBUG_DYNAMIC@"
+LDFLAGS_RELEASE_STATIC="@LDFLAGS_RELEASE_STATIC@"
+LDFLAGS_DEBUG_STATIC="@LDFLAGS_DEBUG_STATIC@"
+
+if [ "$PRINTLIBS" = "1" ]; then
+    if [ "$MODE" = "release" ]; then
+	if [ "$LINKDYN" = "1" ]; then
+	    echo $LDFLAGS_RELEASE_DYNAMIC
+	else
+	    echo $LDFLAGS_RELEASE_STATIC
+	fi
+    else
+	if [ "$LINKDYN" = "1" ]; then
+	    echo $LDFLAGS_DEBUG_DYNAMIC
+	else
+	    echo $LDFLAGS_DEBUG_STATIC
+	fi
+    fi
+fi

@@ -1,0 +1,1 @@
+The GLU tessellator found in WRATH has been modified from the original sources, see the header inc/3rd_party/wrath-glu-tess/wrath-glu-tess.hpp for details.

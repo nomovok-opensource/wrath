@@ -1,0 +1,5 @@
+\cmd{link revel_red.txt}
+\cmd{color r:100 g:255 b:100}
+\cmd{PP raw:true}
+\cmd{include_raw_utf8 revelation.wutf8}
+\cmd{bgcolor r:00 g:0 b:0}

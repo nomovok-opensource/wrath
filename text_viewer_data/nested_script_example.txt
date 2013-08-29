@@ -1,0 +1,3 @@
+
+base\cmd{begin_super_script}super\cmd{begin_sub_script}sub-of-super
+\cmd{end_sub_script}\cmd{end_super_script}

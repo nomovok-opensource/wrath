@@ -1,0 +1,73 @@
+Kevin Rogovin
+March 2, 2011
+Nomovok
+BrowserRenderGL
+
+Disclaimer: time requirements are at best horrible rough guesses!
+Stage 1 is a MUST and MUST be done reasonably well.
+
+
+WebBrowser Rendering via GL proposal.
+
+Stage 1: Planning and Checking
+ Time: 8 weeks (approximately) 
+ People: 2-3
+
+Investigate and document what how the classes 
+defined in WebCore/rendering/ render. 
+
+Several issues to know that affect rendering
+strategy:
+ 1) Amount of clipping nodes, i.e. how often does clipping change?
+ 2) Number of types of objects to render?
+ 3) Compositing, i.e. transparency?
+   
+ At the end of the Stage1, we will know how much man power
+is needed to execute this (and for that matter if it is 
+reasonable to execute this).
+
+ Preferred Personal:
+  Kevin Rogovin (requirement)
+  Petri Latvala (GL knowledge, familiarity with WebKit from previous projects, excellent developer, theoretical leanings).
+
+ 
+Stage 2: Implementation Phase A.
+ People: 3-5 people (likely, but ont known until Stage 1 is done)
+ Time: 16-32 weeks (not known until Stage 1 is done)
+  
+ Implement enough so that most web pages are viewable, 
+ we will NOT initially support:
+   1) Apples's 3D transformations
+   2) SVG 
+   3) Movies ala HTML5
+   4) WebGL
+   5) Plugins
+i.e. render side of "HTML5" and all plugins will not be in the initial release
+
+Stage 3: Implementation Phase B.
+
+  Except for "Apples's 3D transformations", each of those elements
+skipped in Stage 2 can be added:
+
+   1) WebGL --> use GL framebuffer objects
+   2) Movies ---> OMAX + render to EGL_image and/or hardware specific code OR gstreamer + EGL_image sink extension(s).
+   3) SVG is not clear until code of WebKit is closely investigated.
+   4) 3D transformations is a bit of a wild card. The core issue is how many
+many times "clipping" is changed in WebKit. If not often then we can use a 
+stencil technique to achieve clipping, this stencil technique will work 
+seamlessly with 3D transformations. If clipping is changed often then the
+stencil technique can be a bad idea for performance, and other clipping techniques
+I have in mind do not work with 3D transformations. 
+   5) Canvas2D: use QGLFramebufferObject and QPainter. An issue on how
+it behaves on zoom needs to be addressed. Note that Canvas will perform
+poorly anyways.
+   6) Other HTML5 bits: case by case basis.
+   7) Plugins are going to be problematic. In a best case scenario, a plugin
+redirects all it's rendering to something which can be mapped to an EGL_Image
+which in turn can be used as a source for a GL texture. Under X11, that something
+is an X11 Pixmap. Likely we will still have issues in getting the programming
+bureaucracy correct. Too early to tell what will happen and how. 
+
+
+
+
