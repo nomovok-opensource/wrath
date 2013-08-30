@@ -23,12 +23,12 @@ shader_in mediump vec4 clipping_via_discard;
 #endif
 
 /*
-  Note: since the depth buffer was set in the previous pass,
-  we can then avoid the discard pain in the case of
-  WRATH_POST_DEPTH_COLOR_ONLY_DRAW
+  Note: in the case of WRATH_COVER_DRAW,
+  the depth or stencil buffer was set 
+  in the previous pass, thus we can then 
+  avoid the discard 
  */
-
-#if defined(CLIP_VIA_DISCARD) && !defined(WRATH_POST_DEPTH_COLOR_ONLY_DRAW)
+#if defined(CLIP_VIA_DISCARD) && !defined(WRATH_COVER_DRAW)
 #define CLIPPING_USES_DISCARD
 
 void

@@ -27,8 +27,9 @@ namespace
   {
   public:
 
-    WRATHMultiGLProgram::Selector m_depth_only;
-    WRATHMultiGLProgram::Selector m_color_only;
+    WRATHMultiGLProgram::Selector m_selector_non_color_draw;
+    WRATHMultiGLProgram::Selector m_selector_color_draw_cover;
+    WRATHMultiGLProgram::Selector m_selector_non_color_draw_cover;
 
     static
     BaseItemSelectorHoard&
@@ -41,10 +42,13 @@ namespace
 
   private:
     BaseItemSelectorHoard(void):
-      m_depth_only(WRATHMultiGLProgram::macro_collection()
-                   .add_macro("WRATH_DEPTH_STENCIL_ONLY_DRAW")),
-      m_color_only(WRATHMultiGLProgram::macro_collection()
-                   .add_macro("WRATH_POST_DEPTH_COLOR_ONLY_DRAW"))
+      m_selector_non_color_draw(WRATHMultiGLProgram::macro_collection()
+                                .add_macro("WRATH_NON_COLOR_DRAW")),
+      m_selector_color_draw_cover(WRATHMultiGLProgram::macro_collection()
+                                  .add_macro("WRATH_COVER_DRAW")),
+      m_selector_non_color_draw_cover(WRATHMultiGLProgram::macro_collection()
+                                      .add_macro("WRATH_NON_COLOR_DRAW")
+                                      .add_macro("WRATH_COVER_DRAW"))
       
                    
     {}
@@ -54,22 +58,34 @@ namespace
 
 WRATHMultiGLProgram::Selector
 WRATHBaseItem::
-selector_color_depth_draw(void)
+selector_draw(void)
 {
   return WRATHMultiGLProgram::Selector();
 }
 
+
+
 WRATHMultiGLProgram::Selector
 WRATHBaseItem::
-selector_depth_stenicl_only_draw(void)
+selector_non_color_draw(void)
 {
-  return BaseItemSelectorHoard::hoard().m_depth_only;
+  return BaseItemSelectorHoard::hoard().m_selector_non_color_draw;
 }
 
 
+
 WRATHMultiGLProgram::Selector
 WRATHBaseItem::
-selector_color_post_draw(void)
+selector_color_draw_cover(void)
 {
-  return BaseItemSelectorHoard::hoard().m_color_only;
+  return BaseItemSelectorHoard::hoard().m_selector_color_draw_cover;
+}
+
+
+
+WRATHMultiGLProgram::Selector
+WRATHBaseItem::
+selector_non_color_draw_cover(void)
+{
+  return BaseItemSelectorHoard::hoard().m_selector_non_color_draw_cover;
 }

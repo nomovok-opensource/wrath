@@ -19,7 +19,7 @@
 
 /*
   TODO:
-  - integrate WRATH_DEPTH_STENCIL_ONLY_DRAW 
+  - integrate WRATH_NON_COLOR_DRAW and WRATH_COVER_DRAW
  */
 
 

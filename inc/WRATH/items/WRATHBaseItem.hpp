@@ -104,38 +104,49 @@ public:
   void
   canvas_base(WRATHCanvas *c)=0;
 
-  /*!\fn WRATHMultiGLProgram::Selector selector_color_depth_draw
+  /*!\fn WRATHMultiGLProgram::Selector selector_draw
     WRATHMultiGLProgram::Selector for "normal" item drawing:
     drawing to depth and color buffer. Does not define
     any additional macros.
    */
   static
   WRATHMultiGLProgram::Selector 
-  selector_color_depth_draw(void);
+  selector_draw(void);
 
-  /*!\fn WRATHMultiGLProgram::Selector selector_depth_stenicl_only_draw
-    WRATHMultiGLProgram::Selector for depth and/or
-    stencil drawing. Color buffer writes are not performed.
-    Defines the macro WRATH_DEPTH_STENCIL_ONLY_DRAW.
+  /*!\fn WRATHMultiGLProgram::Selector selector_non_color_draw
+    WRATHMultiGLProgram::Selector for drawing with color
+    buffer masked out. Defines the macro WRATH_NON_COLOR_DRAW.
    */
   static
   WRATHMultiGLProgram::Selector
-  selector_depth_stenicl_only_draw(void);
+  selector_non_color_draw(void);
 
-  /*!\fn WRATHMultiGLProgram::Selector selector_color_post_draw
-    WRATHMultiGLProgram::Selector for color only
-    writes after a depth only pass. This is used 
-    for drawing where the z-value is layed down 
-    first followed by drawing to the color buffer.
-    In this drawing case, if a shader uses discard
-    to avoid drawing it can skip that check in this
-    mode since the depth buffer is already correct
-    from a previous draw.
-    Defines the macro WRATH_POST_DEPTH_COLOR_ONLY_DRAW.
+  /*!\fn WRATHMultiGLProgram::Selector selector_color_draw_cover
+    WRATHMultiGLProgram::Selector for color only drawing
+    where a previous draw pass set the depth values
+    already (by drawing with \ref selector_non_color_draw()).
+    In particular, if a fragment shader issues discard
+    for normal drawing it should not for this drawing
+    phase and should only compute a color value.
+    Defines the macro WRATH_COVER_DRAW.
    */
   static
   WRATHMultiGLProgram::Selector
-  selector_color_post_draw(void);
+  selector_color_draw_cover(void);
+
+  /*!\fn WRATHMultiGLProgram::Selector selector_non_color_draw_cover
+    WRATHMultiGLProgram::Selector for when color buffer
+    is masked out AND a previous draw pass already set
+    the depth and/or stencil values to the buffer and
+    relies on the depth and/or stencil test for coverage.
+    Thus the fragment shader should do essentially nothing
+    and the vertex shader just needs to make sure it emits
+    vertices for primitives that cover. Defines
+    the macros WRATH_NON_COLOR_DRAW and WRATH_COVER_DRAW
+   */
+  static
+  WRATHMultiGLProgram::Selector
+  selector_non_color_draw_cover(void);
 
 private:
   signal_t m_dtor_signal;

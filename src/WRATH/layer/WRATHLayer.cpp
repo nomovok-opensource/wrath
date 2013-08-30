@@ -778,7 +778,7 @@ draw_implement(const float4x4 *pre_modelview_matrix,
       glEnable(GL_DEPTH_TEST);
       glDepthFunc(GL_LESS);
       disable_color_buffer_write(gl_state);
-      gl_state.selector(WRATHBaseItem::selector_depth_stenicl_only_draw());
+      gl_state.selector(WRATHBaseItem::selector_non_color_draw());
       draw_render_items(gl_state, render_raw_datas(WRATHDrawType::clip_outside_draw) );
       gl_state.flush_draws();
     }
@@ -847,7 +847,7 @@ draw_content_pre_children(WRATHRawDrawData::DrawState &gl_state)
 
   glDisable(GL_BLEND);
 
-  gl_state.selector(WRATHBaseItem::selector_color_depth_draw());
+  gl_state.selector(WRATHBaseItem::selector_draw());
   draw_render_items(gl_state, render_raw_datas(WRATHDrawType::opaque_draw));
   gl_state.flush_draws();
 }
@@ -878,7 +878,7 @@ draw_content_post_children(WRATHRawDrawData::DrawState &gl_state)
   glDepthFunc(GL_LESS);
   glEnable(GL_BLEND);
 
-  gl_state.selector(WRATHBaseItem::selector_color_depth_draw());
+  gl_state.selector(WRATHBaseItem::selector_draw());
   draw_render_items(gl_state, render_raw_datas(WRATHDrawType::transparent_draw));
   gl_state.flush_draws();
 }
@@ -922,7 +922,7 @@ push_clipped_in_items(draw_state &state_stack, bool &have_clip_items,
       glDepthFunc(GL_ALWAYS);
 
       glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
-      gl_state.selector(WRATHBaseItem::selector_depth_stenicl_only_draw());
+      gl_state.selector(WRATHBaseItem::selector_non_color_draw());
       for(;i!=e; ++i)
         {
           i->second->draw(gl_state);
@@ -969,7 +969,7 @@ pop_clipped_in_items(draw_state &state_stack, bool have_clip_items,
       glDepthFunc(GL_ALWAYS);
       glDepthMask(GL_FALSE);
 
-      gl_state.selector(WRATHBaseItem::selector_depth_stenicl_only_draw());
+      gl_state.selector(WRATHBaseItem::selector_non_color_draw_cover());
       draw_render_items(gl_state, render_raw_datas(WRATHDrawType::clip_inside_draw));
       gl_state.flush_draws();
 

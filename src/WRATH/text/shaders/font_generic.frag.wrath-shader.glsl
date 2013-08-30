@@ -17,23 +17,24 @@
  */
 
 
-
-
-
 shader_in mediump vec4 tex_color;
 
 void
 shader_main(void)
 {
-  #if defined(APPLY_BRUSH_RELATIVE_TO_LETTER) || defined(APPLY_BRUSH_RELATIVE_TO_ITEM)
+  #if !defined(WRATH_NON_COLOR_DRAW)
   {
-    tex_color*=wrath_shader_brush_color();
+    #if defined(APPLY_BRUSH_RELATIVE_TO_LETTER) || defined(APPLY_BRUSH_RELATIVE_TO_ITEM)
+    {
+      tex_color*=wrath_shader_brush_color();
+    }
+    #endif
   }
   #endif
 
-  #if defined(WRATH_POST_DEPTH_COLOR_ONLY_DRAW)
+  #if defined(WRATH_COVER_DRAW)
   {
-    //the depth-stencil pass guarantees that the
+    //a previous pass guarantees that the
     //fragment is covered by the glyph, thus
     //we can skip the test and just draw the color
     gl_FragColor=tex_color;

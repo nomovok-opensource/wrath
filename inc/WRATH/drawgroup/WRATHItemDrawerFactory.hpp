@@ -119,7 +119,11 @@ public:
     basis or use hardware clipping planes, then the function discard_if_clipped()
     is empty and the function discard_via_alpha() always returns 1.0. For the case
     where the functins are not this (i.e. clipping is done in the fragment shader),
-    the symbol CLIPPING_USES_DISCARD must be defined as well.
+    the symbol CLIPPING_USES_DISCARD must be defined as well. In addition,
+    the function discard_if_clipped() should be a no-op and CLIPPING_USES_DISCARD
+    not defined when the macro WRATH_COVER_DRAW is defined, see also \ref 
+    WRATHBaseItem::selector_color_draw_cover() and \ref 
+    WRATHBaseItem::selector_non_color_draw_cover()
 
     \param shader_specifier WRATHShaderSpecifier specifying user provided share source code
     \param attribute_packer WRATHAttributePacker specifying explicit attribute data
