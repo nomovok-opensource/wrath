@@ -17,11 +17,6 @@
  */
 
 
-/*
-  TODO:
-  - integrate WRATH_NON_COLOR_DRAW and WRATH_COVER_DRAW
- */
-
 
 /*
   "control flow" via #if macros.
@@ -90,15 +85,17 @@
 
 
 #ifdef NONLINEAR_BRUSH_PRESENT
-mediump vec4 wrath_shader_brush_color(in vec2 mediump wrath_brush_frag_pos)
+mediump vec4 wrath_shader_brush_color(in mediump vec2 wrath_brush_frag_pos, out mediump float valid)
 #else
-mediump vec4 wrath_shader_brush_color(void)
+mediump vec4 wrath_shader_brush_color(out mediump float valid)
 #endif
 {
   mediump vec4 color=vec4(1.0, 1.0, 1.0, 1.0);
   mediump vec4 grad_color=vec4(1.0, 1.0, 1.0, 1.0);
   mediump vec2 grad_tex=vec2(0.5, 0.5);
 
+
+  valid=1.0;
 
   #if defined(NONLINEAR_BRUSH_PRESENT) && defined(NON_LINEAR_TEXTURE_COORDINATE)
 
@@ -107,19 +104,25 @@ mediump vec4 wrath_shader_brush_color(void)
 
   #endif
 
-  #ifdef CONST_COLOR_FS
+  #if defined(CONST_COLOR_FS)
   {  
     color=const_color_value();
     #if defined(CONST_COLOR_ALPHA_TEST)
     {
       if(color.w<0.5)
-        discard;
+        valid=0.0;
     }  
     #endif
   }
   #elif defined(CONST_COLOR_VS)
   {
     color=wrath_brush_const_color;
+    #if defined(CONST_COLOR_ALPHA_TEST)
+    {
+      if(color.w<0.5)
+        valid=0.0;
+    }  
+    #endif
   }
   #endif
 
@@ -172,7 +175,7 @@ mediump vec4 wrath_shader_brush_color(void)
     #ifdef IMAGE_ALPHA_TEST
     {
       if(image_color.w<0.5)
-        discard;
+        valid=0.0;
     }
     #endif
 
@@ -195,7 +198,13 @@ mediump vec4 wrath_shader_brush_color(void)
   }
   #elif defined(NON_LINEAR_GRADIENT)
   {
-    grad_tex.x=compute_gradient(wrath_brush_frag_pos.xy);
+    mediump vec2 vv;
+
+    vv=compute_gradient(wrath_brush_frag_pos.xy);
+
+    grad_tex.x=vv.x;
+    valid*=vv.y;
+
     #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
     {
       grad_tex.y=fetch_node_value(WRATH_GRADIENT_y_coordinate);
@@ -233,14 +242,14 @@ mediump vec4 wrath_shader_brush_color(void)
       #ifdef GRADIENT_INTERPOLATE_RANGE_ENFORCE_POSITIVE
       {
         if(grad_tex.x<0.0)
-          discard;
+          valid=0.0;
       }
       #endif
 
       #ifdef GRADIENT_INTERPOLATE_RANGE_ENFORCE_LESS_THAN_ONE
       {
         if(grad_tex.x>1.0)
-          discard;
+          valid=0.0;
       }
       #endif
     }
@@ -251,7 +260,7 @@ mediump vec4 wrath_shader_brush_color(void)
     #ifdef GRADIENT_ALPHA_TEST
     {
       if(grad_color.w<0.5)
-        discard;
+        valid=0.0;
     }
     #endif
 
@@ -262,9 +271,46 @@ mediump vec4 wrath_shader_brush_color(void)
   #if defined(FINAL_ALPHA_TEST)
   {
     if(color.w<0.5)
-      discard;
+      valid=0.0;
   }
   #endif
 
   return color;
 }
+
+#ifdef NONLINEAR_BRUSH_PRESENT
+
+  mediump vec4 wrath_shader_brush_color(in mediump vec2 wrath_brush_frag_pos)
+  {
+    mediump vec4 C;
+    mediump float v;
+    C=wrath_shader_brush_color(wrath_brush_frag_pos, v);
+
+    #if !defined(WRATH_COVER_DRAW) && defined(BRUSH_ISSUES_DISCARD)
+    {
+      if(v<0.5)
+        discard;
+    }
+    #endif
+
+    return C;
+  }
+
+#else
+
+  mediump vec4 wrath_shader_brush_color()
+  {
+    mediump vec4 C;
+    mediump float v;
+    C=wrath_shader_brush_color(v);
+    
+    #if !defined(WRATH_COVER_DRAW) && defined(BRUSH_ISSUES_DISCARD)
+    {
+      if(v<0.5)
+        discard;
+    }
+    #endif
+
+    return C;    
+  }
+#endif

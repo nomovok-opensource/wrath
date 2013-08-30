@@ -106,6 +106,13 @@ namespace
     }
 
     virtual
+    bool
+    gradient_always_valid(void) const
+    {
+      return true;
+    }
+
+    virtual
     const_c_array<std::string>
     global_scoped_symbols(enum precision_t, enum interpolation_behaviour_t ibt) const
     {

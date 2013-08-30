@@ -61,12 +61,13 @@ public:
     To be implemented by a dervied class
     to return the GLSL source code
     for the the function:
-    - prec float compute_gradient(in prec vec2 p)
+    - prec return_type compute_gradient(in prec vec2 p)
    
     where prec is one of mediump, highp or 
     an empty string as indicated by \ref
-    precision_t.
-
+    precision_t and return_type is float
+    if ibt is \ref WRATHBaseSource::linear_computation
+    and vec2 otherwise
     \param prec the precision in which to perform the gradient
                 interpolate computation
     \param ibt indicates the interpolation behavior at which

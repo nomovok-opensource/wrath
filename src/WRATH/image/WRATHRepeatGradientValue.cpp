@@ -35,6 +35,14 @@ namespace
     {
       return WRATHGradientSource::fully_nonlinear_computation;
     }
+
+    
+    bool
+    gradient_always_valid(void) const
+    {
+      return m_src->gradient_always_valid();
+    }
+
   protected:
     
     virtual

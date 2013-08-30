@@ -71,7 +71,8 @@ namespace WRATHGradientSourceBasePrivate
     float compute_gradient(in vec2 p)
     \endcode
     in the vertex shader. The coordinate p
-    is in item local coordinates
+    is in item local coordinates.
+    The return value is the gradient interpolate.
 
   - When the interpolation behavior is partially
     non-linear, implement the function
@@ -80,10 +81,18 @@ namespace WRATHGradientSourceBasePrivate
     \endcode
     in the vertex shader and the function
     \code
-    float compute_gradient(in vec2 p)
+    vec2 compute_gradient(in vec2 p)
     \endcode
     in the fragment shader. The coordinate p
-    is in item local coordinates
+    is in item local coordinates.
+    The .x of the return value is the
+    gradient interpolate, the .y is
+    1.0 if the gradient interpolate is 
+    well defined and 0.0 if it is not
+    well defined [for example a radial
+    gradient will return 0.0 in .y if 
+    the point is outside of the domain 
+    of a radial gradient]
 
   - When the interpolation behavior is fully
     non-linear, implement the function
@@ -92,10 +101,18 @@ namespace WRATHGradientSourceBasePrivate
     \endcode
     in the vertex shader and the function
     \code
-    float compute_gradient(in vec2 p)
+    vec2 compute_gradient(in vec2 p)
     \endcode
     in the fragment shader. The coordinate p
-    is in item local coordinates
+    is in item local coordinates.
+    The .x of the return value is the
+    gradient interpolate, the .y is
+    1.0 if the gradient interpolate is 
+    well defined and 0.0 if it is not
+    well defined [for example a radial
+    gradient will return 0.0 in .y if 
+    the point is outside of the domain 
+    of a radial gradient]
 
 
   The class \ref WRATHShaderBrushSourceHoard, in implementing the 
@@ -134,6 +151,18 @@ public:
   virtual
   enum interpolation_behaviour_t
   adjust_interpolation_behavior(enum interpolation_behaviour_t ibt) const=0;
+
+  /*!\fn bool gradient_always_valid
+    To be implemented by a derived class to indicate if the 
+    the domain of the gradient interpolate computation is
+    the entire plane; for example radial gradients have that
+    their domain is NOT the entire plane and should return
+    false and linear gradients have that their domain is
+    the entire plane and should return true.
+   */
+  virtual
+  bool
+  gradient_always_valid(void) const=0;
 
 
   /*!\fn void add_shader_source_code_specify_interpolation

@@ -90,6 +90,20 @@ namespace
                        const WRATHShaderBrush &brush,
                        enum WRATHShaderBrushSourceHoard::brush_mapping_t brush_mapping)
   {
+    bool brush_issues_discard, enforce_via_discard;
+
+    enforce_via_discard=!brush.gradient_interpolate_enforce_by_blend()
+      and (brush.gradient_interpolate_enforce_positive() or brush.gradient_interpolate_enforce_greater_than_one());
+
+    brush_issues_discard=
+      enforce_via_discard
+      or brush.image_alpha_test()
+      or brush.gradient_alpha_test()
+      or brush.color_alpha_test()
+      or brush.final_color_alpha_test();
+
+    
+
     add_flag(brush.anti_alias(), "AA_HINT", dest);
     add_flag(brush.image_alpha_test(), "IMAGE_ALPHA_TEST", dest);
     add_flag(brush.gradient_alpha_test(), "GRADIENT_ALPHA_TEST", dest);
@@ -133,9 +147,18 @@ namespace
         dest.add_macro("BRUSH_GRADIENT_PRESENT");
       }
     
-    if(brush.m_gradient_source!=NULL)
+    if(brush.m_color_value_source!=NULL)
       {
         dest.add_macro("BRUSH_COLOR_PRESENT");
+      }
+
+    brush_issues_discard=brush_issues_discard
+      or (brush.m_gradient_source!=NULL and !brush.m_gradient_source->gradient_always_valid())
+      or (brush.m_color_value_source!=NULL and brush.color_alpha_test());
+
+    if(brush_issues_discard)
+      {
+        dest.add_macro("BRUSH_ISSUES_DISCARD");
       }
   }
   

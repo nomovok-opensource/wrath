@@ -134,6 +134,13 @@ namespace
       return m_varyings;
     }
 
+    virtual
+    bool
+    gradient_always_valid(void) const
+    {
+      return false;
+    }
+
   private:
     vecN<vecN<shader_pair, 3>, 3> m_data;
     std::vector<std::string> m_varyings;

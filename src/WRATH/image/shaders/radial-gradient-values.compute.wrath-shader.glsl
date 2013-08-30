@@ -115,31 +115,21 @@
   #define r0_r0 WRATH_RADIAL_GRADIENT_varying1.w
     
 
-  WRATH_RADIAL_GRADIENT_PREC float compute_gradient(in WRATH_RADIAL_GRADIENT_PREC vec2 p)
+  WRATH_RADIAL_GRADIENT_PREC vec2 compute_gradient(in WRATH_RADIAL_GRADIENT_PREC vec2 p)
   {
-    WRATH_RADIAL_GRADIENT_PREC float C, BB_minus_C, sqrt_BB_minus_C;
+    WRATH_RADIAL_GRADIENT_PREC float C, BB_minus_C, sqrt_BB_minus_C, t;
     WRATH_RADIAL_GRADIENT_PREC vec2 t01, good01;
     
     C=A*( dot(pminusp0, pminusp0) - r0_r0);
     BB_minus_C=B*B - C; 
 
     /*
-      cannot take a root, thus we discard.
-      TODO: tweak the gradient GLSL source API
-      so that the function returns a vec2:
-      .x --> interpolate
-      .y --> discard or not.
+      cannot take a root, thus the fragment is invalid,
+      bail now by returning indicating gradient
+      is not valid at the point.
     */
-    #if defined(WRATH_POST_DEPTH_COLOR_ONLY_DRAW)
-    {
-      BB_minus_C=max(0.0, BB_minus_C);
-    }
-    #else
-    {
-      if(BB_minus_C<0.0)
-        discard;
-    }
-    #endif
+    if(BB_minus_C<0.0)
+      return vec2(0.0, 0.0);
 
     sqrt_BB_minus_C=sqrt(BB_minus_C);
     t0= B + sqrt_BB_minus_C;
@@ -155,9 +145,11 @@
     */
     good01=step(0.0, t01)*step(t01, vec2(1.0, 1.0));
     
-    return (good0==good1)?
+    t=(good0==good1)?
       max(t0, t1):
       dot(good01, t01);
+
+    return vec2(t, 1.0);
   }
 
   #undef B
@@ -177,7 +169,7 @@
     #define A_delta_p WRATH_RADIAL_GRADIENT_varying1.zw
   #endif
 
-  WRATH_RADIAL_GRADIENT_PREC float compute_gradient(in WRATH_RADIAL_GRADIENT_PREC vec2 p)
+  WRATH_RADIAL_GRADIENT_PREC vec2 compute_gradient(in WRATH_RADIAL_GRADIENT_PREC vec2 p)
   {
     #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
       WRATH_RADIAL_GRADIENT_PREC float A=fetch_node_value(WRATH_RADIAL_GRADIENT_A);
@@ -189,7 +181,7 @@
                                                      fetch_node_value(WRATH_RADIAL_GRADIENT_A_delta_p_y));
     #endif
 
-    WRATH_RADIAL_GRADIENT_PREC float B, C, BB_minus_C, sqrt_BB_minus_C;
+      WRATH_RADIAL_GRADIENT_PREC float B, C, BB_minus_C, sqrt_BB_minus_C, t;
     WRATH_RADIAL_GRADIENT_PREC vec2 t01, good01, pminusp0;
 
     pminusp0=p - p0;
@@ -199,23 +191,11 @@
     BB_minus_C=B*B - C; 
 
     /*
-      cannot take a root, thus we discard.
-      TODO: tweak the gradient GLSL source API
-      so that the function returns a vec2:
-      .x --> interpolate
-      .y --> discard or not.
+      cannot take a root, bail out now
+      indicating cannot take the root.
     */
-    #if defined(WRATH_POST_DEPTH_COLOR_ONLY_DRAW)
-    {
-      BB_minus_C=max(0.0, BB_minus_C);
-    }
-    #else
-    {
-      if(BB_minus_C<0.0)
-        discard;
-    }
-    #endif
-
+    if(BB_minus_C<0.0)
+      return vec2(0.0, 0.0);
 
     sqrt_BB_minus_C=sqrt(BB_minus_C);
     t0= B + sqrt_BB_minus_C;
@@ -231,11 +211,11 @@
     */
     good01=step(0.0, t01)*step(t01, vec2(1.0, 1.0));
     
-    return (good0==good1)?
+    t=(good0==good1)?
       max(t0, t1):
       dot(good01, t01);
 
-    
+    return vec2(t, 1.0);
   }
 
   #ifndef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK

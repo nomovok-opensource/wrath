@@ -44,7 +44,14 @@ namespace WRATHGradientSourceBasePrivate
     {
       return WRATHBaseSource::fully_nonlinear_computation;
     }
-    
+
+    virtual
+    bool
+    gradient_always_valid(void) const
+    {
+      return m_src->gradient_always_valid();
+    }
+
   protected:
     virtual
     void

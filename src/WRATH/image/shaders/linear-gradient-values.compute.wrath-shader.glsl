@@ -36,9 +36,18 @@
     
  */
 
+#ifdef WRATH_GL_VERTEX_SHADER
+#define WRATH_LINEAR_GRADIENT_RETURN_TYPE float
+#define WRATH_MAKE_LINEAR_GRADIENT_RETURN_TYPE(X) X
+#else
+#define WRATH_LINEAR_GRADIENT_RETURN_TYPE vec2
+#define WRATH_MAKE_LINEAR_GRADIENT_RETURN_TYPE(X) vec2(X, 1.0)
+#endif
+
+
 #if defined(WRATH_LINEAR_GRADIENT_VS) || defined(WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK)
 
-    WRATH_LINEAR_GRADIENT_PREC float compute_gradient(in WRATH_LINEAR_GRADIENT_PREC vec2 p)
+    WRATH_LINEAR_GRADIENT_PREC WRATH_LINEAR_GRADIENT_RETURN_TYPE compute_gradient(in WRATH_LINEAR_GRADIENT_PREC vec2 p)
     {
       vec2 pt, dt;
       
@@ -48,24 +57,27 @@
       dt=vec2(fetch_node_value(WRATH_LINEAR_GRADIENT_delta_x),
               fetch_node_value(WRATH_LINEAR_GRADIENT_delta_y));
 
-      return dot(p - pt, dt);
+      return WRATH_MAKE_LINEAR_GRADIENT_RETURN_TYPE(dot(p - pt, dt));
     }
 
 #else
   
    shader_in WRATH_LINEAR_GRADIENT_PREC vec4 WRATH_LINEAR_GRADIENT_varying;
    
-   WRATH_LINEAR_GRADIENT_PREC float compute_gradient(in WRATH_LINEAR_GRADIENT_PREC vec2 p)
+   WRATH_LINEAR_GRADIENT_PREC WRATH_LINEAR_GRADIENT_RETURN_TYPE compute_gradient(in WRATH_LINEAR_GRADIENT_PREC vec2 p)
    {
      WRATH_LINEAR_GRADIENT_PREC vec2 pt, dt;
 
      pt=WRATH_LINEAR_GRADIENT_varying.xy;
      dt=WRATH_LINEAR_GRADIENT_varying.zw;
 
-     return dot(p-pt, dt);
+     return WRATH_MAKE_LINEAR_GRADIENT_RETURN_TYPE(dot(p-pt, dt));
    }
 
 #endif
 
+
+#undef WRATH_MAKE_LINEAR_GRADIENT_RETURN_TYPE
+#undef WRATH_LINEAR_GRADIENT_RETURN_TYPE
 
 

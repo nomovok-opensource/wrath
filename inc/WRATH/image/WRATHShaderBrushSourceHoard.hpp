@@ -53,24 +53,36 @@ public:
       /*!
         Indicating to use linear brush mapping computed
         from the vertex shader
-        - wrath_shader_brush_prepare(in vec2 p) in the vertex shader
-          taking as input the brush coordinate to feed to image
-          and gradient
-        - wrath_shader_brush_color() [no arguments] in the fragment
+        - <B>void wrath_shader_brush_prepare(in vec2 p)</B> 
+          in the vertex shader taking as input the brush 
+          coordinate to feed to image and gradient
+        - <B>vec4 wrath_shader_brush_color()</B> in the fragment
           shader to compute the color of the brush at the fragment
-          position
+          position. If the brush dictates that the fragment should
+          not be drawn, issues a discard. Also defines 
+          <B>vec4 wrath_shader_brush_color(out float)</B> which 
+          returns the color of the brush and the out argument is 
+          0.0 if the brush dictates that the fragment should
+          not be drawn and 1.0 if the brush dictates that the
+          fragment should be drawn.
        */
       linear_brush_mapping,
 
       /*!
         Indicates to use non-lienar brush mapping computed
         from the fragment shader
-        - wrath_shader_brush_prepare() [no arguments] in the
+        - <B>void wrath_shader_brush_prepare()</B> in the
           vertex shader to perform any pre-compute stages of 
           the gradient and image 
-        - wrath_shader_brush_color(in vec2 p) in the fragment
+        - vec4 wrath_shader_brush_color(in vec2 p) in the fragment
           shader taking as input the brush coordinate to feed 
-          to image and gradient
+          to image and gradient. If the brush dictates that the 
+          fragment should not be drawn, issues a discard. Also defines 
+          <B>vec4 wrath_shader_brush_color(in vec2 p, out float)</B> which 
+          returns the color of the brush and the out argument is 
+          0.0 if the brush dictates that the fragment should
+          not be drawn and 1.0 if the brush dictates that the
+          fragment should be drawn.
        */
       nonlinear_brush_mapping,
 
@@ -219,11 +231,19 @@ public:
     - if GRADIENT_INTERPOLATE_ENFORCE_BLEND, then the alpha value is 0 if the gradient
       interpolate is not in range
     - if GRADIENT_INTERPOLATE_ENFORCE_BLEND is false and if the gradient interpolate
-      is not within range, then discard is issued
-    - if IMAGE_ALPHA_TEST, then discard is issued for when image alpha is less than 0.5
-    - if GRADIENT_ALPHA_TEST, then discard is issued for when gradient alpha is less than 0.5
-    - if CONST_COLOR_ALPHA_TEST, then discard is issued if the const color alpha is less than 0.5
-    - if FINAL_ALPHA_TEST, then discrad is issued if the final brush color is less than 0.5
+      is not within range, then the brush would discard is issued
+    - if IMAGE_ALPHA_TEST, then the brush would discard is issued for when image alpha is less than 0.5
+    - if GRADIENT_ALPHA_TEST, then the brush would discard is issued for when gradient alpha is less than 0.5
+    - if CONST_COLOR_ALPHA_TEST, then the brush would discard is issued if the const color alpha is less than 0.5
+    - if FINAL_ALPHA_TEST, then the brush would discrad is issued if the final brush color is less than 0.5
+    - if the brush may issue a discard then BRUSH_ISSUES_DISCARD is defined
+
+    The color computation function <B>vec4 wrath_shader_brush_color(out float)</B>
+    (for linear) and <B>vec4 wrath_shader_brush_color(in vec2 p, out float)</B>
+    (for non-linear) do NOT issue a discard -ever- and return through the out
+    if the brush would issue a discard, where as <B>vec4 wrath_shader_brush_color()</B>
+    (for linear) and <B>vec4 wrath_shader_brush_color(in vec2 p)</B>
+    (for non-linear) do issue a discard.
 
     The brush color function NEVER pre-multiplies the alpha color, even when
     PREMULTIPLY_ALPHA is true. The purpose of PREMULTIPLY_ALPHA is for a shader

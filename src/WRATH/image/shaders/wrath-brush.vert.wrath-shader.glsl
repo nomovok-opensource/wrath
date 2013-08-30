@@ -73,7 +73,7 @@ uniform mediump vec2 wrath_brush_imageTextureSize; //let it be available to vert
   #define FRAG_POS_DEFINED
 #endif
 
-#ifdef CONST_COLOR_VS
+#if defined(CONST_COLOR_VS) && !defined(CONST_COLOR_FS)
 shader_out CONST_COLOR_PREC vec4 wrath_brush_const_color;
 #endif
 
@@ -150,20 +150,9 @@ void wrath_shader_brush_prepare(in vec2 highp p)
   }
   #endif
 
-  #ifdef CONST_COLOR_VS
+  #if defined(CONST_COLOR_VS) && !defined(CONST_COLOR_FS)
   {
     wrath_brush_const_color=const_color_value();
   }
-  #endif
-
-
-  #if defined(CONST_COLOR_VS) && defined(CONST_COLOR_ALPHA_TEST)
-  {
-    //we can avoid the drawing the entire primitive
-    //TODO: we need to document that wrath_shader_brush_prepare should be
-    //called _AFTER_ setting gl_Position
-    if(wrath_brush_const_color.w<0.5)
-      gl_Position.w=-10.0;
-  }  
-  #endif
+  #endif  
 }
