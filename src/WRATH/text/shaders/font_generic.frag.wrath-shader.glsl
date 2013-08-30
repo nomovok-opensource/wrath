@@ -22,13 +22,10 @@ shader_in mediump vec4 tex_color;
 void
 shader_main(void)
 {
-  #if !defined(WRATH_NON_COLOR_DRAW)
+  
+  #if defined(APPLY_BRUSH_RELATIVE_TO_LETTER) || defined(APPLY_BRUSH_RELATIVE_TO_ITEM)
   {
-    #if defined(APPLY_BRUSH_RELATIVE_TO_LETTER) || defined(APPLY_BRUSH_RELATIVE_TO_ITEM)
-    {
-      tex_color*=wrath_shader_brush_color();
-    }
-    #endif
+    tex_color*=wrath_shader_brush_color();
   }
   #endif
 

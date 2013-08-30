@@ -34,14 +34,14 @@ shader_main(void)
     for the rendering situation of lay down depth first,
     there is no transparent pass, thus the shader reduces
     to:
-    - depth pass, check coverage
-    - color pass, always draw color
+    - non-color pass: check coverage with is_covered() test
+    - color pass: just set gl_FragColor to tex_color
    */
-  #if defined(WRATH_POST_DEPTH_COLOR_ONLY_DRAW)
+  #if defined(WRATH_COVER_DRAW)
   {
     gl_FragColor=tex_color;
   }
-  #elif defined(WRATH_DEPTH_STENCIL_ONLY_DRAW)
+  #elif defined(WRATH_NON_COLOR_DRAW) 
   {
     mediump float d;
     d=is_covered();
