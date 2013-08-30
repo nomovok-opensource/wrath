@@ -139,8 +139,8 @@ per-node basis... I am concerned about a cache-miss fiasco....
     per-node clipping using gl_ClipDistance and/or gl_ClipVertex
 
 11) update all shaders to obey the macros: 
-    - WRATH_DEPTH_STENCIL_ONLY_DRAW
-    - WRATH_POST_DEPTH_COLOR_ONLY_DRAW
+    - WRATH_COVER_DRAW
+    - WRATH_NON_COLOR_DRAW
 
 12) figure out a scheme to avoid running the fragment shader twice
     on glyphs without saying "just draw them as transparent".
