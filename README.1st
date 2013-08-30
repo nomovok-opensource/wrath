@@ -35,7 +35,7 @@ Documentation
   WRATH has doxygen documentation complete with tutorials and overview text,
 build the documentation with:
 
- #cd docs; make  
+ #cd docs && make  
 
 and find it at docs/doxy/html/index.html
 
@@ -46,7 +46,7 @@ Porting WRATH
 Most of WRATH's source code is standard vanilla C/C++ code.
 The main issues of which to be aware are:
   - GL version and GL header files. This is the NGL system. You will
-    need to hack ngl/Rules.ml for a new target to where the GL/GLES
+    need to hack ngl/Rules.mk for a new target to where the GL/GLES
     header files are located In addition, you will need to set 
     correctly the GL/GLES version, in Makefile.settings,
     the variable GL_VERSION 

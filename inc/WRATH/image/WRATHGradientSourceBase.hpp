@@ -51,8 +51,8 @@ namespace WRATHGradientSourceBasePrivate
     interpolation_behaviour_t
 
   - A gradient interpolate is implemented in GLSL by
-    implementing 2 functions: pre_compute_gradient()
-    and compute_gradient(). 
+    implementing 2 functions: <B>pre_compute_gradient()</B>
+    and <B>compute_gradient()</B>. 
 
   The interpolation behavior can be linear, partially-nonlinear
   and fully non-linear. The caller requests the nature
@@ -79,7 +79,8 @@ namespace WRATHGradientSourceBasePrivate
     \code   
     void pre_compute_gradient(in vec2 p)
     \endcode
-    in the vertex shader and the function
+    in the vertex shader.\n\n 
+    Also implement the function
     \code
     vec2 compute_gradient(in vec2 p)
     \endcode
@@ -99,7 +100,8 @@ namespace WRATHGradientSourceBasePrivate
     \code   
     void pre_compute_gradient(void)
     \endcode
-    in the vertex shader and the function
+    in the vertex shader.\n\n 
+    Also implement the function
     \code
     vec2 compute_gradient(in vec2 p)
     \endcode
@@ -176,7 +178,7 @@ public:
     \param prec precision qaulifier to use
     \param suffix suffix to which to append to all function, macros, etc
                   added to the GLSL code, including the functions
-                  compute_gradient() and pre_compute_gradient(). 
+                  <B>compute_gradient()</B> and <B>pre_compute_gradient()</B>. 
                   A non-empty suffix indicates that the functions
                   are being chained from another function, in this
                   case none of the macros LINEAR_GRADIENT, NON_LINEAR_GRADIENT
@@ -220,7 +222,7 @@ protected:
     \param prec precision qaulifier to use
     \param suffix suffix to which to append to all symbols of GLSL shaders
                   that are at global scope, including the functions
-                  compute_gradient() and pre_compute_gradient()
+                  <B>compute_gradient()</B> and <B>pre_compute_gradient()</B>
    */
   virtual
   void

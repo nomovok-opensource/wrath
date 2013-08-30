@@ -69,7 +69,8 @@ namespace WRATHTextureCoordinateSourceBasePrivate
     \code   
     void pre_compute_texture_coordinate(in vec2 p)
     \endcode
-    in the vertex shader and the function
+    in the vertex shader.\n\n 
+    Also implement the function
     \code
     vec2 compute_texture_coordinate(in vec2 p)
     \endcode
@@ -83,7 +84,8 @@ namespace WRATHTextureCoordinateSourceBasePrivate
     \code   
     void pre_compute_texture_coordinate(void)
     \endcode
-    in the vertex shader and the function
+    in the vertex shader.\n\n 
+    Also implement the function
     \code
     vec2 compute_texture_coordinate(in vec2 p)
     \endcode
@@ -140,7 +142,8 @@ public:
     \param prec precision qaulifier to use
     \param suffix suffix to which to append to all function, macros, etc
                   added to the GLSL code, including the functions
-                  compute_texture_coordinate() and pre_compute_texture_coordinate().
+                  <B>compute_texture_coordinate()</B> and 
+                  <B>pre_compute_texture_coordinate()</B>.
                   A non-empty suffix indicates that the functions
                   are being chained from another function, in this
                   case none of the macros LINEAR_TEXTURE_COORDINATE, 
@@ -187,7 +190,8 @@ protected:
     \param prec precision qaulifier to use
     \param suffix suffix to which to append to all symbols of GLSL shaders
                   that are at global scope, including the functions
-                  compute_texture_coordinate() and pre_compute_texture_coordinate().
+                  <B>compute_texture_coordinate()</B> and 
+                  <B>pre_compute_texture_coordinate()</B>.
    */
   virtual
   void

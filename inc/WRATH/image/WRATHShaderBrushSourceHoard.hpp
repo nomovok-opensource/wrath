@@ -74,7 +74,7 @@ public:
         - <B>void wrath_shader_brush_prepare()</B> in the
           vertex shader to perform any pre-compute stages of 
           the gradient and image 
-        - vec4 wrath_shader_brush_color(in vec2 p) in the fragment
+        - <B>vec4 wrath_shader_brush_color(in vec2 p)</B> in the fragment
           shader taking as input the brush coordinate to feed 
           to image and gradient. If the brush dictates that the 
           fragment should not be drawn, issues a discard. Also defines 
