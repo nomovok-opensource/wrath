@@ -32,29 +32,6 @@ shader_out mediump float aa_hint;
 #endif
 
 
-#ifdef LINEAR_GRADIENT
-shader_out mediump vec2 tex_coord;
-
-  #ifdef WRATH_SHAPE_Y_GRAD_TEXTURE_UNIFORM
-    uniform mediump float gradient_y_coordinate;
-  #else 
-    shader_in mediump float gradient_y_coordinate;
-  #endif
-
-#endif
-
-#ifdef NON_LINEAR_GRADIENT
-shader_out mediump vec2 frag_pos;
-
-  #ifdef WRATH_SHAPE_Y_GRAD_TEXTURE_UNIFORM
-    uniform mediump float gradient_y_coordinate;
-  #else 
-    shader_in mediump float gradient_y_coordinate;
-    shader_out mediump float varying_gradient_y_coordinate;
-  #endif
-
-#endif
-
 
 shader_out mediump vec4 tex_color;
 
@@ -62,24 +39,7 @@ shader_out mediump vec4 tex_color;
 void
 shader_main(void)
 {
-  #ifdef LINEAR_GRADIENT
-    tex_coord.x=compute_gradient(pos);
-    tex_coord.y=gradient_y_coordinate;
-  #endif
-
-  #ifdef NON_LINEAR_GRADIENT
-    frag_pos=pos;
-    #ifdef FULLY_NON_LINEAR_GRADIENT
-      pre_compute_gradient();
-    #else
-      pre_compute_gradient(frag_pos);
-    #endif    
-    #ifdef WRATH_SHAPE_Y_GRAD_TEXTURE_UNIFORM
-    #else
-      varying_gradient_y_coordinate=gradient_y_coordinate;
-    #endif
-  #endif
-
+  
   tex_color=vec4(fetch_node_value(color_red),
 		 fetch_node_value(color_green), 
 		 fetch_node_value(color_blue), 

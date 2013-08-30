@@ -21,22 +21,6 @@
 shader_in mediump float aa_hint;
 #endif
 
-#ifdef LINEAR_GRADIENT
-shader_in mediump vec2 tex_coord;
-uniform mediump sampler2D gradientTexture;
-#endif
-
-#ifdef NON_LINEAR_GRADIENT
-
-shader_in mediump vec2 frag_pos;
-uniform mediump sampler2D gradientTexture;
-
-  #ifdef WRATH_SHAPE_Y_GRAD_TEXTURE_UNIFORM
-    uniform mediump float gradient_y_coordinate;
-  #else
-    shader_in mediump float varying_gradient_y_coordinate;
-  #endif
-#endif
 
 
 shader_in mediump vec4 tex_color;
@@ -59,48 +43,7 @@ shader_main(void)
 
   color=tex_color;
 
-  #if defined(LINEAR_GRADIENT)
-  {
-    color*=texture2D(gradientTexture, tex_coord); 
-  }
-  #elif defined(NON_LINEAR_GRADIENT)
-  {
-    tex_coord.x=compute_gradient(frag_pos);
-    #ifdef WRATH_SHAPE_Y_GRAD_TEXTURE_UNIFORM
-      tex_coord.y=gradient_y_coordinate;
-    #else
-      tex_coord.y=varying_gradient_y_coordinate;
-    #endif
-
-    color*=texture2D(gradientTexture, tex_coord);
-  }
-  #endif
-
-  #ifdef GRADIENT_INTERPOLATE_ENFORCE_BLEND
-  {
-      #ifdef GRADIENT_INTERPOLATE_RANGE_ENFORCE_POSITIVE
-        if(tex_coord.x<0.0)
-          color=vec4(0.0, 0.0, 0.0, 0.0);
-      #endif
-
-      #ifdef GRADIENT_INTERPOLATE_RANGE_ENFORCE_LESS_THAN_ONE
-        if(tex_coord.x>1.0)
-          color=vec4(0.0, 0.0, 0.0, 0.0);
-      #endif
-  }
-  #else
-  {
-      #ifdef GRADIENT_INTERPOLATE_RANGE_ENFORCE_POSITIVE
-        if(tex_coord.x<0.0)
-          discard;
-      #endif
-
-      #ifdef GRADIENT_INTERPOLATE_RANGE_ENFORCE_LESS_THAN_ONE
-        if(tex_coord.x>1.0)
-          discard;
-      #endif
-  }
-  #endif
+   
 
 
   #if defined(AA_HINT) && defined(WRATH_DERIVATIVES_SUPPORTED)
