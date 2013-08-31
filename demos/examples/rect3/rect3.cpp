@@ -137,8 +137,16 @@ private:
       {
         return_value->m_outer_radius=100.0f;
       }
+
+    /*
+      packing of attribute data takes place on set_parameters,
+      until this is called the rect does not have it's
+      attribute data set.
+     */
+    return_value->set_parameters(ExampleRectAttributePacker::rect_properties());    
+
+    
     return_value->m_inner_radius=0.4f*return_value->m_outer_radius;
-    return_value->set_parameters(WRATHReferenceCountedObject::handle());    
     return_value->z_order(m_widget_count);
     return_value->position(vec2(m_widget_count*10, m_widget_count*10));
     ++m_widget_count;

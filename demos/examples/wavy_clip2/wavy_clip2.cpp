@@ -153,7 +153,12 @@ make_widget(WRATHLayer *layer,
   hoard.add_state(brush, drawer.m_draw_passes[0].m_draw_state);
   
   widget=WRATHNew T(layer, drawer);
-  widget->set_parameters(WRATHReferenceCountedObject::handle());   
+  /*
+    packing of attribute data takes place on set_parameters,
+    until this is called the rect does not have it's
+    attribute data set.
+  */
+  widget->set_parameters(ExampleRectAttributePacker::rect_properties());   
   
   //some properties of the brush need to be transmitted
   //to the node of the widget, set_from_brush() does that
@@ -553,7 +558,7 @@ animate_ring(int i,
 
   out_phase=cycle*M_PI*2.0f;
   out_amplitude= radius/2.0f;
-  out_freq=outer_radius;
+  out_freq=outer_radius*2.0f;
 
    
   bound_and_v(position.x(), 

@@ -37,6 +37,20 @@ public:
   }
 
   /*
+    Our attribute packer class has that all the attributes
+    it packs are the SAME for any rectangle it packs,
+    thus it's rect properties are "empty", so
+    it returns an invalid handle.
+   */
+  static
+  WRATHReferenceCountedObject::handle
+  rect_properties(void)
+  {
+    return WRATHReferenceCountedObject::handle();
+  }
+
+
+  /*
     pure-virtual function from WRATHRectAttributePacker
     used to specify the attribute type and format
     used by the attribute packer

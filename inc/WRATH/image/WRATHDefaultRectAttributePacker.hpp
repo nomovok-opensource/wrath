@@ -150,6 +150,36 @@ public:
     return WRATHAttributePacker::fetch_make<WRATHDefaultRectAttributePacker>(Factory());
   }
 
+  /*!\fn Rect::handle rect_properties(float, float, float)
+    Provided as a conveniance, equivalent to
+    \code
+    WRATHNew Rect(w, h, z);
+    \endcode
+    \param w width 
+    \param h height 
+    \param z perspective z-coordinate
+   */
+  static
+  Rect::handle
+  rect_properties(float w, float h, float z=-1.0f)
+  {
+    return WRATHNew Rect(w, h, z);
+  }
+
+  /*!\fn Rect::handle rect_properties(const vec2&, float)
+    Provided as a conveniance, equivalent to
+    \code
+    WRATHNew Rect(pwh, z);
+    \endcode
+    \param pwh width and height 
+    \param z perspective z-coordinate
+   */
+  static
+  Rect::handle
+  rect_properties(const vec2 &pwh=vec2(0.0f, 0.0f), float z=-1.0f)
+  {
+    return WRATHNew Rect(pwh, z);
+  }
 
   virtual
   void

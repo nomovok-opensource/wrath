@@ -125,8 +125,6 @@ private:
     //set the values of the node from the brush.
     return_value->set_from_brush(brush);
     
-    //set the size of the rect widget
-    WRATHDefaultRectAttributePacker::Rect::handle rect;
     if(image!=NULL)
       {
         return_value->m_size=vec2(image->size());
@@ -136,8 +134,8 @@ private:
       {
         return_value->m_size=vec2(100.0f, 100.0f);
       }
-    rect=WRATHNew WRATHDefaultRectAttributePacker::Rect(return_value->m_size);
-    return_value->set_parameters(rect);
+    //set the size of the rect widget
+    return_value->set_parameters(WRATHDefaultRectAttributePacker::rect_properties(return_value->m_size));
     
     return_value->z_order(m_widget_count);
     return_value->position(vec2(m_widget_count*10, m_widget_count*10));
