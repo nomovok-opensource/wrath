@@ -232,14 +232,14 @@ public:
   }
 
   /*!\fn vecN<T,N> length(void) const
-    If empty() returns true, returns T(0).
+    If empty() returns true, returns vecN<T,N>(T(0)).
     Otherwise returns max_corner() - min_corner().
    */
   vecN<T,N>
   length(void) const
   {
     return m_empty?
-      T(0):
+      vecN<T,N>(T(0)):
       m_max - m_min;
   }
 
