@@ -224,14 +224,14 @@ per-node basis... I am concerned about a cache-miss fiasco....
         - WRATHBufferAllocator and WRATHAbstractDataSink the first argument is an offset in units of _BYTES_
     Should we somehow make this consistent?
     
-16) Finish implementing:
+17) Finish implementing:
    - WRATHShapeDistanceField (inc/WRATH/shape/WRATHShapeDistanceField.hpp, -Implement.tcc, -Types.tcc)
    - WRATHAntiAliasFillShapeAttributePacker (inc/WRATH/shape/WRATHAntiAliasFillShapeAttributePacker.hpp)
    - WRATHSVGFont (inc/WRATH/text/WRATHSVGFont.hpp)
    - WRATHLayerNodeValuePackerTextureFixed (inc/WRATH/layer/node_packers/WRATHLayerNodeValuePackerTextureFixed.hpp)
    - stroking, right now only solid or no stroking are supported (i.e. dotted/dashed stroking is missing)
 
-17) WRATHFontDatabase is far from complete and should be regarded as a rough sketch. The following are missing:
+18) WRATHFontDatabase is far from complete and should be regarded as a rough sketch. The following are missing:
   - Recording what unicode pages a font supports or for that matter requesting a font based off of
     required unicode pages
   - Font propertiet bold should not be a flag but a value (like those used in CSS) 
