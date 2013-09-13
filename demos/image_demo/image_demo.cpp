@@ -1179,7 +1179,8 @@ paint(void)
     }
   
   if(!cmd_line.m_fast_quit.m_value and 
-     (cmd_line.m_time_limit_off.m_value
+     (frame_count<=5
+      or cmd_line.m_time_limit_off.m_value
       or running_time-start_record_time<cmd_line.m_time_ms.m_value))
     {
       WRATHLayer::draw_information localstats;
