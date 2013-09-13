@@ -22,10 +22,13 @@ shader_in mediump vec4 tex_color;
 void
 shader_main(void)
 {
+  mediump vec4 final_color;
+
+  final_color=tex_color;
   
   #if defined(APPLY_BRUSH_RELATIVE_TO_LETTER) || defined(APPLY_BRUSH_RELATIVE_TO_ITEM)
   {
-    tex_color*=wrath_shader_brush_color();
+    final_color*=wrath_shader_brush_color();
   }
   #endif
 
@@ -34,7 +37,7 @@ shader_main(void)
     //a previous pass guarantees that the
     //fragment is covered by the glyph, thus
     //we can skip the test and just draw the color
-    gl_FragColor=tex_color;
+    gl_FragColor=final_color;
   }
   #else
   {
@@ -44,12 +47,12 @@ shader_main(void)
     #if defined(IS_OPAQUE_PASS) 
       if(d<0.5)
         discard;
-      gl_FragColor=tex_color;
+      gl_FragColor=final_color;
     #else
       if(d<0.5)
         gl_FragColor=vec4(0.0, 0.0, 0.0, 0.0);
       else
-        gl_FragColor=tex_color;
+        gl_FragColor=final_color;
     #endif
   }
   #endif

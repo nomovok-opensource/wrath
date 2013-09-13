@@ -24,9 +24,13 @@ shader_in mediump vec4 tex_color;
 void
 shader_main(void)
 {
+  mediump vec4 final_color;
+
+  final_color=tex_color;
+
   #if defined(APPLY_BRUSH_RELATIVE_TO_LETTER) || defined(APPLY_BRUSH_RELATIVE_TO_ITEM)
   {
-    tex_color*=wrath_shader_brush_color();
+    final_color*=wrath_shader_brush_color();
   }
   #endif
 
@@ -35,11 +39,11 @@ shader_main(void)
     there is no transparent pass, thus the shader reduces
     to:
     - non-color pass: check coverage with is_covered() test
-    - color pass: just set gl_FragColor to tex_color
+    - color pass: just set gl_FragColor to final_color
    */
   #if defined(WRATH_COVER_DRAW)
   {
-    gl_FragColor=tex_color;
+    gl_FragColor=final_color;
   }
   #elif defined(WRATH_NON_COLOR_DRAW) 
   {
@@ -47,7 +51,7 @@ shader_main(void)
     d=is_covered();
     if(d<0.5)
       discard;
-    gl_FragColor=tex_color;    
+    gl_FragColor=final_color;    
   }
   #else
   {
@@ -66,7 +70,7 @@ shader_main(void)
       d=1.0;
     */
 
-    d*=tex_color.a;
+    d*=final_color.a;
 
     #if defined(IS_OPAQUE_PASS)
     {
@@ -81,7 +85,7 @@ shader_main(void)
     }
     #endif
 
-    gl_FragColor=vec4(tex_color.xyz*d, d);
+    gl_FragColor=vec4(final_color.xyz*d, d);
   }
   #endif
 }
