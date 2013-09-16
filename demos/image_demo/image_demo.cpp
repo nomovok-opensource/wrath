@@ -1164,6 +1164,9 @@ DemoImage(cmd_line_type &pcmd_line):
                 static_cast<float>(cmd_line.m_bg_green.m_value)/255.0f,
                 static_cast<float>(cmd_line.m_bg_blue.m_value)/255.0f,
                 static_cast<float>(cmd_line.m_bg_alpha.m_value)/255.0f);
+
+  running_time=0;
+  start_record_time=0;
 }
 
 void
@@ -1179,8 +1182,7 @@ paint(void)
     }
   
   if(!cmd_line.m_fast_quit.m_value and 
-     (frame_count<=5
-      or cmd_line.m_time_limit_off.m_value
+     (cmd_line.m_time_limit_off.m_value
       or running_time-start_record_time<cmd_line.m_time_ms.m_value))
     {
       WRATHLayer::draw_information localstats;
