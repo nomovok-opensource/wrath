@@ -1167,6 +1167,7 @@ DemoImage(cmd_line_type &pcmd_line):
 
   running_time=0;
   start_record_time=0;
+  update_widget();
 }
 
 void
@@ -1181,9 +1182,13 @@ paint(void)
       set_perspetive_matrix();      
     }
   
-  if(!cmd_line.m_fast_quit.m_value and 
-     (cmd_line.m_time_limit_off.m_value
-      or running_time-start_record_time<cmd_line.m_time_ms.m_value))
+  bool time_not_ended;
+
+  time_not_ended=cmd_line.m_time_limit_off.m_value 
+    or running_time-start_record_time<cmd_line.m_time_ms.m_value;
+
+  if(frame_count==0
+     or (!cmd_line.m_fast_quit.m_value and time_not_ended))
     {
       WRATHLayer::draw_information localstats;
 
