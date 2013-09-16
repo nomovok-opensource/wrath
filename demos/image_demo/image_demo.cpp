@@ -1165,8 +1165,7 @@ DemoImage(cmd_line_type &pcmd_line):
                 static_cast<float>(cmd_line.m_bg_blue.m_value)/255.0f,
                 static_cast<float>(cmd_line.m_bg_alpha.m_value)/255.0f);
 
-  running_time=0;
-  start_record_time=0;
+ 
   update_widget();
 }
 
@@ -1566,13 +1565,15 @@ handle_event(FURYEvent::handle ev)
           case FURYKey_Space:
             paused=!paused;
             break;
+
           case FURYKey_P:
             m_perspective_on=!m_perspective_on;
             update_z_s();
             break;
 
-          default:
+          case FURYKey_Escape:
             end_demo();
+            break;
           }
       }
       break;
