@@ -625,6 +625,54 @@ public:
     return m_current_simulation_ID;
   }
   
+  /*!\fn number_complete_simulation_frame_calls
+    Returns the total number times \ref
+    signal_complete_simulation_frame() has been called.
+    May be called from both the rendering
+    and simulation thread.
+   */
+  int
+  number_complete_simulation_frame_calls(void)
+  {
+    WRATHAutoLockMutex(m_counter_lock);
+    return m_number_complete_simulation_frame_calls;
+  }
+
+  /*!\fn number_begin_presentation_frame_calls
+    Returns the total number times \ref
+    signal_begin_presentation_frame() has been called.
+    May be called from both the rendering
+    and simulation thread. 
+   */
+  int
+  number_begin_presentation_frame_calls(void)
+  {
+    WRATHAutoLockMutex(m_counter_lock);
+    return m_number_begin_presentation_frame_calls;
+  }
+
+  /*!\fn number_complete_simulation_calls_since_last_begin_presentation_frame
+    Returns the number times \ref signal_complete_simulation_frame()
+    has been called since the last call to \ref signal_begin_presentation_frame().
+   */
+  int
+  number_complete_simulation_calls_since_last_begin_presentation_frame(void)
+  {
+    WRATHAutoLockMutex(m_counter_lock);
+    return m_number_complete_simulation_calls_since_last_begin_presentation_frame;
+  }
+
+  /*!\fn number_begin_presentation_calls_since_last_simulation_complete_frame
+    Returns the number times \ref signal_begin_presentation_frame()
+    has been called since the last call to \ref signal_complete_simulation_frame().
+   */
+  int
+  number_begin_presentation_calls_since_last_simulation_complete_frame(void)
+  {
+    WRATHAutoLockMutex(m_counter_lock);
+    return m_number_begin_presentation_calls_since_last_simulation_complete_frame;
+  }
+
   /*!\fn void schedule_rendering_action(const T&)
     Actions added via schedule_rendering_action()
     are executed at end of the next call to 
@@ -773,6 +821,12 @@ private:
   int m_present_ID;
   int m_last_simulation_ID;
   int m_current_simulation_ID;
+
+  WRATHMutex m_counter_lock;
+  int m_number_complete_simulation_frame_calls;
+  int m_number_begin_presentation_frame_calls;
+  int m_number_complete_simulation_calls_since_last_begin_presentation_frame;
+  int m_number_begin_presentation_calls_since_last_simulation_complete_frame;
 };
 
 

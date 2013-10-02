@@ -195,7 +195,11 @@ WRATHTripleBufferEnabler(void):
   m_purging(false),
   m_present_ID(0),
   m_last_simulation_ID(1),
-  m_current_simulation_ID(2)
+  m_current_simulation_ID(2),
+  m_number_complete_simulation_frame_calls(0),
+  m_number_begin_presentation_frame_calls(0),
+  m_number_complete_simulation_calls_since_last_begin_presentation_frame(0),
+  m_number_begin_presentation_calls_since_last_simulation_complete_frame(0)
 {}
 
 WRATHTripleBufferEnabler::
@@ -277,8 +281,14 @@ signal_begin_presentation_frame(void)
   WRATHUnlockMutex(m_mutex);
   fire_signal(m_sigs[on_begin_presentation_frame][post_update_no_lock]);
   do_actions(m_render_actions, m_render_actions_mutex);
-}
 
+  {
+    WRATHAutoLockMutex(m_counter_lock);
+    ++m_number_begin_presentation_frame_calls;
+    ++m_number_begin_presentation_calls_since_last_simulation_complete_frame;
+    m_number_complete_simulation_calls_since_last_begin_presentation_frame=0;
+  }
+}
 
 void
 WRATHTripleBufferEnabler::
@@ -317,6 +327,7 @@ signal_complete_simulation_frame(void)
   
   fire_signal(m_sigs[on_complete_simulation_frame][pre_update_no_lock]);
 
+
   WRATHLockMutex(m_mutex);
 
   //pre-conditions:
@@ -353,6 +364,13 @@ signal_complete_simulation_frame(void)
 
   WRATHUnlockMutex(m_mutex);
   fire_signal(m_sigs[on_complete_simulation_frame][post_update_no_lock]);
+
+  {
+    WRATHAutoLockMutex(m_counter_lock);
+    ++m_number_complete_simulation_frame_calls;
+    ++m_number_complete_simulation_calls_since_last_begin_presentation_frame;
+    m_number_begin_presentation_calls_since_last_simulation_complete_frame=0;
+  }
 }
 
 
