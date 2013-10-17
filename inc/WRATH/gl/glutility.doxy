@@ -57,4 +57,160 @@
 #define WRATH_REMOVE_PRECISION_QUALIFIERS
 #define WRATH_TEGRA_PREC_HACK
 
+
+/*
+  Declare WRATHglUniform against a generic T
+  so that documentation will generate it
+*/
+
+/*! \addtogroup GLUtility
+ * @{
+ */
+
+/*!\fn void WRATHglUniform1v(int, GLsizei, const T*)
+  Overload conveniance, equivalent to
+  \code
+   glUniform1*v(location, count, v)
+  \endcode
+  where * is one of {i,f,d,ui} for T being 
+  {GLint, GLfloat, GLdouble and GLuint}
+  respectively.
+  \tparam T an elementary GL type, such as GLfloat, GLint, etc
+  \param location location of uniform, i.e. return value
+                  of glGetUniformLocation
+  \param count number of elements from the array v to use		 
+  \param v array of values
+ */
+template<typename T>
+void
+WRATHglUniform1v(int location, GLsizei count, const T *v);
+
+/*!\fn void WRATHglUniform2v(int, GLsizei, const T*)
+  Overload conveniance, equivalent to
+  \code
+   glUniform2*v(location, count, v)
+  \endcode
+  where * is one of {i,f,d,ui} for T being 
+  {GLint, GLfloat, GLdouble and GLuint}
+  respectively.
+  \tparam T an elementary GL type, such as GLfloat, GLint, etc
+  \param location location of uniform, i.e. return value
+                  of glGetUniformLocation
+  \param count number of elements from the array v to use		 
+  \param v array of values
+ */
+template<typename T>
+void
+WRATHglUniform2v(int location, GLsizei count, const T *v);
+
+/*!\fn void WRATHglUniform3v(int, GLsizei, const T*)
+  Overload conveniance, equivalent to
+  \code
+   glUniform3*v(location, count, v)
+  \endcode
+  where * is one of {i,f,d,ui} for T being 
+  {GLint, GLfloat, GLdouble and GLuint}
+  respectively.
+  \tparam T an elementary GL type, such as GLfloat, GLint, etc
+  \param location location of uniform, i.e. return value
+                  of glGetUniformLocation
+  \param count number of elements from the array v to use		 
+  \param v array of values
+ */
+template<typename T>
+void
+WRATHglUniform3v(int location, GLsizei count, const T *v);
+
+/*!\fn void WRATHglUniform4v(int, GLsizei, const T*)
+  Overload conveniance, equivalent to
+  \code
+   glUniform4*v(location, count, v)
+  \endcode
+  where * is one of {i,f,d,ui} for T being 
+  {GLint, GLfloat, GLdouble and GLuint}
+  respectively.
+  \tparam T an elementary GL type, such as GLfloat, GLint, etc
+  \param location location of uniform, i.e. return value
+                  of glGetUniformLocation
+  \param count number of elements from the array v to use		 
+  \param v array of values
+ */
+template<typename T>
+void
+WRATHglUniform4v(int location, GLsizei count, const T *v);
+
+/*!\fn void WRATHglUniform(int, const T &)
+  Overload mapping to one of WRATHglUniform1v, WRATHglUniform2v,
+  WRATHglUniform3v or WRATHglUniform4v as:
+  \code
+  WRATHglUniformNv(location, 1, &v[0])
+  \endcode
+  where N is from the dimenstion of the type
+  T. The type T must be a GL elementary type
+  or of the form vecN<S,N> where S is an elementary
+  type and N is 1,2,3 or 4.
+  \param location location of uniform, i.e. return value
+                  of glGetUniformLocation
+  \param v valut to which to assign to the uniform
+ */
+template<typename T>
+void
+WRATHglUniform(int location, const T &v);
+
+/*!\fn void WRATHglUniform(int, GLsizei, const T &)
+  Overload mapping to one of WRATHglUniform1v, WRATHglUniform2v,
+  WRATHglUniform3v or WRATHglUniform4v as:
+  \code
+  WRATHglUniformNv(location, count, w)
+  \endcode
+  where N is from the dimenstion of the type
+  T. The type T must be a GL elementary type
+  or of the form vecN<S,N> where S is an elementary
+  type and N is 1,2,3 or 4.
+  \param location location of uniform, i.e. return value
+                  of glGetUniformLocation
+  \param count number of elements from the array v to use
+  \param v values to which to assign to the array of uniforms
+ */
+template<typename T>
+void
+WRATHglUniform(int location, GLsizei count, const T *v);
+
+/*!\fn WRATHglUniform(int, GLsizei, const matrixNxM<N,M>*, bool)
+  Overload mapping to one of the glUniformMatrix family
+  of calls to set an array of uniform matrices.
+  \param location location of uniform, i.e. return value
+                  of glGetUniformLocation
+  \param count number of elements from the array matrices to use
+  \param matrices values to which to assign to the array of uniforms
+  \param transposed flag to indicate if the matrices are to be transposed
+  \tparam N height of matrix, must be 2,3 or 4
+  \tparam M width of matrix, must be 2,3 or 4. For unextended GLES2, M must have same value as N
+ */
+template<unsigned int N, unsigned int M>
+void
+WRATHglUniform(int location, GLsizei count, const matrixNxM<N,M> *matrices, bool transposed=false)
+
+/*!\fn WRATHglUniform(int, const matrixNxM<N,M>&, bool)
+  Overload mapping to one of the glUniformMatrix family
+  of calls to set a uniform matrix, equivalent to
+  \code
+  WRATHglUniform(location, 1, &matrix, transposed);
+  \endcode
+  \param location location of uniform, i.e. return value
+                  of glGetUniformLocation
+  \param matrices values to which to assign to the array of uniforms
+  \param transposed flag to indicate if the matrices are to be transposed
+  \tparam N height of matrix, must be 2,3 or 4
+  \tparam M width of matrix, must be 2,3 or 4. For unextended GLES2, M must have same value as N
+ */
+template<unsigned int N, unsigned int M>
+void
+WRATHglUniform(int location, const matrixNxM<N,M> &matrix, bool transposed=false)
+
+
+/*! @} */
+
+
+
 #error "Include of " __FILE __ " which is a documentation files"
