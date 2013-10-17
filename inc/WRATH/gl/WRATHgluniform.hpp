@@ -272,7 +272,7 @@ WRATHglUniform(int location, const vecN<GLint, 4> &v)
   WRATHglUniform4v(location, 1, &v[0]);
 }
 
-/*!\fn void WRATHglUniform(int, GLsizei, const float2x2*, bool)
+/*!\fn void WRATHglUniform(int, GLsizei, const matrixNxM<2,2>*, bool)
   Equivalent to
   \code
   glUniformMatrix2fv(location, count, transposed?GL_TRUE:GL_FALSE, reinterpret_cast<const GLfloat*>(matrices));
@@ -285,7 +285,7 @@ WRATHglUniform(int location, const vecN<GLint, 4> &v)
  */
 inline
 void
-WRATHglUniform(int location, GLsizei count, const float2x2 *matrices, bool transposed=false)
+WRATHglUniform(int location, GLsizei count, const matrixNxM<2,2> *matrices, bool transposed=false)
 {
   glUniformMatrix2fv(location,
                      count,
@@ -293,7 +293,7 @@ WRATHglUniform(int location, GLsizei count, const float2x2 *matrices, bool trans
                      reinterpret_cast<const GLfloat*>(matrices));
 }
 
-/*!\fn void WRATHglUniform(int, const float2x2&, bool)
+/*!\fn void WRATHglUniform(int, const matrixNxM<2,2>&, bool)
   Equivalent to
   \code
   glUniformMatrix2fv(location, 1, transposed?GL_TRUE:GL_FALSE, reinterpret_cast<const GLfloat*>(&matrices));
@@ -305,7 +305,7 @@ WRATHglUniform(int location, GLsizei count, const float2x2 *matrices, bool trans
  */
 inline
 void
-WRATHglUniform(int location, const float2x2 &matrices, bool transposed=false)
+WRATHglUniform(int location, const matrixNxM<2,2> &matrices, bool transposed=false)
 {
   glUniformMatrix2fv(location,
                      1,
@@ -313,7 +313,7 @@ WRATHglUniform(int location, const float2x2 &matrices, bool transposed=false)
                      reinterpret_cast<const GLfloat*>(&matrices));
 }
 
-/*!\fn void WRATHglUniform(int, GLsizei, const float3x3*, bool)
+/*!\fn void WRATHglUniform(int, GLsizei, const matrixNxM<3,3>*, bool)
   Equivalent to
   \code
   glUniformMatrix3fv(location, count, transposed?GL_TRUE:GL_FALSE, reinterpret_cast<const GLfloat*>(matrices));
@@ -326,7 +326,7 @@ WRATHglUniform(int location, const float2x2 &matrices, bool transposed=false)
  */
 inline
 void
-WRATHglUniform(int location, GLsizei count, const float3x3 *matrices, bool transposed=false)
+WRATHglUniform(int location, GLsizei count, const matrixNxM<3,3> *matrices, bool transposed=false)
 {
   glUniformMatrix3fv(location,
                      count,
@@ -334,7 +334,7 @@ WRATHglUniform(int location, GLsizei count, const float3x3 *matrices, bool trans
                      reinterpret_cast<const GLfloat*>(matrices));
 }
 
-/*!\fn void WRATHglUniform(int, const float3x3&, bool)
+/*!\fn void WRATHglUniform(int, const matrixNxM<3,3>&, bool)
   Equivalent to
   \code
   glUniformMatrix3fv(location, 1, transposed?GL_TRUE:GL_FALSE, reinterpret_cast<const GLfloat*>(&matrices));
@@ -346,7 +346,7 @@ WRATHglUniform(int location, GLsizei count, const float3x3 *matrices, bool trans
  */
 inline
 void
-WRATHglUniform(int location, const float3x3 &matrices, bool transposed=false)
+WRATHglUniform(int location, const matrixNxM<3,3> &matrices, bool transposed=false)
 {
   glUniformMatrix3fv(location,
                      1,
@@ -354,7 +354,7 @@ WRATHglUniform(int location, const float3x3 &matrices, bool transposed=false)
                      reinterpret_cast<const GLfloat*>(&matrices));
 }
 
-/*!\fn void WRATHglUniform(int, GLsizei, const float4x4*, bool)
+/*!\fn void WRATHglUniform(int, GLsizei, const matrixNxM<4,4>*, bool)
   Equivalent to
   \code
   glUniformMatrix4fv(location, 1, transposed?GL_TRUE:GL_FALSE, reinterpret_cast<const GLfloat*>(matrices));
@@ -367,7 +367,7 @@ WRATHglUniform(int location, const float3x3 &matrices, bool transposed=false)
  */
 inline
 void
-WRATHglUniform(int location, GLsizei count, const float4x4 *matrices, bool transposed=false)
+WRATHglUniform(int location, GLsizei count, const matrixNxM<4,4> *matrices, bool transposed=false)
 {
   glUniformMatrix4fv(location,
                      count,
@@ -375,7 +375,7 @@ WRATHglUniform(int location, GLsizei count, const float4x4 *matrices, bool trans
                      reinterpret_cast<const GLfloat*>(matrices));
 }
 
-/*!\fn void WRATHglUniform(int, const float4x4&, bool)
+/*!\fn void WRATHglUniform(int, const matrixNxM<4,4>&, bool)
   Equivalent to
   \code
   glUniformMatrix4fv(location, 1, transposed?GL_TRUE:GL_FALSE, reinterpret_cast<const GLfloat*>(&matrices));
@@ -387,13 +387,40 @@ WRATHglUniform(int location, GLsizei count, const float4x4 *matrices, bool trans
  */
 inline
 void
-WRATHglUniform(int location, const float4x4 &matrices, bool transposed=false)
+WRATHglUniform(int location, const matrixNxM<4,4> &matrices, bool transposed=false)
 {
   glUniformMatrix4fv(location,
                      1,
                      transposed?GL_TRUE:GL_FALSE,
                      reinterpret_cast<const GLfloat*>(&matrices));
 }
+
+#if defined(WRATH_GL_VERSION) || WRATH_GLES_VERSION>=3
+
+/*
+  support for non-square matrices, via macro.
+ */
+#define WRATH_GL_UNIFORM_MATRIX_IMPL(A,B) \
+  inline void WRATHglUniform(int location, GLsizei count, const matrixNxM<A,B> *matrices, bool transposed=false) \
+  {									\
+    glUniformMatrix##A##x##B##fv(location, count, transposed?GL_TRUE:GL_FALSE, reinterpret_cast<const GLfloat*>(matrices)); \
+  }									\
+  inline void WRATHglUniform(int location, const matrixNxM<A,B> &matrix, bool transposed=false) \
+  {									\
+    WRATHglUniform(location, 1, &matrix, transposed);			\
+  }
+
+WRATH_GL_UNIFORM_MATRIX_IMPL(2,3)
+WRATH_GL_UNIFORM_MATRIX_IMPL(2,4)
+WRATH_GL_UNIFORM_MATRIX_IMPL(3,2)
+WRATH_GL_UNIFORM_MATRIX_IMPL(3,4)
+WRATH_GL_UNIFORM_MATRIX_IMPL(4,2)
+WRATH_GL_UNIFORM_MATRIX_IMPL(4,3)
+
+#undef WRATH_GL_UNIFORM_MATRIX_IMPL
+
+#endif
+
 
 /*!\fn void WRATHglUniform(int, GLsizei, const vecN<GLint,2>*)
   Equivalent to
