@@ -34,243 +34,44 @@
  * @{
  */
 
-/*!\fn void WRATHglUniform1v(int, GLsizei, const GLfloat*)
-  Equivalent to
-  \code
-  glUniform1fv(location, count, v);
-  \endcode
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param count number of elements at location to set (i.e. if an array)
-  \param v pointer to values.
- */
-inline
-void
-WRATHglUniform1v(int location, GLsizei count, const GLfloat *v)
-{
-  glUniform1fv(location, count, v);
-}
+#define IMPLEMENT_WRATH_GL_UNIFORM_CNT(GLFN, TYPE, COUNT)		\
+  inline void WRATHglUniform##COUNT##v(int location, GLsizei count, const TYPE *v) \
+  {									\
+    glUniform##COUNT##GLFN##v(location, count, v);			\
+  }									\
+  inline void WRATHglUniform(int location, const vecN<TYPE, COUNT> &v)	\
+  {									\
+    WRATHglUniform##COUNT##v(location, 1, &v[0]);			\
+  }									\
+  inline void WRATHglUniform(int location, GLsizei count, const vecN<TYPE, COUNT> *v) \
+  {									\
+    WRATHglUniform##COUNT##v(location, count, reinterpret_cast<const TYPE*>(v)); \
+  }
 
-/*!\fn void WRATHglUniform2v(int, GLsizei, const GLfloat*)
-  Equivalent to
-  \code
-  glUniform2fv(location, count, v);
-  \endcode
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param count number of elements at location to set (i.e. if an array)
-  \param v pointer to values.
- */
-inline
-void
-WRATHglUniform2v(int location, GLsizei count, const GLfloat *v)
-{
-  glUniform2fv(location, count, v);
-}
+#define IMPLEMENT_WRATH_GL_UNIFORM(GLFN, TYPE)				\
+  IMPLEMENT_WRATH_GL_UNIFORM_CNT(GLFN, TYPE, 1)				\
+  IMPLEMENT_WRATH_GL_UNIFORM_CNT(GLFN, TYPE, 2)				\
+  IMPLEMENT_WRATH_GL_UNIFORM_CNT(GLFN, TYPE, 3)				\
+  IMPLEMENT_WRATH_GL_UNIFORM_CNT(GLFN, TYPE, 4)				\
+  inline void WRATHglUniform(int location, TYPE v)			\
+  {									\
+    glUniform1##GLFN(location, v);					\
+  }
 
-/*!\fn void WRATHglUniform(int, const vecN<GLfloat, 2>&)
-  Equivalent to
-  \code
-  WRATHglUniform2v(location,1 , &v[0]);
-  \endcode
-  i.e. set a vec2 uniform of GLSL program.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v value to set to the uniform at location
- */
-inline
-void
-WRATHglUniform(int location, const vecN<GLfloat, 2> &v)
-{
-  WRATHglUniform2v(location, 1, &v[0]);
-}
 
-/*!\fn void WRATHglUniform3v(int, GLsizei, const GLfloat*)
-  Equivalent to
-  \code
-  glUniform3fv(location, count, v);
-  \endcode
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param count number of elements at location to set (i.e. if an array)
-  \param v pointer to values.
- */
-inline
-void
-WRATHglUniform3v(int location, GLsizei count, const GLfloat *v)
-{
-  glUniform3fv(location, count, v);
-}
+IMPLEMENT_WRATH_GL_UNIFORM(f, GLfloat)
+IMPLEMENT_WRATH_GL_UNIFORM(i, GLint)
 
-/*!\fn void WRATHglUniform(int, const vecN<GLfloat, 3>&)
-  Equivalent to
-  \code
-  WRATHglUniform3v(location,1 , &v[0]);
-  \endcode
-  i.e. set a vec3 uniform of GLSL program.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v value to set to the uniform at location
- */
-inline
-void
-WRATHglUniform(int location, const vecN<GLfloat, 3> &v)
-{
-  WRATHglUniform3v(location, 1, &v[0]);
-}
+#if defined(WRATH_GL_VERSION) || WRATH_GLES_VERSION>=3
+IMPLEMENT_WRATH_GL_UNIFORM(ui, GLuint)
+IMPLEMENT_WRATH_GL_UNIFORM(d, GLdouble)
+#endif
 
-/*!\fn void WRATHglUniform4v(int, GLsizei, const GLfloat*)
-  Equivalent to
-  \code
-  glUniform4fv(location, count, v);
-  \endcode
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param count number of elements at location to set (i.e. if an array)
-  \param v pointer to values.
- */
-inline
-void
-WRATHglUniform4v(int location, GLsizei count, const GLfloat *v)
-{
-  glUniform4fv(location, count, v);
-}
 
-/*!\fn void WRATHglUniform(int, const vecN<GLfloat, 4>&)
-  Equivalent to
-  \code
-  WRATHglUniform4v(location,1 , &v[0]);
-  \endcode
-  i.e. set a vec4 uniform of GLSL program.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v value to set to the uniform at location
- */
-inline
-void
-WRATHglUniform(int location, const vecN<GLfloat, 4> &v)
-{
-  WRATHglUniform4v(location, 1, &v[0]);
-}
+#undef IMPLEMENT_WRATH_GL_UNIFORM
+#undef IMPLEMENT_WRATH_GL_UNIFORM_CNT
 
-/*!\fn void WRATHglUniform1v(int, GLsizei, const GLint*)
-  Equivalent to
-  \code
-  glUniform1iv(location, count, v);
-  \endcode
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param count number of elements at location to set (i.e. if an array)
-  \param v pointer to values.
- */
-inline
-void
-WRATHglUniform1v(int location, GLsizei count, const GLint *v)
-{
-  glUniform1iv(location, count, v);
-}
 
-/*!\fn void WRATHglUniform2v(int, GLsizei, const GLint*)
-  Equivalent to
-  \code
-  glUniform2iv(location, count, v);
-  \endcode
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param count number of elements at location to set (i.e. if an array)
-  \param v pointer to values.
- */
-inline
-void
-WRATHglUniform2v(int location, GLsizei count, const GLint *v)
-{
-  glUniform2iv(location, count, v);
-}
-
-/*!\fn void WRATHglUniform(int, const vecN<GLint, 2>&)
-  Equivalent to
-  \code
-  WRATHglUniform2iv(location, 1, &v[0]);
-  \endcode
-  i.e. set a ivec2 uniform of GLSL program.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v value to set to the uniform at location
- */
-inline
-void
-WRATHglUniform(int location, const vecN<GLint, 2> &v)
-{
-  WRATHglUniform2v(location, 1, &v[0]);
-}
-
-/*!\fn void WRATHglUniform3v(int, GLsizei, const GLint*)
-  Equivalent to
-  \code
-  glUniform3iv(location, count, v);
-  \endcode
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param count number of elements at location to set (i.e. if an array)
-  \param v pointer to values.
- */
-inline
-void
-WRATHglUniform3v(int location, GLsizei count, const GLint *v)
-{
-  glUniform3iv(location, count, v);
-}
-
-/*!\fn void WRATHglUniform(int, const vecN<GLint, 3> &)
-  Equivalent to
-  \code
-  WRATHglUniform3iv(location, 1, &v[0]);
-  \endcode
-  i.e. set a ivec3 uniform of GLSL program.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v value to set to the uniform at location
- */
-inline
-void
-WRATHglUniform(int location, const vecN<GLint, 3> &v)
-{
-  WRATHglUniform3v(location, 1, &v[0]);
-}
-
-/*!\fn void WRATHglUniform4v(int, GLsizei, const GLint*)
-  Equivalent to
-  \code
-  glUniform4iv(location, count, v);
-  \endcode
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param count number of elements at location to set (i.e. if an array)
-  \param v pointer to values.
- */
-inline
-void
-WRATHglUniform4v(int location, GLsizei count, const GLint *v)
-{
-  glUniform4iv(location, count, v);
-}
-
-/*!\fn void WRATHglUniform(int, const vecN<GLint, 4>&)
-  Equivalent to
-  \code
-  WRATHglUniform4iv(location, 1, &v[0]);
-  \endcode
-  i.e. set a ivec4 uniform of GLSL program.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v value to set to the uniform at location
- */
-inline
-void
-WRATHglUniform(int location, const vecN<GLint, 4> &v)
-{
-  WRATHglUniform4v(location, 1, &v[0]);
-}
 
 /*!\fn void WRATHglUniform(int, GLsizei, const matrixNxM<2,2>*, bool)
   Equivalent to
@@ -420,118 +221,6 @@ WRATH_GL_UNIFORM_MATRIX_IMPL(4,3)
 #undef WRATH_GL_UNIFORM_MATRIX_IMPL
 
 #endif
-
-
-/*!\fn void WRATHglUniform(int, GLsizei, const vecN<GLint,2>*)
-  Equivalent to
-  \code
-  WRATHglUniform2v(location, count, &(v[0].x()) );
-  \endcode
-  i.e. set an array of ivec2 GLSL uniforms.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v pointer to values
-  \param count length of array point to by v.
- */
-inline
-void
-WRATHglUniform(int location, GLsizei count, const vecN<GLint,2> *v)
-{
-  WRATHglUniform2v(location, count, &(v[0].x()) );
-}
-
-/*!\fn void WRATHglUniform(int, GLsizei, const vecN<GLint,3>*)
-  Equivalent to
-  \code
-  WRATHglUniform2v(location, count, &(v[0].x()) );
-  \endcode
-  i.e. set an array of ivec3 GLSL uniforms.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v pointer to values
-  \param count length of array point to by v.
- */
-inline
-void
-WRATHglUniform(int location, GLsizei count, const vecN<GLint,3> *v)
-{
-  WRATHglUniform3v(location, count, &(v[0].x()) );
-}
-
-/*!\fn void WRATHglUniform(int, GLsizei, const vecN<GLint,4>*)
-  Equivalent to
-  \code
-  WRATHglUniform3v(location, count, &(v[0].x()) );
-  \endcode
-  i.e. set an array of ivec4 GLSL uniforms.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v pointer to values
-  \param count length of array point to by v.
- */
-inline
-void
-WRATHglUniform(int location, GLsizei count, const vecN<GLint,4> *v)
-{
-  WRATHglUniform4v(location, count, &(v[0].x()) );
-}
-
-
-/*!\fn void WRATHglUniform(int, GLsizei, const vecN<GLfloat,2>*)
-  Equivalent to
-  \code
-  WRATHglUniform2v(location, count, &(v[0].x()) );
-  \endcode
-  i.e. set an array of vec2 GLSL uniforms.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v pointer to values
-  \param count length of array point to by v.
- */
-inline
-void
-WRATHglUniform(int location, GLsizei count, const vecN<GLfloat,2> *v)
-{
-  WRATHglUniform2v(location, count, &(v[0].x()) );
-}
-
-/*!\fn void WRATHglUniform(int, GLsizei, const vecN<GLfloat,3>*)
-  Equivalent to
-  \code
-  WRATHglUniform2v(location, count, &(v[0].x()) );
-  \endcode
-  i.e. set an array of vec3 GLSL uniforms.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v pointer to values
-  \param count length of array point to by v.
- */
-inline
-void
-WRATHglUniform(int location, GLsizei count, const vecN<GLfloat,3> *v)
-{
-  WRATHglUniform3v(location, count, &(v[0].x()) );
-}
-
-/*!\fn void WRATHglUniform(int, GLsizei, const vecN<GLfloat,4>*)
-  Equivalent to
-  \code
-  WRATHglUniform2v(location, count, &(v[0].x()) );
-  \endcode
-  i.e. set an array of vec4 GLSL uniforms.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v pointer to values
-  \param count length of array pointed to by v.
- */
-inline
-void
-WRATHglUniform(int location, GLsizei count, const vecN<GLfloat,4> *v)
-{
-  WRATHglUniform4v(location, count, &(v[0].x()) );
-}
-
-
 
 
 /*!\fn void WRATHglUniform(int, GLsizei, const vecN<T,N> &)
@@ -707,39 +396,6 @@ WRATHglUniform(int location, const std::vector<T> &v)
     }
 }
 
-/*!\fn void WRATHglUniform(int, GLfloat)
-  Equivalent to
-  \code
-  glUniform1f(location, v);
-  \endcode
-  i.e. set one float GLSL uniform.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v value to set the uniform as
- */
-inline
-void
-WRATHglUniform(int location, GLfloat v)
-{
-  glUniform1f(location, v);
-}
-
-/*!\fn void WRATHglUniform(int, GLint)
-  Equivalent to
-  \code
-  glUniform1i(location, v);
-  \endcode
-  i.e. set one int GLSL uniform.
-  \param location location of uniform, i.e. return value
-                  of glGetUniformLocation
-  \param v value to set the uniform as
- */
-inline
-void
-WRATHglUniform(int location, GLint v)
-{
-  glUniform1i(location, v);
-}
 
 
 
