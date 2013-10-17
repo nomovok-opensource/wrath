@@ -157,7 +157,7 @@ template<typename T>
 void
 WRATHglUniform(int location, const T &v);
 
-/*!\fn void WRATHglUniform(int, GLsizei, const T &)
+/*!\fn void WRATHglUniform(int, GLsizei, const T *)
   Overload mapping to one of WRATHglUniform1v, WRATHglUniform2v,
   WRATHglUniform3v or WRATHglUniform4v as:
   \code
@@ -176,7 +176,7 @@ template<typename T>
 void
 WRATHglUniform(int location, GLsizei count, const T *v);
 
-/*!\fn WRATHglUniform(int, GLsizei, const matrixNxM<N,M>*, bool)
+/*!\fn void WRATHglUniform(int, GLsizei, const matrixNxM<N,M>*, bool)
   Overload mapping to one of the glUniformMatrix family
   of calls to set an array of uniform matrices.
   \param location location of uniform, i.e. return value
@@ -191,7 +191,7 @@ template<unsigned int N, unsigned int M>
 void
 WRATHglUniform(int location, GLsizei count, const matrixNxM<N,M> *matrices, bool transposed=false)
 
-/*!\fn WRATHglUniform(int, const matrixNxM<N,M>&, bool)
+/*!\fn void WRATHglUniform(int, const matrixNxM<N,M>&, bool)
   Overload mapping to one of the glUniformMatrix family
   of calls to set a uniform matrix, equivalent to
   \code
