@@ -36,7 +36,7 @@
   \ref WRATHAutoLockMutex, \ref WRATHUnlockMutex,
   and \ref WRATHUnlockMutexIfNonNULL) \ref WRATHAtomicAddAndFetch
   and \ref WRATHAtomicSubtractAndFetch
-  - Helper math classes and routines: \ref matrixNxN, 
+  - Helper math classes and routines: \ref matrixNxM, 
   \ref float2x2, \ref matrix3x3, \ref matrix4x4, \ref float3x3,
   \ref float4x4, \ref projection_params, \ref float_projection_params,
   \ref orthogonal_projection_params, \ref float_orthogonal_projection_params,

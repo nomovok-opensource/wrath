@@ -29,46 +29,52 @@
  * @{
  */
 
-/*!\class matrixNxN
+/*!\class matrixNxM
   A generic matrix class whose 
   entries are packed in a form 
   suitable for OpenGL:
  
   \verbatim
-  data[ 0 ] data[ N  ] data[2N  ]  .. data[ N(N-1)  ]
-  data[ 1 ] data[ N+1] data[2N+1]  .. data[ N(N-1)+1]
+  data[ 0 ] data[ N  ] data[2N  ]  .. data[ N(M-1)  ]
+  data[ 1 ] data[ N+1] data[2N+1]  .. data[ N(M-1)+1]
   .
   .
-  data[N-1] data[2N-1] data[3N-1]  .. data[  N*N - 1] \endverbatim
+  data[N-1] data[2N-1] data[3N-1]  .. data[  N*M - 1] 
+  \endverbatim
 
- i.e. data[ row+ col*N] --> matrix(row,col), 
- with 0<=row<N, 0<=col<N
+ i.e. data[ row + col*N] --> matrix(row,col), 
+ with 0<=row<N, 0<=col<M
  operator()(row,col) --> data[row+col*N] <--> matrix(row,col)
 
  If WRATH_VECTOR_BOUND_CHECK is defined, 
  will perform bounds checking.
+ \tparam N hieght of matrix
+ \tparam M width of matrix
+ \tparam T matrix entry type
 */
-template<unsigned int N, typename T=GLfloat>
-class matrixNxN
+template<unsigned int N, unsigned int M, typename T=GLfloat>
+class matrixNxM
 {
 private:
-  vecN<T,N*N> m_data;
+  vecN<T,N*M> m_data;
 
 public:
 
-  /*!\fn matrixNxN(const matrixNxN&)
+  /*!\fn matrixNxM(const matrixNxM&)
     Copy-constructor for a NxN matrix.
     \param obj matrix to copy
    */
-  matrixNxN(const matrixNxN &obj):
-    m_data(obj.m_data) { }
+  matrixNxM(const matrixNxM &obj):
+    m_data(obj.m_data) 
+  {}
 
-  /*!\fn matrixNxN(void)
+  /*!\fn matrixNxM(void)
     Ctor.
-    Initializes an NxN matrix as the identity,
-    i.e. diagnols are 1 and other values are 0.
-   */
-  matrixNxN(void)
+    Initializes an NxN matrix as diagnols are 1 
+    and other values are 0, for square matrices,
+    that is the identity matrix.
+  */
+  matrixNxM(void)
   {
     for(unsigned int i=0;i<N;++i)
       {
@@ -82,12 +88,12 @@ public:
       }
   }
 
-  /*!\fn void swap(matrixNxN&)
+  /*!\fn void swap(matrixNxM&)
     Swaps the values between this and the parameter matrix.
     \param obj matrix to swap values with
    */
   void
-  swap(matrixNxN &obj)
+  swap(matrixNxM &obj)
   {
     m_data.swap(obj.m_data);
   }
@@ -113,7 +119,7 @@ public:
   /*!\fn const vecN<T,N*N>& raw_data(void) const
     Returns a const reference to the raw data vectors in the matrix.
     */
-  const vecN<T,N*N>&
+  const vecN<T,N*M>&
   raw_data(void) const { return m_data; }
 
   /*!\fn T& operator()(unsigned int, unsigned int)
@@ -126,7 +132,7 @@ public:
   {
     #ifdef WRATH_VECTOR_BOUND_CHECK 
       assert(row<N);
-      assert(col<N);
+      assert(col<M);
     #endif
     return m_data[N*col+row];
   }
@@ -141,172 +147,98 @@ public:
   {
     #ifdef WRATH_VECTOR_BOUND_CHECK 
       assert(row<N);
-      assert(col<N);
+      assert(col<M);
     #endif
     return m_data[N*col+row];
   }
 
-  /*!\fn vecN<T,N> row_vector(unsigned int row) const
-    Returns the row vector corresponding the row given in the
-    parameter, i.e. return value [I] equals operator()(row, I), 
-    i.e. a set of numbers going horizontally across the matrix
-    \param row target row
-   */
-  vecN<T,N>
-  row_vector(unsigned int row) const
-  {
-    //return row'th row (j fixed), note that the
-    //matrix is stored in column-major
-    //format!
-    WRATHassert(row<N);
-    return vecN<T,N>(m_data, row, N);
-  }
-
-  /*!\fn void row_vector(unsigned int row, const vecN<T,N>&)
-    Sets the target row of the matrix, i.e. for 0<=I<N,
-    operator()(row, I) = v[I].
-    \param row target row
-    \param v source vector
-   */
-  void
-  row_vector(unsigned int row, const vecN<T,N> &v)
-  {
-    WRATHassert(row<N);
-    for(unsigned int i=0; i<N; ++i)
-      {
-        operator()(row,i)=v[i];
-      }
-  }
-
-  /*!\fn vecN<T,N> col_vector(unsigned int col) const
-    Returns the column vector corresponding the row given in the
-    parameter, i.e. return value [I] equals operator()(I, col), 
-    i.e. a set of numbers going vertically down the matrix
-    \param col target column index
-   */
-  vecN<T,N>
-  col_vector(unsigned int col) const
-  {    
-    WRATHassert(col<N);
-    return vecN<T,N>(m_data, col*N, 1);
-  }
-
-  /*!\fn void col_vector(unsigned int col, const vecN<T,N>&)
-    Sets the target column of the matrix, i.e. for 0<=I<N,
-    operator()(I, col) = v[I].
-    \param col target column index
-    \param v source column vector
-   */
-  void
-  col_vector(unsigned int col, const vecN<T,N> &v)
-  {
-    WRATHassert(col<N);
-    for(unsigned int i=0;i<N;++i)
-      {
-        operator()(i,col)=v[i];
-      }
-  }
-
-  /*!\fn matrixNxN transpose(void) const
+  /*!\fn matrixNxM transpose(void) const
     Returns a transpose of the matrix.
    */
-  matrixNxN 
+  matrixNxM<M,N,T> 
   transpose(void) const
   {
-    matrixNxN retval;
+    matrixNxM<M,N,T>  retval;
 
     for(unsigned int i=0;i<N;++i)
       {
-        for(unsigned int j=0;j<N;++j)
+        for(unsigned int j=0;j<M;++j)
           {
             retval.operator()(i,j)=operator()(j,i);
           }
       }
     return retval;
   }
+  
 
-  /*!\fn void transpose_matrix(void)
-    Transposes the matrix in place.
-   */
-  void
-  transpose_matrix(void)
-  {
-    for(unsigned int i=0;i<N;++i)
-      {
-        for(unsigned int j=i;j<N;++j)
-          {
-            std::swap(operator()(i,j), operator()(j,i));
-          }
-      }
-  }
-
-  /*!\fn matrixNxN operator+(const matrixNxN&) const
+  /*!\fn matrixNxM operator+(const matrixNxM&) const
     Operator for adding matrices together.
     \param matrix target matrix
    */
-  matrixNxN
-  operator+(const matrixNxN &matrix) const
+  matrixNxM
+  operator+(const matrixNxM &matrix) const
   {
-    matrixNxN out;
+    matrixNxM out;
     out.m_data= m_data+matrix.m_data;
     return out;
   }
 
-  /*!\fn matrixNxN operator-(const matrixNxN&) const
+  /*!\fn matrixNxM operator-(const matrixNxM&) const
     Operator for substracting matrices from each other.
     \param matrix target matrix
    */
-  matrixNxN
-  operator-(const matrixNxN &matrix) const
+  matrixNxM
+  operator-(const matrixNxM &matrix) const
   {
-    matrixNxN out;
+    matrixNxM out;
     out.m_data= m_data-matrix.m_data;
     return out;
   }
 
-  /*!\fn matrixNxN operator*(const T&) const
+  /*!\fn matrixNxM operator*(const T&) const
     Multiplies the matrix with a given scalar.
     \param value scalar to multiply with
    */
-  matrixNxN
+  matrixNxM
   operator*(const T &value) const
   {
-    matrixNxN out;
+    matrixNxM out;
     out.m_data= m_data*value;
     return out;
   }
   
-  /*!\fn matrixNxN operator*(const T&, const matrixNxN&)
+  /*!\fn matrixNxM operator*(const T&, const matrixNxM&)
     Multiplies the given matrix with the given scalar
     and returns the resulting matrix.
     \param value scalar to multiply with
     \param matrix target matrix to multiply
    */
   friend
-  matrixNxN
-  operator*(const T &value, const matrixNxN &matrix)
+  matrixNxM
+  operator*(const T &value, const matrixNxM &matrix)
   {
-    matrixNxN out;
+    matrixNxM out;
     out.m_data=matrix.m_data*value;
     return out;
   }
 
-  /*!\fn matrixNxN operator*(const matrixNxN&) const
+  /*!\fn matrixNxM<N,K,T> operator*(const matrixNxM<M,K,T>&) const
     Multiplies this matrix with the given matrix.
     \param matrix target matrix
    */
-  matrixNxN
-  operator*(const matrixNxN &matrix) const
+  template<unsigned int K>
+  matrixNxM<N,K,T>
+  operator*(const matrixNxM<M,K,T> &matrix) const
   {
     unsigned int i,j,k;
-    matrixNxN out;
+    matrixNxM<N,K,T> out;
 
     for(i=0;i<N;++i)
       {
-        for(j=0;j<N;++j)
+        for(j=0;j<K;++j)
           {
             out.operator()(i,j)=T(0);
-            for(k=0;k<N;++k)
+            for(k=0;k<M;++k)
               {
                 out.operator()(i,j)+=operator()(i,k)*matrix.operator()(k,j);
               }
@@ -315,51 +247,51 @@ public:
     return out;
   }
 
-  /*!\fn vecN<T,N> operator*(const vecN<T,N>&) const
+  /*!\fn vecN<T,N> operator*(const vecN<T,M>&) const
     Multiplies the given vector with the matrix.
     \param in target vector
    */
   vecN<T,N>
-  operator*(const vecN<T,N> &in) const
+  operator*(const vecN<T,M> &in) const
   {
     vecN<T,N> retval;
 
     for(unsigned int i=0;i<N;++i)
-    {
-      retval[i]=T(0);
-      for(unsigned int j=0;j<N;++j)
-        {
-          retval[i]+=operator()(i,j)*in[j];
-        }
-    }
+      {
+	retval[i]=T(0);
+	for(unsigned int j=0;j<M;++j)
+	  {
+	    retval[i]+=operator()(i,j)*in[j];
+	  }
+      }
 
     return retval;
   }
 
 
-  /*!\fn vecN<T,N> operator*(const vecN<T,N>&, const matrixNxN&)
+  /*!\fn vecN<T,N> operator*(const vecN<T,N>&, const matrixNxM&)
     Multiplies the target matrix with the given vector
     \param matrix target matrix
     \param in target vector
    */
   friend
-  vecN<T,N>
-  operator*(const vecN<T,N> &in, const matrixNxN &matrix)
+  vecN<T,M>
+  operator*(const vecN<T,N> &in, const matrixNxM &matrix)
   {
-    vecN<T,N> retval;
+    vecN<T,M> retval;
 
-    for(unsigned int i=0;i<N;++i)
-    {
-      retval[i]=T(0);
-      for(unsigned int j=0;j<N;++j)
-        {
-          retval[i]+=in[j]*matrix.operator()(j,i);
-        }
-    }
+    for(unsigned int i=0;i<M;++i)
+      {
+	retval[i]=T(0);
+	for(unsigned int j=0;j<N;++j)
+	  {
+	    retval[i]+=in[j]*matrix.operator()(j,i);
+	  }
+      }
     return retval;
   }
 
-  /*!\fn std::ostream& operator<<(std::ostream&, const matrixNxN&)
+  /*!\fn std::ostream& operator<<(std::ostream&, const matrixNxM&)
     Pushes a string representation of the given matrix to the given
     stream.
     \param ostr output stream
@@ -367,7 +299,7 @@ public:
    */
   friend
   std::ostream&
-  operator<<(std::ostream &ostr, const matrixNxN &matrix)
+  operator<<(std::ostream &ostr, const matrixNxM &matrix)
   {
     unsigned int i,j;
 
@@ -375,7 +307,7 @@ public:
     for(i=0;i<N;++i)
     {
       ostr << "|";
-      for(j=0;j<N;++j)
+      for(j=0;j<M;++j)
         {
           ostr << std::setw(14) << std::setprecision(6) << matrix.operator()(i,j) << " ";
         }
@@ -393,24 +325,24 @@ public:
 
 namespace std
 {
-  /*!\fn swap(matrixNxN<N,T>&, matrixNxN<N,T>&)
+  /*!\fn swap(matrixNxM<N,T>&, matrixNxM<N,T>&)
     Swaps the two given matrices in place.
     \param obj0 first matrix
     \param obj1 second matrix
    */
-  template<unsigned int N, typename T>
+  template<unsigned int N, unsigned int M, typename T>
   inline
   void
-  swap(matrixNxN<N,T> &obj0, matrixNxN<N,T> &obj1)
+  swap(matrixNxM<N,M,T> &obj0, matrixNxM<N,M,T> &obj1)
   {
     obj0.swap(obj1);
   }
 }
 
 /*!\typedef float2x2
-  Convenience typedef to \ref matrixNxN\<2, float\>
+  Convenience typedef to \ref matrixNxM\<2, float\>
  */
-typedef matrixNxN<2, float> float2x2;
+typedef matrixNxM<2, 2, float> float2x2;
 
 /*!\class matrix3x3
   A representation of a 3x3 matrix, that in addition to the NxN
@@ -418,20 +350,25 @@ typedef matrixNxN<2, float> float2x2;
   determinant.
  */
 template<typename T>
-class matrix3x3:public matrixNxN<3,T>
+class matrix3x3:public matrixNxM<3,3,T>
 {
 public:
+  /*!\typedef base_class
+    Conveniance typedef to base class, matrixNxM<3,3,T>
+   */
+  typedef matrixNxM<3,3,T> base_class;
+
   /*!\fn matrix3x3(void)
     Initializes the 3x3 matrix as the identity,
     i.e. diagnols are 1 and other values are 0.
    */
-  matrix3x3(void):matrixNxN<3,T>() {}
+  matrix3x3(void):base_class() {}
 
-  /*!\fn matrix3x3(const matrixNxN<3,T>&)
+  /*!\fn matrix3x3(const base_class&)
     Copy-constructor for a 3x3 matrix.
     \param obj target matrix to copy.
    */
-  matrix3x3(const matrixNxN<3,T> &obj):matrixNxN<3,T>(obj) {}
+  matrix3x3(const base_class &obj):base_class(obj) {}
   
   /*!\fn matrix3x3(const vecN<T,3>&, const vecN<T,3>&, const vecN<T,3>&)
     Construct a matrix3x3 M so that
@@ -446,9 +383,9 @@ public:
   {
     for(int i=0;i<3;++i)
       {
-        matrixNxN<3, T>::operator()(i,0)=t[i];
-        matrixNxN<3, T>::operator()(i,1)=b[i];
-        matrixNxN<3, T>::operator()(i,2)=n[i];
+        base_class::operator()(i,0)=t[i];
+        base_class::operator()(i,1)=b[i];
+        base_class::operator()(i,2)=n[i];
       }
   }
 
@@ -458,17 +395,17 @@ public:
   T 
   determinate(void) const
   {
-    return matrixNxN<3,T>::operator()(0,0)*
-      ( matrixNxN<3,T>::operator()(1,1)*matrixNxN<3,T>::operator()(2,2) 
-        - matrixNxN<3,T>::operator()(1,2)*matrixNxN<3,T>::operator()(2,1) )
+    return base_class::operator()(0,0)*
+      ( base_class::operator()(1,1)*base_class::operator()(2,2) 
+        - base_class::operator()(1,2)*base_class::operator()(2,1) )
 
-      - matrixNxN<3,T>::operator()(1,0)*
-      ( matrixNxN<3,T>::operator()(0,1)*matrixNxN<3,T>::operator()(2,2) 
-        - matrixNxN<3,T>::operator()(2,1)*matrixNxN<3,T>::operator()(0,2) )
+      - base_class::operator()(1,0)*
+      ( base_class::operator()(0,1)*base_class::operator()(2,2) 
+        - base_class::operator()(2,1)*base_class::operator()(0,2) )
 
-      + matrixNxN<3,T>::operator()(2,0)*
-      ( matrixNxN<3,T>::operator()(0,1)*matrixNxN<3,T>::operator()(1,2)
-        - matrixNxN<3,T>::operator()(1,1)*matrixNxN<3,T>::operator()(0,2) ) ;
+      + base_class::operator()(2,0)*
+      ( base_class::operator()(0,1)*base_class::operator()(1,2)
+        - base_class::operator()(1,1)*base_class::operator()(0,2) ) ;
   }
 
   /*!\fn bool reverses_orientation(void) const
@@ -669,23 +606,28 @@ typedef orthogonal_projection_params<float> float_orthogonal_projection_params;
 /*!\class matrix4x4
   4x4 matrix class that provides functions for matrix math,
   such as scaling, translating and creating projection matrices.
-  Special case of NxN matrix.
+  Special case of NxM matrix.
  */
 template<typename T>
-class matrix4x4:public matrixNxN<4, T> 
+class matrix4x4:public matrixNxM<4, 4, T> 
 {
 public:
+  /*!\typedef base_class
+    Conveniance typedef to base class, matrixNxM<4,4,T>
+   */
+  typedef matrixNxM<4,4,T> base_class;
+
   /*!\fn matrix4x4(void)
     Initializes the 4x4 matrix as the identity,
     i.e. diagnols are 1 and other values are 0.
    */
-  matrix4x4(void):matrixNxN<4,T>() {}
+  matrix4x4(void):base_class() {}
 
-  /*!\fn matrix4x4(const matrixNxN<4,T>&)
+  /*!\fn matrix4x4(const base_class&)
     Copy-constructor for const 4x4 matrix.
     \param obj matrix to be copied from
    */
-  matrix4x4(const matrixNxN<4,T> &obj):matrixNxN<4,T>(obj) {}
+  matrix4x4(const base_class &obj):base_class(obj) {}
 
   /*!\fn matrix4x4(const vecN<T,3>&,
                    const vecN<T,3>&,
@@ -708,14 +650,14 @@ public:
   {
     for(int i=0;i<3;++i)
       {
-        matrixNxN<4, T>::operator()(i,0)=right[i];
-        matrixNxN<4, T>::operator()(i,1)=up[i];
-        matrixNxN<4, T>::operator()(i,2)=backwards[i];
-        matrixNxN<4, T>::operator()(i,3)=origin[i];
+        base_class::operator()(i,0)=right[i];
+        base_class::operator()(i,1)=up[i];
+        base_class::operator()(i,2)=backwards[i];
+        base_class::operator()(i,3)=origin[i];
         
-        matrixNxN<4, T>::operator()(3,i)=T(0);
+        base_class::operator()(3,i)=T(0);
       }
-    matrixNxN<4, T>::operator()(3,3)=T(1);    
+    base_class::operator()(3,3)=T(1);    
   }
 
   /*!\fn matrix4x4(const vecN<T,3>&)
@@ -724,52 +666,52 @@ public:
     */
   explicit 
   matrix4x4(const vecN<T,3> &translate):
-    matrixNxN<4,T>()
+    base_class()
   {
     for(int i=0;i<3;++i)
       {
-        matrixNxN<4, T>::operator()(i,3)=translate[i];
+        base_class::operator()(i,3)=translate[i];
       }
   }
 
-  /*!\fn matrix4x4(const matrixNxN<3,T>&, const vecN<T,3>&)
+  /*!\fn matrix4x4(const matrixNxM<3,3,T>&, const vecN<T,3>&)
     Creates a translated 4x4 matrix from a given matrix and
     translation.
     \param m source matrix
     \param translate translation matrix
     */
   explicit
-  matrix4x4(const matrixNxN<3,T> &m,
+  matrix4x4(const matrixNxM<3,3,T> &m,
             const vecN<T,3> &translate):
-    matrixNxN<4,T>()
+    base_class()
   {
     for(int i=0;i<3;++i)
       {
-        matrixNxN<4, T>::operator()(i,3)=translate[i];
-        matrixNxN<4, T>::operator()(3,i)=T(0);
+        base_class::operator()(i,3)=translate[i];
+        base_class::operator()(3,i)=T(0);
 
         for(int j=0;j<3;++j)
           {
-            matrixNxN<4, T>::operator()(i,j)=m.operator()(i,j);
+            base_class::operator()(i,j)=m.operator()(i,j);
           }
       }
-    matrixNxN<4, T>::operator()(3,3)=T(1);   
+    base_class::operator()(3,3)=T(1);   
   }
 
-  /*!\fn matrix4x4(const matrixNxN<3,T>&)
+  /*!\fn matrix4x4(const matrixNxM<3,3,T>&)
     Copy-constructor for a 4x4 matrix from
     a 3x3 matrix
     \param m source matrix to copy
     */
   explicit
-  matrix4x4(const matrixNxN<3,T> &m):
-    matrixNxN<4,T>()
+  matrix4x4(const matrixNxM<3,3,T> &m):
+    base_class()
   {
     for(int i=0;i<3;++i)
       {
         for(int j=0;j<3;++j)
           {
-            matrixNxN<4, T>::operator()(i,j)=m.operator()(i,j);
+            base_class::operator()(i,j)=m.operator()(i,j);
           }
       }
   }
@@ -782,9 +724,9 @@ public:
     */
   matrix4x4(const T &scaleX, const T &scaleY, const T &scaleZ)
   {
-    matrixNxN<4, T>::operator()(0,0)=scaleX;
-    matrixNxN<4, T>::operator()(1,1)=scaleY;
-    matrixNxN<4, T>::operator()(2,2)=scaleZ;
+    base_class::operator()(0,0)=scaleX;
+    base_class::operator()(1,1)=scaleY;
+    base_class::operator()(2,2)=scaleZ;
   } 
 
   /*!\fn matrix4x4(T, vecN<T,3>)
@@ -808,20 +750,20 @@ public:
     
     one_minus_c=T(1)-c;
 
-    matrixNxN<4, T>::operator()(0,0)=x*x*one_minus_c + c;
-    matrixNxN<4, T>::operator()(1,0)=y*x*one_minus_c + z*s;
-    matrixNxN<4, T>::operator()(2,0)=x*z*one_minus_c - y*s;
-    matrixNxN<4, T>::operator()(3,0)=T(0);
+    base_class::operator()(0,0)=x*x*one_minus_c + c;
+    base_class::operator()(1,0)=y*x*one_minus_c + z*s;
+    base_class::operator()(2,0)=x*z*one_minus_c - y*s;
+    base_class::operator()(3,0)=T(0);
 
-    matrixNxN<4, T>::operator()(0,1)=x*y*one_minus_c - z*s;
-    matrixNxN<4, T>::operator()(1,1)=y*y*one_minus_c + c;
-    matrixNxN<4, T>::operator()(2,1)=y*z*one_minus_c + x*s;
-    matrixNxN<4, T>::operator()(3,1)=T(0);
+    base_class::operator()(0,1)=x*y*one_minus_c - z*s;
+    base_class::operator()(1,1)=y*y*one_minus_c + c;
+    base_class::operator()(2,1)=y*z*one_minus_c + x*s;
+    base_class::operator()(3,1)=T(0);
 
-    matrixNxN<4, T>::operator()(0,2)=x*z*one_minus_c + y*s;
-    matrixNxN<4, T>::operator()(1,2)=y*z*one_minus_c - x*s;
-    matrixNxN<4, T>::operator()(2,2)=z*z*one_minus_c + c;
-    matrixNxN<4, T>::operator()(3,2)=T(0);
+    base_class::operator()(0,2)=x*z*one_minus_c + y*s;
+    base_class::operator()(1,2)=y*z*one_minus_c - x*s;
+    base_class::operator()(2,2)=z*z*one_minus_c + c;
+    base_class::operator()(3,2)=T(0);
   }
 
   /*!\fn matrix4x4(const projection_params<T>&)
@@ -830,7 +772,7 @@ public:
    */
   explicit
   matrix4x4(const projection_params<T> &P):
-    matrixNxN<4,T>()
+    base_class()
   {
     projection_matrix(P);
   }
@@ -842,7 +784,7 @@ public:
     */
   explicit
   matrix4x4(const orthogonal_projection_params<T> &P):
-    matrixNxN<4,T>()
+    base_class()
   {
     orthogonal_projection_matrix(P);
   }
@@ -855,34 +797,34 @@ public:
   void
   projection_matrix(const projection_params<T> &P)
   {
-    matrixNxN<4, T>::operator()(0,0)=T(2)*P.m_near/(P.m_right-P.m_left);
-    matrixNxN<4, T>::operator()(1,0)=T(0);
-    matrixNxN<4, T>::operator()(2,0)=T(0);
-    matrixNxN<4, T>::operator()(3,0)=T(0);
+    base_class::operator()(0,0)=T(2)*P.m_near/(P.m_right-P.m_left);
+    base_class::operator()(1,0)=T(0);
+    base_class::operator()(2,0)=T(0);
+    base_class::operator()(3,0)=T(0);
     
-    matrixNxN<4, T>::operator()(0,1)=T(0);
-    matrixNxN<4, T>::operator()(1,1)=T(2)*P.m_near/(P.m_top-P.m_bottom);
-    matrixNxN<4, T>::operator()(2,1)=T(0);
-    matrixNxN<4, T>::operator()(3,1)=T(0);
+    base_class::operator()(0,1)=T(0);
+    base_class::operator()(1,1)=T(2)*P.m_near/(P.m_top-P.m_bottom);
+    base_class::operator()(2,1)=T(0);
+    base_class::operator()(3,1)=T(0);
 
 
-    matrixNxN<4, T>::operator()(0,2)=(P.m_right+P.m_left)/(P.m_right-P.m_left);
-    matrixNxN<4, T>::operator()(1,2)=(P.m_top+P.m_bottom)/(P.m_top-P.m_bottom);
-    matrixNxN<4, T>::operator()(3,2)=T(-1);
+    base_class::operator()(0,2)=(P.m_right+P.m_left)/(P.m_right-P.m_left);
+    base_class::operator()(1,2)=(P.m_top+P.m_bottom)/(P.m_top-P.m_bottom);
+    base_class::operator()(3,2)=T(-1);
 
-    matrixNxN<4, T>::operator()(0,3)=T(0);
-    matrixNxN<4, T>::operator()(1,3)=T(0);
-    matrixNxN<4, T>::operator()(3,3)=T(0);
+    base_class::operator()(0,3)=T(0);
+    base_class::operator()(1,3)=T(0);
+    base_class::operator()(3,3)=T(0);
     
     if(!P.m_farAtinfinity)  
       {
-        matrixNxN<4, T>::operator()(2,2)=(P.m_near+P.m_far)/(P.m_near-P.m_far);
-        matrixNxN<4, T>::operator()(2,3)=T(2)*P.m_near*P.m_far/(P.m_near-P.m_far);
+        base_class::operator()(2,2)=(P.m_near+P.m_far)/(P.m_near-P.m_far);
+        base_class::operator()(2,3)=T(2)*P.m_near*P.m_far/(P.m_near-P.m_far);
       }
     else
       {
-        matrixNxN<4, T>::operator()(2,2)=T(-1);
-        matrixNxN<4, T>::operator()(2,3)=T(-2)*P.m_near;
+        base_class::operator()(2,2)=T(-1);
+        base_class::operator()(2,3)=T(-2)*P.m_near;
       }
   }
 
@@ -895,33 +837,33 @@ public:
   void
   inverse_projection_matrix(const projection_params<T> &P)
   {
-    matrixNxN<4, T>::operator()(0,0)=(P.m_right-P.m_left)/( T(2)*P.m_near);
-    matrixNxN<4, T>::operator()(1,0)=T(0);
-    matrixNxN<4, T>::operator()(2,0)=T(0);
-    matrixNxN<4, T>::operator()(3,0)=T(0);
+    base_class::operator()(0,0)=(P.m_right-P.m_left)/( T(2)*P.m_near);
+    base_class::operator()(1,0)=T(0);
+    base_class::operator()(2,0)=T(0);
+    base_class::operator()(3,0)=T(0);
     
-    matrixNxN<4, T>::operator()(0,1)=T(0);
-    matrixNxN<4, T>::operator()(1,1)=(P.m_top-P.m_bottom)/( T(2)*P.m_near);
-    matrixNxN<4, T>::operator()(2,1)=T(0);
-    matrixNxN<4, T>::operator()(3,1)=T(0);
+    base_class::operator()(0,1)=T(0);
+    base_class::operator()(1,1)=(P.m_top-P.m_bottom)/( T(2)*P.m_near);
+    base_class::operator()(2,1)=T(0);
+    base_class::operator()(3,1)=T(0);
     
-    matrixNxN<4, T>::operator()(0,2)=T(0);
-    matrixNxN<4, T>::operator()(1,2)=T(0);
-    matrixNxN<4, T>::operator()(2,2)=T(0);
+    base_class::operator()(0,2)=T(0);
+    base_class::operator()(1,2)=T(0);
+    base_class::operator()(2,2)=T(0);
     
-    matrixNxN<4, T>::operator()(0,3)=(P.m_right+P.m_left)/( T(2)*P.m_near);
-    matrixNxN<4, T>::operator()(1,3)=(P.m_top+P.m_bottom)/( T(2)*P.m_near);
-    matrixNxN<4, T>::operator()(2,3)=T(-1);
+    base_class::operator()(0,3)=(P.m_right+P.m_left)/( T(2)*P.m_near);
+    base_class::operator()(1,3)=(P.m_top+P.m_bottom)/( T(2)*P.m_near);
+    base_class::operator()(2,3)=T(-1);
     
     if(!P.m_farAtinfinity)  
       {      
-        matrixNxN<4, T>::operator()(3,2)=(P.m_near-P.m_far)/(P.m_far*P.m_near*T(2));
-        matrixNxN<4, T>::operator()(3,3)=(P.m_near+P.m_far)/(P.m_far*P.m_near*T(-2));
+        base_class::operator()(3,2)=(P.m_near-P.m_far)/(P.m_far*P.m_near*T(2));
+        base_class::operator()(3,3)=(P.m_near+P.m_far)/(P.m_far*P.m_near*T(-2));
       }
     else
       {
-        matrixNxN<4, T>::operator()(3,2)=T(-1)/ (2.0f*P.m_near);
-        matrixNxN<4, T>::operator()(3,3)=T(-1)/ (2.0f*P.m_near);
+        base_class::operator()(3,2)=T(-1)/ (2.0f*P.m_near);
+        base_class::operator()(3,3)=T(-1)/ (2.0f*P.m_near);
       }
   }
   
@@ -933,25 +875,25 @@ public:
   void
   orthogonal_projection_matrix(const projection_params<T> &P)
   {
-    matrixNxN<4, T>::operator()(0,0)=T(2)/(P.m_right-P.m_left);
-    matrixNxN<4, T>::operator()(1,0)=T(0);
-    matrixNxN<4, T>::operator()(2,0)=T(0);
-    matrixNxN<4, T>::operator()(3,0)=T(0);
+    base_class::operator()(0,0)=T(2)/(P.m_right-P.m_left);
+    base_class::operator()(1,0)=T(0);
+    base_class::operator()(2,0)=T(0);
+    base_class::operator()(3,0)=T(0);
     
-    matrixNxN<4, T>::operator()(0,1)=T(0);
-    matrixNxN<4, T>::operator()(1,1)=T(2)/(P.m_top-P.m_bottom);
-    matrixNxN<4, T>::operator()(2,1)=T(0);
-    matrixNxN<4, T>::operator()(3,1)=T(0);
+    base_class::operator()(0,1)=T(0);
+    base_class::operator()(1,1)=T(2)/(P.m_top-P.m_bottom);
+    base_class::operator()(2,1)=T(0);
+    base_class::operator()(3,1)=T(0);
     
-    matrixNxN<4, T>::operator()(0,2)=T(0);
-    matrixNxN<4, T>::operator()(1,2)=T(0);
-    matrixNxN<4, T>::operator()(2,2)=T(2)/(P.m_near-P.m_far);
-    matrixNxN<4, T>::operator()(3,2)=T(0);
+    base_class::operator()(0,2)=T(0);
+    base_class::operator()(1,2)=T(0);
+    base_class::operator()(2,2)=T(2)/(P.m_near-P.m_far);
+    base_class::operator()(3,2)=T(0);
     
-    matrixNxN<4, T>::operator()(0,3)=(P.m_right+P.m_left)/(P.m_left-P.m_right);
-    matrixNxN<4, T>::operator()(1,3)=(P.m_top+P.m_bottom)/(P.m_bottom-P.m_top);
-    matrixNxN<4, T>::operator()(2,3)=(P.m_near+P.m_far)/(P.m_near-P.m_far);
-    matrixNxN<4, T>::operator()(3,3)=T(1);
+    base_class::operator()(0,3)=(P.m_right+P.m_left)/(P.m_left-P.m_right);
+    base_class::operator()(1,3)=(P.m_top+P.m_bottom)/(P.m_bottom-P.m_top);
+    base_class::operator()(2,3)=(P.m_near+P.m_far)/(P.m_near-P.m_far);
+    base_class::operator()(3,3)=T(1);
   }
 
   /*!\fn void orthogonal_projection_matrix(const T&, const T&, const T&, const T&, const T&, const T&)
@@ -1067,7 +1009,7 @@ public:
     return vecN<T,3>(temp);
   }
 
-  /*!\fn matrixNxN<3,T> upper3x3_submatrix(void) const
+  /*!\fn matrixNxM<3,T> upper3x3_submatrix(void) const
     Returns a 3x3 matrix representing the upper-left part
     of the matrix:\n\n
       M11 M12 M13|M14\n
@@ -1076,15 +1018,15 @@ public:
       ---------------\n
       M41 M42 M43|M44\n
    */
-  matrixNxN<3,T> 
+  matrixNxM<3,3,T> 
   upper3x3_submatrix(void) const
   {
-    matrixNxN<3,T> retval;
+    matrixNxM<3,3,T> retval;
     for(int i=0;i<3;++i)
       {
         for(int j=0;j<3;++j)
           {
-            retval.operator()(i,j)=matrixNxN<4,T>::operator()(i,j);
+            retval.operator()(i,j)=base_class::operator()(i,j);
           }
       }
     return retval;
@@ -1103,7 +1045,7 @@ public:
 
     for(int i=0;i<3;++i)
       {
-        retval[i]=matrixNxN<4,T>::operator()(i,3);
+        retval[i]=base_class::operator()(i,3);
       }
 
     return retval;
@@ -1119,7 +1061,7 @@ public:
   {
     for(int i=0;i<3;++i)
       {
-        matrixNxN<4,T>::operator()(i,3)=v[i];
+        base_class::operator()(i,3)=v[i];
       }
   }
 
@@ -1129,17 +1071,17 @@ public:
   T 
   upper3x3_determinate(void) const
   {
-    return matrixNxN<4,T>::operator()(0,0)*
-      ( matrixNxN<4,T>::operator()(1,1)*matrixNxN<4,T>::operator()(2,2) 
-        - matrixNxN<4,T>::operator()(1,2)*matrixNxN<4,T>::operator()(2,1) )
+    return base_class::operator()(0,0)*
+      ( base_class::operator()(1,1)*base_class::operator()(2,2) 
+        - base_class::operator()(1,2)*base_class::operator()(2,1) )
 
-      - matrixNxN<4,T>::operator()(1,0)*
-      ( matrixNxN<4,T>::operator()(0,1)*matrixNxN<4,T>::operator()(2,2) 
-        - matrixNxN<4,T>::operator()(2,1)*matrixNxN<4,T>::operator()(0,2) )
+      - base_class::operator()(1,0)*
+      ( base_class::operator()(0,1)*base_class::operator()(2,2) 
+        - base_class::operator()(2,1)*base_class::operator()(0,2) )
 
-      + matrixNxN<4,T>::operator()(2,0)*
-      ( matrixNxN<4,T>::operator()(0,1)*matrixNxN<4,T>::operator()(1,2)
-        - matrixNxN<4,T>::operator()(1,1)*matrixNxN<4,T>::operator()(0,2) ) ;
+      + base_class::operator()(2,0)*
+      ( base_class::operator()(0,1)*base_class::operator()(1,2)
+        - base_class::operator()(1,1)*base_class::operator()(0,2) ) ;
   }
 
   /*!\fn bool reverses_orientation(void) const
