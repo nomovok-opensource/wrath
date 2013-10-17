@@ -56,6 +56,10 @@
   inline void WRATHglUniform(int location, TYPE v)			\
   {									\
     glUniform1##GLFN(location, v);					\
+  }									\
+  inline void WRATHglUniform(int location, GLsizei count, const TYPE *v) \
+  {									\
+    WRATHglUniform1v(location, count, v);				\
   }
 
 
