@@ -25,6 +25,11 @@
 
 #define __WRATH_GL_UNIFORM_IMPLEMENT_TCC__
 
+#if defined(WRATH_GL_VERSION) || WRATH_GLES_VERSION>=3
+#define WRATH_GL_SUPPORT_NON_SQUARE_MATRICES
+#define WRATH_GL_SUPPORT_DOUBLE_AND_UINT_UNIFORMS
+#endif
+
 
 /*
   Implement WRATHglUniform{1,2,3,4}v overloads to correct
@@ -35,7 +40,7 @@
   TYPE GL type, such as GLfloat
   COUNT one of {1,2,3,4}
  */
-#define IMPLEMENT_WRATH_GL_UNIFORM_CNT(GLFN, TYPE, COUNT)		\
+#define WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, COUNT)		\
   inline void WRATHglUniform##COUNT##v(int location, GLsizei count, const TYPE *v) \
   {									\
     glUniform##COUNT##GLFN##v(location, count, v);			\
@@ -50,20 +55,18 @@
   }
 
 /*
-  Use IMPLEMENT_WRATH_GL_UNIFORM_CNT to implement
+  Use WRATH_GL_UNIFORM_IMPL_CNT to implement
   all for a given type. In addition array WRATHglUniform
   without vecN.
 
   GLFN one of {d,f,i,ui}
   TYPE GL type, such as GLfloat
-  COUNT one of {1,2,3,4}
-  
  */
-#define IMPLEMENT_WRATH_GL_UNIFORM(GLFN, TYPE)				\
-  IMPLEMENT_WRATH_GL_UNIFORM_CNT(GLFN, TYPE, 1)				\
-  IMPLEMENT_WRATH_GL_UNIFORM_CNT(GLFN, TYPE, 2)				\
-  IMPLEMENT_WRATH_GL_UNIFORM_CNT(GLFN, TYPE, 3)				\
-  IMPLEMENT_WRATH_GL_UNIFORM_CNT(GLFN, TYPE, 4)				\
+#define WRATH_GL_UNIFORM_IMPL(GLFN, TYPE)				\
+  WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, 1)				\
+  WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, 2)				\
+  WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, 3)				\
+  WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, 4)				\
   inline void WRATHglUniform(int location, TYPE v)			\
   {									\
     glUniform1##GLFN(location, v);					\
@@ -73,60 +76,98 @@
     WRATHglUniform1v(location, count, v);				\
   }
 
+/*
+  Implement square matrices uniform setting
+  A: dimension of matrix, one of  {2,3,4}
+  GLFN: one of {f,d}
+  TYPE: one of {GLfloat, GLdouble}
+*/
+#define WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, A)		\
+  inline void WRATHglUniform(int location, GLsizei count, const matrixNxM<A,A,TYPE> *matrices, bool transposed=false) \
+  {									\
+    glUniformMatrix##A##GLFN##v(location, count, transposed?GL_TRUE:GL_FALSE, reinterpret_cast<const TYPE*>(matrices)); \
+  }									\
+  inline void WRATHglUniform(int location, const matrixNxM<A,A,TYPE> &matrix, bool transposed=false) \
+  {									\
+    WRATHglUniform(location, 1, &matrix, transposed);			\
+  }
 
-IMPLEMENT_WRATH_GL_UNIFORM(f, GLfloat)
-IMPLEMENT_WRATH_GL_UNIFORM(i, GLint)
 
-#if defined(WRATH_GL_VERSION) || WRATH_GLES_VERSION>=3
-IMPLEMENT_WRATH_GL_UNIFORM(ui, GLuint)
-IMPLEMENT_WRATH_GL_UNIFORM(d, GLdouble)
+#ifdef WRATH_GL_SUPPORT_NON_SQUARE_MATRICES
+  /*
+    Implement non-square matrices uniform setting
+    A: height of matrix, one of  {2,3,4}
+    B: width of matrix, one of  {2,3,4}
+    GLFN: one of {f,d}
+    TYPE: one of {GLfloat, GLdouble}
+ */
+#define WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, A,B)	\
+  inline void WRATHglUniform(int location, GLsizei count, const matrixNxM<A,B,TYPE> *matrices, bool transposed=false) \
+  {									\
+    glUniformMatrix##A##x##B##GLFN##v(location, count, transposed?GL_TRUE:GL_FALSE, reinterpret_cast<const TYPE*>(matrices)); \
+  }									\
+  inline void WRATHglUniform(int location, const matrixNxM<A,B,TYPE> &matrix, bool transposed=false) \
+  {									\
+    WRATHglUniform(location, 1, &matrix, transposed);			\
+  }
+
+
+#else
+  #define WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, A, B)	
 #endif
 
 
-#undef IMPLEMENT_WRATH_GL_UNIFORM
-#undef IMPLEMENT_WRATH_GL_UNIFORM_CNT
 
 /*
   Implement square matrices uniform setting
- */
-#define WRATH_GL_UNIFORM_MATRIX_SQUARE_IMPL(A) \
-  inline void WRATHglUniform(int location, GLsizei count, const matrixNxM<A,A> *matrices, bool transposed=false) \
-  {									\
-    glUniformMatrix##A##fv(location, count, transposed?GL_TRUE:GL_FALSE, reinterpret_cast<const GLfloat*>(matrices)); \
-  }									\
-  inline void WRATHglUniform(int location, const matrixNxM<A,A> &matrix, bool transposed=false) \
-  {									\
-    WRATHglUniform(location, 1, &matrix, transposed);			\
-  }
-WRATH_GL_UNIFORM_MATRIX_SQUARE_IMPL(2)
-WRATH_GL_UNIFORM_MATRIX_SQUARE_IMPL(3)
-WRATH_GL_UNIFORM_MATRIX_SQUARE_IMPL(4)
+  GLFN: one of {f,d}
+  TYPE: one of {GLfloat, GLdouble}
+*/
+#define WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL(GLFN, TYPE)	 \
+  WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, 2) \
+  WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, 3) \
+  WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, 4) 
 
-#undef WRATH_GL_UNIFORM_MATRIX_SQUARE_IMPL
-
-
-#if defined(WRATH_GL_VERSION) || WRATH_GLES_VERSION>=3
 
 /*
   Implement non-square matrices uniform setting
- */
-#define WRATH_GL_UNIFORM_MATRIX_IMPL(A,B) \
-  inline void WRATHglUniform(int location, GLsizei count, const matrixNxM<A,B> *matrices, bool transposed=false) \
-  {									\
-    glUniformMatrix##A##x##B##fv(location, count, transposed?GL_TRUE:GL_FALSE, reinterpret_cast<const GLfloat*>(matrices)); \
-  }									\
-  inline void WRATHglUniform(int location, const matrixNxM<A,B> &matrix, bool transposed=false) \
-  {									\
-    WRATHglUniform(location, 1, &matrix, transposed);			\
-  }
+  GLFN: one of {f,d}
+  TYPE: one of {GLfloat, GLdouble}
+*/
+#define WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL(GLFN, TYPE)		\
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,2,3)		\
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,2,4)		\
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,3,2)		\
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,3,4)		\
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,4,2)		\
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,4,3)		
+  
 
-WRATH_GL_UNIFORM_MATRIX_IMPL(2,3)
-WRATH_GL_UNIFORM_MATRIX_IMPL(2,4)
-WRATH_GL_UNIFORM_MATRIX_IMPL(3,2)
-WRATH_GL_UNIFORM_MATRIX_IMPL(3,4)
-WRATH_GL_UNIFORM_MATRIX_IMPL(4,2)
-WRATH_GL_UNIFORM_MATRIX_IMPL(4,3)
+/*
+  Implement all matrix uniform setting
+  GLFN: one of {f,d}
+  TYPE: one of {GLfloat, GLdouble}
+*/
+#define WRATH_GL_UNIFORM_MATRIX_IMPL(GLFN, TYPE)	\
+  WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL(GLFN, TYPE)	\
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL(GLFN, TYPE)	
 
-#undef WRATH_GL_UNIFORM_MATRIX_IMPL
 
+#ifdef WRATH_GL_SUPPORT_DOUBLE_AND_UINT_UNIFORMS
+  WRATH_GL_UNIFORM_IMPL(ui, GLuint)
+  WRATH_GL_UNIFORM_IMPL(d, GLdouble)
+  WRATH_GL_UNIFORM_MATRIX_IMPL(d, GLdouble)
 #endif
+
+WRATH_GL_UNIFORM_IMPL(f, GLfloat)
+WRATH_GL_UNIFORM_IMPL(i, GLint)
+WRATH_GL_UNIFORM_MATRIX_IMPL(f, GLfloat)
+
+#undef WRATH_GL_UNIFORM_IMPL
+#undef WRATH_GL_UNIFORM_IMPL_CNT
+#undef WRATH_GL_UNIFORM_MATRIX_IMPL
+#undef WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL
+#undef WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM
+#undef WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL
+#undef WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL_DIM
+
