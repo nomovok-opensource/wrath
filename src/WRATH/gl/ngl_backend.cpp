@@ -80,12 +80,13 @@ ngl_on_load_function_error(const char *fname)
 }
 
 
-const char* 
+std::string 
 ngl_ErrorCheck(const char *call, const char *function_name, 
                const char *fileName, int line, 
                void* fptr)
 {
-  static std::string errorData;
+  WRATHStaticInit();
+
   std::ostringstream str;
   int errorcode;
   int count;
@@ -98,13 +99,13 @@ ngl_ErrorCheck(const char *call, const char *function_name,
 
   if(fptr==ngl_functionPointer(glGetError))
     {
-      return NULL;
+      return std::string();
     }
 
   errorcode=glGetError();
   if(errorcode==GL_NO_ERROR and !ngl_log_gl_commands())
     {
-      return NULL;
+      return std::string();
     }
 
   for(count=0; errorcode!=GL_NO_ERROR; ++count, errorcode=glGetError() )
@@ -140,30 +141,30 @@ ngl_ErrorCheck(const char *call, const char *function_name,
     {
       str << "Post-Log(GL command returned)";
     }
-
-
-  errorData=str.str();
-  
-  
-  return errorData.c_str();
+  return str.str();
 }
 
 
-const char* 
+std::string
 ngl_preErrorCheck(const char *call, const char *function_name, 
                   const char *fileName, int line, 
                   void* fptr)
 {
+  WRATHStaticInit();
+
   WRATHunused(call);
   WRATHunused(function_name);
   WRATHunused(fileName);
   WRATHunused(line);
   WRATHunused(fptr);
+  std::string return_value;
 
   if(ngl_log_gl_commands())
     {
-      return "Pre-Log";
+      std::ostringstream str;
+      str << "Pre-Log[" << fileName << ", " << line << "]";
+      return_value=str.str();
     }
 
-  return NULL;
+  return return_value;
 }

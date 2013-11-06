@@ -429,7 +429,7 @@ output_to_source(ostream &sourceFile)
     }
 
   
-  sourceFile <<  ")\n{\n\tconst char *errorCode;\n\t";
+  sourceFile <<  ")\n{\n\tstd::string errorCode;\n\t";
   
   
   if(returns_value())
@@ -448,7 +448,7 @@ output_to_source(ostream &sourceFile)
              << function_pregl_error() << "(call,\"" 
              << function_name() << "\",file,line,(void*)" 
              << function_pointer_name() << ");\n\t"
-             << "if(errorCode!=NULL and " << log_stream() << "!=NULL)\n\t{\n\t\t(*" << log_stream() 
+             << "if(!errorCode.empty() and " << log_stream() << "!=NULL)\n\t{\n\t\t(*" << log_stream() 
              << ") << \"(\" << std::dec << line << \",\" << file << \") " << function_name() <<"(\"";   
   
   for(i=0;i<number_arguments();++i)
@@ -475,7 +475,7 @@ output_to_source(ostream &sourceFile)
              << function_gl_error() << "(call,\"" 
              << function_name() << "\",file,line,(void*)"
              << function_pointer_name() << ");\n\t"
-             << "if(errorCode!=NULL and " << log_stream() << "!=NULL)\n\t{\n\t\t(*" << log_stream() 
+             << "if(!errorCode.empty() and " << log_stream() << "!=NULL)\n\t{\n\t\t(*" << log_stream() 
              << ") << \"(\" << line << \",\" << file << \") " << function_name() <<"(\"";   
   
   for(i=0;i<number_arguments();++i)
@@ -591,14 +591,15 @@ HeaderStart(ostream &headerFile, const list<string> &fileNames)
                << "#ifndef APIENTRYP\n#define APIENTRYP APIENTRY*\n#endif\n";
   
 
-  headerFile << "#include <iostream>\nstd::ostream *" 
+  headerFile << "#include <string>\n"
+	     << "#include <iostream>\nstd::ostream *" 
              << log_stream_function_name() << "(void);\n\n";
       
   headerFile << "void* " << function_loader() << "(const char *name);\n"
              << "void " << function_error_loading() << "(const char *fname);\n"
-             << "const char* " << function_gl_error() 
+             << "std::string " << function_gl_error() 
              << "(const char *call, const char *function_name, const char *fileName, int line, void* fptr);\n"
-             << "const char* " << function_pregl_error() 
+             << "std::string " << function_pregl_error() 
              << "(const char *call, const char *function_name, const char *fileName, int line, void* fptr);\n"
              << "int  " << inside_begin_end_pair_function() << "(void);\n"
              << "void " << function_load_all() << "(void);\n\n";
@@ -666,9 +667,9 @@ SourceStart(ostream &sourceFile, const list<string> &fileNames)
   
   sourceFile << "void* " << function_loader() << "(const char *name);\n"
              << "void " << function_error_loading() << "(const char *fname);\n"
-             << "const char* " << function_gl_error() 
+             << "std::string " << function_gl_error() 
              << "(const char *call, const char *function_name, const char *fileName, int line, void* fptr);\n"
-             << "const char* " << function_pregl_error() 
+             << "std::string " << function_pregl_error() 
              << "(const char *call, const char *function_name, const char *fileName, int line, void* fptr);\n"
              << "int  " << inside_begin_end_pair_function() << "(void);\n"
              << "void " << function_load_all() << "(void);\n\n";
