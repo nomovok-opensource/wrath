@@ -33,24 +33,27 @@ namespace WRATHAttributeStoreKeyImplement
   class index_bit_count_from_typeT<GLubyte>
   {
   public:
+    static
     enum WRATHAttributeStoreKey::index_bit_count_type
-    operator()(void) const { return WRATHAttributeStoreKey::index_8bits; }
+    f(void) { return WRATHAttributeStoreKey::index_8bits; }
   };
 
   template<>
   class index_bit_count_from_typeT<GLushort>
   {
   public:
+    static
     enum WRATHAttributeStoreKey::index_bit_count_type
-    operator()(void) const { return WRATHAttributeStoreKey::index_16bits; }
+    f(void) { return WRATHAttributeStoreKey::index_16bits; }
   };
 
   template<>
   class index_bit_count_from_typeT<GLuint>
   {
   public:
+    static
     enum WRATHAttributeStoreKey::index_bit_count_type
-    operator()(void) const { return WRATHAttributeStoreKey::index_32bits; }
+    f(void) { return WRATHAttributeStoreKey::index_32bits; }
   };
   /**/
 
@@ -62,8 +65,7 @@ enum WRATHAttributeStoreKey::index_bit_count_type
 WRATHAttributeStoreKey::
 index_bit_count_from_type(void)
 {
-  WRATHAttributeStoreKeyImplement::index_bit_count_from_typeT<I> v;
-  return v();
+  return WRATHAttributeStoreKeyImplement::index_bit_count_from_typeT<I>::f();
 }
 
 #endif
