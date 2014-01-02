@@ -99,6 +99,7 @@ DemoKernelMaker(void):
   m_width(800, "width", "window width", *this),
   m_height(480, "height", "window height", *this),
   m_bpp(32, "bpp", "bits per pixel", *this),
+  m_libGL("", "libGL", "if non-empty use a custom libGL.so", *this),
   m_end_demo_flag(false),
   m_d(NULL),
   m_ep(NULL),
@@ -184,6 +185,11 @@ init_sdl(void)
 #if defined(WRATH_GL_VERSION)
   {
     video_flags|=SDL_OPENGL;
+
+    if(m_libGL.set_by_command_line())
+      {
+	SDL_GL_LoadLibrary(m_libGL.m_value.c_str());
+      }
 
     /*
       set GL attributes:

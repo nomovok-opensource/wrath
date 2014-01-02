@@ -163,6 +163,7 @@ public:
   command_line_argument_value<int> m_width;
   command_line_argument_value<int> m_height;
   command_line_argument_value<int> m_bpp;
+  command_line_argument_value<std::string> m_libGL;
 
   DemoKernelMaker(void);
 

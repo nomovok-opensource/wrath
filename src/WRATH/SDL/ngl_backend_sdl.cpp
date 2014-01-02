@@ -19,6 +19,7 @@
 
 
 #include "WRATHConfig.hpp"
+#include <SDL_video.h>
 #include <sstream>
 
 void*
@@ -27,5 +28,13 @@ ngl_loadFunction_default(const char *);
 void*
 ngl_loadFunction(const char *name)
 {
-  return ngl_loadFunction_default(name);
+  #ifdef WRATH_GLES_VERSION
+  {
+    return ngl_loadFunction_default(name);
+  }
+  #else
+  {
+    return SDL_GL_GetProcAddress(name);
+  }
+  #endif
 }
