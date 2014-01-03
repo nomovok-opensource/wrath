@@ -267,6 +267,7 @@ fetch_texture_font_drawer(const WRATHTextureFont::FragmentSource *fs_source,
   new_specifier->append_vertex_shader_source()
     .add_source("font_common_base.vert.wrath-shader.glsl",
                 WRATHGLShader::from_resource)
+    .add_source(fs_source->m_vertex_processor[v])
     .absorb(vertex_shader_source());
   
   new_specifier->append_fragment_shader_source()

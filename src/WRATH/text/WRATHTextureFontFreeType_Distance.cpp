@@ -70,10 +70,29 @@ namespace
       m_allocator=WRATHImage::create_texture_allocator(true, m_texture_creation_size,
                                                        GL_REPEAT,
                                                        GL_REPEAT);
+      
 
-      m_fragment_source.m_fragment_processor
-        .add_source("font_distance_base.frag.wrath-shader.glsl",
+      m_vertex_source[linear_glyph_position].m_fragment_processor
+        .add_source("font_common_linear.vert.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
+
+      
+
+      m_vertex_source[nonlinear_glyph_position].m_fragment_processor
+        .add_source("font_common_nonlinear.vert.wrath-shader.glsl",
+                    WRATHGLShader::from_resource);
+
+
+      m_fragment_source[linear_glyph_position].m_fragment_processor
+        .add_source("font_distance_linear.frag.wrath-shader.glsl",
+                    WRATHGLShader::from_resource);
+
+      
+
+      m_fragment_source[nonlinear_glyph_position].m_fragment_processor
+        .add_source("font_distance_nonlinear.frag.wrath-shader.glsl",
+                    WRATHGLShader::from_resource);
+
       
       m_fragment_source.m_fragment_processor_sampler_names
         .push_back("DistanceField");

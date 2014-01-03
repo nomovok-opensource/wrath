@@ -1022,23 +1022,27 @@ public:
 
     /*!\var m_pre_vertex_processor
       GLSL source coded added _before_ vertex source 
-      code of the WRATHFontShaderSpecifier indexed
-      by \ref glyph_position_linearity
+      code indexed by \ref glyph_position_linearity
      */
     source_set m_pre_vertex_processor;
 
     /*!\var m_pre_fragment_processor
       GLSL source coded added _before_ fragment source 
-      code of the WRATHFontShaderSpecifier indexed
-      by \ref glyph_position_linearity
+      code indexed by \ref glyph_position_linearity
      */
     source_set m_pre_fragment_processor;
 
-    /*!\fn fragment_processor
+    /*!\var m_vertex_processor
+      GLSL source code that implements the function 
+      <B>pre_compute_glyph</B> indexed by \ref 
+      glyph_position_linearity
+     */
+    source_set m_vertex_processor;
+
+    /*!\var m_fragment_processor
       GLSL source code that implements the functions 
       <B>is_covered</B> and <B>compute_coverage</B>.
-      \param p indicates if glyph position data is linear
-               or not.
+      indexed by \ref glyph_position_linearity
      */
     source_set m_fragment_processor;
 
