@@ -96,7 +96,8 @@ WRATHFontShaderSpecifier(const ResourceKey &pname,
   m_initializers(initers),
   m_bind_actions(on_bind_actions),
   m_modifiable(true),
-  m_font_discard_thresh(0.9f)
+  m_font_discard_thresh(0.9f),
+  m_linear_glyph_position(true)
 {
   append_vertex_shader_source()=vs;
   append_fragment_shader_source()=fs;
@@ -113,7 +114,8 @@ WRATHFontShaderSpecifier(const WRATHGLShader::shader_source &vs,
   m_initializers(initers),
   m_bind_actions(on_bind_actions),
   m_modifiable(true),
-  m_font_discard_thresh(0.9f)
+  m_font_discard_thresh(0.9f),
+  m_linear_glyph_position(true)
 {
   append_vertex_shader_source()=vs;
   append_fragment_shader_source()=fs;
@@ -233,17 +235,30 @@ fetch_texture_font_drawer(const WRATHTextureFont::FragmentSource *fs_source,
     is WRATHTextureFont::FragmentSource interface, perhaps
     use an std::map for its way to specify shader code?
    */
+
+  enum WRATHTextureFont::FragmentSource::glyph_position_linearity v;
+  const char *linearity_macro[]=
+    {
+      /*[linear_glyph_position]=   */ "WRATH_TEXTURE_FONT_LINEAR",
+      /*[nonlinear_glyph_position]=*/ "WRATH_TEXTURE_FONT_NONLINEAR"
+    };
+
+  v=(m_linear_glyph_position)?
+    WRATHTextureFont::FragmentSource::linear_glyph_position:
+    WRATHTextureFont::FragmentSource::nonlinear_glyph_position;
   
   /*
     pre-shader source codes.
    */
   new_specifier->append_pre_vertex_shader_source()
+    .add_macro(linearity_macro[v])
     .absorb(vertex_pre_shader_source())
-    .absorb(fs_source->m_pre_vertex_processor);
+    .absorb(fs_source->m_pre_vertex_processor[v]);
   
   new_specifier->append_pre_fragment_shader_source()
+    .add_macro(linearity_macro[v])
     .absorb(fragment_pre_shader_source())
-    .absorb(fs_source->m_pre_fragment_processor);
+    .absorb(fs_source->m_pre_fragment_processor[v]);
     
   
   /*
@@ -257,7 +272,7 @@ fetch_texture_font_drawer(const WRATHTextureFont::FragmentSource *fs_source,
   new_specifier->append_fragment_shader_source()
     .add_source("font_common_base.frag.wrath-shader.glsl",
                 WRATHGLShader::from_resource)
-    .absorb(fs_source->m_fragment_processor)
+    .absorb(fs_source->m_fragment_processor[v])
     .absorb(fragment_shader_source());
   
   

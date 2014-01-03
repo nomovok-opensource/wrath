@@ -270,6 +270,30 @@ public:
     return m_bind_actions;
   }
 
+  /*!\fn bool linear_glyph_position(void) const
+    Returns true if the font shader code is to 
+    compute the glyph positional values in
+    the vertex shader. Default value is true
+   */
+  bool 
+  linear_glyph_position(void) const
+  {
+    return m_linear_glyph_position;
+  }
+
+  /*!\fn void linear_glyph_position(bool) 
+    Sets true if the font shader code is to 
+    compute the glyph positional values in
+    the vertex shader. Default value is true
+    \param b value with which to assign
+   */
+  void
+  linear_glyph_position(bool b)
+  {
+    WRATHassert(m_modifiable);
+    m_linear_glyph_position=b;
+  }
+
   /*!\fn WRATHGLProgramInitializerArray& append_initializers
     Returns a reference to the WRATHGLProgramInitializerArray
     object of this WRATHShaderSpecifier. Modify the returned
@@ -723,10 +747,11 @@ private:
   WRATHGLProgramInitializerArray m_initializers;
   WRATHGLProgramOnBindActionArray m_bind_actions;
   mutable bool m_modifiable;
-
   
   float m_font_discard_thresh;
   WRATHGLShader::shader_source m_empty_source;
+
+  bool m_linear_glyph_position;
 
   mutable WRATHMutex m_mutex;
   mutable map_type m_actual_creators;

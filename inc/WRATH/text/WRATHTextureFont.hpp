@@ -906,19 +906,65 @@ public:
     A FragmentSource object represents _how_
     a WRATHTextureFont derived object computes
     if(and/or how much) a fragment is covered.
-    It is NOT a standalone fragment shader, rather
-    it provides the functions:
-    - float is_covered(void)
-    - float compute_coverage(void)
+    
+    A FragmentSource specifies if the positional
+    data within the glyph is must be computed
+    in the vertex shader or can be computed 
+    (non-linearly) in the fragment shader.
 
-    An implementation of is_covered(void) 
-    returns 1.0 if the texel is considered
-    covered and 0.0 if it is not.
-
-    An implementation of compute_coverage(void)
-    returns a value in the range [0.0, 1.0]
-    giving a coverage value to be used with
-    AA -blending of drawing a glyph.
+    For the case where the position of the glyph
+    is linear, a FragmentSource implements:
+    - In the vertex shader, implement
+      \code
+      void pre_compute_glyph(in vec2 glyph_position, 
+                             in vec2 glyph_bottom_left,
+                             in vec2 glyph_size,
+	  		     in vec2 glyph_texture_reciprocal_size)
+      \endcode
+      where glyph_position is the position in texels,
+      glyph_bottom_left is from \ref glyph_data_type::texel_lower_left(),
+      glyph_size are is from \ref glyph_data_type::texel_size(),
+      and glyph_texture_reciprocal_size is the reciprocal of the
+      size of the texture. 
+   - In the Fragment shader, implement the functions
+     \code
+     float is_covered(void)
+     float compute_coverage(void)
+     \endcode
+     The function <B>is_covered()</B> returns
+     either 1.0 or 0.0 corresponding to
+     if the fragment is covered or not. The 
+     function <B>compute_coverage()</B> 
+     computes a value in the range [0.0, 1.0] 
+     indicating how much of the fragment is
+     covered. The return value is used to
+     render the glyph with anti-aliasing.
+   
+    For the case where the position of the glyph
+    is non-linear, a FragmentSource implements:
+    - In the vertex shader, implement
+      \code
+      void pre_compute_glyph(in vec2 glyph_bottom_left,
+                             in vec2 glyph_size,
+	  		     in vec2 glyph_texture_reciprocal_size)
+      \endcode
+      where glyph_bottom_left is from \ref glyph_data_type::texel_lower_left(),
+      glyph_size are is from \ref glyph_data_type::texel_size(),
+      and glyph_texture_reciprocal_size is the reciprocal of the
+      size of the texture.     
+   - In the Fragment shader, implement the functions
+     \code
+     float is_covered(in vec2 glyph_position, in vec2 glyph_reciprocal_size)
+     float compute_coverage(in vec2 glyph_position, in vec2 glyph_reciprocal_size)
+     \endcode
+     The function <B>is_covered()</B> returns
+     either 1.0 or 0.0 corresponding to
+     if the fragment is covered or not. The 
+     function <B>compute_coverage()</B> 
+     computes a value in the range [0.0, 1.0] 
+     indicating how much of the fragment is
+     covered. The return value is used to
+     render the glyph with anti-aliasing.
 
     The WRATH framework will provide vec2
     values for use by the fragment code:
@@ -934,29 +980,67 @@ public:
             max LOD, only present if the macro 
             EMULATE_MAX_TEXTURE_LEVEL is defined
    */
-  class FragmentSource
+  class FragmentSource:boost::noncopyable
   {
   public:
-    /*!\var m_pre_vertex_processor
-      GLSL source coded added _before_
-      vertex source code of the
-      WRATHFontShaderSpecifier
+
+    /*!\enum glyph_position_linearity
+      Enumeration type to specify shader source
+      code for linearity of glyph position type.
+    */
+    enum glyph_position_linearity
+      {
+	/*!
+	  Indicates position within glyph is
+	  linear and thus computed entirely
+	  from vertex shader
+	 */
+	linear_glyph_position,
+
+	/*!
+	  Indicates position within glyph is
+	  non-linear and computed from fragment
+	  shader
+	 */
+	nonlinear_glyph_position,
+
+	/*!
+	  Number lnearity types
+	 */
+	num_linearity_types
+      };
+
+    /*!\typedef source_set
+      Array of shader source code indexed by
+      \ref glyph_position_linearity
      */
-    WRATHGLShader::shader_source m_pre_vertex_processor;
+    typedef vecN<WRATHGLShader::shader_source, num_linearity_types> source_set;
+    
+    virtual
+    ~FragmentSource() 
+    {}
+
+    /*!\var m_pre_vertex_processor
+      GLSL source coded added _before_ vertex source 
+      code of the WRATHFontShaderSpecifier indexed
+      by \ref glyph_position_linearity
+     */
+    source_set m_pre_vertex_processor;
 
     /*!\var m_pre_fragment_processor
-      GLSL source coded added _before_
-      fragment source code of the
-      WRATHFontShaderSpecifier
+      GLSL source coded added _before_ fragment source 
+      code of the WRATHFontShaderSpecifier indexed
+      by \ref glyph_position_linearity
      */
-    WRATHGLShader::shader_source m_pre_fragment_processor;
+    source_set m_pre_fragment_processor;
 
-    /*!\var m_fragment_processor
-      GLSL source code that implements
-      the functions is_covered() and
-      compute_coverage().
+    /*!\fn fragment_processor
+      GLSL source code that implements the functions 
+      <B>is_covered</B> and <B>compute_coverage</B>.
+      \param p indicates if glyph position data is linear
+               or not.
      */
-    WRATHGLShader::shader_source m_fragment_processor;
+    source_set m_fragment_processor;
 
     /*!\var m_fragment_processor_sampler_names
       An array of sampler names used by the GLSL code
@@ -968,8 +1052,14 @@ public:
       order of the sampler names.
      */
     std::vector<std::string> m_fragment_processor_sampler_names;
-  };
 
+    /*!\var m_global_names
+      List of global variables (uniforms, functions and varyings)
+      that the GLSL source code induces. Does NOT include
+      the values from \ref m_fragment_processor_sampler_names.
+     */
+    std::vector<std::string> m_global_names;
+  };
   
   /*!\fn WRATHTextureFont
     Ctor, registers the font with the resouce manager.
