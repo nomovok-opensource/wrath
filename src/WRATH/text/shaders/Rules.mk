@@ -11,6 +11,9 @@ include $(dir)/Rules.mk
 dir := $(d)/coverage
 include $(dir)/Rules.mk
 
+dir := $(d)/detailed_coverage
+include $(dir)/Rules.mk
+
 dir := $(d)/distance
 include $(dir)/Rules.mk
 

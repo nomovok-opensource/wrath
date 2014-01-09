@@ -19,11 +19,13 @@
 
 
 
-uniform mediump sampler2D CoverageTexture;
-uniform mediump sampler2D IndexTexture; 
+uniform mediump sampler2D wrath_DetailedCoverageTexture;
+uniform mediump sampler2D wrath_DetailedIndexTexture; 
 
 mediump float
-compute_coverage(void)
+wrath_detailed_compute_coverage(in vec2 GlyphCoordinate,
+                                in vec2 GlyphNormalizedCoordinate,
+                                in float GlyphIndex)
 {
   mediump vec4 loc_sz;
   mediump vec2 idx_tex;
@@ -54,15 +56,19 @@ compute_coverage(void)
   #endif
 
   
-  loc_sz=texture2D(IndexTexture, idx_tex);
+  loc_sz=texture2D(wrath_DetailedIndexTexture, idx_tex);
   ptex=loc_sz.xy + GlyphNormalizedCoordinate*loc_sz.zw;
 
-  return texture2D(CoverageTexture, ptex).r;
+  return texture2D(wrath_DetailedCoverageTexture, ptex).r;
                    
 }
 
 mediump float 
-is_covered(void)
+wrath_detailed_is_covered(in vec2 GlyphCoordinate,
+                          in vec2 GlyphNormalizedCoordinate,
+                          in float GlyphIndex)
 {
-  return step(0.5, compute_coverage());
+  return step(0.5, compute_coverage(GlyphCoordinate,
+                                    GlyphNormalizedCoordinate,
+                                    GlyphIndex));
 }

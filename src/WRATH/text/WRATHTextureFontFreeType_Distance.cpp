@@ -73,21 +73,17 @@ namespace
       
 
       m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
-        .add_source("font_distance_linear.vert.wrath-shader.glsl",
-                    WRATHGLShader::from_resource);
+        .add_source("font_distance_linear.vert.wrath-shader.glsl", WRATHGLShader::from_resource);
 
       m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
-        .add_source("font_distance_linear.frag.wrath-shader.glsl",
-                    WRATHGLShader::from_resource);
+        .add_source("font_distance_linear.frag.wrath-shader.glsl", WRATHGLShader::from_resource);
 
 
       m_glyph_glsl.m_fragment_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
-        .add_source("font_distance_nonlinear.vert.wrath-shader.glsl",
-                    WRATHGLShader::from_resource);
+        .add_source("font_distance_nonlinear.vert.wrath-shader.glsl", WRATHGLShader::from_resource);
 
       m_glyph_glsl.m_fragment_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
-        .add_source("font_distance_nonlinear.frag.wrath-shader.glsl",
-                    WRATHGLShader::from_resource);
+        .add_source("font_distance_nonlinear.frag.wrath-shader.glsl", WRATHGLShader::from_resource);
 
       
       m_glyph_glsl.m_sampler_names.push_back("wrath_DistanceField");

@@ -67,7 +67,7 @@ namespace
 
     WRATHImage::ImageFormatArray m_index_format;
     WRATHImage::ImageFormatArray m_coverage_format;
-    WRATHTextureFont::FragmentSource m_fragment_source;
+    WRATHTextureFont::GlyphGLSL m_glyph_glsl;
 
   private:
     WRATHMutex m_mutex;
@@ -163,15 +163,28 @@ common_data_type(void):
     }
   m_pixel_sizes.insert(last_size);
 
-  m_fragment_source.m_fragment_processor
-    .add_source("font_detailed_base.frag.wrath-shader.glsl",
-                WRATHGLShader::from_resource);
+  m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
+    .add_source("font_detailed_linear.vert.wrath-shader.glsl", WRATHGLShader::from_resource);
+
+  m_glyph_glsl.m_fragment_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
+    .add_source("font_detailed_base.frag.wrath-shader.glsl", WRATHGLShader::from_resource)
+    .add_source("font_detailed_linear.frag.wrath-shader.glsl", WRATHGLShader::from_resource);
+
+  m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
+    .add_source("font_detailed_nonlinear.vert.wrath-shader.glsl", WRATHGLShader::from_resource);
+
+  m_glyph_glsl.m_fragment_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
+    .add_source("font_detailed_base.frag.wrath-shader.glsl", WRATHGLShader::from_resource)
+    .add_source("font_detailed_nonlinear.frag.wrath-shader.glsl", WRATHGLShader::from_resource);
   
-  m_fragment_source.m_fragment_processor_sampler_names
-    .push_back("CoverageTexture");
-  
-  m_fragment_source.m_fragment_processor_sampler_names
-    .push_back("IndexTexture");
+  m_glyph_glsl.m_sampler_names.push_back("wrath_DetailedCoverageTexture");
+  m_glyph_glsl.m_sampler_names.push_back("wrath_DetailedIndexTexture");
+
+  m_glyph_glsl.m_global_names.push_back("wrath_detailed_compute_coverage");
+  m_glyph_glsl.m_global_names.push_back("wrath_detailed_is_covered");
+  m_glyph_glsl.m_global_names.push_back("wrath_DetailedNormalizedCoord_Position");
+  m_glyph_glsl.m_global_names.push_back("wrath_DetailedGlyphIndex");
+  m_glyph_glsl.m_global_names.push_back("wrath_DetailedGlyphRecipSize_GlyphIndex");
 }
 
 WRATHImage::TextureAllocatorHandle
@@ -576,7 +589,6 @@ generate_character(glyph_index_type G)
       WRATHassert(index_image->minX_minY().x()==0);
       WRATHassert(index_image->size().x()==index_image->atlas_size().x());
       WRATHassert(index_image->minX_minY().y()<256 and index_image->minX_minY().y()>=0);
-      return_value->m_custom_int_data.push_back(index_image->minX_minY().y());
       return_value->m_custom_float_data.push_back(static_cast<float>(index_image->minX_minY().y())/255.0f);
     }
                                          
@@ -629,19 +641,11 @@ number_texture_pages(void)
   return m_page_tracker.number_texture_pages();
 }
 
-const WRATHTextureFont::FragmentSource*
+const WRATHTextureFont::GlyphGLSL*
 WRATHTextureFontFreeType_DetailedCoverage::
-fragment_source(void)
+glyph_glsl(void)
 {
-  return &common_data().m_fragment_source;
-}
-
-
-uint8_t
-WRATHTextureFontFreeType_DetailedCoverage::
-unnormalized_glyph_code_value(const glyph_data_type &G)
-{
-  return G.fetch_custom_int(0);
+  return &common_data().m_glyph_glsl;
 }
 
 float

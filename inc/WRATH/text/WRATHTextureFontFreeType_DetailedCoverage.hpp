@@ -67,8 +67,7 @@
   - the normalized_localized_glyph_code to feed as the .y texture coordinate to feed to texture 0,
     stored as an unsigned byte (thus 0-->0.0f, 255->1.0f, etc). Ideally this should be a dedicated
     attribute to a vertex shader. The value normalized can be fetched via 
-    \ref normalized_glyph_code_value() and the value unnormalized can be 
-    fetched via \ref unnormalized_glyph_code_value().
+    \ref normalized_glyph_code_value().
 
   glyph_data_type 's of WRATHTextureFontFreeType_DetailedCoverage have that
   - glyph_data_type::texel_lower_left() always returns (0,0).
@@ -144,19 +143,6 @@ public:
   virtual
   const GlyphGLSL*
   glyph_glsl(void);
-  
-
-  /*!\fn uint8_t unnormalized_glyph_code_value
-    glyph_data_type objects of a WRATHTextureFontFreeType_DetailedCoverage
-    carry an additional custom attribute common to the
-    entire glyph. This value is a texture coordinate to
-    feed to texture 1 as the t(aka y) coordinate.
-    Returns the value unnormalized as an unsigned
-    8-bit integer.
-   */
-  static
-  uint8_t
-  unnormalized_glyph_code_value(const glyph_data_type &G);
 
   /*!\fn float normalized_glyph_code_value
     glyph_data_type objects of a WRATHTextureFontFreeType_DetailedCoverage
