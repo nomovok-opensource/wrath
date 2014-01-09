@@ -29,7 +29,7 @@ namespace
   typedef vec2 glyph_stretch_type;
   typedef vecN<GLushort,2> glyph_size_type;
   typedef vecN<GLushort,2> glyph_bottom_left_type;
-  typedef vecN<GLushort,2> glyph_normalized_coordinate_type;
+  typedef vecN<GLshort,2> glyph_normalized_coordinate_type;
   typedef vecN<GLubyte,4> color_type;
   typedef GLfloat custom_glyph_data_type;
   
@@ -212,6 +212,7 @@ attribute_key(WRATHAttributeStoreKey &pkey) const
     .type_and_format(type_tag<character_attribute>());
 
   pkey.m_attribute_format_location[color_location].m_normalized=GL_TRUE;
+  pkey.m_attribute_format_location[glyph_normalized_coordinate_location].m_normalized=GL_TRUE;
 }
 
 
@@ -223,7 +224,7 @@ WRATHDefaultTextAttributePacker::
 pack_attribute(enum WRATHFormattedTextStream::corner_type ct,
                const glyph_data &in_glyph,
                const vec2 &normalized_glyph_coordinate_float,
-               vecN<GLshort,2> /*normalized_glyph_coordinate_short*/,
+               vecN<GLshort,2> normalized_glyph_coordinate_short,
                c_array<uint8_t> packing_destination,
                const PackerState&) const
 {
