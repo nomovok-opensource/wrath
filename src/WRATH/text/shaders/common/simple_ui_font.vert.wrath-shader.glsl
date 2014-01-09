@@ -56,6 +56,11 @@ shader_in highp vec2 glyph_size;
 shader_in highp vec2 glyph_bottom_left_texel;
 
 /*
+  normalized coordinate within the glyph
+ */
+shader_in highp vec2 glyph_normalized_coordinate;
+
+/*
   Color of the glyph, 
    comment: when clipping via normalized coordinates
    is active, we do internally interpolate the color,

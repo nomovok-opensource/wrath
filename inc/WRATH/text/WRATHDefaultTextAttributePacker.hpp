@@ -73,7 +73,16 @@ public:
         Attribute name in GLSL is "glyph_bottom_left_texel".
         - .xy holds the value for \ref WRATHTextureFont::native_value
       */
-      glyph_bottom_left_texel_location,         
+      glyph_bottom_left_texel_location,   
+
+      /*!
+        location of normalized coordinate within the glyph,
+        i.e. the bottom left is (0,0) and the top right is (1,1).
+        If the y-coordinate increases down the screen, then the
+        top right normalized coordinate is (1, -1).
+        Attribute name in GLSL is "glyph_normalized_coordinate".
+       */
+      glyph_normalized_coordinate_location,
 
       /*!
         location of color, a vec4 (in GLSL) .

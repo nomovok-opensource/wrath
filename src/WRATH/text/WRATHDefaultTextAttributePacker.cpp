@@ -29,6 +29,7 @@ namespace
   typedef vec2 glyph_stretch_type;
   typedef vecN<GLushort,2> glyph_size_type;
   typedef vecN<GLushort,2> glyph_bottom_left_type;
+  typedef vecN<GLushort,2> glyph_normalized_coordinate_type;
   typedef vecN<GLubyte,4> color_type;
   typedef GLfloat custom_glyph_data_type;
   
@@ -39,8 +40,9 @@ namespace
                                       glyph_stretch_type, //stretch -- 1
                                       glyph_size_type, //glyph_size -- 2
                                       glyph_bottom_left_type, //glyph bottom left -- 3
-                                      color_type, //color --4
-                                      custom_glyph_data_type //custom_data -- 5
+                                      glyph_normalized_coordinate_type, //glyph_normalized -- 4
+                                      color_type, //color --5
+                                      custom_glyph_data_type //custom_data --6
                                       >  
   {
   public:
@@ -49,6 +51,12 @@ namespace
     custom_glyph_data(void)
     {
       return get<WRATHDefaultTextAttributePacker::custom_data_location>();
+    }
+
+    glyph_normalized_coordinate_type&
+    glyph_normalized_coordinate(void)
+    {
+      return get<WRATHDefaultTextAttributePacker::glyph_normalized_coordinate_location>();
     }
 
     color_type&
@@ -109,6 +117,7 @@ namespace
         "glyph_stretch",
         "glyph_size",
         "glyph_bottom_left_texel",
+        "glyph_normalized_coordinate", 
         "color",
 
 	/*
@@ -117,7 +126,7 @@ namespace
 	 */
         "custom_data0",
       };
-    static const_c_array<attribute_label_type> R(attribute_labels, 6);
+    static const_c_array<attribute_label_type> R(attribute_labels, 7);
     return R;
   }
 
@@ -225,16 +234,15 @@ pack_attribute(enum WRATHFormattedTextStream::corner_type ct,
   ivec2 native_bl(in_glyph.m_glyph->texel_lower_left(WRATHTextureFont::native_value));
   ivec2 native_sz(in_glyph.m_glyph->texel_size(WRATHTextureFont::native_value));
 
-  
-  
-  attr[0].glyph_bottom_left()=glyph_bottom_left_type(native_bl.x(), native_bl.y());
-  attr[0].glyph_size()=glyph_size_type(native_sz.x(), native_sz.y());
   attr[0].position()=position_type(in_glyph.m_native_position[0].x(), 
                                    in_glyph.m_native_position[0].y(), 
                                    in_glyph.m_z_position, 
                                    in_glyph.m_scale);
   attr[0].glyph_stretch()=glyph_stretch_type(in_glyph.m_horizontal_stretching,
                                              in_glyph.m_vertical_stretching);
+  attr[0].glyph_size()=glyph_size_type(native_sz.x(), native_sz.y());
+  attr[0].glyph_bottom_left()=glyph_bottom_left_type(native_bl.x(), native_bl.y());  
+  attr[0].glyph_normalized_coordinate()=normalized_glyph_coordinate_short;
   attr[0].custom_glyph_data()=in_glyph.m_glyph->fetch_custom_float(0);
   
   
