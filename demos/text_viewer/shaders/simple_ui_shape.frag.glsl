@@ -33,7 +33,7 @@ shader_main(void)
 
   mediump vec4 color;
 
-  #ifdef NON_LINEAR_GRADIENT
+  #ifdef WRATH_NON_LINEAR_GRADIENT
     mediump vec2 tex_coord;
   #endif
 

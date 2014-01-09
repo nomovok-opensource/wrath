@@ -22,12 +22,12 @@
   
   Some notes:
    if NONWRATH_LINEAR_BRUSH_PRESENT is defined, then 
-   both LINEAR_GRADIENT and LINEAR_TEXTURE_COORDINATE
+   both WRATH_LINEAR_GRADIENT and LINEAR_TEXTURE_COORDINATE
    should NOT be defined.
  */
 #ifdef NONWRATH_LINEAR_BRUSH_PRESENT
-  #ifdef LINEAR_GRADIENT
-  #error "LINEAR_GRADIENT defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
+  #ifdef WRATH_LINEAR_GRADIENT
+  #error "WRATH_LINEAR_GRADIENT defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
   #endif
 
   #ifdef LINEAR_TEXTURE_COORDINATE
@@ -35,7 +35,7 @@
   #endif
 #endif
 
-#ifdef LINEAR_GRADIENT
+#ifdef WRATH_LINEAR_GRADIENT
   #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
      shader_out mediump float wrath_brush_tex_coord;
   #else
@@ -43,7 +43,7 @@
   #endif
 #endif
 
-#ifdef NON_LINEAR_GRADIENT
+#ifdef WRATH_NON_LINEAR_GRADIENT
 
   #ifndef NONWRATH_LINEAR_BRUSH_PRESENT
     #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
@@ -68,7 +68,7 @@
 uniform mediump vec2 wrath_brush_imageTextureSize; //let it be available to vertex shader too
 #endif
 
-#if defined(NON_LINEAR_TEXTURE_COORDINATE) && !defined(NON_LINEAR_GRADIENT) && !defined(NONWRATH_LINEAR_BRUSH_PRESENT)
+#if defined(NON_LINEAR_TEXTURE_COORDINATE) && !defined(WRATH_NON_LINEAR_GRADIENT) && !defined(NONWRATH_LINEAR_BRUSH_PRESENT)
   shader_out mediump vec2 wrath_brush_frag_pos;
   #define FRAG_POS_DEFINED
 #endif
@@ -117,7 +117,7 @@ void wrath_shader_brush_prepare(in vec2 highp p)
   }
   #endif
 
-  #ifdef LINEAR_GRADIENT
+  #ifdef WRATH_LINEAR_GRADIENT
   {
     #ifndef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
     {
@@ -130,7 +130,7 @@ void wrath_shader_brush_prepare(in vec2 highp p)
     }
     #endif
   }
-  #elif defined(NON_LINEAR_GRADIENT)
+  #elif defined(WRATH_NON_LINEAR_GRADIENT)
   {
     #ifndef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
     {
@@ -138,7 +138,7 @@ void wrath_shader_brush_prepare(in vec2 highp p)
     }
     #endif
 
-    #ifdef FULLY_NON_LINEAR_GRADIENT
+    #ifdef WRATH_FULLY_NON_LINEAR_GRADIENT
     {
       pre_compute_gradient();
     }

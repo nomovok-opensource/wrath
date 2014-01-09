@@ -123,21 +123,21 @@ add_shader_source_code_specify_interpolation(enum interpolation_behaviour_t ibt,
       switch(ibt)
          {
          case linear_computation:
-           vs.add_macro("LINEAR_GRADIENT");
-           fs.add_macro("LINEAR_GRADIENT");
+           vs.add_macro("WRATH_LINEAR_GRADIENT");
+           fs.add_macro("WRATH_LINEAR_GRADIENT");
            break;
            
          case nonlinear_computation:
-           vs.add_macro("NON_LINEAR_GRADIENT");
-           fs.add_macro("NON_LINEAR_GRADIENT");
+           vs.add_macro("WRATH_NON_LINEAR_GRADIENT");
+           fs.add_macro("WRATH_NON_LINEAR_GRADIENT");
            break;
 
          default://fall through
          case fully_nonlinear_computation:
-           vs.add_macro("NON_LINEAR_GRADIENT")
-             .add_macro("FULLY_NON_LINEAR_GRADIENT");
-           fs.add_macro("NON_LINEAR_GRADIENT")
-             .add_macro("FULLY_NON_LINEAR_GRADIENT");
+           vs.add_macro("WRATH_NON_LINEAR_GRADIENT")
+             .add_macro("WRATH_FULLY_NON_LINEAR_GRADIENT");
+           fs.add_macro("WRATH_NON_LINEAR_GRADIENT")
+             .add_macro("WRATH_FULLY_NON_LINEAR_GRADIENT");
            break;
          }
     }

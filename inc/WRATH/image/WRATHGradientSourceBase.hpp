@@ -118,15 +118,15 @@ namespace WRATHGradientSourceBasePrivate
 
 
   The class \ref WRATHShaderBrushSourceHoard, in implementing the 
-  GLSL code for brush functions, obey the added macros LINEAR_GRADIENT, 
-  NON_LINEAR_GRADIENT and FULLY_NON_LINEAR_GRADIENT by adding \#ifdef's checking 
+  GLSL code for brush functions, obey the added macros WRATH_LINEAR_GRADIENT, 
+  WRATH_NON_LINEAR_GRADIENT and WRATH_FULLY_NON_LINEAR_GRADIENT by adding \#ifdef's checking 
   for those macros when calling the functions compute_gradient() 
   and pre_compute_gradient(). These macros are added
   by \ref add_shader_source_code_specify_interpolation() when the
   passed parameter suffic is empty as follows:
-  - WRATHBaseSource::linear_computation: LINEAR_GRADIENT in vertex and fragment shader
-  - WRATHBaseSource::nonlinear_computation NON_LINEAR_GRADIENT in vertex and fragment shader
-  - WRATHBaseSource::fully_nonlinear_computation NON_LINEAR_GRADIENT and FULLY_NON_LINEAR_GRADIENT in vertex and fragment shader
+  - WRATHBaseSource::linear_computation: WRATH_LINEAR_GRADIENT in vertex and fragment shader
+  - WRATHBaseSource::nonlinear_computation WRATH_NON_LINEAR_GRADIENT in vertex and fragment shader
+  - WRATHBaseSource::fully_nonlinear_computation WRATH_NON_LINEAR_GRADIENT and WRATH_FULLY_NON_LINEAR_GRADIENT in vertex and fragment shader
  */
 class WRATHGradientSourceBase:public WRATHBaseSource
 {
@@ -181,8 +181,8 @@ public:
                   <B>compute_gradient()</B> and <B>pre_compute_gradient()</B>. 
                   A non-empty suffix indicates that the functions
                   are being chained from another function, in this
-                  case none of the macros LINEAR_GRADIENT, NON_LINEAR_GRADIENT
-                  and FULLY_NON_LINEAR_GRADIENT will be added
+                  case none of the macros WRATH_LINEAR_GRADIENT, WRATH_NON_LINEAR_GRADIENT
+                  and WRATH_FULLY_NON_LINEAR_GRADIENT will be added
    */
   void
   add_shader_source_code_specify_interpolation(enum interpolation_behaviour_t ibt,

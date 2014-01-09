@@ -23,17 +23,17 @@
   
   Some notes:
    if NONWRATH_LINEAR_BRUSH_PRESENT is defined, then 
-   both LINEAR_GRADIENT and LINEAR_TEXTURE_COORDINATE
+   both WRATH_LINEAR_GRADIENT and LINEAR_TEXTURE_COORDINATE
    are NOT defined.
  */
 #ifdef NONWRATH_LINEAR_BRUSH_PRESENT
-  #ifdef LINEAR_GRADIENT
-  #error "LINEAR_GRADIENT defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
+  #ifdef WRATH_LINEAR_GRADIENT
+  #error "WRATH_LINEAR_GRADIENT defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
   #endif
 
-  #ifdef NON_LINEAR_GRADIENT
-    #ifndef FULLY_NON_LINEAR_GRADIENT
-      #error "NON_LINEAR_GRADIENT defined but FULLY_NON_LINEAR_GRADIENT not defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
+  #ifdef WRATH_NON_LINEAR_GRADIENT
+    #ifndef WRATH_FULLY_NON_LINEAR_GRADIENT
+      #error "WRATH_NON_LINEAR_GRADIENT defined but WRATH_FULLY_NON_LINEAR_GRADIENT not defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
     #endif
   #endif   
 
@@ -42,7 +42,7 @@
   #endif
 #endif
 
-#ifdef LINEAR_GRADIENT
+#ifdef WRATH_LINEAR_GRADIENT
   uniform mediump sampler2D wrath_brush_gradientTexture;
   #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
      shader_in mediump float wrath_brush_tex_coord;
@@ -51,7 +51,7 @@
   #endif
 #endif
 
-#ifdef NON_LINEAR_GRADIENT
+#ifdef WRATH_NON_LINEAR_GRADIENT
   uniform mediump sampler2D wrath_brush_gradientTexture;
   #ifndef NONWRATH_LINEAR_BRUSH_PRESENT
     #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
@@ -183,7 +183,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
   }
   #endif
 
-  #if defined(LINEAR_GRADIENT)  
+  #if defined(WRATH_LINEAR_GRADIENT)  
   {
     #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
     {
@@ -196,7 +196,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
     #endif
     #define HAVE_GRADIENT 
   }
-  #elif defined(NON_LINEAR_GRADIENT)
+  #elif defined(WRATH_NON_LINEAR_GRADIENT)
   {
     mediump vec2 vv;
 
