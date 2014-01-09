@@ -4,7 +4,24 @@ dirstack_$(sp)	:= $(d)
 d		:= $(dir)
 # End standard header
 
-SHADERS += $(call filelist, font_analytic_base.frag.wrath-shader.glsl font_curve_analytic_base.frag.wrath-shader.glsl font_generic_aa.frag.wrath-shader.glsl font_common_base.frag.wrath-shader.glsl font_common_base.vert.wrath-shader.glsl font_detailed_base.frag.wrath-shader.glsl font_generic.frag.wrath-shader.glsl simple_ui_font.vert.wrath-shader.glsl font_coverage_base.frag.wrath-shader.glsl font_distance_base.frag.wrath-shader.glsl font_mix_base.frag.wrath-shader.glsl)
+
+dir := $(d)/analytic
+include $(dir)/Rules.mk
+
+dir := $(d)/coverage
+include $(dir)/Rules.mk
+
+dir := $(d)/distance
+include $(dir)/Rules.mk
+
+dir := $(d)/common
+include $(dir)/Rules.mk
+
+dir := $(d)/curve_analytic
+include $(dir)/Rules.mk
+
+dir := $(d)/mix
+include $(dir)/Rules.mk
 
 # Begin standard footer
 d		:= $(dirstack_$(sp))

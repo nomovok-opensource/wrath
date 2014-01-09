@@ -158,8 +158,8 @@ public:
   number_texture_pages(void);
 
   virtual
-  const FragmentSource*
-  fragment_source(void);
+  const GlyphGLSL*
+  glyph_glsl(void);
       
   /*!\fn GLint texture_creation_size(void)
     Gets the maximum size of the textures

@@ -1,6 +1,6 @@
 /*! 
- * \file font_distance_base.frag.wrath-shader.glsl
- * \brief file font_distance_base.frag.wrath-shader.glsl
+ * \file font_distance_linear.frag.wrath-shader.glsl
+ * \brief file font_distance_linear.frag.wrath-shader.glsl
  * 
  * Copyright 2013 by Nomovok Ltd.
  * 
@@ -21,16 +21,16 @@
 
 
 
-
-uniform mediump sampler2D DistanceField;
-
+shader_in mediump vec2 wrath_DistanceFieldTexCoord;
+shader_in mediump vec2 wrath_DistanceFieldPosition;
+uniform mediump sampler2D wrath_DistanceField;
 
 mediump float 
 is_covered(void)
 {
   mediump float rr;
 
-  rr=texture2D(DistanceField, GlyphTextureCoordinate).r;
+  rr=texture2D(wrath_DistanceField, wrath_DistanceFieldTexCoord).r;
   return step(0.5, rr);
 }
 
@@ -39,15 +39,15 @@ compute_coverage(void)
 {
   mediump float rr, scr;
 
-  rr=texture2D(DistanceField, GlyphTextureCoordinate).r;
+  rr=texture2D(wrath_DistanceField, wrath_DistanceFieldTexCoord).r;
 
   #if defined(WRATH_DERIVATIVES_SUPPORTED)
   {
     mediump vec2 dx, dy;
     mediump float scr;
     
-    dx=dFdx(GlyphCoordinate);
-    dy=dFdy(GlyphCoordinate);
+    dx=dFdx(wrath_DistaceFieldPosition);
+    dy=dFdy(wrath_DistaceFieldPosition);
     scr=sqrt( (dot(dx,dx) + dot(dy,dy))/2.0 );
   
     return smoothstep(0.5 - 0.2*scr,

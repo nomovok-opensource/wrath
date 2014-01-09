@@ -22,32 +22,35 @@
 
 
 
-uniform mediump sampler2D DistanceField;
-
+uniform mediump sampler2D wrath_DistanceField;
+shader_in mediump vec2 wrath_DistanceFieldBottomLeft;
 
 mediump float 
-is_covered(void)
+is_covered(in vec2 glyph_position, in vec2 glyph_recirpocal_size)
 {
   mediump float rr;
+  mediump vec2 tt;
 
-  rr=texture2D(DistanceField, GlyphTextureCoordinate).r;
+  tt=(glyph_position + wrath_DistanceFieldBottomLeft)*glyph_recirpocal_size;
+  rr=texture2D(wrath_DistanceField, tt).r;
   return step(0.5, rr);
 }
 
 mediump float
-compute_coverage(void)
+compute_coverage(in vec2 glyph_position, in vec2 glyph_recirpocal_size)
 {
-  mediump float rr, scr;
+  mediump float rr, scr;mediump vec2 tt;
 
-  rr=texture2D(DistanceField, GlyphTextureCoordinate).r;
+  tt=(glyph_position + wrath_DistanceFieldBottomLeft)*glyph_recirpocal_size;
+  rr=texture2D(wrath_DistanceField, tt).r;
 
   #if defined(WRATH_DERIVATIVES_SUPPORTED)
   {
     mediump vec2 dx, dy;
     mediump float scr;
     
-    dx=dFdx(GlyphCoordinate);
-    dy=dFdy(GlyphCoordinate);
+    dx=dFdx(glyph_position);
+    dy=dFdy(glyph_position);
     scr=sqrt( (dot(dx,dx) + dot(dy,dy))/2.0 );
   
     return smoothstep(0.5 - 0.2*scr,

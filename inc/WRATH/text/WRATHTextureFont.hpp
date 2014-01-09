@@ -902,30 +902,35 @@ public:
   };
 
 
-  /*!\class FragmentSource
-    A FragmentSource object represents _how_
+  /*!\class GlyphGLSL
+    A GlyphGLSL object represents _how_
     a WRATHTextureFont derived object computes
     if(and/or how much) a fragment is covered.
     
-    A FragmentSource specifies if the positional
+    A GlyphGLSL specifies if the positional
     data within the glyph is must be computed
     in the vertex shader or can be computed 
     (non-linearly) in the fragment shader.
 
     For the case where the position of the glyph
-    is linear, a FragmentSource implements:
+    is linear, a GlyphGLSL implements:
     - In the vertex shader, implement
       \code
       void pre_compute_glyph(in vec2 glyph_position, 
                              in vec2 glyph_bottom_left,
                              in vec2 glyph_size,
-	  		     in vec2 glyph_texture_reciprocal_size)
+	  		     in vec2 glyph_texture_reciprocal_size,
+			     in float glyph_custom_data[])
       \endcode
       where glyph_position is the position in texels,
       glyph_bottom_left is from \ref glyph_data_type::texel_lower_left(),
       glyph_size are is from \ref glyph_data_type::texel_size(),
-      and glyph_texture_reciprocal_size is the reciprocal of the
-      size of the texture. 
+      glyph_texture_reciprocal_size is the reciprocal of the
+      size of the texture and glyph_custom_data is an array
+      of size \ref m_custom_data_use.size() and the values 
+      are those values coming from the glyph_data_type::m_custom_float_data
+      taken from \ref m_custom_data_use. If \ref m_custom_data_use
+      is empty, the last argument is to be omitted.
    - In the Fragment shader, implement the functions
      \code
      float is_covered(void)
@@ -941,17 +946,22 @@ public:
      render the glyph with anti-aliasing.
    
     For the case where the position of the glyph
-    is non-linear, a FragmentSource implements:
+    is non-linear, a GlyphGLSL implements:
     - In the vertex shader, implement
       \code
       void pre_compute_glyph(in vec2 glyph_bottom_left,
                              in vec2 glyph_size,
-	  		     in vec2 glyph_texture_reciprocal_size)
+	  		     in vec2 glyph_texture_reciprocal_size,
+			     in float glyph_custom_data[])
       \endcode
       where glyph_bottom_left is from \ref glyph_data_type::texel_lower_left(),
       glyph_size are is from \ref glyph_data_type::texel_size(),
-      and glyph_texture_reciprocal_size is the reciprocal of the
-      size of the texture.     
+      glyph_texture_reciprocal_size is the reciprocal of the
+      size of the texture and glyph_custom_data is an array
+      of size \ref m_custom_data_use.size() and the values 
+      are those values coming from the glyph_data_type::m_custom_float_data
+      taken from \ref m_custom_data_use. If \ref m_custom_data_use
+      is empty, the last argument is to be omitted.
    - In the Fragment shader, implement the functions
      \code
      float is_covered(in vec2 glyph_position, in vec2 glyph_reciprocal_size)
@@ -980,7 +990,7 @@ public:
             max LOD, only present if the macro 
             EMULATE_MAX_TEXTURE_LEVEL is defined
    */
-  class FragmentSource:boost::noncopyable
+  class GlyphGLSL:boost::noncopyable
   {
   public:
 
@@ -1017,8 +1027,15 @@ public:
     typedef vecN<WRATHGLShader::shader_source, num_linearity_types> source_set;
     
     virtual
-    ~FragmentSource() 
+    ~GlyphGLSL() 
     {}
+
+    /*!\var m_custom_data_use
+      An array of indices into \ref glyph_data_type::m_custom_data
+      specifying what floats from there to use and in what
+      order, initial value is an empty array
+     */
+    std::vector<int> m_custom_data_use;
 
     /*!\var m_pre_vertex_processor
       GLSL source coded added _before_ vertex source 
@@ -1047,15 +1064,14 @@ public:
     source_set m_fragment_processor;
 
     /*!\var m_fragment_processor_sampler_names
-      An array of sampler names used by the GLSL code
-      of \ref m_fragment_processor. The value at
-      index I is the sampler name for texture
-      binder texture_binder(page)[I], i.e. the 
-      order of the texture binders returned
+      An array of sampler names used by the GLSL 
+      code. The value at index I is the sampler 
+      name for texture binder texture_binder(page)[I], 
+      i.e. the order of the texture binders returned
       by \ref texture_binder(int) is the same
       order of the sampler names.
      */
-    std::vector<std::string> m_fragment_processor_sampler_names;
+    std::vector<std::string> m_sampler_names;
 
     /*!\var m_global_names
       List of global variables (uniforms, functions and varyings)
@@ -1256,19 +1272,19 @@ public:
   int
   number_texture_pages(void)=0;
 
-  /*!\fn const FragmentSource* fragment_source
+  /*!\fn const GlyphGLSL* glyph_glsl
     To be implemented by a derived class to
     return the GLSL code (and sampler detail
     data) for drawing glyphs of the texture
-    font. An implementation must return the
-    same FragmentSource object for fonts
-    that are drawn in the same way, i.e.
-    returning a unique FragmentSource object
-    per font object is an error.
+    font. The return value is -type- dependent
+    and not object dependent, i.e the return
+    value may only depend on the underlying
+    type of the object but not the object
+    itself.
    */
   virtual
-  const FragmentSource*
-  fragment_source(void)=0;
+  const GlyphGLSL*
+  glyph_glsl(void)=0;
 
   /*!\fn vec2 texture_size_reciprocal
     Returns the texture size multiplier

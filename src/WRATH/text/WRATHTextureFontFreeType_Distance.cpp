@@ -72,30 +72,28 @@ namespace
                                                        GL_REPEAT);
       
 
-      m_vertex_source[linear_glyph_position].m_fragment_processor
-        .add_source("font_common_linear.vert.wrath-shader.glsl",
+      m_glyph_glsl.m_vertex_processor[linear_glyph_position]
+        .add_source("font_distance_linear.vert.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
 
-      
-
-      m_vertex_source[nonlinear_glyph_position].m_fragment_processor
-        .add_source("font_common_nonlinear.vert.wrath-shader.glsl",
-                    WRATHGLShader::from_resource);
-
-
-      m_fragment_source[linear_glyph_position].m_fragment_processor
+      m_glyph_glsl.m_vertex_processor[linear_glyph_position]
         .add_source("font_distance_linear.frag.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
 
-      
 
-      m_fragment_source[nonlinear_glyph_position].m_fragment_processor
+      m_glyph_glsl.m_fragment_processor[nonlinear_glyph_position]
+        .add_source("font_distance_nonlinear.vert.wrath-shader.glsl",
+                    WRATHGLShader::from_resource);
+
+      m_glyph_glsl.m_fragment_processor[nonlinear_glyph_position]
         .add_source("font_distance_nonlinear.frag.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
 
       
-      m_fragment_source.m_fragment_processor_sampler_names
-        .push_back("DistanceField");
+      m_glyph_glsl.m_fragment_processor_sampler_names.push_back("wrath_DistanceField");
+      m_glyph_glsl.m_global_names.push_back("wrath_DistanceFieldTexCoord");
+      m_glyph_glsl.m_global_names.push_back("wrath_DistanceFieldPosition");
+      m_glyph_glsl.m_global_names.push_back("wrath_DistanceFieldBottomLeft");
     }
 
     WRATHMutex m_mutex;
@@ -104,7 +102,7 @@ namespace
     float m_max_L1_distance;
     enum WRATHTextureFontFreeType_Distance::fill_rule_type m_fill_rule;
     WRATHImage::TextureAllocatorHandle m_allocator;
-    WRATHTextureFont::FragmentSource m_fragment_source;
+    WRATHTextureFont::FragmentSource m_glyph_glsl;
   };
 
   common_distance_data_type&
@@ -210,9 +208,9 @@ number_texture_pages(void)
 
 const WRATHTextureFont::FragmentSource*
 WRATHTextureFontFreeType_Distance::
-fragment_source(void)
+glyph_glsl(void)
 {
-  return &common_data().m_fragment_source;
+  return &common_data().m_glyph_glsl;
 }
   
 WRATHImage*
