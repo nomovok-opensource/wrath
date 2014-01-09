@@ -25,10 +25,10 @@ void
 shader_main(void)
 {
   // WRATHShaderBrushSourceHoard defines the macro 
-  // LINEAR_BRUSH_PRESENT if an donly if it defines 
+  // WRATH_LINEAR_BRUSH_PRESENT if an donly if it defines 
   // a brush where the brush input coordinates are 
   // determined by the vertex shader.
-  #ifdef LINEAR_BRUSH_PRESENT
+  #ifdef WRATH_LINEAR_BRUSH_PRESENT
   {
     wrath_shader_brush_prepare(pos.xy);
   }

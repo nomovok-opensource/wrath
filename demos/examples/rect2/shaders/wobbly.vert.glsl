@@ -91,22 +91,22 @@ shader_main(void)
 
   /*
     WRATHShaderBrushSourceHoard defines the macros:
-    - LINEAR_BRUSH_PRESENT if the brush is present and mapping is linear
+    - WRATH_LINEAR_BRUSH_PRESENT if the brush is present and mapping is linear
       (thus position of brush is determined by vertex shader)
-    - NONLINEAR_BRUSH_PRESENT if the brush is present and mapping is
+    - NONWRATH_LINEAR_BRUSH_PRESENT if the brush is present and mapping is
       to be non-linear in that the position is set in the
       fragment shader.
 
     In both cases, the function wrath_shader_brush_prepare is provided
-    to initialize the brush; for LINEAR_BRUSH_PRESENT the brush
-    position is passed, for NONLINEAR_BRUSH_PRESENT no arguments
+    to initialize the brush; for WRATH_LINEAR_BRUSH_PRESENT the brush
+    position is passed, for NONWRATH_LINEAR_BRUSH_PRESENT no arguments
     are to be given.
    */
-  #if defined(LINEAR_BRUSH_PRESENT)
+  #if defined(WRATH_LINEAR_BRUSH_PRESENT)
   {
     wrath_shader_brush_prepare(brush_linear_position);
   }
-  #elif defined(NONLINEAR_BRUSH_PRESENT)
+  #elif defined(NONWRATH_LINEAR_BRUSH_PRESENT)
   {
     wrath_shader_brush_prepare();
   }

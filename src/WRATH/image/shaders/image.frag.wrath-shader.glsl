@@ -27,7 +27,7 @@ shader_main(void)
   
   discard_if_clipped(); 
 
-  #ifdef APPLY_BRUSH
+  #ifdef WRATH_APPLY_BRUSH
    color=wrath_shader_brush_color();
   #else
    color=vec4(1.0, 0.0, 0.0, 1.0);

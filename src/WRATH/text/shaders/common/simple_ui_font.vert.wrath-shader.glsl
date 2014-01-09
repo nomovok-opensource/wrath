@@ -195,11 +195,11 @@ shader_main(void)
   tpos=pos.xy + offset;
   gl_Position=compute_gl_position(vec3(tpos, pos.z));
 
-  #if defined(APPLY_BRUSH_RELATIVE_TO_LETTER)
+  #if defined(WRATH_APPLY_BRUSH_RELATIVE_TO_LETTER)
   {
     wrath_shader_brush_prepare(relative_coord.xy);
   }
-  #elif defined(APPLY_BRUSH_RELATIVE_TO_ITEM)
+  #elif defined(WRATH_APPLY_BRUSH_RELATIVE_TO_ITEM)
   {
     wrath_shader_brush_prepare(tpos);    
   }

@@ -332,7 +332,7 @@ WRATHFontShaderSpecifier::
 default_brush_item_aa(const WRATHShaderBrush &brush)
 {
   WRATHStaticInit();
-  static FontBrushHoard H("APPLY_BRUSH_RELATIVE_TO_ITEM", 
+  static FontBrushHoard H("WRATH_APPLY_BRUSH_RELATIVE_TO_ITEM", 
                           "font_generic_aa.frag.wrath-shader.glsl");
   return H.fetch_font_shader(brush, WRATHBaseSource::mediump_precision);                                    
 }
@@ -342,7 +342,7 @@ WRATHFontShaderSpecifier::
 default_brush_letter_aa(const WRATHShaderBrush &brush)
 {
   WRATHStaticInit();
-  static FontBrushHoard H("APPLY_BRUSH_RELATIVE_TO_LETTER", 
+  static FontBrushHoard H("WRATH_APPLY_BRUSH_RELATIVE_TO_LETTER", 
                           "font_generic_aa.frag.wrath-shader.glsl");
   return H.fetch_font_shader(brush, WRATHBaseSource::mediump_precision);                                    
 }
@@ -353,7 +353,7 @@ WRATHFontShaderSpecifier::
 default_brush_item_non_aa(const WRATHShaderBrush &brush)
 {
   WRATHStaticInit();
-  static FontBrushHoard H("APPLY_BRUSH_RELATIVE_TO_ITEM", 
+  static FontBrushHoard H("WRATH_APPLY_BRUSH_RELATIVE_TO_ITEM", 
                           "font_generic.frag.wrath-shader.glsl");
   return H.fetch_font_shader(brush, WRATHBaseSource::mediump_precision);                                    
 }
@@ -363,7 +363,7 @@ WRATHFontShaderSpecifier::
 default_brush_letter_non_aa(const WRATHShaderBrush &brush)
 {
   WRATHStaticInit();
-  static FontBrushHoard H("APPLY_BRUSH_RELATIVE_TO_LETTER", 
+  static FontBrushHoard H("WRATH_APPLY_BRUSH_RELATIVE_TO_LETTER", 
                           "font_generic.frag.wrath-shader.glsl");
   return H.fetch_font_shader(brush, WRATHBaseSource::mediump_precision);                                    
 }

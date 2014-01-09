@@ -31,10 +31,10 @@ shader_main(void)
   discard_if_clipped();
 
   // WRATHShaderBrushSourceHoard defines the macro 
-  // LINEAR_BRUSH_PRESENT if an donly if it defines 
+  // WRATH_LINEAR_BRUSH_PRESENT if an donly if it defines 
   // a brush where the brush input coordinates are 
   // determined by the vertex shader.
-  #ifdef LINEAR_BRUSH_PRESENT
+  #ifdef WRATH_LINEAR_BRUSH_PRESENT
   {
     gl_FragColor=wrath_shader_brush_color();
   }

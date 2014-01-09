@@ -251,8 +251,8 @@ public:
 
     If an image is present the macro WRATH_BRUSH_IMAGE_PRESENT is added.
     If a gradient is present the macro WRATH_BRUSH_GRADIENT_PRESENT is added.
-    Adds the macro LINEAR_BRUSH_PRESENT if brush_mapping is linear_brush_mapping,
-    adds the macro NONLINEAR_BRUSH_PRESENT if brush_mapping is nonlinear_brush_mapping
+    Adds the macro WRATH_LINEAR_BRUSH_PRESENT if brush_mapping is linear_brush_mapping,
+    adds the macro NONWRATH_LINEAR_BRUSH_PRESENT if brush_mapping is nonlinear_brush_mapping
 
     Adds the macro WRATH_BRUSH_IMAGE_PRESENT if an image is in the brush 
     (see \ref WRATHShaderBrush::m_texture_coordinate_source).

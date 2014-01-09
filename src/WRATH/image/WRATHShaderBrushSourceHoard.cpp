@@ -130,11 +130,11 @@ namespace
     
     if(brush_mapping==WRATHShaderBrushSourceHoard::linear_brush_mapping)
       {
-        dest.add_macro("LINEAR_BRUSH_PRESENT");
+        dest.add_macro("WRATH_LINEAR_BRUSH_PRESENT");
       }
     else if(brush_mapping==WRATHShaderBrushSourceHoard::nonlinear_brush_mapping)
       {
-        dest.add_macro("NONLINEAR_BRUSH_PRESENT");
+        dest.add_macro("NONWRATH_LINEAR_BRUSH_PRESENT");
       }
     
     if(brush.m_texture_coordinate_source!=NULL)

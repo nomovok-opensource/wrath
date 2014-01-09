@@ -37,10 +37,10 @@ shader_main(void)
   pos=r*circle;
 
   // WRATHShaderBrushSourceHoard defines the macro 
-  // LINEAR_BRUSH_PRESENT if an donly if it defines 
+  // WRATH_LINEAR_BRUSH_PRESENT if an donly if it defines 
   // a brush where the brush input coordinates are 
   // determined by the vertex shader.
-  #if defined(LINEAR_BRUSH_PRESENT)
+  #if defined(WRATH_LINEAR_BRUSH_PRESENT)
   {
     /*
       we only change the brush position

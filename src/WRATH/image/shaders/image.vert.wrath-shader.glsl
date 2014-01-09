@@ -55,7 +55,7 @@ shader_main(void)
   frag_pos.xy=clipped_normalized*size_and_z.xy;
   gl_Position=compute_gl_position_and_apply_clipping(vec3(frag_pos.xy, size_and_z.z));
 
-  #ifdef APPLY_BRUSH
+  #ifdef WRATH_APPLY_BRUSH
   wrath_shader_brush_prepare(frag_pos.xy*brush.zw + brush.xy);
   #endif
 }

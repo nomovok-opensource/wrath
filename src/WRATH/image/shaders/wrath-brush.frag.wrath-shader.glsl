@@ -22,23 +22,23 @@
   "control flow" via #if macros.
   
   Some notes:
-   if NONLINEAR_BRUSH_PRESENT is defined, then 
+   if NONWRATH_LINEAR_BRUSH_PRESENT is defined, then 
    both LINEAR_GRADIENT and LINEAR_TEXTURE_COORDINATE
    are NOT defined.
  */
-#ifdef NONLINEAR_BRUSH_PRESENT
+#ifdef NONWRATH_LINEAR_BRUSH_PRESENT
   #ifdef LINEAR_GRADIENT
-  #error "LINEAR_GRADIENT defined with NONLINEAR_BRUSH_PRESENT defined"
+  #error "LINEAR_GRADIENT defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
   #endif
 
   #ifdef NON_LINEAR_GRADIENT
     #ifndef FULLY_NON_LINEAR_GRADIENT
-      #error "NON_LINEAR_GRADIENT defined but FULLY_NON_LINEAR_GRADIENT not defined with NONLINEAR_BRUSH_PRESENT defined"
+      #error "NON_LINEAR_GRADIENT defined but FULLY_NON_LINEAR_GRADIENT not defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
     #endif
   #endif   
 
   #ifdef LINEAR_TEXTURE_COORDINATE
-  #error "LINEAR_TEXTURE_COORDINATE defined with NONLINEAR_BRUSH_PRESENT defined"
+  #error "LINEAR_TEXTURE_COORDINATE defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
   #endif
 #endif
 
@@ -53,7 +53,7 @@
 
 #ifdef NON_LINEAR_GRADIENT
   uniform mediump sampler2D wrath_brush_gradientTexture;
-  #ifndef NONLINEAR_BRUSH_PRESENT
+  #ifndef NONWRATH_LINEAR_BRUSH_PRESENT
     #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
        shader_in mediump vec2 wrath_brush_frag_pos;
     #else
@@ -74,7 +74,7 @@
 #if defined(LINEAR_TEXTURE_COORDINATE) || defined(NON_LINEAR_TEXTURE_COORDINATE)
   uniform mediump sampler2D wrath_brush_imageTexture;
   uniform mediump vec2 wrath_brush_imageTextureSize;
-  #ifndef NONLINEAR_BRUSH_PRESENT
+  #ifndef NONWRATH_LINEAR_BRUSH_PRESENT
     shader_in mediump vec2 wrath_brush_image_tex_coord;
   #endif
 #endif
@@ -84,7 +84,7 @@
 #endif
 
 
-#ifdef NONLINEAR_BRUSH_PRESENT
+#ifdef NONWRATH_LINEAR_BRUSH_PRESENT
 mediump vec4 wrath_shader_brush_color(in mediump vec2 wrath_brush_frag_pos, out mediump float valid)
 #else
 mediump vec4 wrath_shader_brush_color(out mediump float valid)
@@ -97,7 +97,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
 
   valid=1.0;
 
-  #if defined(NONLINEAR_BRUSH_PRESENT) && defined(NON_LINEAR_TEXTURE_COORDINATE)
+  #if defined(NONWRATH_LINEAR_BRUSH_PRESENT) && defined(NON_LINEAR_TEXTURE_COORDINATE)
 
   mediump vec2 wrath_brush_image_tex_coord;
   wrath_brush_image_tex_coord=wrath_brush_frag_pos.xy/wrath_brush_imageTextureSize;
@@ -278,7 +278,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
   return color;
 }
 
-#ifdef NONLINEAR_BRUSH_PRESENT
+#ifdef NONWRATH_LINEAR_BRUSH_PRESENT
 
   mediump vec4 wrath_shader_brush_color(in mediump vec2 wrath_brush_frag_pos)
   {

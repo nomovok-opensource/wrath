@@ -42,7 +42,7 @@ shader_hoard(void)
   static WRATHShaderBrushSourceHoard R(WRATHGLShader::shader_source_collection()
 				       .absorb_shader_stage(GL_VERTEX_SHADER, 
 							    WRATHGLShader::shader_source()
-                                                            .add_macro("APPLY_BRUSH")
+                                                            .add_macro("WRATH_APPLY_BRUSH")
 							    .add_source("shape.vert.wrath-shader.glsl", 
 									WRATHGLShader::from_resource))
 
@@ -50,7 +50,7 @@ shader_hoard(void)
 							    WRATHGLShader::shader_source()
                                                             .specify_extension("GL_OES_standard_derivatives",
                                                                                WRATHGLShader::enable_extension)
-                                                            .add_macro("APPLY_BRUSH")
+                                                            .add_macro("WRATH_APPLY_BRUSH")
 							    .add_source("shape.frag.wrath-shader.glsl", 
 									WRATHGLShader::from_resource) ));
 						

@@ -28,7 +28,7 @@ shader_main(void)
 
   final_color=tex_color;
 
-  #if defined(APPLY_BRUSH_RELATIVE_TO_LETTER) || defined(APPLY_BRUSH_RELATIVE_TO_ITEM)
+  #if defined(WRATH_APPLY_BRUSH_RELATIVE_TO_LETTER) || defined(WRATH_APPLY_BRUSH_RELATIVE_TO_ITEM)
   {
     final_color*=wrath_shader_brush_color();
   }

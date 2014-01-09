@@ -34,24 +34,24 @@ shader_main(void)
 
   /*
     WRATHShaderBrushSourceHoard defines the macros:
-    - LINEAR_BRUSH_PRESENT if the brush is present and mapping is linear
+    - WRATH_LINEAR_BRUSH_PRESENT if the brush is present and mapping is linear
       (thus position of brush is determined by vertex shader)
-    - NONLINEAR_BRUSH_PRESENT if the brush is present and mapping is
+    - NONWRATH_LINEAR_BRUSH_PRESENT if the brush is present and mapping is
       to be non-linear in that the position is set in the
       fragment shader.
 
     In both cases, the function wrath_shader_brush_color() is 
     provided to get the color of the brush; 
-    for NONLINEAR_BRUSH_PRESENT the brush position is passed,
-    for LINEAR_BRUSH_PRESENT no values is passed (because
+    for NONWRATH_LINEAR_BRUSH_PRESENT the brush position is passed,
+    for WRATH_LINEAR_BRUSH_PRESENT no values is passed (because
     the brush position was determined at the vertex shader)
    */
 
-  #if defined(LINEAR_BRUSH_PRESENT)
+  #if defined(WRATH_LINEAR_BRUSH_PRESENT)
   {
     color=wrath_shader_brush_color();
   }
-  #elif defined(NONLINEAR_BRUSH_PRESENT)
+  #elif defined(NONWRATH_LINEAR_BRUSH_PRESENT)
   {
     mediump float amplitude, speed, phase;
 

@@ -43,7 +43,7 @@ shader_main(void)
   #endif
   
   gl_Position=compute_gl_position_and_apply_clipping(vec3(pos, -1.0));
-  #ifdef APPLY_BRUSH
+  #ifdef WRATH_APPLY_BRUSH
     wrath_shader_brush_prepare(pos.xy); 
   #endif
 }
