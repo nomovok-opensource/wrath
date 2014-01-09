@@ -101,16 +101,6 @@ generate_character(WRATHTextureFont::glyph_index_type G)
   /*
     copy custom data values:
   */
-  glyph.m_custom_int_data
-    .resize(dist_gl.m_custom_int_data.size() 
-            + cov_gl.m_custom_int_data.size());
-  std::copy(dist_gl.m_custom_int_data.begin(),
-            dist_gl.m_custom_int_data.end(),
-            glyph.m_custom_int_data.begin());
-  std::copy(cov_gl.m_custom_int_data.begin(),
-            cov_gl.m_custom_int_data.end(),
-            glyph.m_custom_int_data.begin()+dist_gl.m_custom_int_data.size());
-  
   glyph.m_custom_float_data
     .resize(dist_gl.m_custom_float_data.size() 
             + cov_gl.m_custom_float_data.size());

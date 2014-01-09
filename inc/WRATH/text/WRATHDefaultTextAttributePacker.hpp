@@ -32,6 +32,12 @@
 /*!\class WRATHDefaultTextAttributePacker 
   A WRATHDefaultTextAttributePacker is an
   example of a WRATHGenericTextAttributePacker.
+
+  TODO: 
+    1) have it "work" so that number of
+       custom data slots can be specified in 
+       the fetch as well.
+    2) Support mix fonts, somehow.
  */
 class WRATHDefaultTextAttributePacker:public WRATHGenericTextAttributePacker
 {
@@ -45,53 +51,42 @@ public:
         - .z=geometric z_position
         - .w=scaling factor applied to glyph (see \ref WRATHText::effective_scale)
        */
-      position_location=0,  
+      position_location,  
 
       /*!
         location of glyph strech factor,
         a vec2 in GLSL, name in GLSL is "glyph_stretch"
        */
-      glyph_stretch_location=1,
+      glyph_stretch_location,
 
       /*!
         Location of the size of the glyph as according
         to \ref WRATHTextureFont::glyph_data_type::texel_size().
         Attribute name in GLSL is "glyph_size".
         - .xy holds the value for \ref WRATHTextureFont::native_value
-        - .zw holds the value for \ref WRATHTextureFont::minified_value
        */
-      glyph_size_location=2,
+      glyph_size_location,
 
       /*!
         Location of the texel (in pixel coordinates) of the glyphas 
         according to \ref WRATHTextureFont::glyph_data_type::texel_lower_left().
         Attribute name in GLSL is "glyph_bottom_left_texel".
         - .xy holds the value for \ref WRATHTextureFont::native_value
-        - .zw holds the value for \ref WRATHTextureFont::minified_value
       */
-      glyph_bottom_left_texel_location=3,    
-      
-      /*!
-        location of normalized coordinate within the glyph,
-        i.e. the bottom left is (0,0) and the top right is (1,1).
-        If the y-coordinate increases down the screen, then the
-        top right normalized coordinate is (1, -1).
-        Attribute name in GLSL is "glyph_normalized_coordinate".
-      */
-      glyph_normalized_coordinate_location=4,
+      glyph_bottom_left_texel_location,         
 
       /*!
         location of color, a vec4 (in GLSL) .
         Attribute name in GLSL is "color".
       */
-      color_location=5,
+      color_location,
 
       /*!
-        location of local glyph index
-        code (packed as a normalized GLubyte).
-        Attribute name in GLSL is "in_glyph_index".
+        Custom data location; attribute packer
+	supports up to -one- custom data value
+	from the glyph (!)
        */
-      localized_glyph_index_location=6,
+      custom_data_location
     };
   
   /*!\fn fetch
@@ -99,8 +94,7 @@ public:
     There are two versions for it's packing: using
     a single quad per glyph or using multiple primitives
     per glyph (see \ref WRATHTextureFont::glyph_data_type::support_sub_primitives() ).
-
-    \param tp Determines which packer to fetch
+    \param tp Determines which packer type to fetch
    */
   static
   WRATHDefaultTextAttributePacker*

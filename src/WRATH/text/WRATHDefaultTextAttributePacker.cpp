@@ -27,74 +27,34 @@ namespace
 {
   typedef vec4 position_type;
   typedef vec2 glyph_stretch_type;
-  typedef vecN<GLushort,4> glyph_size_type;
-  typedef vecN<GLushort,4> glyph_bottom_left_type;
-  typedef vecN<GLshort,2> glyph_normalized_coordinate_type;
+  typedef vecN<GLushort,2> glyph_size_type;
+  typedef vecN<GLushort,2> glyph_bottom_left_type;
   typedef vecN<GLubyte,4> color_type;
-  typedef GLubyte localized_glyph_index_type;
-  typedef glyph_normalized_coordinate_type::value_type norm_coord_type;
-    
+  typedef GLfloat custom_glyph_data_type;
   
-                                     
-  color_type
-  interpolate_color(const vecN<WRATHText::color_type, 4> &input_color,
-                    vec2 glyph_coord)
-  {
-    color_type R;
-
-    glyph_coord.y()=std::abs(glyph_coord.y());
-
-    /*
-      Do bilinear interpolation..
-    */
-    for(int I=0; I<4; ++I)
-      {
-        vec4 values_at_corner(input_color[0][I], //bottom_left_corner
-                              input_color[1][I], //bottom_right_corner
-                              input_color[2][I], //top_right_corner
-                              input_color[3][I]);//top_left_corner 
-
-        float bottom, top, v;
-
-        bottom= values_at_corner[0] + glyph_coord.x()*( values_at_corner[1]-values_at_corner[0]);
-        top=values_at_corner[3] + glyph_coord.x()*( values_at_corner[2]-values_at_corner[3]);
-
-        v=bottom + glyph_coord.y()*(top-bottom);
-        R[I]=static_cast<WRATHText::color_type::value_type>(v);
-      }
-
-    return R;
-  }
-  
+          
 
   class character_attribute:
     public WRATHInterleavedAttributes<position_type, //position -- 0
                                       glyph_stretch_type, //stretch -- 1
                                       glyph_size_type, //glyph_size -- 2
                                       glyph_bottom_left_type, //glyph bottom left -- 3
-                                      glyph_normalized_coordinate_type, //normalized glyph coords --4
-                                      color_type, //color --5
-                                      localized_glyph_index_type //localized glyph_index --6
+                                      color_type, //color --4
+                                      custom_glyph_data_type //custom_data -- 5
                                       >  
   {
   public:
     
-    localized_glyph_index_type&
-    localized_glyph_index(void)
+    custom_glyph_data_type&
+    custom_glyph_data(void)
     {
-      return get<WRATHDefaultTextAttributePacker::localized_glyph_index_location>();
+      return get<WRATHDefaultTextAttributePacker::custom_data_location>();
     }
 
     color_type&
     color(void)
     {
       return get<WRATHDefaultTextAttributePacker::color_location>();
-    }
-    
-    glyph_normalized_coordinate_type&
-    glyph_normalized_coordinate(void)
-    {
-      return get<WRATHDefaultTextAttributePacker::glyph_normalized_coordinate_location>();
     }
 
     glyph_bottom_left_type&
@@ -149,11 +109,15 @@ namespace
         "glyph_stretch",
         "glyph_size",
         "glyph_bottom_left_texel",
-        "glyph_normalized_coordinate",
         "color",
-        "in_glyph_index",
+
+	/*
+	  Danger: Must make this match with the generated
+	  GLSL found in WRATHFontShaderSpecifier::fetch_texture_font_drawer()
+	 */
+        "custom_data0",
       };
-    static const_c_array<attribute_label_type> R(attribute_labels, 7);
+    static const_c_array<attribute_label_type> R(attribute_labels, 6);
     return R;
   }
 
@@ -163,6 +127,40 @@ namespace
     return subpacker==WRATHGenericTextAttributePacker::SubPrimitivePacker?
       "WRATHDefaultTextAttributePacker-SubPrimitives":
       "WRATHDefaultTextAttributePacker-FullQuad";
+  }
+
+                               
+  color_type
+  interpolate_color(const vecN<WRATHText::color_type, 4> &input_color,
+                    vec2 glyph_coord)
+  {
+    color_type R;
+
+    glyph_coord.y()=std::abs(glyph_coord.y());
+
+    // why is .x not abs'd as well?
+    //glyph_coord.x()=std::abs(glyph_coord.x());
+
+    /*
+      Do bilinear interpolation..
+    */
+    for(int I=0; I<4; ++I)
+      {
+        vec4 values_at_corner(input_color[0][I], //bottom_left_corner
+                              input_color[1][I], //bottom_right_corner
+                              input_color[2][I], //top_right_corner
+                              input_color[3][I]);//top_left_corner 
+
+        float bottom, top, v;
+
+        bottom= values_at_corner[0] + glyph_coord.x()*( values_at_corner[1]-values_at_corner[0]);
+        top=values_at_corner[3] + glyph_coord.x()*( values_at_corner[2]-values_at_corner[3]);
+
+        v=bottom + glyph_coord.y()*(top-bottom);
+        R[I]=static_cast<WRATHText::color_type::value_type>(v);
+      }
+
+    return R;
   }
 }
 
@@ -205,8 +203,6 @@ attribute_key(WRATHAttributeStoreKey &pkey) const
     .type_and_format(type_tag<character_attribute>());
 
   pkey.m_attribute_format_location[color_location].m_normalized=GL_TRUE;
-  pkey.m_attribute_format_location[glyph_normalized_coordinate_location].m_normalized=GL_TRUE;
-  pkey.m_attribute_format_location[localized_glyph_index_location].m_normalized=GL_TRUE;
 }
 
 
@@ -218,7 +214,7 @@ WRATHDefaultTextAttributePacker::
 pack_attribute(enum WRATHFormattedTextStream::corner_type ct,
                const glyph_data &in_glyph,
                const vec2 &normalized_glyph_coordinate_float,
-               vecN<GLshort,2> normalized_glyph_coordinate_short,
+               vecN<GLshort,2> /*normalized_glyph_coordinate_short*/,
                c_array<uint8_t> packing_destination,
                const PackerState&) const
 {
@@ -227,29 +223,19 @@ pack_attribute(enum WRATHFormattedTextStream::corner_type ct,
   attr=packing_destination.reinterpret_pointer<character_attribute>();
   
   ivec2 native_bl(in_glyph.m_glyph->texel_lower_left(WRATHTextureFont::native_value));
-  ivec2 minified_bl(in_glyph.m_glyph->texel_lower_left(WRATHTextureFont::minified_value));
   ivec2 native_sz(in_glyph.m_glyph->texel_size(WRATHTextureFont::native_value));
-  ivec2 minified_sz(in_glyph.m_glyph->texel_size(WRATHTextureFont::minified_value));
 
   
-  attr[0].glyph_normalized_coordinate()=normalized_glyph_coordinate_short;
   
-  attr[0].glyph_bottom_left()=glyph_bottom_left_type(native_bl.x(), native_bl.y(),
-                                                     minified_bl.x(), minified_bl.y());
-  
-  attr[0].glyph_size()=glyph_size_type(native_sz.x(), native_sz.y(),
-                                       minified_sz.x(), minified_sz.y());
-  
+  attr[0].glyph_bottom_left()=glyph_bottom_left_type(native_bl.x(), native_bl.y());
+  attr[0].glyph_size()=glyph_size_type(native_sz.x(), native_sz.y());
   attr[0].position()=position_type(in_glyph.m_native_position[0].x(), 
                                    in_glyph.m_native_position[0].y(), 
                                    in_glyph.m_z_position, 
                                    in_glyph.m_scale);
-
   attr[0].glyph_stretch()=glyph_stretch_type(in_glyph.m_horizontal_stretching,
                                              in_glyph.m_vertical_stretching);
-  
-
-  attr[0].localized_glyph_index()=static_cast<GLubyte>(in_glyph.m_glyph->fetch_custom_int(0));
+  attr[0].custom_glyph_data()=in_glyph.m_glyph->fetch_custom_float(0);
   
   
   if(ct==WRATHFormattedTextStream::not_corner)

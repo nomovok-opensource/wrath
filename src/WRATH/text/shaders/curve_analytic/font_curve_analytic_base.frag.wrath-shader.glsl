@@ -16,6 +16,39 @@
  * 
  */
 
+ /*
+    GlyphIndex is used as a texture coordinate
+    where the texture size is 256. It is set
+    in C++ code as the non-normalized coordinate,
+    i.e. actual texel. Now for something interesting:
+
+    Let I=texel you want, then the normalized
+    texel coordinate to use is given by:
+
+    (I+0.5)/256
+
+    Let B be the value (as a byte) at in_glyph_index.
+    The value of in_glyph_index is B/255, call it f.
+
+    Then the texel coordinate we wish to use is:
+
+    t=(255*f+0.5)/256.
+
+    As a side note, 
+
+    |f-t| = |f/256 - 0.5/256| and we need
+    that to be no more than 1/512:
+
+    thus we want:
+
+    |f-0.5| < 0.5
+
+    which is true for 0<f<1, but, round off
+    issues make this dicey
+   */
+  GlyphIndex=(255.0*in_glyph_index+0.5)/256.0;
+
+
 
 /*
   Basic idea is as follows:

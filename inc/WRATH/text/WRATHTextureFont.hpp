@@ -857,33 +857,7 @@ public:
         m_custom_float_data[v]:
         0.0f;
     }
-
-    /*!\var m_custom_int_data
-      The custom integer data
-      of the glyph. This custom integer 
-      data can be used by a WRATHTextureFont
-      derived object type to hold integer
-      data that is specific to that type.
-     */    
-    std::vector<int> m_custom_int_data;
-
-    /*!\fn int fetch_custom_int
-      Provided as a conveniance, equivalent to
-      \code
-      if(v<m_custom_int_data.size())
-        return m_custom_int_data[v];
-      else
-        return 0;
-      \endcode
-     */
-    int
-    fetch_custom_int(unsigned int v) const
-    {
-      return (v<m_custom_int_data.size())?
-        m_custom_int_data[v]:
-        0;
-    }
-
+    
   private:
 
     WRATHTextureFont *m_font;
@@ -975,20 +949,6 @@ public:
      indicating how much of the fragment is
      covered. The return value is used to
      render the glyph with anti-aliasing.
-
-    The WRATH framework will provide vec2
-    values for use by the fragment code:
-    - vec2 GlyphTextureCoordinate which is the _normalized_
-           texture coordinate to feed to the sampler
-           objects
-    - vec2 GlyphCoordinate which is a non-normalized
-           coordinate of the fragment within the glyph
-    - vec2 GlyphNormalizedCoordinate which is a normalized
-           coordinate of the fragment within the glyph
-    - float GlyphIndex    
-    - float GlyphForceLOD defined only when emulating 
-            max LOD, only present if the macro 
-            EMULATE_MAX_TEXTURE_LEVEL is defined
    */
   class GlyphGLSL:boost::noncopyable
   {
@@ -1015,7 +975,7 @@ public:
 	nonlinear_glyph_position,
 
 	/*!
-	  Number lnearity types
+	  Number linearity types
 	 */
 	num_linearity_types
       };

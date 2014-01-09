@@ -248,6 +248,63 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
     WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position;
   
   /*
+    we need to respect fs_source->m_custom_data_use;
+    We need to rig this as a collection of vec4's
+    and a vecN with N=sz%4, sz=m_custom_data_use.size()%4
+   */
+  std::ostringstream ostr;
+
+  if(!fs_source->m_custom_data_use.empty())
+    {
+      int N, R, idx;
+      const char *swizzle[]={".x", ".y", ".z", ".w" };
+
+      N=fs_source->m_custom_data_use.size()/4;
+      R=fs_source->m_custom_data_use.size()%4;
+      ostr << "\n#define WRATH_FONT_CUSTOM_DATA";
+      for(int i=0; i<N; ++i)
+	{
+	  ostr << "\nshader_in highp vec4 custom_data" << i << ";";
+	}
+      if(R>0)
+	{
+	  ostr << "\nshader_in highp vec" << R << " custom_data" << N << ";";
+	}
+
+      /*
+	create the function that returns the data as an array
+       */
+      ostr << "\nstruct wrath_font_custom_data_t"
+	   << "\n{"
+	   << "\n\tfloat highp values[" << fs_source->m_custom_data_use.size() << "];"
+	   << "\n};";
+      ostr << "\nvoid wrath_font_shader_custom_data_func(out wrath_font_custom_data_t v)"
+	   << "\n{";
+
+      idx=0;
+      for(int i=0; i<N; ++i)
+	{
+	  for(int j=0; j<4; ++j, ++idx)
+	    {
+	      ostr << "\n\tv.values[" << idx << "]=" 
+		   << "custom_data" << i << swizzle[j] << ";";
+	    }
+	}
+
+      for(int j=0; j<R; ++j, ++idx)
+	{
+	  ostr << "\n\tv.values[" << idx << "]=" 
+	       << "custom_data" << N << swizzle[j] << ";";
+	}
+	   
+      ostr << "\n}\n";
+    }
+  else
+    {
+      ostr << "\n#define WRATH_FONT_NO_CUSTOM_DATA\n";
+    }
+
+  /*
     pre-shader source codes.
    */
   new_specifier->append_pre_vertex_shader_source()
