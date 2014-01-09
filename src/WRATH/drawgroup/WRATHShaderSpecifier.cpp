@@ -150,7 +150,7 @@ WRATHShaderSpecifier(const std::string &macro,
       iter!=end; ++iter)
     {
       iter->second.add_macro(macro, "", WRATHGLShader::push_front);
-      iter->second.add_macro("TRANSLUCENT_THRESHOLD", 
+      iter->second.add_macro("WRATH_TRANSLUCENT_THRESHOLD", 
                              parent->m_translucent_threshold, 
                              WRATHGLShader::push_front);
     }
@@ -271,9 +271,9 @@ ready_sub_shaders(void) const
 
   const cstring draw_pass_labels[]=
     {
-      "IS_OPAQUE_PASS", //for opaque_draw_pass
-      "IS_TRANSLUCENT_PASS", //for transluscent_draw_pass
-      "IS_PURE_TRANSLUCENT_PASS", //for pure_transluscent
+      "WRATH_IS_OPAQUE_PASS", //for opaque_draw_pass
+      "WRATH_IS_TRANSLUCENT_PASS", //for transluscent_draw_pass
+      "WRATH_IS_PURE_TRANSLUCENT_PASS", //for pure_transluscent
     };
 
   m_modifiable=false;

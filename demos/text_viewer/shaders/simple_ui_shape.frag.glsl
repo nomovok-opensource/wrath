@@ -54,11 +54,11 @@ shader_main(void)
     alpha=color.w*min(1.0, abs_aa/dd);
     
     
-    #if defined(IS_OPAQUE_PASS)
-      if(alpha<float(TRANSLUCENT_THRESHOLD))
+    #if defined(WRATH_IS_OPAQUE_PASS)
+      if(alpha<float(WRATH_TRANSLUCENT_THRESHOLD))
         discard;
-    #elif defined(IS_TRANSLUCENT_PASS)
-      if(alpha>=float(TRANSLUCENT_THRESHOLD))
+    #elif defined(WRATH_IS_TRANSLUCENT_PASS)
+      if(alpha>=float(WRATH_TRANSLUCENT_THRESHOLD))
         alpha=0.0;
     #endif
 

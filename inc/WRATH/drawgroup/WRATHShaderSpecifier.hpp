@@ -661,10 +661,10 @@ public:
 
     Each of these drawers has an additional macro added
     to all shaders dependent on the WRATHItemDrawer:
-    - IS_OPAQUE_PASS for the opaque pass of a solid object
-    - IS_TRANSLUCENT_PASS for the translucent pass for AA-portions of a solid object
-    - IS_PURE_TRANSLUCENT_PASS for text the drawer to draw a purely transparent object
-    - TRANSLUCENT_THRESHOLD is added for all pass types, with value translucent_threshold()
+    - WRATH_IS_OPAQUE_PASS for the opaque pass of a solid object
+    - WRATH_IS_TRANSLUCENT_PASS for the translucent pass for AA-portions of a solid object
+    - WRATH_IS_PURE_TRANSLUCENT_PASS for text the drawer to draw a purely transparent object
+    - WRATH_TRANSLUCENT_THRESHOLD is added for all pass types, with value translucent_threshold()
     
     The vertex shader needs to match up with the passed
     WRATHAttributePacker (as usual).

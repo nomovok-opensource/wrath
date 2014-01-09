@@ -92,18 +92,18 @@ public:
       from the glyph and 1.0 otherwise. The function compute_coverage() returns
       a value in the range [0.0, 1.0] indicating the coverage of the glyph
       on the fragment.
-    - The macros IS_OPAQUE_PASS, IS_TRANSLUCENT_PASS, IS_PURE_TRANSLUCENT_PASS are
-      defined for different passes of drawing text. The macro IS_OPAQUE_PASS is
+    - The macros WRATH_IS_OPAQUE_PASS, WRATH_IS_TRANSLUCENT_PASS, WRATH_IS_PURE_TRANSLUCENT_PASS are
+      defined for different passes of drawing text. The macro WRATH_IS_OPAQUE_PASS is
       defined if and only if the drawing pass is to draw the entirely opaque
-      portions of solid text. The macro IS_TRANSLUCENT_PASS is defined if and only
+      portions of solid text. The macro WRATH_IS_TRANSLUCENT_PASS is defined if and only
       if the drawing pass is to draw the AA portions of solid text. The macro
-      IS_PURE_TRANSLUCENT_PASS is defined if and only if the drawer is drawing
-      text that is viewed as transparent. In addition, when either of IS_OPAQUE_PASS
-      and IS_TRANSLUCENT_PASS are defined, the macro TRANSLUCENT_THRESHOLD should
-      be used in the opaque pass (i.e. IS_OPAQUE_PASS is defined) to discard those 
-      fragments whose coverage is less than TRANSLUCENT_THRESHOLD and for the 
-      translucent pass (i.e. IS_TRANSLUCENT_PASS is defined) set gl_FragColor.a=0.0 (alpha) 
-      for when the coverage matches or exceeds TRANSLUCENT_THRESHOLD.
+      WRATH_IS_PURE_TRANSLUCENT_PASS is defined if and only if the drawer is drawing
+      text that is viewed as transparent. In addition, when either of WRATH_IS_OPAQUE_PASS
+      and WRATH_IS_TRANSLUCENT_PASS are defined, the macro WRATH_TRANSLUCENT_THRESHOLD should
+      be used in the opaque pass (i.e. WRATH_IS_OPAQUE_PASS is defined) to discard those 
+      fragments whose coverage is less than WRATH_TRANSLUCENT_THRESHOLD and for the 
+      translucent pass (i.e. WRATH_IS_TRANSLUCENT_PASS is defined) set gl_FragColor.a=0.0 (alpha) 
+      for when the coverage matches or exceeds WRATH_TRANSLUCENT_THRESHOLD.
 
     A default font vertex shader is provided by the static method \ref
     default_vertex_shader().
@@ -683,9 +683,9 @@ public:
 
     Each of these drawers has an additional macro added
     to both their vertex and fragment shaders:
-    - IS_OPAQUE_PASS for the opaque pass of solid text
-    - IS_TRANSLUCENT_PASS for the translucent pass for AA-portions of solid text
-    - IS_PURE_TRANSLUCENT_PASS for text the drawer to draw purely transparent text
+    - WRATH_IS_OPAQUE_PASS for the opaque pass of solid text
+    - WRATH_IS_TRANSLUCENT_PASS for the translucent pass for AA-portions of solid text
+    - WRATH_IS_PURE_TRANSLUCENT_PASS for text the drawer to draw purely transparent text
     \param fs_source WRATHTextureFont::GlyphGLSL object, typically
                      taken from a WRATHTextureFont derived object
     \param factory WRATHItemDrawerFactory to specify per item

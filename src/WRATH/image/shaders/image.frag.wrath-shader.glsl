@@ -33,14 +33,14 @@ shader_main(void)
    color=vec4(1.0, 0.0, 0.0, 1.0);
   #endif      
     
-  #if defined(IS_OPAQUE_PASS)
+  #if defined(WRATH_IS_OPAQUE_PASS)
   {
-    if(color.w<float(TRANSLUCENT_THRESHOLD))
+    if(color.w<float(WRATH_TRANSLUCENT_THRESHOLD))
       discard;
   }
-  #elif defined(IS_TRANSLUCENT_PASS)
+  #elif defined(WRATH_IS_TRANSLUCENT_PASS)
   {
-    if(color.w>=float(TRANSLUCENT_THRESHOLD))
+    if(color.w>=float(WRATH_TRANSLUCENT_THRESHOLD))
       color.w=0.0;
   }
   #endif

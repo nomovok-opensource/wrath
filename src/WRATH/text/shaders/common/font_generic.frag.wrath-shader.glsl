@@ -44,7 +44,7 @@ shader_main(void)
     mediump float d;
     d=is_covered();
 
-    #if defined(IS_OPAQUE_PASS) 
+    #if defined(WRATH_IS_OPAQUE_PASS) 
       if(d<0.5)
         discard;
       gl_FragColor=final_color;

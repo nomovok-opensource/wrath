@@ -72,15 +72,15 @@ shader_main(void)
 
     d*=final_color.a;
 
-    #if defined(IS_OPAQUE_PASS)
+    #if defined(WRATH_IS_OPAQUE_PASS)
     {
       //if texel is too translucent, then the opaque pass discarded the texel
-      if(d<float(TRANSLUCENT_THRESHOLD))
+      if(d<float(WRATH_TRANSLUCENT_THRESHOLD))
         discard;
     }
-    #elif defined(IS_TRANSLUCENT_PASS)
+    #elif defined(WRATH_IS_TRANSLUCENT_PASS)
     {
-      if(d>=float(TRANSLUCENT_THRESHOLD))
+      if(d>=float(WRATH_TRANSLUCENT_THRESHOLD))
         d=0.0;
     }
     #endif

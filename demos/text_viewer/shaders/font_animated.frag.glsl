@@ -33,12 +33,12 @@ shader_main(void)
   d=compute_coverage()*tex_color.a*(1.0-animation_fx_interpol);
 #endif
 
-#if defined(IS_OPAQUE_PASS)
+#if defined(WRATH_IS_OPAQUE_PASS)
   //if texel is too translucent, then the opaque pass discards the texel
-  if(d<float(TRANSLUCENT_THRESHOLD))
+  if(d<float(WRATH_TRANSLUCENT_THRESHOLD))
     discard;
-#elif defined(IS_TRANSLUCENT_PASS)
-  if(d>=float(TRANSLUCENT_THRESHOLD))
+#elif defined(WRATH_IS_TRANSLUCENT_PASS)
+  if(d>=float(WRATH_TRANSLUCENT_THRESHOLD))
     d=0.0;
 #endif
 
