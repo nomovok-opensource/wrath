@@ -115,7 +115,7 @@ shader_main(void)
     the brush coordinate so that the image
     maps to the rectangle [0, 2*outer]x[0, 2*outer]
   */
-  #if defined(BRUSH_IMAGE_PRESENT)
+  #if defined(WRATH_BRUSH_IMAGE_PRESENT)
   {
     brush_scale_factor=
       vec2(fetch_node_value(WRATH_TEXTURE_subrect_w), 

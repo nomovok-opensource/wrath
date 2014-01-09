@@ -130,7 +130,7 @@ shader_main(void)
     the brush coordinate so that the image
     maps to the rectangle [0, 2*outer]x[0, 2*outer]
   */
-  #if defined(BRUSH_IMAGE_PRESENT)
+  #if defined(WRATH_BRUSH_IMAGE_PRESENT)
   {
     highp vec2 brush_scale_factor;
 

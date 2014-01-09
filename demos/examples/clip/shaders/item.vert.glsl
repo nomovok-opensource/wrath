@@ -46,7 +46,7 @@ shader_main(void)
       we only change the brush position
       if an image is present too.
      */
-    #if defined(BRUSH_IMAGE_PRESENT)
+    #if defined(WRATH_BRUSH_IMAGE_PRESENT)
     {
       vec2 brush_pos;
 

@@ -249,18 +249,18 @@ public:
     PREMULTIPLY_ALPHA is true. The purpose of PREMULTIPLY_ALPHA is for a shader
     that uses the brush to pre-multiply the color itself.
 
-    If an image is present the macro BRUSH_IMAGE_PRESENT is added.
-    If a gradient is present the macro BRUSH_GRADIENT_PRESENT is added.
+    If an image is present the macro WRATH_BRUSH_IMAGE_PRESENT is added.
+    If a gradient is present the macro WRATH_BRUSH_GRADIENT_PRESENT is added.
     Adds the macro LINEAR_BRUSH_PRESENT if brush_mapping is linear_brush_mapping,
     adds the macro NONLINEAR_BRUSH_PRESENT if brush_mapping is nonlinear_brush_mapping
 
-    Adds the macro BRUSH_IMAGE_PRESENT if an image is in the brush 
+    Adds the macro WRATH_BRUSH_IMAGE_PRESENT if an image is in the brush 
     (see \ref WRATHShaderBrush::m_texture_coordinate_source).
 
-    Adds the macro BRUSH_GRADIENT_PRESENT if a gradient is in the brush
+    Adds the macro WRATH_BRUSH_GRADIENT_PRESENT if a gradient is in the brush
     (see \ref WRATHShaderBrush::m_gradient_source).
 
-    Adds the macro BRUSH_COLOR_PRESENT if a color value is in the brush
+    Adds the macro WRATH_BRUSH_COLOR_PRESENT if a color value is in the brush
     (see \ref WRATHShaderBrush::m_color_value_source)
 
     Notes: if the brush has both an image and gradient

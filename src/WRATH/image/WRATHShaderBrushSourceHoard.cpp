@@ -120,12 +120,12 @@ namespace
     
     if(brush.m_gradient_source!=NULL)
       {
-        dest.add_macro("BRUSH_GRADIENT_PRESENT");
+        dest.add_macro("WRATH_BRUSH_GRADIENT_PRESENT");
       }
     
     if(brush.m_texture_coordinate_source!=NULL)
       {
-        dest.add_macro("BRUSH_IMAGE_PRESENT");
+        dest.add_macro("WRATH_BRUSH_IMAGE_PRESENT");
       }
     
     if(brush_mapping==WRATHShaderBrushSourceHoard::linear_brush_mapping)
@@ -139,17 +139,17 @@ namespace
     
     if(brush.m_texture_coordinate_source!=NULL)
       {
-        dest.add_macro("BRUSH_IMAGE_PRESENT");
+        dest.add_macro("WRATH_BRUSH_IMAGE_PRESENT");
       }
     
     if(brush.m_gradient_source!=NULL)
       {
-        dest.add_macro("BRUSH_GRADIENT_PRESENT");
+        dest.add_macro("WRATH_BRUSH_GRADIENT_PRESENT");
       }
     
     if(brush.m_color_value_source!=NULL)
       {
-        dest.add_macro("BRUSH_COLOR_PRESENT");
+        dest.add_macro("WRATH_BRUSH_COLOR_PRESENT");
       }
 
     brush_issues_discard=brush_issues_discard
