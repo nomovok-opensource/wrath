@@ -37,7 +37,7 @@ is_covered(void)
 mediump float
 compute_coverage(void)
 {
-  mediump float rr, scr;
+  mediump float rr;
 
   rr=texture2D(wrath_DistanceField, wrath_DistanceFieldTexCoord).r;
 
@@ -46,8 +46,8 @@ compute_coverage(void)
     mediump vec2 dx, dy;
     mediump float scr;
     
-    dx=dFdx(wrath_DistaceFieldPosition);
-    dy=dFdy(wrath_DistaceFieldPosition);
+    dx=dFdx(wrath_DistanceFieldPosition);
+    dy=dFdy(wrath_DistanceFieldPosition);
     scr=sqrt( (dot(dx,dx) + dot(dy,dy))/2.0 );
   
     return smoothstep(0.5 - 0.2*scr,

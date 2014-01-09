@@ -39,7 +39,8 @@ is_covered(in vec2 glyph_position, in vec2 glyph_recirpocal_size)
 mediump float
 compute_coverage(in vec2 glyph_position, in vec2 glyph_recirpocal_size)
 {
-  mediump float rr, scr;mediump vec2 tt;
+  mediump float rr;
+  mediump vec2 tt;
 
   tt=(glyph_position + wrath_DistanceFieldBottomLeft)*glyph_recirpocal_size;
   rr=texture2D(wrath_DistanceField, tt).r;

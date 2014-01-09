@@ -1,6 +1,6 @@
 /*! 
- * \file font_distance_linear.vert.wrath-shader.glsl
- * \brief file font_distance_linear.vert.wrath-shader.glsl
+ * \file font_coverage_nonlinear.vert.wrath-shader.glsl
+ * \brief file font_coverage_nonlinear.vert.wrath-shader.glsl
  * 
  * Copyright 2013 by Nomovok Ltd.
  * 
@@ -16,18 +16,11 @@
  * 
  */
 
-
-shader_out mediump vec2 wrath_DistanceFieldTexCoord;
-shader_out mediump vec2 wrath_DistanceFieldPosition;
-
+shader_out mediump vec2 wrath_CoverageFieldBottomLeft;
 void pre_compute_glyph(in vec2 glyph_position, 
 		       in vec2 glyph_bottom_left,
 		       in vec2 glyph_size,
 		       in vec2 glyph_texture_reciprocal_size)
 {
-  mediump vec2 pp;
-
-  pp=glyph_bottom_left + glyph_position;
-  wrath_DistanceFieldPosition=pp;
-  wrath_DistanceFieldPosition=pp*glyph_texture_reciprocal_size;
+  wrath_CoverageFieldBottomLeft=glyph_bottom_left;
 }

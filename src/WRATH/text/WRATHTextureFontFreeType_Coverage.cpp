@@ -69,12 +69,28 @@ namespace
     {
       m_allocator=WRATHImage::create_texture_allocator(true, m_texture_creation_size);
 
-      m_fragment_source.m_fragment_processor
-        .add_source("font_coverage_base.frag.wrath-shader.glsl",
+       m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
+        .add_source("font_coverage_linear.vert.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
+
+      m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
+        .add_source("font_coverage_linear.frag.wrath-shader.glsl",
+                    WRATHGLShader::from_resource);
+
+
+      m_glyph_glsl.m_fragment_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
+        .add_source("font_coverage_nonlinear.vert.wrath-shader.glsl",
+                    WRATHGLShader::from_resource);
+
+      m_glyph_glsl.m_fragment_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
+        .add_source("font_coverage_nonlinear.frag.wrath-shader.glsl",
+                    WRATHGLShader::from_resource);
+
       
-      m_fragment_source.m_fragment_processor_sampler_names
-        .push_back("CoverageTexture");
+      m_glyph_glsl.m_sampler_names.push_back("wrath_CoverageField");
+      m_glyph_glsl.m_global_names.push_back("wrath_CoverageFieldTexCoord");
+      m_glyph_glsl.m_global_names.push_back("wrath_CoverageFieldPosition");
+      m_glyph_glsl.m_global_names.push_back("wrath_CoverageFieldBottomLeft");
 
     }
 
@@ -85,7 +101,7 @@ namespace
     GLenum m_magnification_filter;
     GLenum m_minification_filter;
     WRATHImage::TextureAllocatorHandle m_allocator;
-    WRATHTextureFont::FragmentSource m_fragment_source;
+    WRATHTextureFont::GlyphGLSL m_glyph_glsl;
   };
 
   common_coverage_data_type&
@@ -243,11 +259,11 @@ number_texture_pages(void)
 }
 
 
-const WRATHTextureFont::FragmentSource*
+const WRATHTextureFont::GlyphGLSL*
 WRATHTextureFontFreeType_Coverage::
-fragment_source(void)
+glyph_glsl(void)
 {
-  return &common_data().m_fragment_source;
+  return &common_data().m_glyph_glsl;
 }
 
 
