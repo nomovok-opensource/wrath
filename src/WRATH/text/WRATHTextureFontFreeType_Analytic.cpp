@@ -284,7 +284,7 @@ namespace
     ~common_analytic_texture_data();
 
 
-    const WRATHTextureFont::FragmentSource*
+    const WRATHTextureFont::GlyphGLSL*
     glyph_glsl(enum WRATHTextureFontFreeType_Analytic::texture_mode_type,
                     unsigned int);
 
@@ -297,8 +297,8 @@ namespace
 
   private:
     
-    std::vector<WRATHTextureFont::FragmentSource*> m_relative_glyph_glsl;
-    WRATHTextureFont::FragmentSource m_glyph_glsl;
+    std::vector<WRATHTextureFont::GlyphGLSL*> m_relative_glyph_glsl;
+    WRATHTextureFont::GlyphGLSL m_glyph_glsl;
   };
 
   common_analytic_texture_data&
@@ -406,19 +406,19 @@ common_analytic_texture_data(void):
 
   
 
-  m_glyph_glsl.m_vertex_processor[linear_glyph_position]
+  m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
     .add_source("font_analytic_linear.vert.wrath-shader.glsl",
                 WRATHGLShader::from_resource);
 
-  m_glyph_glsl.m_fragment_processor[linear_glyph_position]
+  m_glyph_glsl.m_fragment_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
     .add_source("font_analytic_base.frag.wrath-shader.glsl", WRATHGLShader::from_resource)
     .add_source("font_analytic_linear.frag.wrath-shader.glsl", WRATHGLShader::from_resource);
 
-  m_glyph_glsl.m_vertex_processor[nonlinear_glyph_position]
+  m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
     .add_source("font_analytic_nonlinear.vert.wrath-shader.glsl",
                 WRATHGLShader::from_resource);
 
-  m_glyph_glsl.m_fragment_processor[nonlinear_glyph_position]
+  m_glyph_glsl.m_fragment_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
     .add_source("font_analytic_base.frag.wrath-shader.glsl", WRATHGLShader::from_resource)
     .add_source("font_analytic_nonlinear.frag.wrath-shader.glsl", WRATHGLShader::from_resource);
 
@@ -448,7 +448,7 @@ common_analytic_texture_data::
     }
 }
 
-const WRATHTextureFont::FragmentSource*
+const WRATHTextureFont::GlyphGLSL*
 common_analytic_texture_data::
 glyph_glsl(enum WRATHTextureFontFreeType_Analytic::texture_mode_type pmode,
 	   unsigned int pmipmap_levels)
@@ -469,7 +469,7 @@ glyph_glsl(enum WRATHTextureFontFreeType_Analytic::texture_mode_type pmode,
   m_relative_glyph_glsl.resize(pmipmap_levels+1);
   for(;old_sz<=pmipmap_levels; ++old_sz)
     {
-      m_relative_glyph_glsl[old_sz]=WRATHNew WRATHTextureFont::FragmentSource();
+      m_relative_glyph_glsl[old_sz]=WRATHNew WRATHTextureFont::GlyphGLSL();
 
       m_relative_glyph_glsl[old_sz]->m_sampler_names=m_glyph_glsl.m_sampler_names;
       m_relative_glyph_glsl[old_sz]->m_global_names=m_glyph_glsl.m_global_names;
@@ -1225,7 +1225,7 @@ number_texture_pages(void)
   return m_page_tracker.number_texture_pages();
 }
 
-const WRATHTextureFont::FragmentSource*
+const WRATHTextureFont::GlyphGLSL*
 WRATHTextureFontFreeType_Analytic::
 glyph_glsl(void)
 {

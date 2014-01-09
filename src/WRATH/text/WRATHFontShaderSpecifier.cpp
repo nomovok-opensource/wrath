@@ -265,7 +265,7 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
     append shader codes
    */
   new_specifier->append_vertex_shader_source()
-    .add_source(fs_source->m_vertex_processor[v])
+    .absorb(fs_source->m_vertex_processor[v])
     .absorb(vertex_shader_source());
   
   new_specifier->append_fragment_shader_source()

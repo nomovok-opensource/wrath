@@ -79,9 +79,9 @@ namespace WRATHTextureFontFreeType_TMixSupport
   PerMixClass&
   datum(const std::type_info &tp);
 
-  const WRATHTextureFont::FragmentSource*
-  fragment_source(WRATHTextureFont *native_fnt,
-                  WRATHTextureFont *minified_fnt,
-                  PerMixClass*);
+  const WRATHTextureFont::GlyphGLSL*
+  glyph_glsl(WRATHTextureFont *native_fnt,
+	     WRATHTextureFont *minified_fnt,
+	     PerMixClass*);
                   
 }

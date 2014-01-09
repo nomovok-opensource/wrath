@@ -142,8 +142,8 @@ public:
   number_texture_pages(void);
 
   virtual
-  const FragmentSource*
-  fragment_source(void);
+  const GlyphGLSL*
+  glyph_glsl(void);
   
 
   /*!\fn uint8_t unnormalized_glyph_code_value

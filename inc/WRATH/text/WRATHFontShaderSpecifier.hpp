@@ -708,7 +708,7 @@ public:
                                                            int) const
     Provided as a conveniance, equivalent to:
     \code
-    fetch_texture_font_drawer(font->fragment_source(), factory, attribute_packer, sub_drawer_id); 
+    fetch_texture_font_drawer(font->glyph_glsl(), factory, attribute_packer, sub_drawer_id); 
     \endcode
     \param font WRATHTextureFont derived object from which to take the
                 WRATHTextureFont::GlyphGLSL object
@@ -726,7 +726,7 @@ public:
                             const WRATHAttributePacker *attribute_packer,
                             int sub_drawer_id) const
   {
-    return fetch_texture_font_drawer(font->fragment_source(),
+    return fetch_texture_font_drawer(font->glyph_glsl(),
                                      factory, attribute_packer, sub_drawer_id);
   }
 

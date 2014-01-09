@@ -118,8 +118,8 @@ public:
   number_texture_pages(void);
 
   virtual
-  const FragmentSource*
-  fragment_source(void);
+  const GlyphGLSL*
+  glyph_glsl(void);
 
   /*!\fn int total_pixel_waste
     Returns the number of pixels on the texture

@@ -49,7 +49,7 @@
   elements from S::texture_binder().
 
   The fragment source code returned by
-  \ref fragment_source() defines the additional 
+  \ref glyph_glsl() defines the additional 
   functions and symbols:
   - native_compute_coverage() is compute_coverage() function taken from the
     fragment source code of the native sized font (T) [fragment shader only]
@@ -109,7 +109,7 @@ public:
     m_minified_src=create_minified_font();
     m_native_src=create_native_font();
 
-    m_fragment_source=WRATHTextureFontFreeType_TMixSupport::fragment_source(m_native_src,
+    m_glyph_glsl=WRATHTextureFontFreeType_TMixSupport::glyph_glsl(m_native_src,
                                                                             m_minified_src,
                                                                             &datum());
   }
@@ -139,8 +139,8 @@ public:
   {
     WRATHassert(dist_font->source_font()==minified_font->source_font());
     
-    m_fragment_source
-      =WRATHTextureFontFreeType_TMixSupport::fragment_source(m_native_src,
+    m_glyph_glsl
+      =WRATHTextureFontFreeType_TMixSupport::glyph_glsl(m_native_src,
                                                              m_minified_src,
                                                              &datum());
   }
@@ -176,10 +176,10 @@ public:
 
   
   virtual
-  const WRATHTextureFont::FragmentSource*
-  fragment_source(void)
+  const WRATHTextureFont::GlyphGLSL*
+  glyph_glsl(void)
   {
-    return m_fragment_source;
+    return m_glyph_glsl;
   }
 
   /*!\fn S* minified_font_src
@@ -376,7 +376,7 @@ private:
   S *m_minified_src;
   T *m_native_src;
   float m_size_ratio;
-  const WRATHTextureFont::FragmentSource *m_fragment_source;
+  const WRATHTextureFont::FragmentSource *m_glyph_glsl;
 
   WRATHTextureFontUtil::TexturePageTracker m_page_tracker;
 };

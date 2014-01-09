@@ -72,25 +72,25 @@ namespace
                                                        GL_REPEAT);
       
 
-      m_glyph_glsl.m_vertex_processor[linear_glyph_position]
+      m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
         .add_source("font_distance_linear.vert.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
 
-      m_glyph_glsl.m_vertex_processor[linear_glyph_position]
+      m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
         .add_source("font_distance_linear.frag.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
 
 
-      m_glyph_glsl.m_fragment_processor[nonlinear_glyph_position]
+      m_glyph_glsl.m_fragment_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
         .add_source("font_distance_nonlinear.vert.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
 
-      m_glyph_glsl.m_fragment_processor[nonlinear_glyph_position]
+      m_glyph_glsl.m_fragment_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
         .add_source("font_distance_nonlinear.frag.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
 
       
-      m_glyph_glsl.m_fragment_processor_sampler_names.push_back("wrath_DistanceField");
+      m_glyph_glsl.m_sampler_names.push_back("wrath_DistanceField");
       m_glyph_glsl.m_global_names.push_back("wrath_DistanceFieldTexCoord");
       m_glyph_glsl.m_global_names.push_back("wrath_DistanceFieldPosition");
       m_glyph_glsl.m_global_names.push_back("wrath_DistanceFieldBottomLeft");
@@ -102,7 +102,7 @@ namespace
     float m_max_L1_distance;
     enum WRATHTextureFontFreeType_Distance::fill_rule_type m_fill_rule;
     WRATHImage::TextureAllocatorHandle m_allocator;
-    WRATHTextureFont::FragmentSource m_glyph_glsl;
+    WRATHTextureFont::GlyphGLSL m_glyph_glsl;
   };
 
   common_distance_data_type&
@@ -206,7 +206,7 @@ number_texture_pages(void)
   return m_page_tracker.number_texture_pages();
 }
 
-const WRATHTextureFont::FragmentSource*
+const WRATHTextureFont::GlyphGLSL*
 WRATHTextureFontFreeType_Distance::
 glyph_glsl(void)
 {
