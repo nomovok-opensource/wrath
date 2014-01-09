@@ -1,6 +1,6 @@
 /*! 
- * \file font_analytic_nonlinear.vert.wrath-shader.glsl
- * \brief file font_analytic_nonlinear.vert.wrath-shader.glsl
+ * \file font_curve_analytic_nonlinear.vert.wrath-shader.glsl
+ * \brief file font_curve_analytic_nonlinear.vert.wrath-shader.glsl
  * 
  * Copyright 2013 by Nomovok Ltd.
  * 
@@ -16,11 +16,15 @@
  * 
  */
 
-shader_out mediump vec2 wrath_AnalyticBottomLeft;
+shader_out mediump vec2 wrath_CurveAnalyticBottomLeft;
+shader_out mediump float wrath_CurveAnalyticGlyphIndex;
+
 void pre_compute_glyph(in vec2 glyph_position, 
 		       in vec2 glyph_bottom_left,
 		       in vec2 glyph_size,
-		       in vec2 glyph_texture_reciprocal_size)
+		       in vec2 glyph_texture_reciprocal_size,
+                       in float glyph_custom_data[1])
 {
-  wrath_AnalyticBottomLeft=glyph_bottom_left;
+  wrath_CurveAnalyticBottomLeft=glyph_bottom_left;
+  wrath_CurveAnalyticGlyphIndex=glyph_custom_data[0];
 }

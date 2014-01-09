@@ -909,8 +909,8 @@ namespace
       m_curve_consumption.m_number_texels_used+=256*2;
     }
 
-    const WRATHTextureFont::FragmentSource*
-    fragment_source(uint32_t flags);
+    const WRATHTextureFont::GlyphGLSL*
+    glyph_glsl(uint32_t flags);
     
     WRATHImage::TextureAllocatorHandle m_allocator;
 
@@ -958,7 +958,7 @@ namespace
     WRATHMutex m_curve_consumption_counter_mutex;
     WRATHImage::TextureAllocatorHandle::texture_consumption_data_type m_curve_consumption;
     vecN<GeometryDataImageSet*, 8> m_all_data;
-    vecN<WRATHTextureFont::FragmentSource, 8> m_fragment_source;
+    vecN<WRATHTextureFont::GlyphGLSL, 8> m_glyph_glsl;
   };
 
   common_data_type&
@@ -981,8 +981,22 @@ namespace
       m_loc(loc),
       m_number_curves(number_curves)
     {
-      m_custom_int_data.push_back(loc.first.y());
-      m_custom_float_data.push_back(static_cast<float>(loc.first.y()/255.0f));
+      float t, n;
+      /*
+        The custom_float value is the y-texture coordinate
+        of where the curve data sits, the texture size
+        is 256 in height. We want to give the -normalized-
+        texure coordinate. Now for something interesting:
+        
+        The normalization is from [0,256] to [0,1],
+        and we want the "center" texel, so it is
+        given by:
+
+        (texel + 0.5)/255.0
+      */
+      t=static_cast<float>(loc.first.y());
+      n=(0.5f + t)/255.0f;
+      m_custom_float_data.push_back(n);
     }
     
     ~local_glyph_data_type()
@@ -1420,38 +1434,88 @@ common_data_type(void):
     {
       WRATHImage::ImageFormatArray curve_fmt;
 
-      if(i&with_scaling)
+      for(int type=0; type<WRATHTextureFont::GlyphGLSL::num_linearity_types; ++type)
         {
-          m_fragment_source[i].m_fragment_processor
-            .add_macro("CURVE_ANALYTIC_STORE_SCALING");
-        }
-
-      if(i&two_channel)
-        {
-          m_fragment_source[i].m_fragment_processor
-            .add_macro("CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND");
-        }
-
-      if(i&separate_curve)
-        {
-          m_fragment_source[i].m_fragment_processor
-            .add_macro("CURVE_ANALYTIC_SEPARATE_CURVES");
-        }
+          if(i&with_scaling)
+            {
+              m_glyph_glsl[i].m_fragment_processor[type]
+                .add_macro("WRATH_CURVE_ANALYTIC_STORE_SCALING");
+            }
+          
+          if(i&two_channel)
+            {
+              m_glyph_glsl[i].m_fragment_processor[type]
+                .add_macro("WRATH_CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND");
+            }
+          
+          if(i&separate_curve)
+            {
+              m_glyph_glsl[i].m_fragment_processor[type]
+                .add_macro("WRATH_CURVE_ANALYTIC_SEPARATE_CURVES");
+            }
       
-      #if defined(WRATH_GLES_VERSION) && WRATH_GLES_VERSION==2
-      {
-        m_fragment_source[i].m_fragment_processor.add_macro("USE_LA_LOOKUP");
-      }
-      #endif
+          #if defined(WRATH_GLES_VERSION) && WRATH_GLES_VERSION==2
+            {
+              m_glyph_glsl[i].m_fragment_processor[type].add_macro("WRATH_CURVE_ANALYTIC_USE_LA_LOOKUP");
+            }
+          #endif
+        }
+
+      
 
 
-      m_fragment_source[i].m_fragment_processor
-        .add_source("font_curve_analytic_base.frag.wrath-shader.glsl",
+      m_glyph_glsl[i].m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
+        .add_source("font_curve_analytic_linear.vert.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
 
+      m_glyph_glsl[i].m_fragment_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
+        .add_source("font_curve_analytic_base.frag.wrath-shader.glsl", WRATHGLShader::from_resource)
+        .add_source("font_curve_analytic_linear.frag.wrath-shader.glsl", WRATHGLShader::from_resource);
+
+
+      m_glyph_glsl[i].m_vertex_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
+        .add_source("font_curve_analytic_nonlinear.vert.wrath-shader.glsl",
+                    WRATHGLShader::from_resource);
+
+      m_glyph_glsl[i].m_fragment_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
+        .add_source("font_curve_analytic_base.frag.wrath-shader.glsl", WRATHGLShader::from_resource)
+        .add_source("font_curve_analytic_nonlinear.frag.wrath-shader.glsl",
+                    WRATHGLShader::from_resource);
+
+
+      for(int type=0; type<WRATHTextureFont::GlyphGLSL::num_linearity_types; ++type)
+        {
+          if(i&with_scaling)
+            {
+              m_glyph_glsl[i].m_fragment_processor[type]
+                .remove_macro("WRATH_CURVE_ANALYTIC_STORE_SCALING");
+            }
+          
+          if(i&two_channel)
+            {
+              m_glyph_glsl[i].m_fragment_processor[type]
+                .remove_macro("WRATH_CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND");
+            }
+          
+          if(i&separate_curve)
+            {
+              m_glyph_glsl[i].m_fragment_processor[type]
+                .remove_macro("WRATH_CURVE_ANALYTIC_SEPARATE_CURVES");
+            }
       
+          #if defined(WRATH_GLES_VERSION) && WRATH_GLES_VERSION==2
+            {
+              m_glyph_glsl[i].m_fragment_processor[type].remove_macro("WRATH_CURVE_ANALYTIC_USE_LA_LOOKUP");
+            }
+          #endif
+        }
+
+      m_glyph_glsl[i].m_global_names.push_back("wrath_curve_analytic_font_compute_distance");
+      m_glyph_glsl[i].m_global_names.push_back("wrath_CurveAnalyticTexCoord_Position");
+      m_glyph_glsl[i].m_global_names.push_back("wrath_CurveAnalyticBottomLeft");
+      m_glyph_glsl[i].m_global_names.push_back("wrath_CurveAnalyticGlyphIndex");
       build_sampler_names_and_format(i, 
-                                     m_fragment_source[i].m_fragment_processor_sampler_names,
+                                     m_glyph_glsl[i].m_sampler_names,
                                      curve_fmt);
 
       m_all_data[i]=WRATHNew GeometryDataImageSet(i, curve_fmt);
@@ -1478,7 +1542,7 @@ build_sampler_names_and_format(int I,
   
   int current_layer(0);
   
-  sampler_names.push_back("IndexTexture");
+  sampler_names.push_back("wrath_CurveAnalyticIndexTexture");
 
   if(I&separate_curve)
     {
@@ -1503,16 +1567,16 @@ build_sampler_names_and_format(int I,
            cobined into one LA8
        */
 
-      append_rgba16f(current_layer, "M_P_Texture",
+      append_rgba16f(current_layer, "wrath_CurveAnalyticM_P_Texture",
                      sampler_names, curve_fmt,
                      I&two_channel);
 
-      append_la16f(current_layer, "QTexture",
-                     sampler_names, curve_fmt);
-
+      append_la16f(current_layer, "wrath_CurveAnalyticQTexture",
+                   sampler_names, curve_fmt);
+      
       if(I&with_scaling)
         {
-          append_custom(current_layer, "ScaleTexture",
+          append_custom(current_layer, "wrath_CurveAnalyticScaleTexture",
                         sampler_names, curve_fmt,
                         WRATHImage::ImageFormat()
                         .internal_format(HALF_FLOAT_INTERNAL_FORMAT_1CHANNEL)
@@ -1524,7 +1588,7 @@ build_sampler_names_and_format(int I,
                         .max_mip_level(0));
         }
 
-      append_custom(current_layer, "NextCurveTexture",
+      append_custom(current_layer, "wrath_CurveAnalyticNextCurveTexture",
                     sampler_names, curve_fmt,
                     WRATHImage::ImageFormat()
                     .internal_format(PIXEL_TYPE_1CHANNEL)
@@ -1539,7 +1603,7 @@ build_sampler_names_and_format(int I,
         we could compress this down to 1 byte, and then 
         combine it with NextCurveTexture...
        */
-      append_custom(current_layer, "RuleTexture",
+      append_custom(current_layer, "wrath_CurveAnalyticRuleTexture",
                     sampler_names, curve_fmt,
                     WRATHImage::ImageFormat()
                     .internal_format(GL_RGBA)
@@ -1554,27 +1618,27 @@ build_sampler_names_and_format(int I,
     }
   else
     {
-      append_rgba16f(current_layer, "ABTexture",
+      append_rgba16f(current_layer, "wrath_CurveAnalyticABTexture",
                      sampler_names, curve_fmt,
                      I&two_channel);
 
-      append_rgba16f(current_layer, "QTexture",
+      append_rgba16f(current_layer, "wrath_CurveAnalyticQTexture",
                      sampler_names, curve_fmt,
                      I&two_channel);
 
       if(I&with_scaling)
         {
-          append_rgba16f(current_layer, "P2Texture",
+          append_rgba16f(current_layer, "wrath_CurveAnalyticP2Texture",
                      sampler_names, curve_fmt,
                      I&two_channel);
         }
       else
         {
-          append_la16f(current_layer, "P2Texture",
+          append_la16f(current_layer, "wrath_CurveAnalyticP2Texture",
                        sampler_names, curve_fmt);
         }
 
-      append_custom(current_layer, "RuleTexture",
+      append_custom(current_layer, "wrath_CurveAnalyticRuleTexture",
                     sampler_names, curve_fmt,
                     WRATHImage::ImageFormat()
                     .internal_format(GL_RGBA)
@@ -1650,11 +1714,11 @@ append_rgba16f(int &layer, const std::string &pname,
 }
 
 
-const WRATHTextureFont::FragmentSource*
+const WRATHTextureFont::GlyphGLSL*
 common_data_type::
-fragment_source(uint32_t flags)
+glyph_glsl(uint32_t flags)
 {
-  return &m_fragment_source[flags];
+  return &m_glyph_glsl[flags];
 }
 
 WRATHImage*
@@ -3208,13 +3272,6 @@ WRATHTextureFontFreeType_CurveAnalytic::
 }
 
 
-uint8_t
-WRATHTextureFontFreeType_CurveAnalytic::
-unnormalized_glyph_code_value(const glyph_data_type &G)
-{
-  return G.fetch_custom_int(0);
-}
-
 float
 WRATHTextureFontFreeType_CurveAnalytic::
 normalized_glyph_code_value(const glyph_data_type &G)
@@ -3229,11 +3286,11 @@ number_texture_pages(void)
   return m_page_tracker.number_texture_pages();
 }
 
-const WRATHTextureFont::FragmentSource*
+const WRATHTextureFont::GlyphGLSL*
 WRATHTextureFontFreeType_CurveAnalytic::
-fragment_source(void)
+glyph_glsl(void)
 {
-  return common_data().fragment_source(m_flags);
+  return common_data().glyph_glsl(m_flags);
 }
 
 

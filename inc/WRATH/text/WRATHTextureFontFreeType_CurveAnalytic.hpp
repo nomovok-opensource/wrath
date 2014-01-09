@@ -133,21 +133,7 @@ public:
   virtual
   const GlyphGLSL*
   glyph_glsl(void);
-
- 
-  /*!\fn uint8_t unnormalized_glyph_code_value(const glyph_data_type&)
-    glyph_data_type objects of a WRATHTextureFontFreeType_CurveAnalytic
-    carry an additional custom attribute common to the
-    entire glyph. This value is a texture coordinate to
-    feed to texture 1 as the t(aka y) coordinate.
-    Returns the value unnormalized as an unsigned
-    8-bit integer.
-    \param G glyph_data_type object to query
-   */
-  static
-  uint8_t
-  unnormalized_glyph_code_value(const glyph_data_type &G);
-
+  
   /*!\fn normalized_glyph_code_value
     glyph_data_type objects of a WRATHTextureFontFreeType_CurveAnalytic
     carry an additional custom attribute common to the

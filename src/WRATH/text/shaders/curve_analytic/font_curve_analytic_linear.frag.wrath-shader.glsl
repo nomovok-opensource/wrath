@@ -1,6 +1,6 @@
 /*! 
- * \file font_analytic_base.frag.wrath-shader.glsl
- * \brief file font_analytic_base.frag.wrath-shader.glsl
+ * \file font_curve_analytic_base.frag.wrath-shader.glsl
+ * \brief file font_curve_analytic_base.frag.wrath-shader.glsl
  * 
  * Copyright 2013 by Nomovok Ltd.
  * 
@@ -20,9 +20,10 @@
 
 
 shader_in mediump vec4 wrath_AnalyticTexCoord_Position;
+shader_in mediump float wrath_CurveAnalyticGlyphIndex;
 
-#define GlyphTextureCoordinate wrath_AnalyticTexCoord_Position.xy
-#define GlyphCoordinate wrath_AnalyticTexCoord_Position.zw
+#define GlyphTextureCoordinate wrath_CurveAnalyticTexCoord_Position.xy
+#define GlyphCoordinate wrath_CurveAnalyticTexCoord_Position.zw
 
 
 mediump float
@@ -30,7 +31,9 @@ compute_coverage(void)
 {
   mediump float d;
 
-  d=wrath_analytic_font_compute_distance(GlyphTextureCoordinate, GlyphCoordinate);
+  d=wrath_curve_analytic_compute_quasi_distance(GlyphCoordinate,
+                                                GlyphTextureCoordinate, 
+                                                wrath_CurveAnalyticGlyphIndex);
   
   #if defined(WRATH_DERIVATIVES_SUPPORTED)
   {
@@ -56,7 +59,9 @@ is_covered(void)
 {
   mediump float d;
 
-  d=wrath_analytic_font_compute_distance(GlyphTextureCoordinate, GlyphCoordinate);
+  d=wrath_curve_analytic_compute_quasi_distance(GlyphCoordinate,
+                                                GlyphTextureCoordinate, 
+                                                wrath_CurveAnalyticGlyphIndex);
   return step(0.0, d);
 }
 

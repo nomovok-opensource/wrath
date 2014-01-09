@@ -1,6 +1,6 @@
 /*! 
- * \file font_analytic_base.frag.wrath-shader.glsl
- * \brief file font_analytic_base.frag.wrath-shader.glsl
+ * \file font_analytic_nonlinear.frag.wrath-shader.glsl
+ * \brief file font_analytic_nonlinear.frag.wrath-shader.glsl
  * 
  * Copyright 2013 by Nomovok Ltd.
  * 
@@ -15,21 +15,6 @@
  * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
  * 
  */
-
-
-
-uniform mediump sampler2D wrath_AnalyticNormalTexture;
-uniform mediump sampler2D wrath_AnalyticPositionTexture;
-
-
-
-#ifdef WRATH_FONT_ANALYTIC_PIXEL_RELATIVE_COORDINATES
-
-#ifndef WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE 
-#define WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE 1.0
-#endif
-
-#endif
 
 
 shader_in mediump vec2 wrath_AnalyticBottomLeft;

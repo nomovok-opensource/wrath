@@ -16,37 +16,7 @@
  * 
  */
 
- /*
-    GlyphIndex is used as a texture coordinate
-    where the texture size is 256. It is set
-    in C++ code as the non-normalized coordinate,
-    i.e. actual texel. Now for something interesting:
-
-    Let I=texel you want, then the normalized
-    texel coordinate to use is given by:
-
-    (I+0.5)/256
-
-    Let B be the value (as a byte) at in_glyph_index.
-    The value of in_glyph_index is B/255, call it f.
-
-    Then the texel coordinate we wish to use is:
-
-    t=(255*f+0.5)/256.
-
-    As a side note, 
-
-    |f-t| = |f/256 - 0.5/256| and we need
-    that to be no more than 1/512:
-
-    thus we want:
-
-    |f-0.5| < 0.5
-
-    which is true for 0<f<1, but, round off
-    issues make this dicey
-   */
-  GlyphIndex=(255.0*in_glyph_index+0.5)/256.0;
+ 
 
 
 
@@ -109,32 +79,32 @@
     to the curve at t=0.
  */
 
-#ifdef CURVE_ANALYTIC_SEPARATE_CURVES
+#ifdef WRATH_CURVE_ANALYTIC_SEPARATE_CURVES
 
-  uniform mediump sampler2D IndexTexture;//A8
-  uniform mediump sampler2D QTexture; 
-  uniform mediump sampler2D M_P_Texture;
-  #ifdef CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND
-    uniform mediump sampler2D M_P_Texture_2nd;
+  uniform mediump sampler2D wrath_CurveAnalyticIndexTexture;//A8
+  uniform mediump sampler2D wrath_CurveAnalyticQTexture; 
+  uniform mediump sampler2D wrath_CurveAnalyticM_P_Texture;
+  #ifdef WRATH_CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND
+    uniform mediump sampler2D wrath_CurveAnalyticM_P_Texture_2nd;
   #endif
-  #ifdef CURVE_ANALYTIC_STORE_SCALING
-    uniform mediump sampler2D ScaleTexture;
+  #ifdef WRATH_CURVE_ANALYTIC_STORE_SCALING
+    uniform mediump sampler2D wrath_CurveAnalyticScaleTexture;
   #endif
-  uniform mediump sampler2D NextCurveTexture; //L8
-  uniform mediump sampler2D RuleTexture; //RGBA4444 (cA, cB, rule, reserved)
+  uniform mediump sampler2D wrath_CurveAnalyticNextCurveTexture; //L8
+  uniform mediump sampler2D wrath_CurveAnalyticRuleTexture; //RGBA4444 (cA, cB, rule, reserved)
  
 #else
 
-  uniform mediump sampler2D IndexTexture;//A8
-  uniform mediump sampler2D ABTexture;   //RGBA_16F (A0,B0,A1,B1)
-  uniform mediump sampler2D QTexture;    //RGBA_16F (QaX, QaY, QbX, QbY)
-  uniform mediump sampler2D P2Texture;   //LA_16F (p2x, p2y) OR RGBA_16F (p2x, p2y, mag_Qa, mag_Qb)
-  uniform mediump sampler2D RuleTexture; //RGBA4444 (cA, cB, rule, tangle)
+  uniform mediump sampler2D wrath_CurveAnalyticIndexTexture;//A8
+  uniform mediump sampler2D wrath_CurveAnalyticABTexture;   //RGBA_16F (A0,B0,A1,B1)
+  uniform mediump sampler2D wrath_CurveAnalyticQTexture;    //RGBA_16F (QaX, QaY, QbX, QbY)
+  uniform mediump sampler2D wrath_CurveAnalyticP2Texture;   //LA_16F (p2x, p2y) OR RGBA_16F (p2x, p2y, mag_Qa, mag_Qb)
+  uniform mediump sampler2D wrath_CurveAnalyticRuleTexture; //RGBA4444 (cA, cB, rule, tangle)
 
-  #ifdef CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND
-    uniform mediump sampler2D ABTexture_2nd;   //RGBA_16F (A0,B0,A1,B1)
-    uniform mediump sampler2D QTexture_2nd;    //RGBA_16F (QaX, QaY, QbX, QbY)
-    uniform mediump sampler2D P2Texture_2nd;   //LA_16F (p2x, p2y) OR RGBA_16F (p2x, p2y, mag_Qa, mag_Qb)
+  #ifdef WRATH_CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND
+    uniform mediump sampler2D wrath_CurveAnalyticABTexture_2nd;   //RGBA_16F (A0,B0,A1,B1)
+    uniform mediump sampler2D wrath_CurveAnalyticQTexture_2nd;    //RGBA_16F (QaX, QaY, QbX, QbY)
+    uniform mediump sampler2D wrath_CurveAnalyticP2Texture_2nd;   //LA_16F (p2x, p2y) OR RGBA_16F (p2x, p2y, mag_Qa, mag_Qb)
   #endif
 #endif
 
@@ -164,28 +134,17 @@
   Hackage to handle where GLES2 for 2 channel is LA texture
   gut GL is R and RG textures
  */
-#ifdef USE_LA_LOOKUP
+#ifdef WRATH_USE_LA_LOOKUP
 #define float_texture2D_2channel(X, Y) float_texture2D(X,Y).ra
 #else
 #define float_texture2D_2channel(X, Y) float_texture2D(X,Y).rg
 #endif
 
-/*
-  needed if this font shader is used twice for a mix
-  font with the saem type to make sure that each
-  notion of size, the function compute_quasi_distance
-  is unique
- */
-#ifndef CURVE_ANALYTIC_PRESENT
-#define CURVE_ANALYTIC_PRESENT
-
-#else
-#define compute_quasi_distance compute_quasi_distance_again
-#endif
-
 
 mediump float
-compute_quasi_distance(void)
+wrath_curve_analytic_compute_quasi_distance(in vec2 GlyphCoordinate,
+                                            in vec2 GlyphTextureCoordinate,
+                                            in float GlyphIndex)
 {
   mediump vec2 pp;
   mediump vec4 pa_pb;
@@ -195,7 +154,7 @@ compute_quasi_distance(void)
   mediump vec4 ca_cb_rule_tangle;
   mediump float omega, zeta, sigma, sigma_min, sigma_max;
 
-#ifdef CURVE_ANALYTIC_STORE_SCALING
+#ifdef WRATH_CURVE_ANALYTIC_STORE_SCALING
   mediump vec4 p2_QaScale_QbScale;
   #define p2 p2_QaScale_QbScale.xy
   #define QaScale p2_QaScale_QbScale.z
@@ -237,7 +196,7 @@ compute_quasi_distance(void)
 #define Qa_Qb_x Qa_Qb.xz
 #define Qa_Qb_y Qa_Qb.yw
 
-  dependent_tex.x=index_texture2D(IndexTexture, GlyphTextureCoordinate).r;
+  dependent_tex.x=index_texture2D(wrath_CurveAnalyticIndexTexture, GlyphTextureCoordinate).r;
   dependent_tex.y=GlyphIndex;
 
   
@@ -253,7 +212,7 @@ compute_quasi_distance(void)
 
   dependent_tex.x=(255.0*dependent_tex.x + 0.5)/256.0;
   
-  #ifdef CURVE_ANALYTIC_SEPARATE_CURVES
+  #ifdef WRATH_CURVE_ANALYTIC_SEPARATE_CURVES
   {
     mediump vec4 Ma_Pa, Mb_Pb;
     mediump vec4 PP_AB;
@@ -261,45 +220,45 @@ compute_quasi_distance(void)
 
     dependent_tex2.y=dependent_tex.y;
 
-    dependent_tex2.x=rule_texture2D(NextCurveTexture, dependent_tex).r;
-    ca_cb_rule_tangle=rule_texture2D(RuleTexture, dependent_tex).rgba;
+    dependent_tex2.x=rule_texture2D(wrath_CurveAnalyticNextCurveTexture, dependent_tex).r;
+    ca_cb_rule_tangle=rule_texture2D(wrath_CurveAnalyticRuleTexture, dependent_tex).rgba;
 
-    #ifdef CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND
+    #ifdef WRATH_CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND
     {
       Ma_Pa.xy=float_texture2D_2channel(M_P_Texture, dependent_tex);
       Ma_Pa.zw=float_texture2D_2channel(M_P_Texture_2nd, dependent_tex);
     }
     #else
     {
-      Ma_Pa=float_texture2D(M_P_Texture, dependent_tex);
+      Ma_Pa=float_texture2D(wrath_CurveAnalyticM_P_Texture, dependent_tex);
     }
     #endif
 
     Qa=float_texture2D_2channel(QTexture, dependent_tex);
-    #ifdef CURVE_ANALYTIC_STORE_SCALING
+    #ifdef WRATH_CURVE_ANALYTIC_STORE_SCALING
     {
-      QaScale=float_texture2D(ScaleTexture, dependent_tex).r;
+      QaScale=float_texture2D(wrath_CurveAnalyticScaleTexture, dependent_tex).r;
     }
     #endif
 
 
     dependent_tex2.x=(255.0*dependent_tex2.x + 0.5)/256.0;
-    #ifdef CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND
+    #ifdef WRATH_CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND
     {
       Mb_Pb.xy=float_texture2D_2channel(M_P_Texture, dependent_tex2);
       Mb_Pb.zw=float_texture2D_2channel(M_P_Texture_2nd, dependent_tex2);
     }
     #else
     {
-      Mb_Pb=float_texture2D(M_P_Texture, dependent_tex2);
+      Mb_Pb=float_texture2D(wrath_CurveAnalyticM_P_Texture, dependent_tex2);
     }
     #endif
     
     
     Qb=float_texture2D_2channel(QTexture, dependent_tex2);
-    #ifdef CURVE_ANALYTIC_STORE_SCALING
+    #ifdef WRATH_CURVE_ANALYTIC_STORE_SCALING
     {
-      QbScale=float_texture2D(ScaleTexture, dependent_tex2).r;
+      QbScale=float_texture2D(wrath_CurveAnalyticScaleTexture, dependent_tex2).r;
     }
     #endif
 
@@ -358,7 +317,7 @@ compute_quasi_distance(void)
   }
   #else
   {
-    #ifdef CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND
+    #ifdef WRATH_CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND
     {
       Qa_Qb.xy=float_texture2D_2channel(QTexture, dependent_tex);
       Qa_Qb.zw=float_texture2D_2channel(QTexture_2nd, dependent_tex);
@@ -366,7 +325,7 @@ compute_quasi_distance(void)
       A0_B0_A1_B1.zw=float_texture2D_2channel(ABTexture_2nd, dependent_tex);
       p2=float_texture2D_2channel(P2Texture, dependent_tex);
       
-      #ifdef CURVE_ANALYTIC_STORE_SCALING
+      #ifdef WRATH_CURVE_ANALYTIC_STORE_SCALING
       {
         QaScale_QbScale=float_texture2D_2channel(P2Texture_2nd, dependent_tex);
       }
@@ -375,12 +334,12 @@ compute_quasi_distance(void)
     #else
     {
    
-      Qa_Qb=float_texture2D(QTexture, dependent_tex);
-      A0_B0_A1_B1=float_texture2D(ABTexture, dependent_tex);
+      Qa_Qb=float_texture2D(wrath_CurveAnalyticQTexture, dependent_tex);
+      A0_B0_A1_B1=float_texture2D(wrath_CurveAnalyticABTexture, dependent_tex);
 
-      #ifdef CURVE_ANALYTIC_STORE_SCALING
+      #ifdef WRATH_CURVE_ANALYTIC_STORE_SCALING
       {
-        p2_QaScale_QbScale=float_texture2D(P2Texture, dependent_tex);
+        p2_QaScale_QbScale=float_texture2D(wrath_CurveAnalyticP2Texture, dependent_tex);
       }
       #else
       {
@@ -390,7 +349,7 @@ compute_quasi_distance(void)
     }
     #endif
 
-    ca_cb_rule_tangle=rule_texture2D(RuleTexture, dependent_tex).rgba;
+    ca_cb_rule_tangle=rule_texture2D(wrath_CurveAnalyticRuleTexture, dependent_tex).rgba;
     pp=GlyphCoordinate-p2;
     /*
       Qa:= | Qa_x  Qa_y |
@@ -485,7 +444,7 @@ compute_quasi_distance(void)
    use QaScale_QbScale in place of ca_cb
   */
 
-  #ifdef CURVE_ANALYTIC_SEPARATE_CURVES
+  #ifdef WRATH_CURVE_ANALYTIC_SEPARATE_CURVES
   {
     A0_B0=-A0_B0;
   }
@@ -496,7 +455,7 @@ compute_quasi_distance(void)
   #endif
 
 
-  #ifdef CURVE_ANALYTIC_STORE_SCALING
+  #ifdef WRATH_CURVE_ANALYTIC_STORE_SCALING
   {
     sigma_ab=(A1_B1*ta_tb + sa_sb*QaScale_QbScale - pa_pb_y)*sign(A0_B0);
   }
@@ -522,7 +481,7 @@ compute_quasi_distance(void)
 
   return sigma;
 
-#ifdef CURVE_ANALYTIC_STORE_SCALING
+#ifdef WRATH_CURVE_ANALYTIC_STORE_SCALING
 #undef p2
 #undef QaScale
 #undef QbScale
