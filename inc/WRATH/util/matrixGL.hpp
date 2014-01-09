@@ -325,7 +325,7 @@ public:
 
 namespace std
 {
-  /*!\fn swap(matrixNxM<N,T>&, matrixNxM<N,T>&)
+  /*!\fn swap(matrixNxM<N,M,T>&, matrixNxM<N,M,T>&)
     Swaps the two given matrices in place.
     \param obj0 first matrix
     \param obj1 second matrix
