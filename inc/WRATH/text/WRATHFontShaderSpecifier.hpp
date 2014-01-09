@@ -41,7 +41,7 @@
   WRATHTextureFontDrawer objects which are
   manufactured as combination from a user provided
   vertex shader, _generic_ fragment shader and
-  the WRATHTextureFont::FragmentSource data
+  the WRATHTextureFont::GlyphGLSL data
   of a font type. Changing, querying, etc
   what WRATHFontShaderSpecifier is applied
   in a \ref WRATHTextDataStream is done
@@ -663,12 +663,12 @@ public:
     m_font_discard_thresh=v;
   }
 
-  /*!\fn WRATHTextureFontDrawer* fetch_texture_font_drawer(const WRATHTextureFont::FragmentSource*,
+  /*!\fn WRATHTextureFontDrawer* fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL*,
                                                            const WRATHItemDrawerFactory&,
                                                            const WRATHAttributePacker*,
                                                            int) const
     Fetch, and if necessary first create, a WRATHTextureFontDrawer
-    object using the named WRATHTextureFont::FragmentSource object
+    object using the named WRATHTextureFont::GlyphGLSL object
     to implement is_covered() and compute_coverage(). The WRATHTextureFontDrawer
     are stored in the creating WRATHFontShaderSpecifier object.
     Hence, one should save one's created WRATHFontShaderSpecifier.
@@ -686,7 +686,7 @@ public:
     - IS_OPAQUE_PASS for the opaque pass of solid text
     - IS_TRANSLUCENT_PASS for the translucent pass for AA-portions of solid text
     - IS_PURE_TRANSLUCENT_PASS for text the drawer to draw purely transparent text
-    \param fs_source WRATHTextureFont::FragmentSource object, typically
+    \param fs_source WRATHTextureFont::GlyphGLSL object, typically
                      taken from a WRATHTextureFont derived object
     \param factory WRATHItemDrawerFactory to specify per item
                    and per draw group collection transformation source
@@ -697,7 +697,7 @@ public:
                          factor object.
    */
   WRATHTextureFontDrawer*
-  fetch_texture_font_drawer(const WRATHTextureFont::FragmentSource *fs_source,
+  fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
                             const WRATHItemDrawerFactory &factory,
                             const WRATHAttributePacker *attribute_packer,
                             int sub_drawer_id) const;
@@ -711,7 +711,7 @@ public:
     fetch_texture_font_drawer(font->fragment_source(), factory, attribute_packer, sub_drawer_id); 
     \endcode
     \param font WRATHTextureFont derived object from which to take the
-                WRATHTextureFont::FragmentSource object
+                WRATHTextureFont::GlyphGLSL object
     \param factory WRATHItemDrawerFactory to specify per item
                    and per draw group collection transformation source
                    code
@@ -733,8 +733,8 @@ public:
 private:
 
  
-  typedef WRATHTextureFont::FragmentSource FragmentSource;
-  typedef std::map<const FragmentSource*, WRATHShaderSpecifier*> map_type;
+  typedef WRATHTextureFont::GlyphGLSL GlyphGLSL;
+  typedef std::map<const GlyphGLSL*, WRATHShaderSpecifier*> map_type;
   
   ResourceKey m_resource_name;
   bool m_remove_from_manager;

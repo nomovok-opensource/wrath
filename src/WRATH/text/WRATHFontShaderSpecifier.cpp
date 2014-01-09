@@ -165,7 +165,7 @@ add_pre_shader_source_code(const WRATHBaseSource *src,
 
 WRATHTextureFontDrawer*
 WRATHFontShaderSpecifier::
-fetch_texture_font_drawer(const WRATHTextureFont::FragmentSource *fs_source,
+fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
                           const WRATHItemDrawerFactory &factory,
                           const WRATHAttributePacker *attribute_packer,
                           int sub_drawer_id) const
@@ -205,10 +205,10 @@ fetch_texture_font_drawer(const WRATHTextureFont::FragmentSource *fs_source,
 
   new_specifier->append_initializers()=initializers();
 
-  for(int i=0, endi=fs_source->m_fragment_processor_sampler_names.size(); i<endi; ++i)
+  for(int i=0, endi=fs_source->m_sampler_names.size(); i<endi; ++i)
     {
       new_specifier->append_initializers()
-        .add_sampler_initializer(fs_source->m_fragment_processor_sampler_names[i], i);
+        .add_sampler_initializer(fs_source->m_sampler_names[i], i);
 
       new_specifier->append_bindings()
 	.add_texture_binding(GL_TEXTURE0+i);
@@ -219,7 +219,7 @@ fetch_texture_font_drawer(const WRATHTextureFont::FragmentSource *fs_source,
     {
       unsigned int S;
       
-      S=iter->first + fs_source->m_fragment_processor_sampler_names.size();
+      S=iter->first + fs_source->m_sampler_names.size();
 
       new_specifier->append_initializers()
         .add_sampler_initializer(iter->second, S);
@@ -232,11 +232,11 @@ fetch_texture_font_drawer(const WRATHTextureFont::FragmentSource *fs_source,
     ISSUE: The font shading system does not support shading
     stages beyond vertex and fragment shading; we should 
     likely make it support it, the main issue it looks like
-    is WRATHTextureFont::FragmentSource interface, perhaps
+    is WRATHTextureFont::GlyphGLSL interface, perhaps
     use an std::map for its way to specify shader code?
    */
 
-  enum WRATHTextureFont::FragmentSource::glyph_position_linearity v;
+  enum WRATHTextureFont::GlyphGLSL::glyph_position_linearity v;
   const char *linearity_macro[]=
     {
       /*[linear_glyph_position]=   */ "WRATH_TEXTURE_FONT_LINEAR",
@@ -244,8 +244,8 @@ fetch_texture_font_drawer(const WRATHTextureFont::FragmentSource *fs_source,
     };
 
   v=(m_linear_glyph_position)?
-    WRATHTextureFont::FragmentSource::linear_glyph_position:
-    WRATHTextureFont::FragmentSource::nonlinear_glyph_position;
+    WRATHTextureFont::GlyphGLSL::linear_glyph_position:
+    WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position;
   
   /*
     pre-shader source codes.
@@ -265,14 +265,10 @@ fetch_texture_font_drawer(const WRATHTextureFont::FragmentSource *fs_source,
     append shader codes
    */
   new_specifier->append_vertex_shader_source()
-    .add_source("font_common_base.vert.wrath-shader.glsl",
-                WRATHGLShader::from_resource)
     .add_source(fs_source->m_vertex_processor[v])
     .absorb(vertex_shader_source());
   
   new_specifier->append_fragment_shader_source()
-    .add_source("font_common_base.frag.wrath-shader.glsl",
-                WRATHGLShader::from_resource)
     .absorb(fs_source->m_fragment_processor[v])
     .absorb(fragment_shader_source());
   

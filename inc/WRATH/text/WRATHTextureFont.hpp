@@ -1063,7 +1063,7 @@ public:
      */
     source_set m_fragment_processor;
 
-    /*!\var m_fragment_processor_sampler_names
+    /*!\var m_sampler_names
       An array of sampler names used by the GLSL 
       code. The value at index I is the sampler 
       name for texture binder texture_binder(page)[I], 
