@@ -18,7 +18,7 @@
 
 
 
-#ifdef CLIP_VIA_DISCARD
+#ifdef WRATH_CLIP_VIA_DISCARD
 shader_in mediump vec4 clipping_via_discard;
 #endif
 
@@ -28,7 +28,7 @@ shader_in mediump vec4 clipping_via_discard;
   in the previous pass, thus we can then 
   avoid the discard 
  */
-#if defined(CLIP_VIA_DISCARD) && !defined(WRATH_COVER_DRAW)
+#if defined(WRATH_CLIP_VIA_DISCARD) && !defined(WRATH_COVER_DRAW)
 #define CLIPPING_USES_DISCARD
 
 void

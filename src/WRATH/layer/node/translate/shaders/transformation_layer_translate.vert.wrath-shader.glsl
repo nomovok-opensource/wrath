@@ -40,7 +40,7 @@
 uniform mediump mat4 clip_matrix_layer;
 
 
-#ifdef CLIP_VIA_DISCARD
+#ifdef WRATH_CLIP_VIA_DISCARD
 shader_out mediump vec4 clipping_via_discard;
 #endif
 
@@ -81,7 +81,7 @@ vec4
 compute_gl_position_and_apply_clipping(in highp vec3 pos)
 {
   
-#if defined(CLIP_VIA_DISCARD) || defined(CLIP_VIA_CLIP_VERTEX) || defined(CLIP_VIA_CLIP_DISTANCE)
+#if defined(WRATH_CLIP_VIA_DISCARD) || defined(WRATH_CLIP_VIA_CLIP_VERTEX) || defined(WRATH_CLIP_VIA_CLIP_DISTANCE)
   vec4 values;
   
 
@@ -100,11 +100,11 @@ compute_gl_position_and_apply_clipping(in highp vec3 pos)
 #endif
 
 
-#ifdef CLIP_VIA_DISCARD
+#ifdef WRATH_CLIP_VIA_DISCARD
   clipping_via_discard=values;
-#elif defined(CLIP_VIA_CLIP_VERTEX)
+#elif defined(WRATH_CLIP_VIA_CLIP_VERTEX)
   gl_ClipVertex=values;
-#elif defined(CLIP_VIA_CLIP_DISTANCE)
+#elif defined(WRATH_CLIP_VIA_CLIP_DISTANCE)
   gl_ClipDistance[0]=values.x;
   gl_ClipDistance[1]=values.y;
   gl_ClipDistance[2]=values.z;

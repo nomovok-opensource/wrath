@@ -130,9 +130,9 @@ namespace WRATHLayerItemDrawerFactoryCommon
                                                           WRATHLayerNodeValuePackerBase::SpecDataProcessedPayload::handle &)
     Generates a GLSL program.
     Adds symbols based off of the clipping type:
-    - clip_vertex_clipping --> CLIP_VIA_CLIP_VERTEX
-    - clip_distance_clipping --> CLIP_VIA_CLIP_DISTANCE
-    - clip_discard_clipping --> CLIP_VIA_DISCARD
+    - clip_vertex_clipping --> WRATH_CLIP_VIA_CLIP_VERTEX
+    - clip_distance_clipping --> WRATH_CLIP_VIA_CLIP_DISTANCE
+    - clip_discard_clipping --> WRATH_CLIP_VIA_DISCARD
 
     Adds a single attribute, "transf_index" which names the
     attribute that specifies the node index.

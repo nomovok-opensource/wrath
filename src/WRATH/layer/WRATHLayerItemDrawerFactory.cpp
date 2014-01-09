@@ -225,8 +225,8 @@ generate_multi_glsl_program(const WRATHShaderSpecifier *shader_specifier,
       break;
 
     case clip_vertex_clipping:
-      vs.add_macro("CLIP_VIA_CLIP_VERTEX");
-      fs.add_macro("CLIP_VIA_CLIP_VERTEX");
+      vs.add_macro("WRATH_CLIP_VIA_CLIP_VERTEX");
+      fs.add_macro("WRATH_CLIP_VIA_CLIP_VERTEX");
       /*
         TODO: create functor object to add
         to WRATHGLSLProgram to set clipping
@@ -241,13 +241,13 @@ generate_multi_glsl_program(const WRATHShaderSpecifier *shader_specifier,
         to WRATHGLSLProgram to enable the 
         first 4 clipping planes.
        */
-      vs.add_macro("CLIP_VIA_CLIP_DISTANCE");
-      fs.add_macro("CLIP_VIA_CLIP_DISTANCE");
+      vs.add_macro("WRATH_CLIP_VIA_CLIP_DISTANCE");
+      fs.add_macro("WRATH_CLIP_VIA_CLIP_DISTANCE");
       break;
 
     case clip_discard_clipping:
-      vs.add_macro("CLIP_VIA_DISCARD");
-      fs.add_macro("CLIP_VIA_DISCARD");
+      vs.add_macro("WRATH_CLIP_VIA_DISCARD");
+      fs.add_macro("WRATH_CLIP_VIA_DISCARD");
       break;
     }
 
