@@ -286,7 +286,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
     mediump float v;
     C=wrath_shader_brush_color(wrath_brush_frag_pos, v);
 
-    #if !defined(WRATH_COVER_DRAW) && defined(BRUSH_ISSUES_DISCARD)
+    #if !defined(WRATH_COVER_DRAW) && defined(WRATH_BRUSH_ISSUES_DISCARD)
     {
       if(v<0.5)
         discard;
@@ -304,7 +304,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
     mediump float v;
     C=wrath_shader_brush_color(v);
     
-    #if !defined(WRATH_COVER_DRAW) && defined(BRUSH_ISSUES_DISCARD)
+    #if !defined(WRATH_COVER_DRAW) && defined(WRATH_BRUSH_ISSUES_DISCARD)
     {
       if(v<0.5)
         discard;

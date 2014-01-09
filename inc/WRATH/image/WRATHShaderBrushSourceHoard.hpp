@@ -236,7 +236,7 @@ public:
     - if GRADIENT_ALPHA_TEST, then the brush would discard is issued for when gradient alpha is less than 0.5
     - if CONST_COLOR_ALPHA_TEST, then the brush would discard is issued if the const color alpha is less than 0.5
     - if FINAL_ALPHA_TEST, then the brush would discrad is issued if the final brush color is less than 0.5
-    - if the brush may issue a discard then BRUSH_ISSUES_DISCARD is defined
+    - if the brush may issue a discard then WRATH_BRUSH_ISSUES_DISCARD is defined
 
     The color computation function <B>vec4 wrath_shader_brush_color(out float)</B>
     (for linear) and <B>vec4 wrath_shader_brush_color(in vec2 p, out float)</B>

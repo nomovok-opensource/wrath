@@ -158,7 +158,7 @@ namespace
 
     if(brush_issues_discard)
       {
-        dest.add_macro("BRUSH_ISSUES_DISCARD");
+        dest.add_macro("WRATH_BRUSH_ISSUES_DISCARD");
       }
   }
   
