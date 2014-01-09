@@ -376,7 +376,7 @@ private:
   S *m_minified_src;
   T *m_native_src;
   float m_size_ratio;
-  const WRATHTextureFont::FragmentSource *m_glyph_glsl;
+  const WRATHTextureFont::GlyphGLSL *m_glyph_glsl;
 
   WRATHTextureFontUtil::TexturePageTracker m_page_tracker;
 };

@@ -19,13 +19,13 @@ include $(dir)/Rules.mk
 dir := $(d)/shape
 include $(dir)/Rules.mk
 
-dir := $(d)/text
-include $(dir)/Rules.mk
-
 dir := $(d)/items
 include $(dir)/Rules.mk
 
 dir := $(d)/layer
+include $(dir)/Rules.mk
+
+dir := $(d)/text
 include $(dir)/Rules.mk
 
 dir := $(d)/Qt

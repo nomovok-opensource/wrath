@@ -147,7 +147,7 @@ get_empty_text_item(WRATHTextItem::text_item_key k)
   else
     {
       ExtraDrawState item_extra_state(m_extra_state);
-      int num_font_textures(k.get<1>()->fragment_source()->m_fragment_processor_sampler_names.size());
+      int num_font_textures(k.get<1>()->glyph_glsl()->m_sampler_names.size());
       const std::map<unsigned int, std::string> &sampler_labels(k.get<3>()->additional_samplers());
 
       for(std::map<unsigned int, std::string>::const_iterator 

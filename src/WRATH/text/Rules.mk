@@ -7,7 +7,7 @@ d		:= $(dir)
 dir := $(d)/shaders
 include $(dir)/Rules.mk
 
-LIB_SOURCES += $(call filelist, WRATHColumnFormatter.cpp WRATHDefaultTextAttributePacker.cpp WRATHFontConfig.cpp WRATHFontShaderSpecifier.cpp WRATHFormattedTextStream.cpp WRATHFreeTypeSupport.cpp WRATHGenericTextAttributePacker.cpp WRATHTextAttributePacker.cpp WRATHTextDataStream.cpp WRATHTextureFont.cpp WRATHTextureFontDrawer.cpp WRATHTextureFontFreeType_Analytic.cpp WRATHTextureFontFreeType_Distance.cpp WRATHTextureFontFreeType_Coverage.cpp WRATHTextureFontFreeType_CurveAnalytic.cpp WRATHTextureFontFreeType_DetailedCoverage.cpp WRATHTextureFontFreeType_Mix.cpp WRATHTextureFontUtil.cpp WRATHTextDataStreamManipulator.cpp WRATHFontDatabase.cpp WRATHFontFetch.cpp)
+LIB_SOURCES += $(call filelist, WRATHColumnFormatter.cpp WRATHDefaultTextAttributePacker.cpp WRATHFontConfig.cpp WRATHFontShaderSpecifier.cpp WRATHFormattedTextStream.cpp WRATHFreeTypeSupport.cpp WRATHGenericTextAttributePacker.cpp WRATHTextAttributePacker.cpp WRATHTextDataStream.cpp WRATHTextureFont.cpp WRATHTextureFontDrawer.cpp WRATHTextureFontUtil.cpp WRATHTextDataStreamManipulator.cpp WRATHFontDatabase.cpp WRATHFontFetch.cpp WRATHTextureFontFreeType_Analytic.cpp WRATHTextureFontFreeType_Distance.cpp WRATHTextureFontFreeType_Coverage.cpp WRATHTextureFontFreeType_CurveAnalytic.cpp WRATHTextureFontFreeType_DetailedCoverage.cpp WRATHTextureFontFreeType_Mix.cpp)
 
 # Begin standard footer
 d		:= $(dirstack_$(sp))
