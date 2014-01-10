@@ -167,7 +167,8 @@ public:
  
   virtual
   void
-  attribute_key(WRATHAttributeStoreKey &pkey) const;
+  attribute_key(WRATHAttributeStoreKey &pkey,
+		int number_custom_data_to_use) const;
   
 private:
 

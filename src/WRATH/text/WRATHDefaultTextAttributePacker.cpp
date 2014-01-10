@@ -31,7 +31,6 @@ namespace
   typedef vecN<GLushort,2> glyph_bottom_left_type;
   typedef vecN<GLshort,2> glyph_normalized_coordinate_type;
   typedef vecN<GLubyte,4> color_type;
-  typedef GLfloat custom_glyph_data_type;
   
           
 
@@ -41,17 +40,10 @@ namespace
                                       glyph_size_type, //glyph_size -- 2
                                       glyph_bottom_left_type, //glyph bottom left -- 3
                                       glyph_normalized_coordinate_type, //glyph_normalized -- 4
-                                      color_type, //color --5
-                                      custom_glyph_data_type //custom_data --6
-                                      >  
+                                      color_type //color --5
+				      >  
   {
   public:
-    
-    custom_glyph_data_type&
-    custom_glyph_data(void)
-    {
-      return get<WRATHDefaultTextAttributePacker::custom_data_location>();
-    }
 
     glyph_normalized_coordinate_type&
     glyph_normalized_coordinate(void)
@@ -97,6 +89,14 @@ namespace
     }
     
   };
+
+  template<unsigned int N>
+  class character_attribute_with_custom
+  {
+  public:
+    character_attribute m_base;
+    GLfloat m_custom[N];
+  };
   
   typedef WRATHDefaultTextAttributePacker* WRATHDefaultTextAttributePackerPtr;
   WRATHDefaultTextAttributePackerPtr&
@@ -119,13 +119,8 @@ namespace
         "glyph_bottom_left_texel",
         "glyph_normalized_coordinate", 
         "color",
-	/*
-	  Danger: Must make this match with the generated
-	  GLSL found in WRATHFontShaderSpecifier::fetch_texture_font_drawer()
-	 */
-        "custom_data0",
       };
-    static const_c_array<attribute_label_type> R(attribute_labels, 7);
+    static const_c_array<attribute_label_type> R(attribute_labels, 6);
     return R;
   }
 
@@ -204,20 +199,49 @@ size_t
 WRATHDefaultTextAttributePacker::
 attribute_size(int n) const
 {
-  WRATHunused(n);
-  return sizeof(character_attribute);
+  return (n==0)?
+    sizeof(character_attribute):
+    sizeof(character_attribute_with_custom<1>) + sizeof(float)*(n-1);
 }
+
+#define CHECK_SIZE(i) WRATHassert((i)==0 or sizeof(character_attribute_with_custom<(i)>)==attribute_size((i)))
+#define CHECK_SIZE_GRP(n) \
+  CHECK_SIZE(4*n); \
+  CHECK_SIZE(4*n+1); \
+  CHECK_SIZE(4*n+2); \
+  CHECK_SIZE(4*n+3); 
 
 void
 WRATHDefaultTextAttributePacker::
-attribute_names(std::vector<std::string> &out_names, int n) const
+attribute_names(std::vector<std::string> &out_names, int number_custom_data) const
 {
-  WRATHunused(n);
+  CHECK_SIZE(0);
+  CHECK_SIZE(1);
+  CHECK_SIZE(2);
+  CHECK_SIZE(3);
+  CHECK_SIZE(4);
+  CHECK_SIZE(5);
+  CHECK_SIZE(6);
+
+  unsigned int N, R;
+
+  N=number_custom_data/4;
+  R=number_custom_data%4;
+  if(R>0) 
+    {
+      ++N;
+    }
   
-  out_names.resize(packer_attribute_names().size());
+  out_names.resize(packer_attribute_names().size()+N);
   std::copy(packer_attribute_names().begin(),
 	    packer_attribute_names().end(),
 	    out_names.begin());
+  for(unsigned int i=0, k=packer_attribute_names().size(); i<N; ++i, ++k)
+    {
+      std::ostringstream ostr;
+      ostr << "custom_data" << i;
+      out_names[k]=ostr.str();
+    }
 }
 
 
@@ -261,6 +285,7 @@ generate_custom_data_glsl(WRATHGLShader::shader_source &out_src,
 	       << "custom_data" << i << swizzle[j] << ";";
 	}
     }
+
   if(R==1)
     {
       ostr << "\n\tv.values[" << idx 
@@ -274,7 +299,6 @@ generate_custom_data_glsl(WRATHGLShader::shader_source &out_src,
 	       << "custom_data" << N << swizzle[j] << ";";
 	}
     }
-  
   ostr << "\n}\n";
 
   out_src.add_source(ostr.str(), WRATHGLShader::from_string);
@@ -282,13 +306,83 @@ generate_custom_data_glsl(WRATHGLShader::shader_source &out_src,
   
 void
 WRATHDefaultTextAttributePacker::
-attribute_key(WRATHAttributeStoreKey &pkey) const
+attribute_key(WRATHAttributeStoreKey &pkey,
+	      int number_custom_floats) const
 {
   pkey
     .type_and_format(type_tag<character_attribute>());
 
   pkey.m_attribute_format_location[color_location].m_normalized=GL_TRUE;
   pkey.m_attribute_format_location[glyph_normalized_coordinate_location].m_normalized=GL_TRUE;
+
+   if(number_custom_floats!=0)
+    {
+      ptrdiff_t offset;
+      const char *p1, *p2;
+      character_attribute_with_custom<1> conveniance;
+      int attr_slot, num_remaining;
+
+      /*
+	we are going to potentially unsafely assume that
+	sizeof(character_attribute_with_custom<N+1>) is
+	same as sizeof(character_attribute_with_custom<N>) + 4
+	for N>=1
+       */
+      pkey.m_type_size = sizeof(character_attribute_with_custom<1>)
+	+ sizeof(float)*(number_custom_floats-1);
+
+      p1=reinterpret_cast<const char*>(boost::addressof(conveniance));
+      p2=reinterpret_cast<const char*>(boost::addressof(conveniance.m_custom[0]));
+      offset=p2-p1;
+      num_remaining=number_custom_floats;
+
+      attr_slot=character_attribute::number_attributes;
+      /*
+	every 4 custom values adds a new vec4 attribute
+       */      
+      for(;num_remaining>=4 and attr_slot<WRATHDrawCallSpec::attribute_count;
+	  num_remaining-=4, ++attr_slot, offset+=4*sizeof(float))
+	{
+	  pkey.m_attribute_format_location[attr_slot].m_offset=offset;
+	  pkey.m_attribute_format_location[attr_slot].traits( type_tag<vec4>() );
+	}
+      /*
+	remaining values use a float, vec2, or vec3
+       */
+      if(attr_slot<WRATHDrawCallSpec::attribute_count)
+	{
+	  WRATHassert(num_remaining<4);
+	  switch(num_remaining)
+	    {
+	    case 0:
+	      break;
+
+	    case 1:
+	      pkey.m_attribute_format_location[attr_slot].m_offset=offset;
+	      pkey.m_attribute_format_location[attr_slot].traits( type_tag<float>() );
+	      ++attr_slot;
+	      break;
+
+	    case 2:
+	      pkey.m_attribute_format_location[attr_slot].m_offset=offset;
+	      pkey.m_attribute_format_location[attr_slot].traits( type_tag<vec2>() );
+	      ++attr_slot;
+	      break;
+
+	    case 3:
+	      pkey.m_attribute_format_location[attr_slot].m_offset=offset;
+	      pkey.m_attribute_format_location[attr_slot].traits( type_tag<vec3>() );
+	      ++attr_slot;
+	      break;
+	    }
+	}
+
+      //now adjust the stride:
+      for(int i=0; i<attr_slot; ++i)
+	{
+	  pkey.m_attribute_format_location[i].m_stride = pkey.m_type_size;	    
+	}
+    }
 }
 
 
@@ -307,31 +401,46 @@ pack_attribute(enum WRATHFormattedTextStream::corner_type ct,
 {
   c_array<character_attribute> attr;
 
-  attr=packing_destination.reinterpret_pointer<character_attribute>();
+  attr=packing_destination
+    .sub_array(0, sizeof(character_attribute))
+    .reinterpret_pointer<character_attribute>();
   
   ivec2 native_bl(in_glyph.m_glyph->texel_lower_left(WRATHTextureFont::native_value));
   ivec2 native_sz(in_glyph.m_glyph->texel_size(WRATHTextureFont::native_value));
 
   attr[0].position()=position_type(in_glyph.m_native_position[0].x(), 
-                                   in_glyph.m_native_position[0].y(), 
-                                   in_glyph.m_z_position, 
-                                   in_glyph.m_scale);
+				   in_glyph.m_native_position[0].y(), 
+				   in_glyph.m_z_position, 
+				   in_glyph.m_scale);
   attr[0].glyph_stretch()=glyph_stretch_type(in_glyph.m_horizontal_stretching,
-                                             in_glyph.m_vertical_stretching);
+					     in_glyph.m_vertical_stretching);
   attr[0].glyph_size()=glyph_size_type(native_sz.x(), native_sz.y());
   attr[0].glyph_bottom_left()=glyph_bottom_left_type(native_bl.x(), native_bl.y());  
   attr[0].glyph_normalized_coordinate()=normalized_glyph_coordinate_short;
-  attr[0].custom_glyph_data()=in_glyph.m_glyph->fetch_custom_float(0);
-  
   
   if(ct==WRATHFormattedTextStream::not_corner)
     {
       attr[0].color()=interpolate_color(in_glyph.m_color,
-                                        normalized_glyph_coordinate_float);
+					       normalized_glyph_coordinate_float);
     }
   else
     {
       attr[0].color()=in_glyph.m_color[ct];
+    }
+
+  if(!custom_data_use.empty())
+    {
+      c_array<character_attribute_with_custom<1> > attr_with;
+      attr_with=packing_destination
+	.sub_array(0, sizeof(character_attribute_with_custom<1>))
+	.reinterpret_pointer<character_attribute_with_custom<1> >();
+
+      WRATHassert(&attr_with[0].m_base==&attr[0]);
+
+      for(int i=0, endi=custom_data_use.size(); i<endi; ++i)
+	{
+	  attr_with[0].m_custom[i]=in_glyph.m_glyph->fetch_custom_float(custom_data_use[i]);
+	}
     }
 }
 

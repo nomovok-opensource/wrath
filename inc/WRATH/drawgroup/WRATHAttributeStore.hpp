@@ -193,7 +193,7 @@ public:
   }
 
   /*!\fn WRATHAttributeStoreKey& type_and_format(type_tag<T>)
-    Specify both the attribute type and format of data.
+    Specify both the attribute size and format of data.
     The type T must implement the static method
     attribute_key(), such type includes WRATHInterleavedAttribute.
     \tparam T type of the attribute
@@ -208,7 +208,7 @@ public:
   }
 
   /*!\fn WRATHAttributeStoreKey& type_and_format(type_tag<T>, const vecN<GLboolean, N> &)
-    Specify both the attribute type and format of data.
+    Specify both the attribute size and format of data.
     \tparam T type of the attribute.  The type T must implement the static method
               attribute_key(), such type includes WRATHInterleavedAttribute.
     \param normalizeds fixed length array specifying the normalization
@@ -266,7 +266,7 @@ public:
     in the following order:
      -# \ref m_buffer_object_hint
      -# \ref m_index_bit_count
-     -# type()
+     -# \ref m_type_size
      -# \ref m_attribute_format_location
      \param rhs object to which to compare
    */
@@ -279,7 +279,7 @@ public:
     are equal:
      - \ref m_buffer_object_hint
      - \ref m_index_bit_count
-     - type()
+     - \ref m_type_size
      - \ref m_attribute_format_location
      \param rhs object to which to compare
    */
@@ -324,13 +324,9 @@ public:
   enum index_bit_count_type m_index_bit_count;
   
   /*!\fn int type_size
-    Returns the size, in bytes, of the attribute type.
+    The size, in bytes, of the attribute type.
    */
-  int
-  type_size(void) const
-  {
-    return m_type_size;
-  }
+  int m_type_size;
 
   /*!\fn bool valid
     A WRATHAttributeStoreKey is said to be valid
@@ -348,9 +344,6 @@ public:
   static
   enum index_bit_count_type
   index_bit_count_from_type(void);
-
-private:
-  int m_type_size;
 };
 
 
@@ -448,7 +441,7 @@ public:
   unsigned int
   attribute_size(void) const
   {
-    return m_key.type_size();
+    return m_key.m_type_size;
   }
 
   /*!\fn GLenum index_type

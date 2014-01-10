@@ -888,7 +888,7 @@ post_action(std::ostream &str, WRATHGLProgram *program) const
       return_value=true;
       str << "\nAttribute \""
           << m_label
-          << "\" present, location NOT specified by binder"; 
+          << "\" not present in shader, but location specified by binder"; 
     }
   else if(iter->second.m_location!=m_location)
     {

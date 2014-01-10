@@ -417,10 +417,14 @@ public:
     To be implemented by a derived class to
     fetch the attribute key.
     \param attrib_key WRATHAttributeStoreKey to which to set
+    \param number_custom_data_to_use indicates the size of \ref
+                                     WRATHTextureFont::GlyphGLSL::m_custom_data_use
+				     which are to also be packed into attributes
    */
   virtual
   void
-  attribute_key(WRATHAttributeStoreKey &attrib_key) const=0;
+  attribute_key(WRATHAttributeStoreKey &attrib_key,
+		int number_custom_data_to_use) const=0;
 
   /*!\fn unsigned int number_of_characters(range_type<int>, 
                                            const WRATHFormattedTextStream&,
