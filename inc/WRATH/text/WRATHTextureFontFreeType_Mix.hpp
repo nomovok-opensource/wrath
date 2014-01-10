@@ -159,12 +159,10 @@ public:
 
   virtual
   ivec2
-  texture_size(int texture_page, 
-               enum WRATHTextureFont::texture_coordinate_size L)
+  texture_size(int texture_page)
   {
-    return (L==WRATHTextureFont::native_value)?
-      m_page_tracker.main_texture_size(texture_page):
-      m_page_tracker.secondary_texture_size(texture_page);
+    return m_page_tracker.main_texture_size(texture_page);
+    //m_page_tracker.secondary_texture_size(texture_page);
   }
 
   virtual

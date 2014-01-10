@@ -405,8 +405,8 @@ pack_attribute(enum WRATHFormattedTextStream::corner_type ct,
     .sub_array(0, sizeof(character_attribute))
     .reinterpret_pointer<character_attribute>();
   
-  ivec2 native_bl(in_glyph.m_glyph->texel_lower_left(WRATHTextureFont::native_value));
-  ivec2 native_sz(in_glyph.m_glyph->texel_size(WRATHTextureFont::native_value));
+  ivec2 native_bl(in_glyph.m_glyph->texel_lower_left());
+  ivec2 native_sz(in_glyph.m_glyph->texel_size());
 
   attr[0].position()=position_type(in_glyph.m_native_position[0].x(), 
 				   in_glyph.m_native_position[0].y(), 

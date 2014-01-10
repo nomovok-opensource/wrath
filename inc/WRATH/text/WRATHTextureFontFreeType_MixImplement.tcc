@@ -77,22 +77,16 @@ generate_character(WRATHTextureFont::glyph_index_type G)
     .bounding_box_size(dist_gl.bounding_box_size())
     
     .texel_values(dist_gl.texel_lower_left(),
-                  dist_gl.texel_size(),
-                  WRATHTextureFont::native_value)
-    .origin(dist_gl.origin(), WRATHTextureFont::native_value)
-    
-    .texel_values(cov_gl.texel_lower_left(), 
-                  cov_gl.texel_size(),
-                  WRATHTextureFont::minified_value)
-    .origin(m_size_ratio*cov_gl.origin(), WRATHTextureFont::minified_value);
+                  dist_gl.texel_size())
+    .origin(dist_gl.origin());
   
   glyph.sub_primitive_attributes().resize(dist_gl.sub_primitive_attributes().size());
   for(int i=0, end_i=dist_gl.sub_primitive_attributes().size(); i<end_i; ++i)
     {
       ivec2 rel;
       
-      rel=dist_gl.sub_primitive_attributes()[i].texel_coordinate(WRATHTextureFont::native_value)
-        - dist_gl.texel_lower_left(WRATHTextureFont::native_value);
+      rel=dist_gl.sub_primitive_attributes()[i].m_texel_coordinates
+        - dist_gl.texel_lower_left();
       
       glyph.sub_primitive_attributes()[i].set(glyph, rel);
     }
@@ -100,6 +94,10 @@ generate_character(WRATHTextureFont::glyph_index_type G)
   
   /*
     copy custom data values:
+    TODO:
+    - pack the minified font's texel_lower_left into
+      the custom_data so that it can be used to do
+      font minification magicks.
   */
   glyph.m_custom_float_data
     .resize(dist_gl.m_custom_float_data.size() 

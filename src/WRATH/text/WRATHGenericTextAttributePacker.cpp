@@ -451,8 +451,7 @@ set_attribute_data_implement(const_c_array<range_type<int> > Rarray,
                */
               the_glyph.m_native_position=pdata.position(the_glyph.m_index, 
                                                          the_glyph.m_scale*vec2(the_glyph.m_horizontal_stretching,
-                                                                                the_glyph.m_vertical_stretching), 
-                                                         WRATHTextureFont::native_value);
+                                                                                the_glyph.m_vertical_stretching));
 
               if(out_bounds_box!=NULL)
                 {

@@ -119,27 +119,6 @@ public:
   typedef WRATHTextureFont* (*font_fetcher_t)(int psize,
                                               const WRATHFontDatabase::Font::const_handle &hndl);
 
-  /*!\enum texture_coordinate_size
-    A glyph has _2_ sets of values
-    for texture coordinate, a minified
-    size and a native size. The native
-    sizes should be used whenever
-    the glyph is displayed at it's
-    native resolution or higher.
-   */
-  enum texture_coordinate_size
-    {
-      /*!
-        Enumeration indicating the native values
-       */
-      native_value,
-
-      /*!
-        Enumeration indicating the minified values
-       */
-      minified_value,
-    };
-
   /*!\class sub_primitive_attribute
     Typically, the quad of a glyph will have
     a large portion of which is clear. For GPU's
@@ -227,25 +206,12 @@ public:
     }
 
     /*!\var m_texel_coordinates
-      Native and minified texel coordinates of attribute,
-      use the enumeration \ref texture_coordinate_size as
-      an index into the array. The texel coordinates
+      Texel coordinates of attribute The texel coordinates
       are in pixels within the texture, not in the
       range [0,1], just as \ref glyph_data_type::texel_upper_right()
       and \ref glyph_data_type::texel_lower_left().
      */
-    vecN<ivec2, 2> m_texel_coordinates;
-
-    /*!\var m_minified_texture_coordinatef
-      For fonts that genuinely support minified texel
-      coordinate (i.e. the texture data used for displaying
-      the font smaller is from a different texture at a
-      different resolution), an integer representation
-      of the minified texel coordinate will be incorrect,
-      as such the member m_minified_texture_coordinatef
-      is provided to give an untruncated value.
-     */
-    vec2 m_minified_texture_coordinatef;
+    ivec2 m_texel_coordinates;
        
     /*!\var m_position_within_glyph_coordinate
       The position within the texel of the attribute,
@@ -254,30 +220,6 @@ public:
       corner.
      */
     vec2 m_position_within_glyph_coordinate;
-
-    /*!\fn ivec2& texel_coordinate(enum texture_coordinate_size)
-      Provided as a readability conveniance to return
-      a reference to the specified integer texel 
-      coordinate of the attribute.
-      \param L texture coordinate family
-     */
-    ivec2&
-    texel_coordinate(enum texture_coordinate_size L)
-    {
-      return m_texel_coordinates[L];
-    }
-
-    /*!\fn const ivec2& texel_coordinate(enum texture_coordinate_size) const
-      Provided as a readability conveniance to return
-      a reference to the spcified texture coordinate
-      of the attribute.
-      \param L texture coordinate family
-     */
-    const ivec2&
-    texel_coordinate(enum texture_coordinate_size L) const
-    {
-      return m_texel_coordinates[L];
-    }
   };
 
   /*!\class glyph_data_type
@@ -316,77 +258,70 @@ public:
       Gives the exact pixel of the texel
       used for the lower left hand corner
       of the glyph.
-      \param L texture coordinate family
      */
     const ivec2&
-    texel_lower_left(enum texture_coordinate_size L=native_value) const
+    texel_lower_left(void) const
     {
-      return m_texels[L].first;
+      return m_texels.first;
     }
 
     /*!\fn const ivec2& texel_upper_right
       Gives the exact pixel of the texel
       used for the upper right hand corner
       of the glyph.
-      \param L coordinate family
      */
     const ivec2&
-    texel_upper_right(enum texture_coordinate_size L=native_value) const
+    texel_upper_right(void) const
     {
-      return m_texels[L].second;
+      return m_texels.second;
     }
 
     /*!\fn ivec2 texel_size
       Returns the size if the glyph on the texture,
       i.e. texel_upper_right()-texel_lower_left()
-      \param L coordinate family
      */
     ivec2
-    texel_size(enum texture_coordinate_size L=native_value) const
+    texel_size(void) const
     {
-      return texel_upper_right(L)-texel_lower_left(L);
+      return texel_upper_right()-texel_lower_left();
     }
    
-    /*!\fn const vec2& origin(enum texture_coordinate_size) const
+    /*!\fn const vec2& origin(void) const
       Gives the offset to display the glyph,
       for example the letter 'y' hangs below
       the origin.
-      \param L texture coordinate family
      */
     const vec2&
-    origin(enum texture_coordinate_size L=native_value) const
+    origin(void) const
     {
-      return m_origin[L];
+      return m_origin;
     }
 
     /*!\fn const vec2& display_size
       Returns \ref texel_size() as a vec2.
-      \param L texture coordinate family
      */
     const vec2&
-    display_size(enum texture_coordinate_size L=native_value) const
+    display_size(void) const
     {
-      return m_sizes[L];
+      return m_sizes;
     }
 
     /*!\fn float display_width
-      Equivalent to \code display_size(L).x() \endcode
-      \param L texture coordinate family
+      Equivalent to \code display_size().x() \endcode
      */
     float
-    display_width(enum texture_coordinate_size L=native_value) const
+    display_width(void) const
     {
-      return m_sizes[L].x();
+      return m_sizes.x();
     }
 
     /*!\fn float display_height
-      Equivalent to \code display_size(L).y() \endcode
-      \param L texture coordinate family
+      Equivalent to \code display_size().y() \endcode
      */
     float
-    display_height(enum texture_coordinate_size L=native_value) const
+    display_height(void) const
     {
-      return m_sizes[L].y();
+      return m_sizes.y();
     }
 
     /*!\fn const vec2& advance(void) const
@@ -449,10 +384,10 @@ public:
       However, if font() is NULL, returns ivec2(0,0).
      */
     ivec2
-    texture_size(enum texture_coordinate_size L=native_value) const
+    texture_size(void) const
     {
       return (font()!=NULL)?
-        font()->texture_size(texture_page(), L):
+        font()->texture_size(texture_page()):
         ivec2(0,0);
     }
 
@@ -575,45 +510,39 @@ public:
       \param sz _SIZE_ in pixels of glyph on the texture,
                 i.e. will assign to texel_upper_right()
                 the value bl+sz.
-      \param L texture coordinate family
      */
     glyph_data_type&
-    texel_values(const ivec2 &bl, const ivec2 &sz, 
-                 enum texture_coordinate_size L=native_value)
+    texel_values(const ivec2 &bl, const ivec2 &sz)
     {
-      m_texels[L].first=bl;
-      m_texels[L].second=bl+sz;
-      m_sizes[L]=vec2( static_cast<float>(sz.x()),
+      m_texels.first=bl;
+      m_texels.second=bl+sz;
+      m_sizes=vec2( static_cast<float>(sz.x()),
                        static_cast<float>(sz.y()) );
       return *this;
     }
 
-    /*!\fn glyph_data_type& origin(const vec2&, enum texture_coordinate_size)
+    /*!\fn glyph_data_type& origin(const vec2&, void)
       Set the value returned by origin(void).
       Initial value is (0,0).
       \param v value to assign to origin(void).
-      \param L texture coordinate family
      */
     glyph_data_type&
-    origin(const vec2 &v,
-           enum texture_coordinate_size L=native_value)
+    origin(const vec2 &v)
     {
-      m_origin[L]=v;
+      m_origin=v;
       return *this;
     }
 
-    /*!\fn glyph_data_type& origin(const ivec2&, enum texture_coordinate_size)
+    /*!\fn glyph_data_type& origin(const ivec2&, void)
       Set the value returned by origin(void).
       Initial value is (0,0).
       \param v value to assign to origin(void).
-      \param L texture coordinate family
      */
     glyph_data_type&
-    origin(const ivec2 &v,
-           enum texture_coordinate_size L=native_value)
+    origin(const ivec2 &v)
     {
-      m_origin[L].x()=static_cast<float>(v.x());
-      m_origin[L].y()=static_cast<float>(v.y());
+      m_origin.x()=static_cast<float>(v.x());
+      m_origin.y()=static_cast<float>(v.y());
       return *this;
     }
     
@@ -861,9 +790,9 @@ public:
   private:
 
     WRATHTextureFont *m_font;
-    vecN<std::pair<ivec2, ivec2>, 2> m_texels;
-    vecN<vec2, 2> m_sizes;
-    vecN<vec2, 2> m_origin;
+    std::pair<ivec2, ivec2> m_texels;
+    vec2  m_sizes;
+    vec2  m_origin;
     vec2 m_advance;
     ivec2 m_iadvance;
     int m_texture_page;
@@ -1201,12 +1130,10 @@ public:
     return the size of the textures, in pixels,
     used by the font.
     \param texture_page which texture page.
-    \param L texture coordinate family
    */
   virtual
   ivec2
-  texture_size(int texture_page, 
-               enum texture_coordinate_size L)=0;
+  texture_size(int texture_page)=0;
 
   /*!\fn const_c_array<WRATHTextureChoice::texture_base::handle> texture_binder
     To be implemented a derived class to return 
@@ -1251,13 +1178,11 @@ public:
     to be used by a shader to draw the 
     glyph.
     \param texture_page which texture page
-    \param L coordinate family
    */  
   vec2
-  texture_size_reciprocal(int texture_page, 
-                          enum texture_coordinate_size L)
+  texture_size_reciprocal(int texture_page)
   {
-    ivec2 r(texture_size(texture_page,L));
+    ivec2 r(texture_size(texture_page));
 
     r.x()=std::max(r.x(), 1);
     r.y()=std::max(r.y(), 1);

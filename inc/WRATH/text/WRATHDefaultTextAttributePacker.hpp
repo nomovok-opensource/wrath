@@ -63,7 +63,6 @@ public:
         Location of the size of the glyph as according
         to \ref WRATHTextureFont::glyph_data_type::texel_size().
         Attribute name in GLSL is "glyph_size".
-        - .xy holds the value for \ref WRATHTextureFont::native_value
        */
       glyph_size_location,
 
@@ -71,7 +70,6 @@ public:
         Location of the texel (in pixel coordinates) of the glyphas 
         according to \ref WRATHTextureFont::glyph_data_type::texel_lower_left().
         Attribute name in GLSL is "glyph_bottom_left_texel".
-        - .xy holds the value for \ref WRATHTextureFont::native_value
       */
       glyph_bottom_left_texel_location,   
 

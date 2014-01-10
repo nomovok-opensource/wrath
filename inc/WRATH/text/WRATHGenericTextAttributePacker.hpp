@@ -164,9 +164,7 @@ public:
 
     /*!\var m_native_position
       Values as returned by 
-      WRATHFormattedTextStream::position(\ref m_index, 
-                                         \ref m_scale, 
-                                         \ref WRATHTextureFont::native_value)
+      WRATHFormattedTextStream::position(\ref m_index, \ref m_scale)
       
      */
     vecN<vec2, 2> m_native_position;

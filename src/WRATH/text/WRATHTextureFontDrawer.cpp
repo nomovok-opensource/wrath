@@ -27,7 +27,8 @@ namespace
   class FontSizeMagic:public WRATHUniformData::uniform_setter_base
   {
   public:
-    FontSizeMagic(WRATHTextureFont *font, int texture_page, const std::string &pname):
+    FontSizeMagic(WRATHTextureFont *font, 
+		  int texture_page, const std::string &pname):
       m_name(pname),
       m_ready(false),
       m_texture_reciprocal_location(-1),
@@ -68,17 +69,14 @@ namespace
 
       if(!m_both_there)
         {
-          vec2 recip_sz(m_font->texture_size_reciprocal(m_texture_page,
-                                                        WRATHTextureFont::native_value));
+          vec2 recip_sz(m_font->texture_size_reciprocal(m_texture_page));
           
           glUniform2fv(m_texture_reciprocal_location, 1, recip_sz.c_ptr());
         }
       else
         {
-          vecN<vec2, 2> recip_szs(m_font->texture_size_reciprocal(m_texture_page,
-                                                                  WRATHTextureFont::native_value),
-                                  m_font->texture_size_reciprocal(m_texture_page,
-                                                                  WRATHTextureFont::minified_value));
+          vecN<vec2, 2> recip_szs(m_font->texture_size_reciprocal(m_texture_page),
+                                  m_font->texture_size_reciprocal(m_texture_page));
           glUniform2fv(m_texture_reciprocal_location, 2, recip_szs[0].c_ptr());
 
         }

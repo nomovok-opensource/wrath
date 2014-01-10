@@ -242,7 +242,7 @@ set(const WRATHTextureFont::glyph_data_type &in_glyph,
   vec2 as_float(static_cast<float>(relative_native_texel_coordinate_x),
                 static_cast<float>(relative_native_texel_coordinate_y));
 
-  ivec2 sz(in_glyph.texel_size(native_value));
+  ivec2 sz(in_glyph.texel_size());
 
   vec2 sz_as_float(std::max(1, sz.x()), 
                    std::max(1, sz.y()) );
@@ -252,20 +252,9 @@ set(const WRATHTextureFont::glyph_data_type &in_glyph,
 
   m_position_within_glyph_coordinate=as_float;
   
-  texel_coordinate(native_value)=
-    in_glyph.texel_lower_left(native_value)
-    + ivec2(relative_native_texel_coordinate_x, relative_native_texel_coordinate_y);
-  
-  
-  vec2 bl(in_glyph.texel_lower_left(minified_value).x(),
-          in_glyph.texel_lower_left(minified_value).y());
-  sz=ivec2(in_glyph.texel_size(minified_value));
-  sz_as_float=vec2(sz.x(), sz.y());
-
-  m_minified_texture_coordinatef=bl+sz_as_float*m_position_within_glyph_coordinate;
-
-  texel_coordinate(minified_value).x()=static_cast<int>(m_minified_texture_coordinatef.x());
-  texel_coordinate(minified_value).y()=static_cast<int>(m_minified_texture_coordinatef.y());
+  m_texel_coordinates=in_glyph.texel_lower_left()
+    + ivec2(relative_native_texel_coordinate_x, 
+	    relative_native_texel_coordinate_y);
 }
 
 //////////////////////////////////

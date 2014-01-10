@@ -58,7 +58,7 @@
 
   In addition, a derived class needs to implement the following
   pure virtual methods from WRATHTextureFont:
-  - texture_size(int, enum texture_coordinate_size)
+  - texture_size(int)
   - texture_binder(int)
   - number_texture_pages(void)
   - fragment_source(void)

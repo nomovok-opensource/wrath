@@ -118,8 +118,7 @@ public:
 
   virtual
   ivec2
-  texture_size(int texture_page, 
-               enum texture_coordinate_size L);
+  texture_size(int texture_page);
 
   
   virtual

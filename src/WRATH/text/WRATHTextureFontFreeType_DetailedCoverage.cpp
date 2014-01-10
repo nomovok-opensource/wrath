@@ -597,10 +597,8 @@ generate_character(glyph_index_type G)
   return_value->iadvance(iadvance)
     .font(this)
     .texture_page(m_page_tracker.get_page_number(ivec2(256, 256), hnds))
-    .texel_values(ivec2(0,0), bitmap_sz, native_value)
-    .texel_values(ivec2(0,0), bitmap_sz, minified_value) 
-    .origin(bitmap_offset, native_value)
-    .origin(bitmap_offset, minified_value)
+    .texel_values(ivec2(0,0), bitmap_sz)
+    .origin(bitmap_offset)
     .bounding_box_size(bitmap_sz+ivec2(1,1))
     .character_code(C)
     .glyph_index(G);
@@ -630,8 +628,7 @@ texture_binder(int pg)
 
 ivec2
 WRATHTextureFontFreeType_DetailedCoverage::
-texture_size(int, 
-             enum texture_coordinate_size)
+texture_size(int)
 {  
   return ivec2(256, 256);
 } 

@@ -146,57 +146,45 @@ public:
     return m_eols;
   }
 
-  /*!\fn ivec2 texture_coordinate(int, enum corner_type, enum WRATHTextureFont::texture_coordinate_size) const
+  /*!\fn ivec2 texture_coordinate(int, enum corner_type) const
     Returns the texture coordinate of the named
     corner of the named glyph of data_stream().
     \param i index into data_stream()
     \param ct which corner.
-    \param L specifiy to ue minified or native
-             resolution of the glyph.
    */
   ivec2
-  texture_coordinate(int i, enum corner_type ct,
-                     enum WRATHTextureFont::texture_coordinate_size L) const;
+  texture_coordinate(int i, enum corner_type ct) const;
 
-  /*!\fn vecN<ivec2, 2> texture_coordinate(int, enum WRATHTextureFont::texture_coordinate_size) const
+  /*!\fn vecN<ivec2, 2> texture_coordinate(int) const
     Returns the texture coordinates of
     the named glyph of data_stream(), the
     bottom left is returned as [0] and
     the top right as [1].
     \param i index into data_stream()
-    \param L specifiy to ue minified or native
-             resolution of the glyph.
    */
   vecN<ivec2, 2>
-  texture_coordinate(int i,
-                     enum WRATHTextureFont::texture_coordinate_size L) const;
+  texture_coordinate(int i) const;
 
-  /*!\fn vec2 position(int, enum corner_type, vec2, enum WRATHTextureFont::texture_coordinate_size) const
+  /*!\fn vec2 position(int, enum corner_type, vec2) const
     Returns the xy-position of the named
     corner of the named glyph of data_stream().
     \param i index into data_stream()
     \param ct which corner.
     \param scale_factor scaling factor to apply to glyph size in each dimention seperately
-    \param L specifiy to ue minified or native
-             resolution of the glyph.
    */
   vec2
-  position(int i, enum corner_type ct, vec2 scale_factor,
-           enum WRATHTextureFont::texture_coordinate_size L) const;
+  position(int i, enum corner_type ct, vec2 scale_factor) const;
 
-  /*!\fn vecN<vec2,2> position(int, vec2, enum WRATHTextureFont::texture_coordinate_size) const
+  /*!\fn vecN<vec2,2> position(int, vec2) const
     Returns the xy-positions of the corners of
     the named glyph of data_stream(), the
     bottom left is returned as [0] and
     the top right as [1].
     \param i which character of data_stream()
     \param scale_factor scaling factor to apply to glyph size in each dimention seperately
-    \param L specifiy to ue minified or native
-             resolution of the glyph.
    */
   vecN<vec2,2>
-  position(int i, vec2 scale_factor,
-           enum WRATHTextureFont::texture_coordinate_size L) const;
+  position(int i, vec2 scale_factor) const;
 
   /*!\fn enum WRATHFormatter::screen_orientation_type orientation
     Returns the y-orientation of the formatted

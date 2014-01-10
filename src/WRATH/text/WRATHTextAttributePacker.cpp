@@ -151,7 +151,7 @@ compute_bounding_box(range_type<int> R,
           vecN<vec2,2> pos;
           
 
-          pos=pdata.position(c, current_scale*current_stretch, WRATHTextureFont::native_value);
+          pos=pdata.position(c, current_scale*current_stretch);
 
           v.set_or(pos[0]);
           v.set_or(pos[1]);

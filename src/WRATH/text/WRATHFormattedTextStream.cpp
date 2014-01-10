@@ -49,8 +49,7 @@ set_text(WRATHFormatter::handle fmt,
 
 ivec2
 WRATHFormattedTextStream::
-texture_coordinate(int i, enum WRATHFormattedTextStream::corner_type ct,
-                   enum WRATHTextureFont::texture_coordinate_size L) const
+texture_coordinate(int i, enum WRATHFormattedTextStream::corner_type ct) const
 {
   const int getx_fast_table[4]=
     {
@@ -71,7 +70,7 @@ texture_coordinate(int i, enum WRATHFormattedTextStream::corner_type ct,
   WRATHassert(ct<4);
   WRATHassert(ct>=0);
 
-  vecN<ivec2,2> ts(texture_coordinate(i,L));
+  vecN<ivec2,2> ts(texture_coordinate(i));
 
   return ivec2( ts[ getx_fast_table[ct] ].x(),
                 ts[ gety_fast_table[ct] ].y());
@@ -79,8 +78,7 @@ texture_coordinate(int i, enum WRATHFormattedTextStream::corner_type ct,
 
 vecN<ivec2, 2>
 WRATHFormattedTextStream::
-texture_coordinate(int i,
-                   enum WRATHTextureFont::texture_coordinate_size L) const
+texture_coordinate(int i) const
 {
   const WRATHFormattedTextStream::glyph_instance &G(data(i));
   
@@ -88,14 +86,13 @@ texture_coordinate(int i,
   const WRATHTextureFont::glyph_data_type &ch(*G.m_glyph);
   
 
-  return vecN<ivec2, 2>(ch.texel_lower_left(L),
-                        ch.texel_upper_right(L));
+  return vecN<ivec2, 2>(ch.texel_lower_left(),
+                        ch.texel_upper_right());
 }
 
 vec2
 WRATHFormattedTextStream::
-position(int i, enum corner_type ct, vec2 scale_factor,
-         enum WRATHTextureFont::texture_coordinate_size L) const
+position(int i, enum corner_type ct, vec2 scale_factor) const
 {
   const int getx_fast_table[4]=
     {
@@ -116,7 +113,7 @@ position(int i, enum corner_type ct, vec2 scale_factor,
   WRATHassert(ct<4);
   WRATHassert(ct>=0);
 
-  vecN<vec2,2> pp(position(i,scale_factor,L));
+  vecN<vec2,2> pp(position(i,scale_factor));
 
   return vec2( pp[ getx_fast_table[ct] ].x(),
                pp[ gety_fast_table[ct] ].y());
@@ -126,20 +123,19 @@ position(int i, enum corner_type ct, vec2 scale_factor,
 
 vecN<vec2,2>
 WRATHFormattedTextStream::
-position(int i, vec2 scale_factor,
-         enum WRATHTextureFont::texture_coordinate_size L) const
+position(int i, vec2 scale_factor) const
 {
   const WRATHFormattedTextStream::glyph_instance &G(data(i));
   
   WRATHassert(data(i).m_glyph!=NULL);
   const WRATHTextureFont::glyph_data_type &ch(*G.m_glyph);
 
-  vec2 bl(G.m_position.x()+scale_factor.x()*ch.origin(L).x(),
-          G.m_position.y()+m_yfactor*scale_factor.y()*ch.origin(L).y());
+  vec2 bl(G.m_position.x()+scale_factor.x()*ch.origin().x(),
+          G.m_position.y()+m_yfactor*scale_factor.y()*ch.origin().y());
   vec2 tr;
 
-  tr=bl + vec2(scale_factor.x()*ch.display_size(L).x(), 
-               scale_factor.y()*m_yfactor*ch.display_size(L).y());
+  tr=bl + vec2(scale_factor.x()*ch.display_size().x(), 
+               scale_factor.y()*m_yfactor*ch.display_size().y());
 
   return vecN<vec2,2>(bl,tr);
 }

@@ -3298,8 +3298,7 @@ glyph_glsl(void)
 
 ivec2
 WRATHTextureFontFreeType_CurveAnalytic::
-texture_size(int texture_page, 
-             enum WRATHTextureFont::texture_coordinate_size)
+texture_size(int texture_page)
 {
   return m_page_tracker.main_texture_size(texture_page);
 }
@@ -3557,10 +3556,8 @@ generate_character(WRATHTextureFont::glyph_index_type G)
     .font(this)
     .iadvance(glyph_advance)
     .texture_page(pg)
-    .texel_values(pIndex->minX_minY(), pIndex->size(), native_value)
-    .texel_values(pIndex->minX_minY(), pIndex->size(), minified_value)
-    .origin(bitmap_offset, native_value)
-    .origin(bitmap_offset, minified_value)
+    .texel_values(pIndex->minX_minY(), pIndex->size())
+    .origin(bitmap_offset)
     .bounding_box_size(pIndex->size())
     .character_code(character_code(G))
     .glyph_index(G);
