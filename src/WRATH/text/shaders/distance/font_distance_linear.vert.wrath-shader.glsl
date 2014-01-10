@@ -29,5 +29,5 @@ void pre_compute_glyph(in vec2 glyph_position,
 
   pp=glyph_bottom_left + glyph_position;
   wrath_DistanceFieldPosition=pp;
-  wrath_DistanceFieldPosition=pp*glyph_texture_reciprocal_size;
+  wrath_DistanceFieldTexCoord=pp*glyph_texture_reciprocal_size;
 }

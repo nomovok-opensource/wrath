@@ -1046,22 +1046,22 @@ assemble(void)
       #if defined(WRATHDEBUG)
       {
 	if(post_action_warning)
-        {
-          WRATHwarning("\nAction warning log for \"" 
-                       << resource_name() << "\":\n"
-                       << m_action_log << "\n");
-        }
-      
-        #if 0
-        {
-          std::ostringstream oo;
+          {
+            WRATHwarning("\nAction warning log for \"" 
+                         << resource_name() << "\":\n"
+                         << m_action_log << "\n");
+          }
+        
+        if(post_action_warning)
+          {
+            std::ostringstream oo;
+            
+            oo << "good_program_post_action_warning" << m_name << ".glsl";
+            std::ofstream eek(oo.str().c_str());
           
-          oo << "good_program_" << m_name << ".glsl";
-          std::ofstream eek(oo.str().c_str());
-          
-          log_contents(eek);
-        }
-        #endif
+            log_contents(eek);
+            eek << "\n\nWarning" << m_action_log << "\n";
+          }
       }
       #endif
       

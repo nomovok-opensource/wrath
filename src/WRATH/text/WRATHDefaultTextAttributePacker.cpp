@@ -119,7 +119,6 @@ namespace
         "glyph_bottom_left_texel",
         "glyph_normalized_coordinate", 
         "color",
-
 	/*
 	  Danger: Must make this match with the generated
 	  GLSL found in WRATHFontShaderSpecifier::fetch_texture_font_drawer()
