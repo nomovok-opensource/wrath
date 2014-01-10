@@ -106,7 +106,7 @@ shader_main(void)
   
   #if defined(WRATH_FONT_CUSTOM_DATA)
   {
-    struct wrath_font_custom_data_t custom_values_str;
+    wrath_font_custom_data_t custom_values_str;
   
     wrath_font_shader_custom_data_func(custom_values_str);
     pre_compute_glyph(glyph_position,
