@@ -295,6 +295,7 @@ set_attribute_data_implement(const_c_array<range_type<int> > Rarray,
   std::vector<GLushort> index_remapper;
   bool y_factor_positive;
   PackerState packer_state;
+  const std::vector<int> &custom_data_use(font->glyph_glsl()->m_custom_data_use);
   int num_customs(font->glyph_glsl()->m_custom_data_use.size());
   size_t sattr_size(this->attribute_size(num_customs));
 
@@ -481,6 +482,7 @@ set_attribute_data_implement(const_c_array<range_type<int> > Rarray,
                                      signed_normalized,
                                      compute_normalized_coordinate_short(y_factor_positive, 
                                                                          tt.m_position_within_glyph_coordinate),
+				     custom_data_use,
                                      get_attribute_reference(current_attr_index, 
                                                              attrs, sattr_size),
                                      packer_state);
@@ -519,6 +521,7 @@ set_attribute_data_implement(const_c_array<range_type<int> > Rarray,
                                      the_glyph,
                                      use_float_normalized_coordinate[k],
                                      use_normalzied_array[k],
+				     custom_data_use,
                                      get_attribute_reference(current_attr_index, 
                                                              attrs, 
                                                              sattr_size),

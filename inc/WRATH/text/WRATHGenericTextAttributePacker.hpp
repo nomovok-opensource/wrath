@@ -329,6 +329,7 @@ public:
     \param normalized_glyph_coordinate_short normalized_glyph_coordinate_float presented as a 
                                              short consumable by GL's glVertexAttributePointer
                                              with normalize set to GL_TRUE
+    \param custom_data_use taken from WRATHTextureFont::GlyphGLSL::m_custom_data_use
     \param packing_destination packing destination location to pack attribute, an implementation
                                will reinterpret_cast the pointer to the attribute type it packs,
                                the value of packing_destination.size() is \ref attribute_size();
@@ -340,6 +341,7 @@ public:
                  const glyph_data &in_glyph,
                  const vec2 &normalized_glyph_coordinate_float,
                  vecN<GLshort,2> normalized_glyph_coordinate_short,
+		 const std::vector<int> &custom_data_use,
                  c_array<uint8_t> packing_destination,
                  const PackerState &packer_state) const=0;
 

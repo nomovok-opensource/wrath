@@ -301,6 +301,7 @@ pack_attribute(enum WRATHFormattedTextStream::corner_type ct,
                const glyph_data &in_glyph,
                const vec2 &normalized_glyph_coordinate_float,
                vecN<GLshort,2> normalized_glyph_coordinate_short,
+	       const std::vector<int> &custom_data_use,
                c_array<uint8_t> packing_destination,
                const PackerState&) const
 {
