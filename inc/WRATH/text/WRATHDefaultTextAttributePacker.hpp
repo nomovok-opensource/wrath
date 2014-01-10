@@ -144,7 +144,7 @@ public:
 
   virtual
   size_t
-  attribute_size(void) const;
+  attribute_size(int number_custom_data_to_use) const;
   
   virtual
   void

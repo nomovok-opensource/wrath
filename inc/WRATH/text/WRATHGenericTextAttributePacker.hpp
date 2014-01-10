@@ -212,10 +212,13 @@ public:
     To be implemented by a dervied class to 
     return the size of the attribute type that
     this WRATHGenericTextAttributePacker packs.
+    \param number_custom_data_to_use indicates the size of \ref
+                                     WRATHTextureFont::GlyphGLSL::m_custom_data_use
+				     which are to also be packed into attributes
    */
   virtual
   size_t
-  attribute_size(void) const=0;
+  attribute_size(int number_custom_data_to_use) const=0;
   
   /*!\fn allocation_requirement_type allocation_requirement
     Implementation of allocation_requirement().

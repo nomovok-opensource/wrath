@@ -295,7 +295,8 @@ set_attribute_data_implement(const_c_array<range_type<int> > Rarray,
   std::vector<GLushort> index_remapper;
   bool y_factor_positive;
   PackerState packer_state;
-  size_t sattr_size(this->attribute_size());
+  int num_customs(font->glyph_glsl()->m_custom_data_use.size());
+  size_t sattr_size(this->attribute_size(num_customs));
 
   y_factor_positive=pdata.y_factor_positive();
 

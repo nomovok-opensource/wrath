@@ -202,8 +202,9 @@ fetch(enum PackerType e)
 
 size_t
 WRATHDefaultTextAttributePacker::
-attribute_size(void) const
+attribute_size(int n) const
 {
+  WRATHunused(n);
   return sizeof(character_attribute);
 }
 

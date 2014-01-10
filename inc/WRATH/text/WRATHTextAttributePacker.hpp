@@ -190,7 +190,7 @@ public:
     \param out_names array to which to resize and write the
                      attribute names
     \param number_custom_data_to_use indicates the size of \ref
-                                     WRATHTextureFont::GlyphGLSL::m_custom_data_to_use
+                                     WRATHTextureFont::GlyphGLSL::m_custom_data_use
 				     which are to also be packed into attributes
    */
   virtual
@@ -201,7 +201,7 @@ public:
   /*!\fn fetch_attribute_packer
     Returns the WRATHAttributePacker of this WRATHTextAttributePacker
     \param number_custom_data_to_use indicates the size of \ref
-                                     WRATHTextureFont::GlyphGLSL::m_custom_data_to_use
+                                     WRATHTextureFont::GlyphGLSL::m_custom_data_use
 				     which are to also be packed into attributes
    */
   const WRATHAttributePacker*
@@ -222,7 +222,7 @@ public:
     \endcode
     is previously defined and N=number_custom_data_to_use
     \param number_custom_data_to_use indicates the size of \ref
-                                     WRATHTextureFont::GlyphGLSL::m_custom_data_to_use
+                                     WRATHTextureFont::GlyphGLSL::m_custom_data_use
 				     which are to also be packed into attributes
    */
   virtual
