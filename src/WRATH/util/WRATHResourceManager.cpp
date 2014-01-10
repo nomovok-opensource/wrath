@@ -18,9 +18,12 @@
 
 
 #include "WRATHConfig.hpp"
+
+#include <vector>
 #include "WRATHResourceManager.hpp"
 #include "WRATHStaticInit.hpp"
 #include "WRATHMutex.hpp"
+
 
 namespace
 {
@@ -60,10 +63,18 @@ void
 WRATHResourceManagerBase::
 clear_all_resource_managers(void)
 {
-  WRATHAutoLockMutex(all_resources().m_mutex);
-  for(std::set<WRATHResourceManagerBase*>::iterator
-        iter=all_resources().m_elements.begin(), 
-        end=all_resources().m_elements.end();
+  std::vector<WRATHResourceManagerBase*> elements;
+
+  {
+    WRATHAutoLockMutex(all_resources().m_mutex);
+    elements.resize(all_resources().m_elements.size());
+    std::copy(all_resources().m_elements.begin(),
+              all_resources().m_elements.end(),
+              elements.begin());
+  }
+
+  for(std::vector<WRATHResourceManagerBase*>::iterator
+        iter=elements.begin(), end=elements.end();
       iter!=end; ++iter)
     {
       (*iter)->clear();
