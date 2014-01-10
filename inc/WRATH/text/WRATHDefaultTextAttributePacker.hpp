@@ -143,6 +143,10 @@ public:
   ~WRATHDefaultTextAttributePacker();
 
   virtual
+  size_t
+  attribute_size(void) const;
+
+  virtual
   void
   pack_attribute(enum WRATHFormattedTextStream::corner_type ct,
                  const glyph_data &in_glyph,

@@ -295,6 +295,7 @@ set_attribute_data_implement(const_c_array<range_type<int> > Rarray,
   std::vector<GLushort> index_remapper;
   bool y_factor_positive;
   PackerState packer_state;
+  size_t sattr_size(this->attribute_size());
 
   y_factor_positive=pdata.y_factor_positive();
 
@@ -315,7 +316,7 @@ set_attribute_data_implement(const_c_array<range_type<int> > Rarray,
   indices=index_group.pointer<GLushort>(0, AA.m_number_indices);
   if(!attr_location.empty())
     {
-      attrs=get_pointer(attr_location[0], attribute_store, m_attribute_size);
+      attrs=get_pointer(attr_location[0], attribute_store, sattr_size);
     }
 
   
@@ -480,12 +481,12 @@ set_attribute_data_implement(const_c_array<range_type<int> > Rarray,
                                      compute_normalized_coordinate_short(y_factor_positive, 
                                                                          tt.m_position_within_glyph_coordinate),
                                      get_attribute_reference(current_attr_index, 
-                                                             attrs, m_attribute_size),
+                                                             attrs, sattr_size),
                                      packer_state);
 
                       ++total_attribute_count;
                       ++current_attr_index;
-                      if(current_attr_index*m_attribute_size==attrs.size())
+                      if(current_attr_index*sattr_size==attrs.size())
                         {
                           ++attr_range_iter;
                           if(attr_range_iter!=attr_range_end)
@@ -493,7 +494,7 @@ set_attribute_data_implement(const_c_array<range_type<int> > Rarray,
                               current_attr_index=0;
                               attrs=get_pointer(*attr_range_iter, 
                                                 attribute_store,
-                                                m_attribute_size);
+                                                sattr_size);
                             }
                         }
                     }
@@ -519,12 +520,12 @@ set_attribute_data_implement(const_c_array<range_type<int> > Rarray,
                                      use_normalzied_array[k],
                                      get_attribute_reference(current_attr_index, 
                                                              attrs, 
-                                                             m_attribute_size),
+                                                             sattr_size),
                                      packer_state);
 
                       ++total_attribute_count;
                       ++current_attr_index;
-                      if(current_attr_index*m_attribute_size==attrs.size())
+                      if(current_attr_index*sattr_size==attrs.size())
                         {
                           ++attr_range_iter;
                           if(attr_range_iter!=attr_range_end)
@@ -532,7 +533,7 @@ set_attribute_data_implement(const_c_array<range_type<int> > Rarray,
                               current_attr_index=0;
                               attrs=get_pointer(*attr_range_iter, 
                                                 attribute_store, 
-                                                m_attribute_size);
+                                                sattr_size);
                             }
                         }
 

@@ -181,7 +181,7 @@ public:
    */
   typedef WRATHReferenceCountedObject::handle PackerState;
 
-  /*!\fn WRATHGenericTextAttributePacker(size_t, const ResourceKey&, 
+  /*!\fn WRATHGenericTextAttributePacker(const ResourceKey&, 
                                          enum PackerType,
                                          iterator, iterator)
     Ctor. Specifies the resource name of the attribute packer
@@ -195,16 +195,14 @@ public:
     \param end iterator to one past the name of the last attribute    
    */
   template<typename iterator>
-  WRATHGenericTextAttributePacker(size_t size_of_attribute,
-                                  const ResourceKey &pname,
+  WRATHGenericTextAttributePacker(const ResourceKey &pname,
                                   enum PackerType tp,
                                   iterator begin, iterator end):
     WRATHTextAttributePacker(pname, begin, end),
-    m_attribute_size(size_of_attribute),
     m_type(tp)
   {}
 
-  /*!\fn WRATHGenericTextAttributePacker(size_t, const ResourceKey&, 
+  /*!\fn WRATHGenericTextAttributePacker(const ResourceKey&, 
                                          enum PackerType,
                                          const std::vector<std::string>&)
     Ctor. Specifies the resource name of the attribute packer
@@ -215,12 +213,10 @@ public:
     \param pattribute_names names of the attributes, value at index 0 
                             will be for attribute #0 in GL
    */
-  WRATHGenericTextAttributePacker(size_t size_of_attribute,
-                                  const ResourceKey &pname,
+  WRATHGenericTextAttributePacker(const ResourceKey &pname,
                                   enum PackerType tp,
                                   const std::vector<std::string> &pattribute_names):
     WRATHTextAttributePacker(pname, pattribute_names),
-    m_attribute_size(size_of_attribute),
     m_type(tp)
   {}
     
@@ -240,15 +236,13 @@ public:
   }
 
   /*!\fn size_t attribute_size
-    Returns the size of the attribute type that
+    To be implemented by a dervied class to 
+    return the size of the attribute type that
     this WRATHGenericTextAttributePacker packs.
    */
+  virtual
   size_t
-  attribute_size(void) const
-  {
-    return m_attribute_size;
-  }
-
+  attribute_size(void) const=0;
   
   /*!\fn allocation_requirement_type allocation_requirement
     Implementation of allocation_requirement().
@@ -391,7 +385,6 @@ protected:
                                BBox *out_bounds_box) const;
 
 private:
-  size_t m_attribute_size;
   enum PackerType m_type;
 };
 

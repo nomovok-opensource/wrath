@@ -174,8 +174,7 @@ namespace
 
 WRATHDefaultTextAttributePacker::
 WRATHDefaultTextAttributePacker(enum PackerType subpacker):
-  WRATHGenericTextAttributePacker(sizeof(character_attribute),
-                                  packer_label(subpacker),
+  WRATHGenericTextAttributePacker(packer_label(subpacker),
                                   subpacker,
                                   packer_attribute_names().begin(), 
                                   packer_attribute_names().end())
@@ -201,6 +200,13 @@ fetch(enum PackerType e)
     }
   WRATHassert(the_ptr(e)!=NULL);
   return the_ptr(e);
+}
+
+size_t
+WRATHDefaultTextAttributePacker::
+attribute_size(void) const
+{
+  return sizeof(character_attribute);
 }
 
 void
