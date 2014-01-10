@@ -89,7 +89,7 @@ public:
   WRATHAttributeStoreKey(void):
     m_buffer_object_hint(GL_STATIC_DRAW),
     m_index_bit_count(index_16bits),
-    m_type(NULL)
+    m_type_size(0)
   {}
 
   /*!\fn WRATHAttributeStoreKey(type_tag<T>, GLenum, enum index_bit_count_type)
@@ -111,7 +111,6 @@ public:
                          enum index_bit_count_type pindex_bit_count=index_16bits):
     m_buffer_object_hint(pbuffer_object_hint),
     m_index_bit_count(pindex_bit_count),      
-    m_type(&typeid(T)),
     m_type_size(sizeof(T))
   {
     T::attribute_key(m_attribute_format_location);
@@ -145,7 +144,6 @@ public:
                          enum index_bit_count_type pindex_bit_count=index_16bits):
     m_buffer_object_hint(pbuffer_object_hint),
     m_index_bit_count(pindex_bit_count),      
-    m_type(&typeid(T)),
     m_type_size(sizeof(T))
   {
     T::attribute_key(m_attribute_format_location);
@@ -166,7 +164,6 @@ public:
   WRATHAttributeStoreKey&
   type(type_tag<T>)
   {
-    m_type=&typeid(T);
     m_type_size=sizeof(T);
     return *this;
   }
@@ -263,16 +260,7 @@ public:
     return *this;
   }
   
-  /*!\fn WRATHAttributeStoreKey& type(void) const
-    Fetch the type_info of the type
-  */
-  const std::type_info&
-  type(void) const
-  {
-    WRATHassert(m_type!=NULL);
-    return *m_type;
-  }
-
+ 
   /*!\fn bool operator<(const WRATHAttributeStoreKey &) const
     comparison operator for sorting, which sorts 
     in the following order:
@@ -362,8 +350,6 @@ public:
   index_bit_count_from_type(void);
 
 private:
-
-  const std::type_info *m_type;
   int m_type_size;
 };
 
@@ -438,16 +424,7 @@ public:
   virtual
   ~WRATHAttributeStore();
     
-  /*!\fn const std::type_info& attribute_type
-    Returns the attribute type for this
-    WRATHAttributeStore.
-   */
-  const std::type_info&
-  attribute_type(void) const
-  {
-    return m_type;
-  }
-
+  
   /*!\fn const WRATHDrawCallSpec::attribute_array_params& attribute_format_location
     Returns the formatting of the attribute type
     to feed to glVertexAttribPointer, see
@@ -940,7 +917,6 @@ private:
   std::vector<opengl_trait_value> m_implicit_attribute_format;
   int m_number_non_implicit_attributes;
 
-  const std::type_info &m_type;
   WRATHDrawCallSpec::attribute_array_params m_attribute_format_location;
   enum WRATHAttributeStoreKey::index_bit_count_type m_index_bits;
   GLenum m_index_type;

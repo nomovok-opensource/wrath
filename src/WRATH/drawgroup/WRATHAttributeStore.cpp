@@ -27,8 +27,8 @@ bool
 WRATHAttributeStoreKey::
 operator<(const WRATHAttributeStoreKey &rhs) const
 {
-  WRATHassert(m_type!=NULL);
-  WRATHassert(rhs.m_type!=NULL);
+  //WRATHassert(m_type!=NULL);
+  //WRATHassert(rhs.m_type!=NULL);
 
   if(m_buffer_object_hint!=rhs.m_buffer_object_hint)
     {
@@ -40,9 +40,14 @@ operator<(const WRATHAttributeStoreKey &rhs) const
       return m_index_bit_count<rhs.m_index_bit_count;
     }
 
-  if(type()!=rhs.type())
+  //  if(type()!=rhs.type())
+  //{
+  //  return type().before(rhs.type());
+  //}
+
+  if(m_type_size!=rhs.m_type_size)
     {
-      return type().before(rhs.type());
+      return m_type_size < rhs.m_type_size;
     }
 
   if(m_attribute_format_location!=rhs.m_attribute_format_location)
@@ -57,12 +62,12 @@ bool
 WRATHAttributeStoreKey::
 operator==(const WRATHAttributeStoreKey &rhs) const
 {
-  WRATHassert(m_type!=NULL);
-  WRATHassert(rhs.m_type!=NULL);
+  //WRATHassert(m_type!=NULL);
+  //WRATHassert(rhs.m_type!=NULL);
 
   return m_buffer_object_hint==rhs.m_buffer_object_hint
     and m_index_bit_count==rhs.m_index_bit_count
-    and type()==rhs.type()
+    and m_type_size==rhs.m_type_size
     and m_attribute_format_location==rhs.m_attribute_format_location;
 }
 
@@ -334,7 +339,6 @@ WRATHAttributeStore(const WRATHAttributeStoreKey &pkey,
   m_key(pkey),
   m_value_at_index0(allocator->m_value_at_index0),
   m_implicit_attribute_format(allocator->m_implicit_attribute_format),
-  m_type(m_key.type()),
   m_attribute_format_location(m_key.m_attribute_format_location),
   m_index_bits(m_key.m_index_bit_count),
   m_buffer_object_hint(m_key.m_buffer_object_hint),
@@ -419,8 +423,7 @@ WRATHAttributeStore::
                    << ": Warning: not all attributes de-allocated! "
                    << attributes_allocated()  << " attributes remain"
                    << "{ attribute size=" << attribute_size()
-                   << ", attribute_type=\"" << attribute_type().name()
-                   << "\" }");
+                   << " }");
     }
 
   WRATHPhasedDelete(m_vertex_buffer);
