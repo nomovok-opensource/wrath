@@ -68,7 +68,7 @@ wrath_detailed_is_covered(in vec2 GlyphCoordinate,
                           in vec2 GlyphNormalizedCoordinate,
                           in float GlyphIndex)
 {
-  return step(0.5, compute_coverage(GlyphCoordinate,
-                                    GlyphNormalizedCoordinate,
-                                    GlyphIndex));
+  return step(0.5, wrath_detailed_compute_coverage(GlyphCoordinate,
+                                                   GlyphNormalizedCoordinate,
+                                                   GlyphIndex));
 }

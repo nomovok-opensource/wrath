@@ -185,6 +185,8 @@ common_data_type(void):
   m_glyph_glsl.m_global_names.push_back("wrath_DetailedNormalizedCoord_Position");
   m_glyph_glsl.m_global_names.push_back("wrath_DetailedGlyphIndex");
   m_glyph_glsl.m_global_names.push_back("wrath_DetailedGlyphRecipSize_GlyphIndex");
+
+  m_glyph_glsl.m_custom_data_use.push_back(0);
 }
 
 WRATHImage::TextureAllocatorHandle
