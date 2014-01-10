@@ -27,6 +27,7 @@
 #include "WRATHTextureFont.hpp"
 #include "WRATHTextDataStream.hpp"
 #include "WRATHTextDataStreamManipulator.hpp"
+#include "WRATHTextAttributePacker.hpp"
 #include "WRATHBrush.hpp"
 
 /*! \addtogroup Text
@@ -52,7 +53,7 @@ class WRATHFontShaderSpecifier
 {
 public:
   /*!\typedef ResourceKey
-    Resource key type for WRATHAttributePacker 
+    Resource key type for WRATHFontShaderSpecifier 
     resource manager.
    */
   typedef std::string ResourceKey; 
@@ -665,7 +666,7 @@ public:
 
   /*!\fn WRATHTextureFontDrawer* fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL*,
                                                            const WRATHItemDrawerFactory&,
-                                                           const WRATHAttributePacker*,
+                                                           const WRATHTextAttributePacker*,
                                                            int) const
     Fetch, and if necessary first create, a WRATHTextureFontDrawer
     object using the named WRATHTextureFont::GlyphGLSL object
@@ -691,7 +692,7 @@ public:
     \param factory WRATHItemDrawerFactory to specify per item
                    and per draw group collection transformation source
                    code
-    \param attribute_packer WRATHAttributePacker to be used to specify
+    \param attribute_packer WRATHTextAttributePacker to be used to specify
                             the binding point on user defined attributes
     \param sub_drawer_id SubDrawerId passed to the WRATHItemDrawerFactory 
                          factor object.
@@ -699,12 +700,12 @@ public:
   WRATHTextureFontDrawer*
   fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
                             const WRATHItemDrawerFactory &factory,
-                            const WRATHAttributePacker *attribute_packer,
+                            const WRATHTextAttributePacker *attribute_packer,
                             int sub_drawer_id) const;
 
   /*!\fn WRATHTextureFontDrawer* fetch_texture_font_drawer(WRATHTextureFont*,
                                                            const WRATHItemDrawerFactory&,
-                                                           const WRATHAttributePacker*,
+                                                           const WRATHTextAttributePacker*,
                                                            int) const
     Provided as a conveniance, equivalent to:
     \code
@@ -715,7 +716,7 @@ public:
     \param factory WRATHItemDrawerFactory to specify per item
                    and per draw group collection transformation source
                    code
-    \param attribute_packer WRATHAttributePacker to be used to specify
+    \param attribute_packer WRATHTextAttributePacker to be used to specify
                             the binding point on user defined attributes
     \param sub_drawer_id SubDrawerId passed to the WRATHItemDrawerFactory 
                          factor object.
@@ -723,7 +724,7 @@ public:
   WRATHTextureFontDrawer*
   fetch_texture_font_drawer(WRATHTextureFont *font,
                             const WRATHItemDrawerFactory &factory,
-                            const WRATHAttributePacker *attribute_packer,
+                            const WRATHTextAttributePacker *attribute_packer,
                             int sub_drawer_id) const
   {
     return fetch_texture_font_drawer(font->glyph_glsl(),

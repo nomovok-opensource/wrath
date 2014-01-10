@@ -167,7 +167,7 @@ WRATHTextureFontDrawer*
 WRATHFontShaderSpecifier::
 fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
                           const WRATHItemDrawerFactory &factory,
-                          const WRATHAttributePacker *attribute_packer,
+                          const WRATHTextAttributePacker *attribute_packer,
                           int sub_drawer_id) const
 {
   WRATHAutoLockMutex(m_mutex);
