@@ -30,8 +30,7 @@ WRATH_RESOURCE_MANAGER_IMPLEMENT(WRATHTextAttributePacker,
 
 WRATHTextAttributePacker::
 WRATHTextAttributePacker(const ResourceKey &pname):
-  m_resource_name(pname),
-  m_packer(NULL)
+  m_resource_name(pname)
 {
   resource_manager().add_resource(m_resource_name, this);
 }
@@ -44,19 +43,29 @@ WRATHTextAttributePacker::
 
 const WRATHAttributePacker*
 WRATHTextAttributePacker::
-fetch_attribute_packer(void) const
+fetch_attribute_packer(int n) const
 {
   WRATHAutoLockMutex(m_mutex);
-  if(m_packer==NULL)
-    {
-      std::vector<std::string> attrs;
+  std::map<int, const WRATHAttributePacker*>::iterator iter;
 
-      attribute_names(attrs);
-      m_packer=WRATHNew WRATHAttributePacker(resource_name(),
-					     attrs.begin(), attrs.end());
-					     
+
+  iter=m_packers.find(n);
+  if(iter!=m_packers.end())
+    {
+      return iter->second;
     }
-  return m_packer;
+
+  const WRATHAttributePacker *q;
+  std::vector<std::string> attrs;
+  std::ostringstream ostr;
+
+  attribute_names(attrs, n);
+  ostr << resource_name() << "_" << n;
+
+  q=WRATHNew WRATHAttributePacker(ostr.str(), attrs.begin(), attrs.end());
+  m_packers[n]=q;
+
+  return q;
 }
 
 int

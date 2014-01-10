@@ -189,16 +189,46 @@ public:
     by the WRATHTextAttributePacker
     \param out_names array to which to resize and write the
                      attribute names
+    \param number_custom_data_to_use indicates the size of \ref
+                                     WRATHTextureFont::GlyphGLSL::m_custom_data_to_use
+				     which are to also be packed into attributes
    */
   virtual
   void
-  attribute_names(std::vector<std::string> &out_names) const=0;
+  attribute_names(std::vector<std::string> &out_names,
+		  int number_custom_data_to_use) const=0;
 
   /*!\fn fetch_attribute_packer
     Returns the WRATHAttributePacker of this WRATHTextAttributePacker
+    \param number_custom_data_to_use indicates the size of \ref
+                                     WRATHTextureFont::GlyphGLSL::m_custom_data_to_use
+				     which are to also be packed into attributes
    */
   const WRATHAttributePacker*
-  fetch_attribute_packer(void) const;
+  fetch_attribute_packer(int number_custom_data_to_use) const;
+
+  /*!\fn generate_custom_data_glsl
+    To be implemented by a derived class to generate the
+    GLSL code that implements
+    \code
+    void wrath_font_shader_custom_data_func(out wrath_font_custom_data_t)
+    \endcode
+    where 
+    \code
+    struct wrath_font_custom_data_t
+    {
+      float highp values[N];
+    }
+    \endcode
+    is previously defined and N=number_custom_data_to_use
+    \param number_custom_data_to_use indicates the size of \ref
+                                     WRATHTextureFont::GlyphGLSL::m_custom_data_to_use
+				     which are to also be packed into attributes
+   */
+  virtual
+  void
+  generate_custom_data_glsl(WRATHGLShader::shader_source &out_src,
+			    int number_custom_data_to_use) const=0;
 
   /*!\fn allocation_requirement_type allocation_requirement
     To be implemented by a derived class to indicate
@@ -569,7 +599,7 @@ protected:
 private:
   ResourceKey m_resource_name;
   mutable WRATHMutex m_mutex;
-  mutable const WRATHAttributePacker *m_packer;
+  mutable std::map<int, const WRATHAttributePacker*> m_packers;
 };
 
 namespace WRATHText

@@ -209,14 +209,76 @@ attribute_size(void) const
 
 void
 WRATHDefaultTextAttributePacker::
-attribute_names(std::vector<std::string> &out_names) const
+attribute_names(std::vector<std::string> &out_names, int n) const
 {
+  WRATHunused(n);
+  
   out_names.resize(packer_attribute_names().size());
   std::copy(packer_attribute_names().begin(),
 	    packer_attribute_names().end(),
 	    out_names.begin());
 }
 
+
+void
+WRATHDefaultTextAttributePacker::
+generate_custom_data_glsl(WRATHGLShader::shader_source &out_src,
+			  int number_custom_data_to_use) const
+{
+  int N, R, idx;
+  const char *swizzle[]={".x", ".y", ".z", ".w" };
+  std::ostringstream ostr;
+
+  N=number_custom_data_to_use/4;
+  R=number_custom_data_to_use%4;
+  for(int i=0; i<N; ++i)
+    {
+      ostr << "\nshader_in highp vec4 custom_data" << i << ";";
+    }
+  
+  if(R==1)
+    {
+      ostr << "\nshader_in highp float custom_data" << N << ";";
+    }
+  else if(R>1)
+    {
+      ostr << "\nshader_in highp vec" << R << " custom_data" << N << ";";
+    }
+  
+  /*
+    create the function that returns the data as an array
+  */
+  ostr << "\nvoid wrath_font_shader_custom_data_func(out wrath_font_custom_data_t v)"
+       << "\n{";
+  
+  idx=0;
+  for(int i=0; i<N; ++i)
+    {
+      for(int j=0; j<4; ++j, ++idx)
+	{
+	  ostr << "\n\tv.values[" << idx << "]=" 
+	       << "custom_data" << i << swizzle[j] << ";";
+	}
+    }
+  if(R==1)
+    {
+      ostr << "\n\tv.values[" << idx 
+	   << "]=custom_data" << N << ";";
+    }
+  else
+    {
+      for(int j=0; j<R; ++j, ++idx)
+	{
+	  ostr << "\n\tv.values[" << idx << "]=" 
+	       << "custom_data" << N << swizzle[j] << ";";
+	}
+    }
+  
+  ostr << "\n}\n";
+
+  out_src.add_source(ostr.str(), WRATHGLShader::from_string);
+}
+  
 void
 WRATHDefaultTextAttributePacker::
 attribute_key(WRATHAttributeStoreKey &pkey) const

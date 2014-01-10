@@ -148,7 +148,12 @@ public:
   
   virtual
   void
-  attribute_names(std::vector<std::string> &out_names) const;
+  attribute_names(std::vector<std::string> &out_names, int n) const;
+
+  virtual
+  void
+  generate_custom_data_glsl(WRATHGLShader::shader_source &out_src,
+			    int number_custom_data_to_use) const;
 
   virtual
   void
