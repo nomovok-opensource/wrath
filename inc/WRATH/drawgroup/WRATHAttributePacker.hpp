@@ -146,7 +146,7 @@ public:
     returns the resource name of this WRATHAttributePacker.
    */
   const ResourceKey&
-  resource_name(void)
+  resource_name(void) const
   {
     return m_resource_name;
   }

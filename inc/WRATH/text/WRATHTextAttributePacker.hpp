@@ -50,7 +50,7 @@
   by the manipulator created with
   \ref WRATHText::font_packer.
  */
-class WRATHTextAttributePacker:public WRATHAttributePacker
+class WRATHTextAttributePacker:boost::noncopyable
 {
 public:
   
@@ -151,38 +151,54 @@ public:
     int m_sub_end;
   };
 
+  /*!\typedef ResourceKey
+    Resource key type for WRATHAttributePacker 
+    resource manager.
+   */
+  typedef std::string ResourceKey;
+
+  /// @cond
+  WRATH_RESOURCE_MANAGER_DECLARE(WRATHTextAttributePacker, ResourceKey);
+  /// @endcond
   
-  /*!\fn WRATHTextAttributePacker(const ResourceKey&, iterator, iterator)
+  /*!\fn WRATHTextAttributePacker(const ResourceKey&)
     Ctor. Specifies the resource name of the attribute packer
     and the names of each attribute as an STL range.
     The number of attributes is then std::distance(begin,end)
     and the attribute of index I has value begin+I.
     \param pname resource name to identify the WRATHTextAttributePacker
-    \param begin iterator to name of attribure #0
-    \param end iterator to one past the name of the last attribute
    */
-  template<typename iterator>
-  WRATHTextAttributePacker(const ResourceKey &pname,
-                           iterator begin, iterator end):
-    WRATHAttributePacker(pname, begin, end)
-  {}
-
-  /*!\fn WRATHTextAttributePacker(const ResourceKey&, const std::vector<std::string>&)
-    Ctor. Specifies the resource name of the attribute packer
-    and the names of each attribute in an array of strings.
-    \param pname resource name (see \ref resource_name) of the packer
-    \param pattribute_names names of the attributes, value at index 0 
-                            will be for attribute #0 in GL
-   */
-  WRATHTextAttributePacker(const ResourceKey &pname,
-                           const std::vector<std::string> &pattribute_names):
-    WRATHAttributePacker(pname, pattribute_names)
-  {}
-
+  explicit
+  WRATHTextAttributePacker(const ResourceKey &pname);
+  
   virtual
-  ~WRATHTextAttributePacker()
-  {}
+  ~WRATHTextAttributePacker();
 
+  /*!\fn const ResourceKey& resource_name(void)
+    returns the resource name of this WRATHAttributePacker.
+   */
+  const ResourceKey&
+  resource_name(void) const
+  {
+    return m_resource_name;
+  }
+
+  /*!\fn attribute_names
+    To be implemented by a derived class to
+    return the names of attrivutes packed
+    by the WRATHTextAttributePacker
+    \param out_names array to which to resize and write the
+                     attribute names
+   */
+  virtual
+  void
+  attribute_names(std::vector<std::string> &out_names) const=0;
+
+  /*!\fn fetch_attribute_packer
+    Returns the WRATHAttributePacker of this WRATHTextAttributePacker
+   */
+  const WRATHAttributePacker*
+  fetch_attribute_packer(void) const;
 
   /*!\fn allocation_requirement_type allocation_requirement
     To be implemented by a derived class to indicate
@@ -549,6 +565,11 @@ protected:
                                const WRATHFormattedTextStream &pdata,
                                const WRATHStateStream &state_stream,
                                BBox *out_bounds_box) const=0;   
+
+private:
+  ResourceKey m_resource_name;
+  mutable WRATHMutex m_mutex;
+  mutable const WRATHAttributePacker *m_packer;
 };
 
 namespace WRATHText

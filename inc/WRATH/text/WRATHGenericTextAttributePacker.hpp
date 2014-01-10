@@ -182,45 +182,18 @@ public:
   typedef WRATHReferenceCountedObject::handle PackerState;
 
   /*!\fn WRATHGenericTextAttributePacker(const ResourceKey&, 
-                                         enum PackerType,
-                                         iterator, iterator)
-    Ctor. Specifies the resource name of the attribute packer
-    and the names of each attribute as an STL range.
-    The number of attributes is then std::distance(begin,end)
-    and the attribute of index I has value begin+I.
-    \param size_of_attribute size, in bytes, of attribute that will be packed
-    \param pname resource name (see \ref resource_name) of the packer
-    \param tp to specify if the packer prefers to pack sub-quads in packing
-    \param begin iterator to name of attribure #0
-    \param end iterator to one past the name of the last attribute    
-   */
-  template<typename iterator>
-  WRATHGenericTextAttributePacker(const ResourceKey &pname,
-                                  enum PackerType tp,
-                                  iterator begin, iterator end):
-    WRATHTextAttributePacker(pname, begin, end),
-    m_type(tp)
-  {}
-
-  /*!\fn WRATHGenericTextAttributePacker(const ResourceKey&, 
-                                         enum PackerType,
-                                         const std::vector<std::string>&)
+                                         enum PackerType)
     Ctor. Specifies the resource name of the attribute packer
     and the names of each attribute in an array of strings.
-    \param size_of_attribute size, in bytes, of attribute that will be packed
     \param pname resource name (see \ref resource_name) of the packer
     \param tp to specify if the packer prefers to pack sub-quads in packing
-    \param pattribute_names names of the attributes, value at index 0 
-                            will be for attribute #0 in GL
    */
   WRATHGenericTextAttributePacker(const ResourceKey &pname,
-                                  enum PackerType tp,
-                                  const std::vector<std::string> &pattribute_names):
-    WRATHTextAttributePacker(pname, pattribute_names),
+                                  enum PackerType tp):
+    WRATHTextAttributePacker(pname),
     m_type(tp)
   {}
     
-
   virtual
   ~WRATHGenericTextAttributePacker()
   {}

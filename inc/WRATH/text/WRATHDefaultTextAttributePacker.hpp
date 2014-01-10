@@ -145,6 +145,10 @@ public:
   virtual
   size_t
   attribute_size(void) const;
+  
+  virtual
+  void
+  attribute_names(std::vector<std::string> &out_names) const;
 
   virtual
   void

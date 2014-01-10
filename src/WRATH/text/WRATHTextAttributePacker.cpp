@@ -25,6 +25,40 @@
 
 //////////////////////////////////////////
 // WRATHTextAttributePacker methods
+WRATH_RESOURCE_MANAGER_IMPLEMENT(WRATHTextAttributePacker, 
+                                 WRATHTextAttributePacker::ResourceKey);
+
+WRATHTextAttributePacker::
+WRATHTextAttributePacker(const ResourceKey &pname):
+  m_resource_name(pname),
+  m_packer(NULL)
+{
+  resource_manager().add_resource(m_resource_name, this);
+}
+
+WRATHTextAttributePacker::
+~WRATHTextAttributePacker()
+{
+  resource_manager().remove_resource(this);
+}
+
+const WRATHAttributePacker*
+WRATHTextAttributePacker::
+fetch_attribute_packer(void) const
+{
+  WRATHAutoLockMutex(m_mutex);
+  if(m_packer==NULL)
+    {
+      std::vector<std::string> attrs;
+
+      attribute_names(attrs);
+      m_packer=WRATHNew WRATHAttributePacker(resource_name(),
+					     attrs.begin(), attrs.end());
+					     
+    }
+  return m_packer;
+}
+
 int
 WRATHTextAttributePacker::
 highest_texture_page(range_type<int> R, 

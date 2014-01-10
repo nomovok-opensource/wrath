@@ -175,9 +175,7 @@ namespace
 WRATHDefaultTextAttributePacker::
 WRATHDefaultTextAttributePacker(enum PackerType subpacker):
   WRATHGenericTextAttributePacker(packer_label(subpacker),
-                                  subpacker,
-                                  packer_attribute_names().begin(), 
-                                  packer_attribute_names().end())
+                                  subpacker)
 {
   WRATHassert(the_ptr(subpacker)==NULL);
   the_ptr(subpacker)=this;
@@ -207,6 +205,16 @@ WRATHDefaultTextAttributePacker::
 attribute_size(void) const
 {
   return sizeof(character_attribute);
+}
+
+void
+WRATHDefaultTextAttributePacker::
+attribute_names(std::vector<std::string> &out_names) const
+{
+  out_names.resize(packer_attribute_names().size());
+  std::copy(packer_attribute_names().begin(),
+	    packer_attribute_names().end(),
+	    out_names.begin());
 }
 
 void
