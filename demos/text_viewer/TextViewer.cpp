@@ -71,8 +71,8 @@ public:
   {}
 
   template<typename F>
-  const WRATHTextureFont::FragmentSource*
-  fetch_source(const WRATHTextureFont::FragmentSource *src)
+  const WRATHTextureFont::GlyphGLSL*
+  fetch_source(const WRATHTextureFont::GlyphGLSL *src)
   {
     key K(typeid(F));
 
@@ -91,7 +91,7 @@ public:
 
     if(m_use_custom)
       {
-        v.first->second.m_fragment_processor=m_font_fragment_processor;
+        v.first->second.m_fragment_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]=m_font_fragment_processor;
       }
 
     return &v.first->second;
@@ -125,7 +125,7 @@ private:
     const std::type_info &m_info;
   };
 
-  typedef std::map<key, WRATHTextureFont::FragmentSource> map;
+  typedef std::map<key, WRATHTextureFont::GlyphGLSL> map;
   map m_map;
 };
 
@@ -142,10 +142,10 @@ public:
   {}
 
   virtual
-  const WRATHTextureFont::FragmentSource*
-  fragment_source(void)
+  const WRATHTextureFont::GlyphGLSL*
+  glyph_glsl(void)
   {
-    return fragment_sources::obj().fetch_source<F>(F::fragment_source());
+    return fragment_sources::obj().fetch_source<F>(F::glyph_glsl());
   }
 
   static

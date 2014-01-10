@@ -950,7 +950,7 @@ public:
      covered. The return value is used to
      render the glyph with anti-aliasing.
    */
-  class GlyphGLSL:boost::noncopyable
+  class GlyphGLSL
   {
   public:
 
