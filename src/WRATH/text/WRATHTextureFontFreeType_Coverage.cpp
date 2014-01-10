@@ -73,12 +73,12 @@ namespace
         .add_source("font_coverage_linear.vert.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
 
-      m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
+      m_glyph_glsl.m_fragment_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
         .add_source("font_coverage_linear.frag.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
 
 
-      m_glyph_glsl.m_fragment_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
+      m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
         .add_source("font_coverage_nonlinear.vert.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
 

@@ -29,5 +29,5 @@ void pre_compute_glyph(in vec2 glyph_position,
 
   pp=glyph_bottom_left + glyph_position;
   wrath_CoverageFieldPosition=pp;
-  wrath_CoverageFieldPosition=pp*glyph_texture_reciprocal_size;
+  wrath_CoverageFieldTexCoord=pp*glyph_texture_reciprocal_size;
 }
