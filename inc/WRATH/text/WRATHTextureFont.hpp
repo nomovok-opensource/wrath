@@ -521,7 +521,7 @@ public:
       return *this;
     }
 
-    /*!\fn glyph_data_type& origin(const vec2&, void)
+    /*!\fn glyph_data_type& origin(const vec2&)
       Set the value returned by origin(void).
       Initial value is (0,0).
       \param v value to assign to origin(void).
@@ -533,7 +533,7 @@ public:
       return *this;
     }
 
-    /*!\fn glyph_data_type& origin(const ivec2&, void)
+    /*!\fn glyph_data_type& origin(const ivec2&)
       Set the value returned by origin(void).
       Initial value is (0,0).
       \param v value to assign to origin(void).
@@ -830,10 +830,11 @@ public:
       glyph_size are is from \ref glyph_data_type::texel_size(),
       glyph_texture_reciprocal_size is the reciprocal of the
       size of the texture and glyph_custom_data is an array
-      of size \ref m_custom_data_use.size() and the values 
+      of same size as \ref m_custom_data_use and the values 
       are those values coming from the glyph_data_type::m_custom_float_data
       taken from \ref m_custom_data_use. If \ref m_custom_data_use
       is empty, the last argument is to be omitted.
+
    - In the Fragment shader, implement the functions
      \code
      float is_covered(void)
@@ -861,10 +862,11 @@ public:
       glyph_size are is from \ref glyph_data_type::texel_size(),
       glyph_texture_reciprocal_size is the reciprocal of the
       size of the texture and glyph_custom_data is an array
-      of size \ref m_custom_data_use.size() and the values 
+      of same size as \ref m_custom_data_use and the values 
       are those values coming from the glyph_data_type::m_custom_float_data
       taken from \ref m_custom_data_use. If \ref m_custom_data_use
       is empty, the last argument is to be omitted.
+
    - In the Fragment shader, implement the functions
      \code
      float is_covered(in vec2 glyph_position, in vec2 glyph_reciprocal_size)
@@ -920,7 +922,7 @@ public:
     {}
 
     /*!\var m_custom_data_use
-      An array of indices into \ref glyph_data_type::m_custom_data
+      An array of indices into \ref glyph_data_type::m_custom_float_data
       specifying what floats from there to use and in what
       order, initial value is an empty array
      */
@@ -965,7 +967,7 @@ public:
     /*!\var m_global_names
       List of global variables (uniforms, functions and varyings)
       that the GLSL source code induces. Does NOT include
-      the values from \ref m_fragment_processor_sampler_names.
+      the values from \ref m_sampler_names.
      */
     std::vector<std::string> m_global_names;
   };

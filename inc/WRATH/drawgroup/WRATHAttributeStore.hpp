@@ -323,7 +323,7 @@ public:
    */
   enum index_bit_count_type m_index_bit_count;
   
-  /*!\fn int type_size
+  /*!\var m_type_size
     The size, in bytes, of the attribute type.
    */
   int m_type_size;
