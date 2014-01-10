@@ -29,7 +29,7 @@ void pre_compute_glyph(in vec2 glyph_position,
   mediump vec2 pp;
 
   pp=glyph_bottom_left + glyph_position;
-  wrath_CurveAnalyticTexCoord_Position.zw=pp;
+  wrath_CurveAnalyticTexCoord_Position.zw=glyph_position;
   wrath_CurveAnalyticTexCoord_Position.xy=pp*glyph_texture_reciprocal_size;
   wrath_CurveAnalyticGlyphIndex=glyph_custom_data[0];
 }

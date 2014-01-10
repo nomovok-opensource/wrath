@@ -529,36 +529,4 @@ wrath_curve_analytic_compute_quasi_distance(in vec2 GlyphCoordinate,
 #undef rule_texture2D
 
 
-mediump float
-compute_coverage(void)
-{
-  mediump float d;
 
-  
-  d=compute_quasi_distance(); 
-  #if defined(WRATH_DERIVATIVES_SUPPORTED)
-  {
-    mediump vec2 dx, dy;
-    mediump float sd, a;
-
-    dx=dFdx(GlyphCoordinate);
-    dy=dFdy(GlyphCoordinate);
-    sd=max(1.0, inversesqrt( (dot(dx,dx) + dot(dy,dy))/2.0) );
-    a= 0.5 + d*sd;
-    return clamp(a, 0.0, 1.0);
-  }
-  #else
-  {
-    return step(0.0, d);
-  }
-  #endif
-}
-
-mediump float 
-is_covered(void)
-{
-  mediump float d;
-
-  d=compute_quasi_distance();
-  return step(0.0, d);
-}

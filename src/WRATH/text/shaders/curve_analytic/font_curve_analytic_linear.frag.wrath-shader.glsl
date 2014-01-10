@@ -19,7 +19,7 @@
 
 
 
-shader_in mediump vec4 wrath_AnalyticTexCoord_Position;
+shader_in mediump vec4 wrath_CurveAnalyticTexCoord_Position;
 shader_in mediump float wrath_CurveAnalyticGlyphIndex;
 
 #define GlyphTextureCoordinate wrath_CurveAnalyticTexCoord_Position.xy

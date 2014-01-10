@@ -266,7 +266,12 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
 	{
 	  ostr << "\nshader_in highp vec4 custom_data" << i << ";";
 	}
-      if(R>0)
+
+      if(R==1)
+        {
+          ostr << "\nshader_in highp float custom_data" << N << ";";
+        }
+      else if(R>1)
 	{
 	  ostr << "\nshader_in highp vec" << R << " custom_data" << N << ";";
 	}
@@ -290,13 +295,21 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
 		   << "custom_data" << i << swizzle[j] << ";";
 	    }
 	}
+      if(R==1)
+        {
+          ostr << "\n\tv.values[" << idx 
+               << "]=custom_data" << N << ";";
+        }
+      else
+        {
 
-      for(int j=0; j<R; ++j, ++idx)
-	{
-	  ostr << "\n\tv.values[" << idx << "]=" 
-	       << "custom_data" << N << swizzle[j] << ";";
-	}
-	   
+          for(int j=0; j<R; ++j, ++idx)
+            {
+              ostr << "\n\tv.values[" << idx << "]=" 
+                   << "custom_data" << N << swizzle[j] << ";";
+            }
+        }
+
       ostr << "\n}\n";
     }
   else
@@ -323,6 +336,7 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
    */
   new_specifier->append_vertex_shader_source()
     .absorb(fs_source->m_vertex_processor[v])
+    .add_source(ostr.str(), WRATHGLShader::from_string)
     .absorb(vertex_shader_source());
   
   new_specifier->append_fragment_shader_source()

@@ -992,10 +992,10 @@ namespace
         and we want the "center" texel, so it is
         given by:
 
-        (texel + 0.5)/255.0
+        (texel + 0.5)/256.0
       */
       t=static_cast<float>(loc.first.y());
-      n=(0.5f + t)/255.0f;
+      n=(0.5f + t)/256.0f;
       m_custom_float_data.push_back(n);
     }
     
@@ -1509,6 +1509,8 @@ common_data_type(void):
             }
           #endif
         }
+
+      m_glyph_glsl[i].m_custom_data_use.push_back(0);
 
       m_glyph_glsl[i].m_global_names.push_back("wrath_curve_analytic_font_compute_distance");
       m_glyph_glsl[i].m_global_names.push_back("wrath_CurveAnalyticTexCoord_Position");
