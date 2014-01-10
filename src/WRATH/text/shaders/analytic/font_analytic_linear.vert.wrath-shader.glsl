@@ -27,6 +27,6 @@ void pre_compute_glyph(in vec2 glyph_position,
   mediump vec2 pp;
 
   pp=glyph_bottom_left + glyph_position;
-  wrath_AnalyticTexCoord_Position.zw=pp;
+  wrath_AnalyticTexCoord_Position.zw=glyph_position;
   wrath_AnalyticTexCoord_Position.xy=pp*glyph_texture_reciprocal_size;
 }
