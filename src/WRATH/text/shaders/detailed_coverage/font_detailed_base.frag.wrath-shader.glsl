@@ -33,7 +33,8 @@ wrath_detailed_compute_coverage(in vec2 GlyphCoordinate,
 
   #if defined(WRATH_DERIVATIVES_SUPPORTED)
   {
-    mediump float sc, dx, dy;
+    mediump float sc;
+    mediump vec2 dx, dy;
 
     /*
       dx and dy give derivatives
@@ -46,7 +47,7 @@ wrath_detailed_compute_coverage(in vec2 GlyphCoordinate,
      */
     dx=dFdx(GlyphCoordinate);
     dy=dFdy(GlyphCoordinate);
-    sc=clamp(inversesqrt(dx*dy + dy*dy), 0.0, 1.0);
+    sc=clamp(inversesqrt( dot(dx,dx) + dot(dy,dy) ), 0.0, 1.0);
     idx_tex=vec2(sc, GlyphIndex);
   }
   #else
