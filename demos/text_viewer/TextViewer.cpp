@@ -1253,12 +1253,12 @@ TextViewer(cmd_line_type &cmd_line):
   if(cmd_line.m_use_font_config.m_value)
     {
       spec=WRATHFontFetch::font_handle(WRATHFontFetch::FontProperties()
-				       .family_name(cmd_line.m_font_name.m_value));
+                                       .family_name(cmd_line.m_font_name.m_value));
     }
   else
     {
       spec=WRATHFontFetch::font_handle(cmd_line.m_font_name.m_value,
-				       cmd_line.m_font_face_index.m_value);
+                                       cmd_line.m_font_face_index.m_value);
     }
 
   if(!spec.valid())
@@ -1267,14 +1267,14 @@ TextViewer(cmd_line_type &cmd_line):
     }
 
   m_font=fetcher.m_font_via_resource(cmd_line.m_font_size.m_value,
-				     spec->name(), 
-				     spec->face_index());
+                                     spec->name(), 
+                                     spec->face_index());
 
   if(m_font==NULL)
     {
       //load a fail safe value:
       m_font=fetcher.m_font_via_resource(cmd_line.m_font_size.m_value,
-					 WRATHFontFetch::default_font()->name(), 
+                                         WRATHFontFetch::default_font()->name(), 
                                          WRATHFontFetch::default_font()->face_index());
     }
 
@@ -1676,7 +1676,7 @@ update_page_animation(void)
              transformation_node().values().m_transformation;
 
           m_current_display_contents->container().visible(true);
-	  m_need_to_update_culling=true;
+          m_need_to_update_culling=true;
           m_page_animation_time.restart();       
           m_page_animation_stage=page_appearing;         
 
@@ -1877,20 +1877,20 @@ paint(void)
   if(m_need_to_update_culling)
     {
       /*
-	We put the update culling AFTER signaling
-	completing a simulation frame because
-	the culling code in FileData.cpp needs
-	the transformation from the screen to
-	the node (FileData::transformation_node()).
-	That value is updated when the signal
-	complete simulation frame is fired.
+        We put the update culling AFTER signaling
+        completing a simulation frame because
+        the culling code in FileData.cpp needs
+        the transformation from the screen to
+        the node (FileData::transformation_node()).
+        That value is updated when the signal
+        complete simulation frame is fired.
 
-	TODO: change from using a function
-	update_culling to creating the TextChunk
-	objects' WRATHLayer object with a
-	WRATHLayerClipDrawer which does not
-	draw but does the computation with
-	m_culling_window to skip it's WRATHLayer
+        TODO: change from using a function
+        update_culling to creating the TextChunk
+        objects' WRATHLayer object with a
+        WRATHLayerClipDrawer which does not
+        draw but does the computation with
+        m_culling_window to skip it's WRATHLayer
        */
       m_need_to_update_culling=false;
       m_current_display_contents->update_culling(m_culling_window, m_disable_culling);

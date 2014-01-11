@@ -940,12 +940,12 @@ generate_font(const cmd_line_type &cmd_line)
   if(cmd_line.m_use_font_config.m_value)
     {
       spec=WRATHFontFetch::font_handle(WRATHFontFetch::FontProperties()
-				       .family_name(cmd_line.m_font_name.m_value));
+                                       .family_name(cmd_line.m_font_name.m_value));
     }
   else
     {
       spec=WRATHFontFetch::font_handle(cmd_line.m_font_name.m_value,
-				       cmd_line.m_font_face_index.m_value);
+                                       cmd_line.m_font_face_index.m_value);
     }
 
   if(!spec.valid())
@@ -953,7 +953,7 @@ generate_font(const cmd_line_type &cmd_line)
       spec=WRATHFontFetch::default_font();
     }
   m_font=fetcher(cmd_line.m_font_size.m_value, 
-		 spec->name(), spec->face_index());
+                 spec->name(), spec->face_index());
 }
 
 void

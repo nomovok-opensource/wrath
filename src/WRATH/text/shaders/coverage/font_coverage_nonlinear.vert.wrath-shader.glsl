@@ -18,9 +18,9 @@
 
 shader_out mediump vec2 wrath_CoverageFieldBottomLeft;
 void pre_compute_glyph(in vec2 glyph_position, 
-		       in vec2 glyph_bottom_left,
-		       in vec2 glyph_size,
-		       in vec2 glyph_texture_reciprocal_size)
+                       in vec2 glyph_bottom_left,
+                       in vec2 glyph_size,
+                       in vec2 glyph_texture_reciprocal_size)
 {
   wrath_CoverageFieldBottomLeft=glyph_bottom_left;
 }

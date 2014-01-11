@@ -36,8 +36,8 @@
   {
     WRATH_REPEAT_GRADIENT_UNDERLYING_GRADIENT_pre_compute();
     WRATH_REPEAT_GRADIENT_VARYING_LABEL=vec4(fetch_node_value(WRATH_GRADIENT_window_x),
-					     fetch_node_value(WRATH_GRADIENT_window_y),
-					     fetch_node_value(WRATH_GRADIENT_window_delta_x),
-					     fetch_node_value(WRATH_GRADIENT_window_delta_y));
+                                             fetch_node_value(WRATH_GRADIENT_window_y),
+                                             fetch_node_value(WRATH_GRADIENT_window_delta_x),
+                                             fetch_node_value(WRATH_GRADIENT_window_delta_y));
   }
 #endif

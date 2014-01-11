@@ -40,17 +40,17 @@
   TYPE GL type, such as GLfloat
   COUNT one of {1,2,3,4}
  */
-#define WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, COUNT)		\
+#define WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, COUNT)            \
   inline void WRATHglUniform##COUNT##v(int location, GLsizei count, const TYPE *v) \
-  {									\
-    glUniform##COUNT##GLFN##v(location, count, v);			\
-  }									\
-  inline void WRATHglUniform(int location, const vecN<TYPE, COUNT> &v)	\
-  {									\
-    WRATHglUniform##COUNT##v(location, 1, &v[0]);			\
-  }									\
+  {                                                                     \
+    glUniform##COUNT##GLFN##v(location, count, v);                      \
+  }                                                                     \
+  inline void WRATHglUniform(int location, const vecN<TYPE, COUNT> &v)  \
+  {                                                                     \
+    WRATHglUniform##COUNT##v(location, 1, &v[0]);                       \
+  }                                                                     \
   inline void WRATHglUniform(int location, GLsizei count, const vecN<TYPE, COUNT> *v) \
-  {									\
+  {                                                                     \
     WRATHglUniform##COUNT##v(location, count, reinterpret_cast<const TYPE*>(v)); \
   }
 
@@ -62,18 +62,18 @@
   GLFN one of {d,f,i,ui}
   TYPE GL type, such as GLfloat
  */
-#define WRATH_GL_UNIFORM_IMPL(GLFN, TYPE)				\
-  WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, 1)				\
-  WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, 2)				\
-  WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, 3)				\
-  WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, 4)				\
-  inline void WRATHglUniform(int location, TYPE v)			\
-  {									\
-    glUniform1##GLFN(location, v);					\
-  }									\
+#define WRATH_GL_UNIFORM_IMPL(GLFN, TYPE)                               \
+  WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, 1)                              \
+  WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, 2)                              \
+  WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, 3)                              \
+  WRATH_GL_UNIFORM_IMPL_CNT(GLFN, TYPE, 4)                              \
+  inline void WRATHglUniform(int location, TYPE v)                      \
+  {                                                                     \
+    glUniform1##GLFN(location, v);                                      \
+  }                                                                     \
   inline void WRATHglUniform(int location, GLsizei count, const TYPE *v) \
-  {									\
-    WRATHglUniform1v(location, count, v);				\
+  {                                                                     \
+    WRATHglUniform1v(location, count, v);                               \
   }
 
 /*
@@ -82,14 +82,14 @@
   GLFN: one of {f,d}
   TYPE: one of {GLfloat, GLdouble}
 */
-#define WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, A)		\
+#define WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, A)          \
   inline void WRATHglUniform(int location, GLsizei count, const matrixNxM<A,A,TYPE> *matrices, bool transposed=false) \
-  {									\
+  {                                                                     \
     glUniformMatrix##A##GLFN##v(location, count, transposed?GL_TRUE:GL_FALSE, reinterpret_cast<const TYPE*>(matrices)); \
-  }									\
+  }                                                                     \
   inline void WRATHglUniform(int location, const matrixNxM<A,A,TYPE> &matrix, bool transposed=false) \
-  {									\
-    WRATHglUniform(location, 1, &matrix, transposed);			\
+  {                                                                     \
+    WRATHglUniform(location, 1, &matrix, transposed);                   \
   }
 
 
@@ -101,19 +101,19 @@
     GLFN: one of {f,d}
     TYPE: one of {GLfloat, GLdouble}
  */
-#define WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, A,B)	\
+#define WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, A,B)    \
   inline void WRATHglUniform(int location, GLsizei count, const matrixNxM<A,B,TYPE> *matrices, bool transposed=false) \
-  {									\
+  {                                                                     \
     glUniformMatrix##A##x##B##GLFN##v(location, count, transposed?GL_TRUE:GL_FALSE, reinterpret_cast<const TYPE*>(matrices)); \
-  }									\
+  }                                                                     \
   inline void WRATHglUniform(int location, const matrixNxM<A,B,TYPE> &matrix, bool transposed=false) \
-  {									\
-    WRATHglUniform(location, 1, &matrix, transposed);			\
+  {                                                                     \
+    WRATHglUniform(location, 1, &matrix, transposed);                   \
   }
 
 
 #else
-  #define WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, A, B)	
+  #define WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, A, B) 
 #endif
 
 
@@ -123,7 +123,7 @@
   GLFN: one of {f,d}
   TYPE: one of {GLfloat, GLdouble}
 */
-#define WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL(GLFN, TYPE)	 \
+#define WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL(GLFN, TYPE)  \
   WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, 2) \
   WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, 3) \
   WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL_DIM(GLFN, TYPE, 4) 
@@ -134,13 +134,13 @@
   GLFN: one of {f,d}
   TYPE: one of {GLfloat, GLdouble}
 */
-#define WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL(GLFN, TYPE)		\
-  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,2,3)		\
-  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,2,4)		\
-  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,3,2)		\
-  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,3,4)		\
-  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,4,2)		\
-  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,4,3)		
+#define WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL(GLFN, TYPE)             \
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,2,3)            \
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,2,4)            \
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,3,2)            \
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,3,4)            \
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,4,2)            \
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL_DIM(GLFN,TYPE,4,3)            
   
 
 /*
@@ -148,9 +148,9 @@
   GLFN: one of {f,d}
   TYPE: one of {GLfloat, GLdouble}
 */
-#define WRATH_GL_UNIFORM_MATRIX_IMPL(GLFN, TYPE)	\
-  WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL(GLFN, TYPE)	\
-  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL(GLFN, TYPE)	
+#define WRATH_GL_UNIFORM_MATRIX_IMPL(GLFN, TYPE)        \
+  WRATH_GL_UNIFORM_SQUARE_MATRIX_IMPL(GLFN, TYPE)       \
+  WRATH_GL_UNIFORM_NON_SQUARE_MATRIX_IMPL(GLFN, TYPE)   
 
 
 #ifdef WRATH_GL_SUPPORT_DOUBLE_AND_UINT_UNIFORMS

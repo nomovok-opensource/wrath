@@ -55,8 +55,8 @@ compute_coverage(in vec2 glyph_position, in vec2 glyph_recirpocal_size)
     scr=sqrt( (dot(dx,dx) + dot(dy,dy))/2.0 );
   
     return smoothstep(0.5 - 0.2*scr,
-		      0.5 + 0.2*scr,
-		      rr);
+                      0.5 + 0.2*scr,
+                      rr);
   }
   #else
   {

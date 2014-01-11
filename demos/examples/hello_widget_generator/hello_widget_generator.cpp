@@ -43,11 +43,11 @@
 #include "WRATHWidgetGenerator.hpp"
 
 typedef WRATHLayerNodeValuePackerTextureT<WRATHLayerNodeValuePackerTexture::fp32_texture,
-					  WRATHLayerNodeValuePackerTexture::two_channel_texture> two_channel_fp32; 
+                                          WRATHLayerNodeValuePackerTexture::two_channel_texture> two_channel_fp32; 
 
 typedef WRATHLayerNodeValuePackerUniformArrays NodePacker;
 //typedef WRATHLayerNodeValuePackerTextureT<WRATHLayerNodeValuePackerTexture::fp32_texture,
-//					  WRATHLayerNodeValuePackerTexture::two_channel_texture> NodePacker;
+//                                        WRATHLayerNodeValuePackerTexture::two_channel_texture> NodePacker;
 
 //typedef WRATHLayerNodeValuePackerTextureFP32 NodePacker;
 //typedef WRATHLayerNodeValuePackerHybrid<WRATHLayerNodeValuePackerUniformArrays, WRATHLayerNodeValuePackerTextureFP16> NodePacker;
@@ -647,9 +647,9 @@ paint(WidgetGenerator *painter)
                    m_rect_clipper,
                    vec2(100.0f, 100.0f))
         
-	.clip_filled_shape(WRATHWidgetGenerator::clip_inside,
-			   m_shape_clipper, 
-			   WRATHWidgetGenerator::shape_value(m_shapes[0]))
+        .clip_filled_shape(WRATHWidgetGenerator::clip_inside,
+                           m_shape_clipper, 
+                           WRATHWidgetGenerator::shape_value(m_shapes[0]))
         .push_node(m_clipper_mover)
         .clip_text(WRATHWidgetGenerator::clip_outside,
                    m_text_clipper,

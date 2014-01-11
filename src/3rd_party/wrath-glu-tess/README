@@ -82,12 +82,12 @@ The interface
 
   If "fn" is NULL, any previously defined callback is discarded.
   
-  The callbacks used to provide output are:	/* which == */
+  The callbacks used to provide output are:     /* which == */
 
-     void begin( GLenum type );			/* WRATH_GLU_TESS_BEGIN */
-     void edgeFlag( WRATH_GLUboolean flag );		/* WRATH_GLU_TESS_EDGE_FLAG */
-     void vertex( void *data );			/* WRATH_GLU_TESS_VERTEX */
-     void end( void );				/* WRATH_GLU_TESS_END */
+     void begin( GLenum type );                 /* WRATH_GLU_TESS_BEGIN */
+     void edgeFlag( WRATH_GLUboolean flag );            /* WRATH_GLU_TESS_EDGE_FLAG */
+     void vertex( void *data );                 /* WRATH_GLU_TESS_VERTEX */
+     void end( void );                          /* WRATH_GLU_TESS_END */
 
   Any of the callbacks may be left undefined; if so, the corresponding
   information will not be supplied during rendering.
@@ -112,7 +112,7 @@ The interface
   Other Callbacks
   ---------------
 
-   void mesh( GLUmesh *mesh );			/* WRATH_GLU_TESS_MESH */
+   void mesh( GLUmesh *mesh );                  /* WRATH_GLU_TESS_MESH */
 
    - Returns an explicit mesh, represented using the quad-edge structure
      (Guibas/Stolfi '85).  Other implementations of this interface might
@@ -120,7 +120,7 @@ The interface
      SGI extension.  When the mesh is no longer needed, it should be freed
      using
 
-	void gluDeleteMesh( GLUmesh *mesh );
+        void gluDeleteMesh( GLUmesh *mesh );
 
      There is a brief description of this data structure in the include
      file "mesh.h".  For the full details, see L. Guibas and J. Stolfi,
@@ -131,14 +131,14 @@ The interface
      available at the Stanford bookstore (and taught during the fall
      quarter).
 
-   void error( GLenum errno );			/* WRATH_GLU_TESS_ERROR */
+   void error( GLenum errno );                  /* WRATH_GLU_TESS_ERROR */
 
-   - errno is one of	WRATH_GLU_TESS_MISSING_BEGIN_POLYGON,
-			WRATH_GLU_TESS_MISSING_END_POLYGON,
-			WRATH_GLU_TESS_MISSING_BEGIN_CONTOUR,
-			WRATH_GLU_TESS_MISSING_END_CONTOUR,
-			WRATH_GLU_TESS_COORD_TOO_LARGE,
-			WRATH_GLU_TESS_NEED_COMBINE_CALLBACK
+   - errno is one of    WRATH_GLU_TESS_MISSING_BEGIN_POLYGON,
+                        WRATH_GLU_TESS_MISSING_END_POLYGON,
+                        WRATH_GLU_TESS_MISSING_BEGIN_CONTOUR,
+                        WRATH_GLU_TESS_MISSING_END_CONTOUR,
+                        WRATH_GLU_TESS_COORD_TOO_LARGE,
+                        WRATH_GLU_TESS_NEED_COMBINE_CALLBACK
 
      The first four are obvious.  The interface recovers from these
      errors by inserting the missing call(s).
@@ -153,8 +153,8 @@ The interface
      callback (below) was not provided.  No output will be generated.
 
 
-   void combine( GLUcoord coords[3], void *data[4],	/* WRATH_GLU_TESS_COMBINE */
-		 GLUcoord weight[4], void **outData );
+   void combine( GLUcoord coords[3], void *data[4],     /* WRATH_GLU_TESS_COMBINE */
+                 GLUcoord weight[4], void **outData );
 
    - When the algorithm detects an intersection, or wishes to merge
      features, it needs to create a new vertex.  The vertex is defined
@@ -202,11 +202,11 @@ The interface
 
     - WRATH_GLU_TESS_WINDING_RULE.  Possible values:
 
-	  WRATH_GLU_TESS_WINDING_ODD
-	  WRATH_GLU_TESS_WINDING_NONZERO
-	  WRATH_GLU_TESS_WINDING_POSITIVE
-	  WRATH_GLU_TESS_WINDING_NEGATIVE
-	  WRATH_GLU_TESS_WINDING_ABS_GEQ_TWO
+          WRATH_GLU_TESS_WINDING_ODD
+          WRATH_GLU_TESS_WINDING_NONZERO
+          WRATH_GLU_TESS_WINDING_POSITIVE
+          WRATH_GLU_TESS_WINDING_NEGATIVE
+          WRATH_GLU_TESS_WINDING_ABS_GEQ_TWO
 
       The input contours parition the plane into regions.  A winding
       rule determines which of these regions are inside the polygon.
@@ -256,7 +256,7 @@ The interface
 
 
    void gluTessNormal( wrath_GLUtesselator *tess,
-		      GLUcoord x, GLUcoord y, GLUcoord z )
+                      GLUcoord x, GLUcoord y, GLUcoord z )
 
     - Lets the user supply the polygon normal, if known.  All input data
       is projected into a plane perpendicular to the normal before
@@ -286,7 +286,7 @@ The interface
   The preferred interface is the one described above.  The following
   routines are obsolete, and are provided only for backward compatibility:
 
-    typedef wrath_GLUtesselator GLUtriangulatorObj;	/* obsolete name */
+    typedef wrath_GLUtesselator GLUtriangulatorObj;     /* obsolete name */
 
     void gluBeginPolygon( wrath_GLUtesselator *tess );
     void gluNextContour( wrath_GLUtesselator *tess, GLenum type );
@@ -397,14 +397,14 @@ Comparison with the GLU tesselator
 
   Key to the statistics:
 
-	vert		number of input vertices on all contours
-	cntr		number of input contours
-	tri		number of triangles in all output primitives
-	strip		number of triangle strips
-	fan		number of triangle fans
-	ind		number of independent triangles
-	ms		number of milliseconds for tesselation
-			(on a 150MHz R4400 Indy)
+        vert            number of input vertices on all contours
+        cntr            number of input contours
+        tri             number of triangles in all output primitives
+        strip           number of triangle strips
+        fan             number of triangle fans
+        ind             number of independent triangles
+        ms              number of milliseconds for tesselation
+                        (on a 150MHz R4400 Indy)
 
   Convex polygon examples:
 

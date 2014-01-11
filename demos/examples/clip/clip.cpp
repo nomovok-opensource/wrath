@@ -362,7 +362,7 @@ ClipExample::
 move_widget(Node *n, vec2 delta)
 {
   vec2 pos;
-	
+        
   pos=n->position() + delta;
   pos=vec2(fmod(pos.x(), width()), fmod(pos.y(), height()));
   n->position(pos);

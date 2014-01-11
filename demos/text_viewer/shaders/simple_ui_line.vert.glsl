@@ -41,5 +41,5 @@ shader_main(void)
   clip_pos=compute_gl_position_and_apply_clipping(vec3(rotated_pos, pos.z));
 
   gl_Position=vec4(clip_pos.xy, 
-		   (1.0-animation_fx_interpol)*clip_pos.zw); 
+                   (1.0-animation_fx_interpol)*clip_pos.zw); 
 }

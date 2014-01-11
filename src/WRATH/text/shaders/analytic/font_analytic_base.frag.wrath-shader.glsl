@@ -39,7 +39,7 @@ uniform mediump sampler2D wrath_AnalyticPositionTexture;
  */
 mediump float
 wrath_analytic_font_compute_distance(in vec2 GlyphTextureCoordinate,
-				     in vec2 GlyphCoordinate)
+                                     in vec2 GlyphCoordinate)
 {
   mediump vec4 tex_v, X_Y;  
   mediump vec2 p, Cv, dL_dM;

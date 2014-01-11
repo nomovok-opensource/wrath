@@ -188,7 +188,7 @@ init_sdl(void)
 
     if(m_libGL.set_by_command_line())
       {
-	SDL_GL_LoadLibrary(m_libGL.m_value.c_str());
+        SDL_GL_LoadLibrary(m_libGL.m_value.c_str());
       }
 
     /*

@@ -41,8 +41,8 @@ shader_main(void)
 {
   
   tex_color=vec4(fetch_node_value(color_red),
-		 fetch_node_value(color_green), 
-		 fetch_node_value(color_blue), 
+                 fetch_node_value(color_green), 
+                 fetch_node_value(color_blue), 
                  fetch_node_value(color_alpha));
   tex_color*=(1.0-2.0*animation_fx_interpol);
 
@@ -59,6 +59,6 @@ shader_main(void)
   clip_pos=compute_gl_position_and_apply_clipping(vec3(tpos, -1.0));
 
   gl_Position=vec4(clip_pos.xy,
-		   (1.0-animation_fx_interpol)*clip_pos.zw);
+                   (1.0-animation_fx_interpol)*clip_pos.zw);
   
 }

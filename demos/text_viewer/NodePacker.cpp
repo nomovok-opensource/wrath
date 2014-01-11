@@ -60,7 +60,7 @@ namespace
     void
     add_actions(const SpecDataProcessedPayload::handle& payload,
                 const ProcessedActiveNodeValuesCollection &spec,
-		WRATHShaderSpecifier::ReservedBindings& reserved_bindings,
+                WRATHShaderSpecifier::ReservedBindings& reserved_bindings,
                 WRATHGLProgramOnBindActionArray& actions,
                 WRATHGLProgramInitializerArray& initers) const
     {

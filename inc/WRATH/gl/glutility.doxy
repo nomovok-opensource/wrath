@@ -78,7 +78,7 @@
   \tparam T an elementary GL type, such as GLfloat, GLint, etc
   \param location location of uniform, i.e. return value
                   of glGetUniformLocation
-  \param count number of elements from the array v to use		 
+  \param count number of elements from the array v to use                
   \param v array of values
  */
 template<typename T>
@@ -96,7 +96,7 @@ WRATHglUniform1v(int location, GLsizei count, const T *v);
   \tparam T an elementary GL type, such as GLfloat, GLint, etc
   \param location location of uniform, i.e. return value
                   of glGetUniformLocation
-  \param count number of elements from the array v to use		 
+  \param count number of elements from the array v to use                
   \param v array of values
  */
 template<typename T>
@@ -114,7 +114,7 @@ WRATHglUniform2v(int location, GLsizei count, const T *v);
   \tparam T an elementary GL type, such as GLfloat, GLint, etc
   \param location location of uniform, i.e. return value
                   of glGetUniformLocation
-  \param count number of elements from the array v to use		 
+  \param count number of elements from the array v to use                
   \param v array of values
  */
 template<typename T>
@@ -132,7 +132,7 @@ WRATHglUniform3v(int location, GLsizei count, const T *v);
   \tparam T an elementary GL type, such as GLfloat, GLint, etc
   \param location location of uniform, i.e. return value
                   of glGetUniformLocation
-  \param count number of elements from the array v to use		 
+  \param count number of elements from the array v to use                
   \param v array of values
  */
 template<typename T>

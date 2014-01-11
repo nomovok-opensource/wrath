@@ -32,10 +32,10 @@
     WRATH_REPEAT_GRADIENT_PREC vec2 q, f, dt, dp;
 
     dp=vec2(fetch_node_value(WRATH_GRADIENT_window_x),
-	    fetch_node_value(WRATH_GRADIENT_window_y));
+            fetch_node_value(WRATH_GRADIENT_window_y));
 
     dt=vec2(fetch_node_value(WRATH_GRADIENT_window_delta_x),
-	    fetch_node_value(WRATH_GRADIENT_window_delta_y));
+            fetch_node_value(WRATH_GRADIENT_window_delta_y));
 
     f=fract( (p-dp)/dt );
     q=dp + f*dt;

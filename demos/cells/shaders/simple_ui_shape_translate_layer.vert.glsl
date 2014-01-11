@@ -62,6 +62,6 @@ shader_main(void)
   tex_color=vec4(vv.rgb, 1.0);
   tex_color*=(1.0-2.0*animation_fx_interpol);
   gl_Position=vec4(clip_pos.xy, 
-		   (1.0-animation_fx_interpol)*clip_pos.zw);
+                   (1.0-animation_fx_interpol)*clip_pos.zw);
   
 }

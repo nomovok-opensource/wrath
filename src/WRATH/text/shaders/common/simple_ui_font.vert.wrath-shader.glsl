@@ -110,17 +110,17 @@ shader_main(void)
   
     wrath_font_shader_custom_data_func(custom_values_str);
     pre_compute_glyph(glyph_position,
-		      glyph_bottom_left_texel,
-		      glyph_size,
-		      reciprocal_texture_size,
-		      custom_values_str.values);
+                      glyph_bottom_left_texel,
+                      glyph_size,
+                      reciprocal_texture_size,
+                      custom_values_str.values);
   }  
   #else
   {
     pre_compute_glyph(glyph_position,
-		      glyph_bottom_left_texel,
-		      glyph_size,
-		      reciprocal_texture_size);
+                      glyph_bottom_left_texel,
+                      glyph_size,
+                      reciprocal_texture_size);
   }
   #endif
   

@@ -131,7 +131,7 @@ private:
     if(image!=NULL)
       {
          return_value->m_outer_radius=0.5f*std::min(image->size().x(),
-						    image->size().y());
+                                                    image->size().y());
       }
     else
       {
@@ -163,7 +163,7 @@ private:
 
   void
   move_node(int phase_offset, 
-	    Node *pnode, float delta_t);
+            Node *pnode, float delta_t);
 
   WRATHShaderBrushSourceHoard m_shader_hoard;
 

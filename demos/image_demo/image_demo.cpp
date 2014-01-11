@@ -936,12 +936,12 @@ DemoImage(cmd_line_type &pcmd_line):
   if(cmd_line.m_use_config_font.m_value)
     {
       spec=WRATHFontFetch::font_handle(WRATHFontFetch::FontProperties()
-				       .family_name(cmd_line.m_font_filename.m_value));
+                                       .family_name(cmd_line.m_font_filename.m_value));
     }
   else
     {
       spec=WRATHFontFetch::font_handle(cmd_line.m_font_filename.m_value,
-				       cmd_line.m_font_face_index.m_value);
+                                       cmd_line.m_font_face_index.m_value);
     }
 
   if(!spec.valid())
@@ -949,7 +949,7 @@ DemoImage(cmd_line_type &pcmd_line):
       spec=WRATHFontFetch::default_font();
     }
   pfont=fetcher(cmd_line.m_font_size.m_value, 
-		spec->name(), spec->face_index());
+                spec->name(), spec->face_index());
     
 
  

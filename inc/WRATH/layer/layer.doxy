@@ -390,7 +390,7 @@ protected:
 private:
   //m_local holds the transformation
   //from the parent node local coordinates
-  //to this node's local coordinates	
+  //to this node's local coordinates    
   CustomNodeExampleValues m_local;
 
   //m_global is to hold the transformation

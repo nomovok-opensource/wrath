@@ -43,11 +43,11 @@
 #include "WRATHWidgetGenerator.hpp"
 
 typedef WRATHLayerNodeValuePackerTextureT<WRATHLayerNodeValuePackerTexture::fp32_texture,
-					  WRATHLayerNodeValuePackerTexture::two_channel_texture> two_channel_fp32; 
+                                          WRATHLayerNodeValuePackerTexture::two_channel_texture> two_channel_fp32; 
 
 typedef WRATHLayerNodeValuePackerUniformArrays NodePacker;
 //typedef WRATHLayerNodeValuePackerTextureT<WRATHLayerNodeValuePackerTexture::fp32_texture,
-//					  WRATHLayerNodeValuePackerTexture::two_channel_texture> NodePacker;
+//                                        WRATHLayerNodeValuePackerTexture::two_channel_texture> NodePacker;
 
 //typedef WRATHLayerNodeValuePackerTextureFP32 NodePacker;
 //typedef WRATHLayerNodeValuePackerHybrid<WRATHLayerNodeValuePackerUniformArrays, WRATHLayerNodeValuePackerTextureFP16> NodePacker;

@@ -38,19 +38,19 @@ is_covered(void)
       f2=minified_is_covered();
       
       return (sc<MIX_FONT_SHADER)?
-	f1:f2;
+        f1:f2;
 
     }
     #else
     {
       if(sc<MIX_FONT_SHADER*MIX_FONT_SHADER)
-	{
-	  return native_is_covered();
-	}
+        {
+          return native_is_covered();
+        }
       else
-	{
-	  return minified_is_covered();
-	}
+        {
+          return minified_is_covered();
+        }
     }
     #endif 
   }
@@ -81,19 +81,19 @@ compute_coverage(void)
       f2=minified_compute_coverage();
       
       return (sc<MIX_FONT_SHADER)?
-	f1:f2;
+        f1:f2;
 
     }
     #else
     {
       if(sc<MIX_FONT_SHADER)
-	{
-	  return native_compute_coverage();
-	}
+        {
+          return native_compute_coverage();
+        }
       else
-	{
-	  return minified_compute_coverage();
-	}
+        {
+          return minified_compute_coverage();
+        }
     }
     #endif
   }

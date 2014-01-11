@@ -25,7 +25,7 @@ shader_in mediump float wrath_CurveAnalyticGlyphIndex;
 
 mediump float
 compute_coverage(in vec2 GlyphCoordinate,
-		 in vec2 glyph_recirpocal_size)
+                 in vec2 glyph_recirpocal_size)
 {
   mediump float d;
   mediump vec2 GlyphTextureCoordinate;
@@ -56,7 +56,7 @@ compute_coverage(in vec2 GlyphCoordinate,
 
 mediump float 
 is_covered(in vec2 GlyphCoordinate,
-	   in vec2 glyph_recirpocal_size)
+           in vec2 glyph_recirpocal_size)
 {
   mediump float d;
   mediump vec2 GlyphTextureCoordinate;

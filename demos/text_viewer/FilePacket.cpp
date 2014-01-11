@@ -2311,8 +2311,8 @@ change_font_qt(const Command &cmd, CommandData &cmd_data, bool push)
 
         new_font=m_fetcher.m_font_via_qt(fnt, pix_sz);
       #else
-	WRATHFontFetch::FontProperties in_spec;
-	WRATHFontFetch::font_handle out_spec;
+        WRATHFontFetch::FontProperties in_spec;
+        WRATHFontFetch::font_handle out_spec;
 
         in_spec.family_name(convert_percent_to_spaces(cmd.argument(0)));
         if(cmd.number_arguments()>=2
@@ -2322,7 +2322,7 @@ change_font_qt(const Command &cmd, CommandData &cmd_data, bool push)
           }
 
         out_spec=WRATHFontFetch::fetch_font_entry(in_spec);
-	if(out_spec.valid())
+        if(out_spec.valid())
           {
             new_font=m_fetcher.m_font_via_resource(pix_sz,
                                                out_spec->name(), 
@@ -2752,14 +2752,14 @@ add_image_column(const Command &cmd, CommandData &cmd_data)
   std::string filename(WRATHUtil::filename_fullpath(pfile.m_file_with_path));
       
   im=WRATHDemo::fetch_image(filename,
-			    WRATHImage::ImageFormat()
-			    .internal_format(GL_RGBA)
-			    .pixel_data_format(GL_RGBA)
-			    .pixel_type(GL_UNSIGNED_BYTE)
-			    .magnification_filter(m_magnification_image_filter)
-			    .minification_filter(m_minification_image_filter)
-			    .automatic_mipmap_generation(!m_manual_mipmap_generation),
-			    false);
+                            WRATHImage::ImageFormat()
+                            .internal_format(GL_RGBA)
+                            .pixel_data_format(GL_RGBA)
+                            .pixel_type(GL_UNSIGNED_BYTE)
+                            .magnification_filter(m_magnification_image_filter)
+                            .minification_filter(m_minification_image_filter)
+                            .automatic_mipmap_generation(!m_manual_mipmap_generation),
+                            false);
 
   if(im==NULL or im->size().x()<=0 or im->size().y()<=0)
     {
@@ -2816,14 +2816,14 @@ add_image(const Command &cmd, CommandData &cmd_data)
   std::string filename(WRATHUtil::filename_fullpath(pfile.m_file_with_path));
   
   im=WRATHDemo::fetch_image(filename,
-			    WRATHImage::ImageFormat()
-			    .internal_format(GL_RGBA)
-			    .pixel_data_format(GL_RGBA)
-			    .pixel_type(GL_UNSIGNED_BYTE)
-			    .magnification_filter(m_magnification_image_filter)
-			    .minification_filter(m_minification_image_filter)
-			    .automatic_mipmap_generation(!m_manual_mipmap_generation),
-			    false);
+                            WRATHImage::ImageFormat()
+                            .internal_format(GL_RGBA)
+                            .pixel_data_format(GL_RGBA)
+                            .pixel_type(GL_UNSIGNED_BYTE)
+                            .magnification_filter(m_magnification_image_filter)
+                            .minification_filter(m_minification_image_filter)
+                            .automatic_mipmap_generation(!m_manual_mipmap_generation),
+                            false);
   
   
   if(im==NULL or im->size().x()<1 or im->size().y()<1)
