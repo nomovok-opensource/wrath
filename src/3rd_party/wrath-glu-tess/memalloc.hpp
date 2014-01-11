@@ -38,18 +38,18 @@
 #include <stdlib.h>
 #include "WRATHmalloc.hpp"
 
-#define memRealloc	WRATHrealloc
-#define memFree		WRATHfree
+#define memRealloc      WRATHrealloc
+#define memFree         WRATHfree
 
-#define memInit		__wrath__gl_memInit
-/*extern void		__wrath__gl_memInit( size_t );*/
-extern int		__wrath__gl_memInit( size_t );
+#define memInit         __wrath__gl_memInit
+/*extern void           __wrath__gl_memInit( size_t );*/
+extern int              __wrath__gl_memInit( size_t );
 
 #ifndef MEMORY_DEBUG
-#define memAlloc	WRATHmalloc
+#define memAlloc        WRATHmalloc
 #else
-#define memAlloc	__wrath__gl_memAlloc
-extern void *		__wrath__gl_memAlloc( size_t );
+#define memAlloc        __wrath__gl_memAlloc
+extern void *           __wrath__gl_memAlloc( size_t );
 #endif
 
 #endif

@@ -38,9 +38,9 @@ namespace
   add_flag(bool b, const char *macro, WRATHGLShader::shader_source &dest)
     {
       if(b)
-	{
+        {
           dest.add_macro(macro);
-	}
+        }
     }
 
   void
@@ -268,7 +268,7 @@ fetch_font_shader(const WRATHShaderBrush &pbrush, enum WRATHBaseSource::precisio
     }
 
   for(std::map<GLenum, WRATHGLShader::shader_source>::const_iterator
-	iter=m_src.begin(), end=m_src.end(); iter!=end; ++iter)
+        iter=m_src.begin(), end=m_src.end(); iter!=end; ++iter)
     {
       p->append_shader_source(iter->first).absorb(iter->second);
     }
@@ -345,7 +345,7 @@ fetch(const WRATHShaderBrush &pbrush, enum WRATHBaseSource::precision_t prec,
     }
 
   for(std::map<GLenum, WRATHGLShader::shader_source>::const_iterator
-	iter=m_src.begin(), end=m_src.end(); iter!=end; ++iter)
+        iter=m_src.begin(), end=m_src.end(); iter!=end; ++iter)
     {
       p->append_shader_source(iter->first).absorb(iter->second);
     }

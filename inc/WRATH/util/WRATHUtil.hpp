@@ -404,7 +404,7 @@ namespace WRATHUtil
   inline
   uint32_t
   apply_bit_flag(uint32_t input_value, bool to_apply, 
-		 uint32_t bitfield_value)
+                 uint32_t bitfield_value)
   {
     return to_apply?
       input_value|bitfield_value:

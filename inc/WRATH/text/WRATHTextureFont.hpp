@@ -822,8 +822,8 @@ public:
       void pre_compute_glyph(in vec2 glyph_position, 
                              in vec2 glyph_bottom_left,
                              in vec2 glyph_size,
-	  		     in vec2 glyph_texture_reciprocal_size,
-			     in float glyph_custom_data[])
+                             in vec2 glyph_texture_reciprocal_size,
+                             in float glyph_custom_data[])
       \endcode
       where glyph_position is the position in texels,
       glyph_bottom_left is from \ref glyph_data_type::texel_lower_left(),
@@ -855,8 +855,8 @@ public:
       \code
       void pre_compute_glyph(in vec2 glyph_bottom_left,
                              in vec2 glyph_size,
-	  		     in vec2 glyph_texture_reciprocal_size,
-			     in float glyph_custom_data[])
+                             in vec2 glyph_texture_reciprocal_size,
+                             in float glyph_custom_data[])
       \endcode
       where glyph_bottom_left is from \ref glyph_data_type::texel_lower_left(),
       glyph_size are is from \ref glyph_data_type::texel_size(),
@@ -891,24 +891,24 @@ public:
     */
     enum glyph_position_linearity
       {
-	/*!
-	  Indicates position within glyph is
-	  linear and thus computed entirely
-	  from vertex shader
-	 */
-	linear_glyph_position,
+        /*!
+          Indicates position within glyph is
+          linear and thus computed entirely
+          from vertex shader
+         */
+        linear_glyph_position,
 
-	/*!
-	  Indicates position within glyph is
-	  non-linear and computed from fragment
-	  shader
-	 */
-	nonlinear_glyph_position,
+        /*!
+          Indicates position within glyph is
+          non-linear and computed from fragment
+          shader
+         */
+        nonlinear_glyph_position,
 
-	/*!
-	  Number linearity types
-	 */
-	num_linearity_types
+        /*!
+          Number linearity types
+         */
+        num_linearity_types
       };
 
     /*!\typedef source_set
@@ -977,12 +977,12 @@ public:
     \param pname resource name for the font
     \param pfetcher function pointer with which to construct
                     sibling fonts, i.e texture fonts of the exact 
-		    same type sourced from different 
-		    WRATHFontDatabase::Font::const_handle
-		    objects
+                    same type sourced from different 
+                    WRATHFontDatabase::Font::const_handle
+                    objects
    */
   WRATHTextureFont(const WRATHTextureFontKey &pname,
-		   font_fetcher_t pfetcher);
+                   font_fetcher_t pfetcher);
 
   virtual
   ~WRATHTextureFont();

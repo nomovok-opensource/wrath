@@ -90,8 +90,8 @@ public:
 
       /*!
         Custom data location; attribute packer
-	supports up to -one- custom data value
-	from the glyph (!)
+        supports up to -one- custom data value
+        from the glyph (!)
        */
       custom_data_location
     };
@@ -151,7 +151,7 @@ public:
   virtual
   void
   generate_custom_data_glsl(WRATHGLShader::shader_source &out_src,
-			    int number_custom_data_to_use) const;
+                            int number_custom_data_to_use) const;
 
   virtual
   void
@@ -159,14 +159,14 @@ public:
                  const glyph_data &in_glyph,
                  const vec2 &normalized_glyph_coordinate_float,
                  vecN<GLshort,2> normalized_glyph_coordinate_short,
-		 const std::vector<int> &custom_data_use,
+                 const std::vector<int> &custom_data_use,
                  c_array<uint8_t> packing_destination,
                  const PackerState &packer_state) const;
  
   virtual
   void
   attribute_key(WRATHAttributeStoreKey &pkey,
-		int number_custom_data_to_use) const;
+                int number_custom_data_to_use) const;
   
 private:
 

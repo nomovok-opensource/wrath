@@ -29,10 +29,10 @@
 // WRATHLayerClipDrawerMesh methods
 WRATHLayerClipDrawerMesh::
 WRATHLayerClipDrawerMesh(WRATHGLProgram *prog,
-			 const WRATHTripleBufferEnabler::handle &h,
-			 const std::string &zdraworder_uniform_name,
-			 const std::string &matrix_uniform_name,
-			 const std::string &attr_name):
+                         const WRATHTripleBufferEnabler::handle &h,
+                         const std::string &zdraworder_uniform_name,
+                         const std::string &matrix_uniform_name,
+                         const std::string &attr_name):
   m_z_depth_value(0),
   m_program(prog),
   m_z_depth_value_name(zdraworder_uniform_name),
@@ -181,8 +181,8 @@ flush_vertices(int begin, int end)
 void
 WRATHLayerClipDrawerMesh::
 draw_region(bool clear_z, 
-	    const DrawStateElement &layer,
-	    const_c_array<DrawStateElement> /*draw_stack*/) const
+            const DrawStateElement &layer,
+            const_c_array<DrawStateElement> /*draw_stack*/) const
 {
   float zvalue;
 
@@ -234,8 +234,8 @@ draw_region(bool clear_z,
 WRATHLayerClipDrawer::DrawStateElementClipping
 WRATHLayerClipDrawerMesh::
 clip_mode(WRATHLayer*,
-	  const DrawStateElementTransformations&,
-	  const_c_array<DrawStateElement>) const
+          const DrawStateElementTransformations&,
+          const_c_array<DrawStateElement>) const
 {
   return WRATHLayerClipDrawer::layer_clipped_hierarchy;
 }

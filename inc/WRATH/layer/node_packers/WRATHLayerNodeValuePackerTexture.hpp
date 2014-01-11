@@ -76,20 +76,20 @@ public:
   enum texture_channel_type
     {
       /*!
-	4 channel texture, thus
-	4 node values per texel
+        4 channel texture, thus
+        4 node values per texel
        */
       four_channel_texture,
 
       /*!
-	2 channel texture, thus
-	2 node values per texel
+        2 channel texture, thus
+        2 node values per texel
        */
       two_channel_texture,
 
       /*!
-	1 channel texture, thus
-	1 node values per texel
+        1 channel texture, thus
+        1 node values per texel
        */
       one_channel_texture,
     };
@@ -101,8 +101,8 @@ public:
     \param spec passed to ctor of \ref WRATHLayerNodeValuePackerBase    
    */ 
   WRATHLayerNodeValuePackerTexture(WRATHLayerBase *layer,
-				   const SpecDataProcessedPayload::const_handle &payload,
-				   const ProcessedActiveNodeValuesCollection &spec);
+                                   const SpecDataProcessedPayload::const_handle &payload,
+                                   const ProcessedActiveNodeValuesCollection &spec);
 
   virtual
   ~WRATHLayerNodeValuePackerTexture();
@@ -123,7 +123,7 @@ public:
   static
   const WRATHLayerNodeValuePackerBase::function_packet&
   functions(enum texture_packing_type type, 
-	    enum texture_channel_type ch=four_channel_texture);
+            enum texture_channel_type ch=four_channel_texture);
 
 protected:
 
@@ -146,7 +146,7 @@ private:
   \tparam ch specifies the number of node values per texel
  */ 
 template<enum WRATHLayerNodeValuePackerTexture::texture_packing_type type,
-	 enum WRATHLayerNodeValuePackerTexture::texture_channel_type ch=WRATHLayerNodeValuePackerTexture::four_channel_texture>
+         enum WRATHLayerNodeValuePackerTexture::texture_channel_type ch=WRATHLayerNodeValuePackerTexture::four_channel_texture>
 class WRATHLayerNodeValuePackerTextureT:public WRATHLayerNodeValuePackerTexture
 {
 public:

@@ -68,7 +68,7 @@ namespace
 
     explicit
     Payload(bool is_fp16, 
-	    enum WRATHLayerNodeValuePackerTexture::texture_channel_type ch):
+            enum WRATHLayerNodeValuePackerTexture::texture_channel_type ch):
       WRATHLayerNodeValuePackerBase::SpecDataProcessedPayload(),
       m_texture_unit(GL_INVALID_ENUM),
       m_texture_width(0),
@@ -93,7 +93,7 @@ namespace
 
 
     NodePackerTextureFunctions(const std::string &prec_string, 
-			       enum WRATHLayerNodeValuePackerTexture::texture_channel_type ch);
+                               enum WRATHLayerNodeValuePackerTexture::texture_channel_type ch);
 
     virtual
     SpecDataProcessedPayload::handle
@@ -111,7 +111,7 @@ namespace
     void
     add_actions(const SpecDataProcessedPayload::handle& /*payload*/,
                 const ProcessedActiveNodeValuesCollection&,
-		WRATHShaderSpecifier::ReservedBindings& /*reserved_bindings*/,
+                WRATHShaderSpecifier::ReservedBindings& /*reserved_bindings*/,
                 WRATHGLProgramOnBindActionArray& /*actions*/,
                 WRATHGLProgramInitializerArray& /*initers*/) const;
 
@@ -152,8 +152,8 @@ namespace
     functions(enum WRATHLayerNodeValuePackerTexture::texture_packing_type type)
     {
       return (type==WRATHLayerNodeValuePackerTexture::fp16_texture)?
-	m_mediump:
-	m_highp;
+        m_mediump:
+        m_highp;
     }
 
   private:
@@ -310,9 +310,9 @@ TextureForNodeFP16(WRATHLayerNodeValuePackerBase::DataToGL q,
 
     static GLenum tex_format[]=
       {
-	/*[four_channel_texture]=*/ GL_RGBA16F,
-	/*[two_channel_texture]= */ GL_RG16F,
-	/*[one_channel_texture]= */ GL_R16F,
+        /*[four_channel_texture]=*/ GL_RGBA16F,
+        /*[two_channel_texture]= */ GL_RG16F,
+        /*[one_channel_texture]= */ GL_R16F,
       };
     
     m_pixel_format=pixel_format[channel_format()];
@@ -331,10 +331,10 @@ TextureForNodeFP16::
 create_texture(void)
 {
   glTexImage2D(GL_TEXTURE_2D,
-	       0,
-	       m_texture_format,
-	       texture_width(), 256, 0,
-	       m_pixel_format, m_pixel_type, NULL);  
+               0,
+               m_texture_format,
+               texture_width(), 256, 0,
+               m_pixel_format, m_pixel_type, NULL);  
 }
 
 
@@ -352,24 +352,24 @@ upload_texture_data(const_c_array<float> input, int number_rows)
   if(texture_width()&1 and num_channels()==1)
     {
       /*
-	if the texture width is odd and if the
-	number of channels is 1, then there are
-	an odd number of half floats per row,
-	thus the alignment is 2, the size in
-	bytes of a half float. All other situations
-	have that the alignmnet is a multiple of 4
-	anyways.
+        if the texture width is odd and if the
+        number of channels is 1, then there are
+        an odd number of half floats per row,
+        thus the alignment is 2, the size in
+        bytes of a half float. All other situations
+        have that the alignmnet is a multiple of 4
+        anyways.
        */
       glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
     }
 
   glTexSubImage2D(GL_TEXTURE_2D,
-		  0, //LOD
-		  0, 0, //bottom left corner
-		  texture_width(), number_rows, //texture size
-		  m_pixel_format, // format
-		  m_pixel_type, //type
-		  output.c_ptr());
+                  0, //LOD
+                  0, 0, //bottom left corner
+                  texture_width(), number_rows, //texture size
+                  m_pixel_format, // format
+                  m_pixel_type, //type
+                  output.c_ptr());
 
 
 }
@@ -403,9 +403,9 @@ TextureForNodeFP32(WRATHLayerNodeValuePackerBase::DataToGL q,
 
     static GLenum tex_format[]=
       {
-	/*[four_channel_texture]=*/ GL_RGBA32F,
-	/*[two_channel_texture]= */ GL_RG32F,
-	/*[one_channel_texture]= */ GL_R32F,
+        /*[four_channel_texture]=*/ GL_RGBA32F,
+        /*[two_channel_texture]= */ GL_RG32F,
+        /*[one_channel_texture]= */ GL_R32F,
       };
     m_pixel_format=pixel_format[channel_format()];
     m_texture_format=tex_format[channel_format()];
@@ -420,10 +420,10 @@ TextureForNodeFP32::
 create_texture(void)
 {
   glTexImage2D(GL_TEXTURE_2D,
-	       0,
-	       m_texture_format,
-	       texture_width(), 256, 0,
-	       m_pixel_format, GL_FLOAT, NULL);
+               0,
+               m_texture_format,
+               texture_width(), 256, 0,
+               m_pixel_format, GL_FLOAT, NULL);
   
 }
 
@@ -498,7 +498,7 @@ bind_texture(GLenum ptexture_unit)
 // NodePackerTextureFunctions methods
 NodePackerTextureFunctions::
 NodePackerTextureFunctions(const std::string &prec_string, 
-			   enum WRATHLayerNodeValuePackerTexture::texture_channel_type ch):
+                           enum WRATHLayerNodeValuePackerTexture::texture_channel_type ch):
   m_channel_format(ch),
   m_prec_string(prec_string),
   m_is_fp16(prec_string==std::string("mediump"))
@@ -525,13 +525,13 @@ NodePackerTextureFunctions(const std::string &prec_string,
     {
     case WRATHLayerNodeValuePackerTexture::four_channel_texture :
       {
-	static vecN<std::string, 4> members(".x", ".y", ".z", ".w");
-	static vecN<std::string, 4> tex_swi(".xyzw", ".x", ".xy", ".xyz");
+        static vecN<std::string, 4> members(".x", ".y", ".z", ".w");
+        static vecN<std::string, 4> tex_swi(".xyzw", ".x", ".xy", ".xyz");
 
-	m_member_names=members;
-	m_texture_swizzle=tex_swi;
-	m_member_swizzle=m_texture_swizzle;
-	m_temp_type="vec4";
+        m_member_names=members;
+        m_texture_swizzle=tex_swi;
+        m_member_swizzle=m_texture_swizzle;
+        m_temp_type="vec4";
       }
       break;
 
@@ -540,30 +540,30 @@ NodePackerTextureFunctions(const std::string &prec_string,
         static vecN<std::string, 2> members(".x", ".y");
         
         #if defined(WRATH_GLES_VERSION) && WRATH_GLES_VERSION==2
-	  static vecN<std::string, 2> tex_swi(".xw", ".x");
+          static vecN<std::string, 2> tex_swi(".xw", ".x");
         #else
-	  static vecN<std::string, 2> tex_swi(".xy", ".x");
-	#endif
+          static vecN<std::string, 2> tex_swi(".xy", ".x");
+        #endif
         
         static vecN<std::string, 2> mem_swi(".xy", ".x");
 
-	m_member_names=members;
-	m_texture_swizzle=tex_swi;
-	m_member_swizzle=mem_swi;
-	m_temp_type="vec2";
+        m_member_names=members;
+        m_texture_swizzle=tex_swi;
+        m_member_swizzle=mem_swi;
+        m_temp_type="vec2";
       }
       break;
 
     case WRATHLayerNodeValuePackerTexture::one_channel_texture :
       {
-	static vecN<std::string, 1> members("");
-	static vecN<std::string, 1> tex_swi(".x");
-	static vecN<std::string, 1> mem_swi("");
+        static vecN<std::string, 1> members("");
+        static vecN<std::string, 1> tex_swi(".x");
+        static vecN<std::string, 1> mem_swi("");
 
-	m_member_names=members;
-	m_texture_swizzle=tex_swi;
-	m_member_swizzle=mem_swi;
-	m_temp_type="float";
+        m_member_names=members;
+        m_texture_swizzle=tex_swi;
+        m_member_swizzle=mem_swi;
+        m_temp_type="float";
       }
       break;
     }
@@ -628,10 +628,10 @@ append_extract_code(const ActiveNodeValues &input, std::ostream &ostr) const
 
       x_tex=(0.5f + static_cast<float>(idx) ) * factor;
       ostr << "\n\t" << temp_label << m_member_swizzle[0]
-	   << "=texture2DLod("
+           << "=texture2DLod("
            << texture_name << ", vec2("
-	   << x_tex << ", node_texel), 0.0)"
-	   << m_texture_swizzle[0] << ";"
+           << x_tex << ", node_texel), 0.0)"
+           << m_texture_swizzle[0] << ";"
            << " // idx=" << idx << ", div_factor=" << div_factor
            << ", factor=" << factor;
 
@@ -650,9 +650,9 @@ append_extract_code(const ActiveNodeValues &input, std::ostream &ostr) const
       WRATHassert(remaining+1<=m_channel_count);
 
       ostr << "\n\t" << temp_label << m_member_swizzle[remaining]
-	   << "=texture2DLod("
+           << "=texture2DLod("
            << texture_name << ", vec2(1.0, node_texel), 0.0)"
-	   << m_texture_swizzle[remaining] << ";";
+           << m_texture_swizzle[remaining] << ";";
 
       for(unsigned int i=0; i<remaining; ++i)
         {
@@ -678,7 +678,7 @@ append_fetch_code(WRATHGLShader::shader_source &src,
       
   ostr << "\n\n#define fetch_node_value(X) X\n";
   for(ActiveNodeValues::map_type::const_iterator iter=spec.entries().begin(),
-	end=spec.entries().end(); iter!=end; ++iter)
+        end=spec.entries().end(); iter!=end; ++iter)
     {
       ostr << "\n" << m_prec_string << " float " 
            << iter->second.label() << ";"
@@ -686,7 +686,7 @@ append_fetch_code(WRATHGLShader::shader_source &src,
            << " = " << iter->first
            << ", offset=" << iter->second.m_offset;
       /*
-	TODO: add #define statements for labels beyond the first label.
+        TODO: add #define statements for labels beyond the first label.
        */
     }
   
@@ -737,9 +737,9 @@ add_actions(const SpecDataProcessedPayload::handle& h,
       number_active=pr.active_node_values(0).number_active();
       tex_width=number_active/m_channel_count;
       if(m_channel_count!=1 and (number_active%m_channel_count)!=0 )
-	{
-	  ++tex_width;
-	}
+        {
+          ++tex_width;
+        }
 
       payload->m_texture_width=tex_width;
     }

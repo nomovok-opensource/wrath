@@ -186,7 +186,7 @@ public:
       Returns true if a per-node value is active.
       \param source_index index into node value 
                           (\ref ActiveNodeValue::m_source_index)
-			  to query if active
+                          to query if active
      */ 
     bool
     node_value_active(int source_index) const
@@ -291,7 +291,7 @@ public:
                    an entry for \ref ActiveNodeValue::m_labels
       \param shader_stage GL enumeration for shader stage,
                           for example GL_VERTEX_SHADER or
-			  GL_FRAGMENT_SHADER.
+                          GL_FRAGMENT_SHADER.
      */
     ActiveNodeValuesCollection&
     add_source(int idx, const std::string &label, GLenum shader_stage)
@@ -392,36 +392,36 @@ public:
     */
     enum data_packing_type
       {
-	/*!
-	  The data is packed into the array
-	  so that values within a node are
-	  continuously stored within the array,
-	  i.e. if each node has
-	  N vec4 values, then the values
-	  are packed as follows:\n\n
-	  
-	  \n Node[0].value[0], Node[0].value[1], ...., Node[0].value[N-1]
-	  \n Node[1].value[0], Node[1].value[1], ...., Node[1].value[N-1]
-	  \n...
-	  \n Node[NumberNodes-1].value[0], Node[NumberNodes-1].value[1], ...., Node[NumberNodes-1].value[N-1]
-	*/
-	packed_by_node,
-	
-	/*!
-	  The data is packed into the array
-	  so that values from all nodes are
-	  continously stored with the array,
-	  i.e. if each node has
-	  N vec4 values, then the values
-	  are packed as follows:\n\n
-	  
-	  \n Node[0].value[0], Node[1].value[0], ...., Node[NumberNodes-1].value[0]
-	  \n Node[0].value[1], Node[1].value[1], ...., Node[NumberNodes-1].value[1]
-	  \n Node[0].value[2], Node[1].value[2], ...., Node[NumberNodes-1].value[2]
-	  \n...
-	  \n Node[0].value[N-1], Node[1].value[N-1], ...., Node[NumberNodes-1].value[N-1]
-	*/
-	packed_by_value
+        /*!
+          The data is packed into the array
+          so that values within a node are
+          continuously stored within the array,
+          i.e. if each node has
+          N vec4 values, then the values
+          are packed as follows:\n\n
+          
+          \n Node[0].value[0], Node[0].value[1], ...., Node[0].value[N-1]
+          \n Node[1].value[0], Node[1].value[1], ...., Node[1].value[N-1]
+          \n...
+          \n Node[NumberNodes-1].value[0], Node[NumberNodes-1].value[1], ...., Node[NumberNodes-1].value[N-1]
+        */
+        packed_by_node,
+        
+        /*!
+          The data is packed into the array
+          so that values from all nodes are
+          continously stored with the array,
+          i.e. if each node has
+          N vec4 values, then the values
+          are packed as follows:\n\n
+          
+          \n Node[0].value[0], Node[1].value[0], ...., Node[NumberNodes-1].value[0]
+          \n Node[0].value[1], Node[1].value[1], ...., Node[NumberNodes-1].value[1]
+          \n Node[0].value[2], Node[1].value[2], ...., Node[NumberNodes-1].value[2]
+          \n...
+          \n Node[0].value[N-1], Node[1].value[N-1], ...., Node[NumberNodes-1].value[N-1]
+        */
+        packed_by_value
       };
 
     /*!\fn NodeDataPackParameters(void)
@@ -439,7 +439,7 @@ public:
       \param ppacking_type value to which to initialize m_packing_type
      */
     NodeDataPackParameters(int pfloat_alignment,
-			   enum data_packing_type ppacking_type):
+                           enum data_packing_type ppacking_type):
       m_float_alignment(pfloat_alignment),
       m_packing_type(ppacking_type)
     {}
@@ -452,7 +452,7 @@ public:
     operator<(const NodeDataPackParameters &rhs) const
     {
       return m_float_alignment<rhs.m_float_alignment
-	or (m_float_alignment==rhs.m_float_alignment and m_packing_type<rhs.m_packing_type);
+        or (m_float_alignment==rhs.m_float_alignment and m_packing_type<rhs.m_packing_type);
     }
 
     /*!\var m_float_alignment
@@ -492,12 +492,12 @@ public:
     {
     public:
       /*!\fn packing_group
-	Ctor. Initialize the packing_group
-	to use the default packing_group
-	(see \ref NodeDataPackParametersCollection::default_packing_group()).
+        Ctor. Initialize the packing_group
+        to use the default packing_group
+        (see \ref NodeDataPackParametersCollection::default_packing_group()).
        */
       packing_group(void):
-	m_index(0)
+        m_index(0)
       {}
 
       /*!\fn bool operator<(packing_group) const
@@ -507,7 +507,7 @@ public:
       bool
       operator<(packing_group rhs) const
       {
-	return m_index < rhs.m_index;
+        return m_index < rhs.m_index;
       }
 
     private:
@@ -515,7 +515,7 @@ public:
 
       explicit
       packing_group(unsigned int v):
-	m_index(v)
+        m_index(v)
       {}
 
       unsigned int m_index;
@@ -575,8 +575,8 @@ public:
       std::map<GLenum, packing_group>::const_iterator iter;
       iter=m_map.find(shader_stage);
       return (iter!=m_map.end())?
-	iter->second:
-	packing_group();
+        iter->second:
+        packing_group();
     }
 
     /*!\fn const NodeDataPackParameters& packer_set_parameters(packing_group) const
@@ -681,8 +681,8 @@ public:
       object then sets is data from the parameters.
       \param parameters specifies the group partioning of packing
                         for the shader stages. Elements in the same
-			partition share the same data to send to GL
-			(see \ref DataToGL::data_to_pack_to_GL())
+                        partition share the same data to send to GL
+                        (see \ref DataToGL::data_to_pack_to_GL())
       \param input specifies, on a per shader level, what node values
                    need to be packed.
       \param active_shader_stages specifies what shader stages will
@@ -697,8 +697,8 @@ public:
      */
     void
     set(const NodeDataPackParametersCollection &parameters,
-	const ActiveNodeValuesCollection &input,
-	const std::map<GLenum, ActiveNodeValues::Filter::const_handle> &active_shader_stages);
+        const ActiveNodeValuesCollection &input,
+        const std::map<GLenum, ActiveNodeValues::Filter::const_handle> &active_shader_stages);
 
     
     /*!\fn int number_indices
@@ -926,7 +926,7 @@ public:
     void
     add_actions(const SpecDataProcessedPayload::handle& /*payload*/,
                 const ProcessedActiveNodeValuesCollection& /*spec*/,
-		WRATHShaderSpecifier::ReservedBindings& /*reserved_bindings*/,
+                WRATHShaderSpecifier::ReservedBindings& /*reserved_bindings*/,
                 WRATHGLProgramOnBindActionArray& /*actions*/,
                 WRATHGLProgramInitializerArray& /*initers*/) const=0;
 
@@ -1039,7 +1039,7 @@ public:
   explicit
   WRATHLayerNodeValuePackerBase(WRATHLayerBase *layer,
                                 const SpecDataProcessedPayload::const_handle &payload,
-				const ProcessedActiveNodeValuesCollection &spec);
+                                const ProcessedActiveNodeValuesCollection &spec);
 
   virtual
   ~WRATHLayerNodeValuePackerBase();

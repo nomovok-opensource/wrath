@@ -846,10 +846,10 @@ allocate(const WRATHImage::ImageFormatArray &fmt,
       GLPixelStore *pix(NULL);
 
       /*
-	TODO: if too many atlases are already
-	made then we should obey our memory 
-	consumption and issue a fail which the
-	caller then needs to handle.
+        TODO: if too many atlases are already
+        made then we should obey our memory 
+        consumption and issue a fail which the
+        caller then needs to handle.
        */
       pix=generate_new_atlas(fmt);
       return_value=pix->m_atlas->add_rectangle(sz);

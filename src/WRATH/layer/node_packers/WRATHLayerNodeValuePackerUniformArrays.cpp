@@ -81,9 +81,9 @@ namespace
       /*
         TODO: query GL how much uniform room there 
         is or have a static variable/function of 
-	WRATHLayerNodeValuePackerUniformArrays
+        WRATHLayerNodeValuePackerUniformArrays
         that specifies how much room the per-item 
-	uniform arrays are allowed to use.
+        uniform arrays are allowed to use.
        */
       int number_vec4s(WRATHLayerNodeValuePackerUniformArrays::size_of_vec4_array());
       int return_value;
@@ -115,7 +115,7 @@ namespace
     void
     add_actions(const SpecDataProcessedPayload::handle& /*payload*/,
                 const ProcessedActiveNodeValuesCollection&,
-		WRATHShaderSpecifier::ReservedBindings& /*reserved_bindings*/,
+                WRATHShaderSpecifier::ReservedBindings& /*reserved_bindings*/,
                 WRATHGLProgramOnBindActionArray& /*actions*/,
                 WRATHGLProgramInitializerArray& /*initers*/) const
     {}
@@ -146,7 +146,7 @@ namespace
       for(ActiveNodeValues::map_type::const_iterator iter=node_values.entries().begin(),
             end=node_values.entries().end(); iter!=end; ++iter)
         {
-	  ostr << "\nfloat " << iter->second.label() << ";\n";
+          ostr << "\nfloat " << iter->second.label() << ";\n";
           /*
             TODO: handle aliases with #defines.
           */
@@ -158,7 +158,7 @@ namespace
        */
 
       ostr << "\n\nuniform vec4 WRATH_LAYER_UNIFORM_PACKER_UNIFORM_ARRAYS"
-	   << "[" << hnd->m_number_slots*(padded_size/4) << "];\n\n"
+           << "[" << hnd->m_number_slots*(padded_size/4) << "];\n\n"
            << "void pre_fetch_node_values(void)"
            << "\n{"
            << "\n\tint node_start_index;"

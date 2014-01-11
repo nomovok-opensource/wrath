@@ -35,8 +35,8 @@
 #include "gluos.hpp"
 #include <assert.h>
 #include <stddef.h>
-#include <setjmp.h>		/* longjmp */
-#include <limits.h>		/* LONG_MAX */
+#include <setjmp.h>             /* longjmp */
+#include <limits.h>             /* LONG_MAX */
 
 #include "mesh.hpp"
 #include "geom.hpp"
@@ -89,15 +89,15 @@ extern void DebugEvent( wrath_GLUtesselator *tess );
  *   when it is necessary.)
  */
 
-#undef	MAX
-#undef	MIN
-#define MAX(x,y)	((x) >= (y) ? (x) : (y))
-#define MIN(x,y)	((x) <= (y) ? (x) : (y))
+#undef  MAX
+#undef  MIN
+#define MAX(x,y)        ((x) >= (y) ? (x) : (y))
+#define MIN(x,y)        ((x) <= (y) ? (x) : (y))
 
 /* When we merge two edges into one, we need to compute the combined
  * winding of the new edge.
  */
-#define AddWinding(eDst,eSrc)	(eDst->winding += eSrc->winding, \
+#define AddWinding(eDst,eSrc)   (eDst->winding += eSrc->winding, \
                                  eDst->Sym->winding += eSrc->Sym->winding)
 
 static void SweepEvent( wrath_GLUtesselator *tess, GLUvertex *vEvent );
@@ -105,7 +105,7 @@ static void WalkDirtyRegions( wrath_GLUtesselator *tess, ActiveRegion *regUp );
 static int CheckForRightSplice( wrath_GLUtesselator *tess, ActiveRegion *regUp );
 
 static int EdgeLeq( wrath_GLUtesselator *tess, ActiveRegion *reg1,
-		    ActiveRegion *reg2 )
+                    ActiveRegion *reg2 )
 /*
  * Both edges must be directed from right to left (this is the canonical
  * direction for the upper edge of each region).
@@ -131,7 +131,7 @@ static int EdgeLeq( wrath_GLUtesselator *tess, ActiveRegion *reg1,
        * Sort them by slope.
        */
       if( VertLeq( e1->Org, e2->Org )) {
-	return EdgeSign( e2->Dst, e1->Org, e2->Org ) <= 0;
+        return EdgeSign( e2->Dst, e1->Org, e2->Org ) <= 0;
       }
       return EdgeSign( e1->Dst, e2->Org, e1->Org ) >= 0;
     }
@@ -211,8 +211,8 @@ static ActiveRegion *TopRightRegion( ActiveRegion *reg )
 }
 
 static ActiveRegion *AddRegionBelow( wrath_GLUtesselator *tess,
-				     ActiveRegion *regAbove,
-				     GLUhalfEdge *eNewUp )
+                                     ActiveRegion *regAbove,
+                                     GLUhalfEdge *eNewUp )
 /*
  * Add a new active region to the sweep line, *somewhere* below "regAbove"
  * (according to where the new edge belongs in the sweep-line dictionary).
@@ -284,7 +284,7 @@ static void FinishRegion( wrath_GLUtesselator *tess, ActiveRegion *reg )
 
 
 static GLUhalfEdge *FinishLeftRegions( wrath_GLUtesselator *tess,
-	       ActiveRegion *regFirst, ActiveRegion *regLast )
+               ActiveRegion *regFirst, ActiveRegion *regLast )
 /*
  * We are given a vertex with one or more left-going edges.  All affected
  * edges should be in the edge dictionary.  Starting at regFirst->eUp,
@@ -293,7 +293,7 @@ static GLUhalfEdge *FinishLeftRegions( wrath_GLUtesselator *tess,
  * active region to the face, since at this point each face will belong
  * to at most one region (this was not necessarily true until this point
  * in the sweep).  The walk stops at the region above regLast; if regLast
- * is NULL we walk as far as possible.	At the same time we relink the
+ * is NULL we walk as far as possible.  At the same time we relink the
  * mesh if necessary, so that the ordering of edges around vOrg is the
  * same as in the dictionary.
  */
@@ -304,19 +304,19 @@ static GLUhalfEdge *FinishLeftRegions( wrath_GLUtesselator *tess,
   regPrev = regFirst;
   ePrev = regFirst->eUp;
   while( regPrev != regLast ) {
-    regPrev->fixUpperEdge = FALSE;	/* placement was OK */
+    regPrev->fixUpperEdge = FALSE;      /* placement was OK */
     reg = RegionBelow( regPrev );
     e = reg->eUp;
     if( e->Org != ePrev->Org ) {
       if( ! reg->fixUpperEdge ) {
-	/* Remove the last left-going edge.  Even though there are no further
-	 * edges in the dictionary with this origin, there may be further
-	 * such edges in the mesh (if we are adding left edges to a vertex
-	 * that has already been processed).  Thus it is important to call
-	 * FinishRegion rather than just DeleteRegion.
-	 */
-	FinishRegion( tess, regPrev );
-	break;
+        /* Remove the last left-going edge.  Even though there are no further
+         * edges in the dictionary with this origin, there may be further
+         * such edges in the mesh (if we are adding left edges to a vertex
+         * that has already been processed).  Thus it is important to call
+         * FinishRegion rather than just DeleteRegion.
+         */
+        FinishRegion( tess, regPrev );
+        break;
       }
       /* If the edge below was a temporary edge introduced by
        * ConnectRightVertex, now is the time to fix it.
@@ -331,7 +331,7 @@ static GLUhalfEdge *FinishLeftRegions( wrath_GLUtesselator *tess,
       if ( !__wrath__gl_meshSplice( e->Oprev, e ) ) longjmp(tess->env,1);
       if ( !__wrath__gl_meshSplice( ePrev, e ) ) longjmp(tess->env,1);
     }
-    FinishRegion( tess, regPrev );	/* may change reg->eUp */
+    FinishRegion( tess, regPrev );      /* may change reg->eUp */
     ePrev = reg->eUp;
     regPrev = reg;
   }
@@ -412,7 +412,7 @@ static void AddRightEdges( wrath_GLUtesselator *tess, ActiveRegion *regUp,
 
 
 static void CallCombine( wrath_GLUtesselator *tess, GLUvertex *isect,
-			 void *data[4], float weights[4], int needed )
+                         void *data[4], float weights[4], int needed )
 {
   double coords[3];
 
@@ -438,7 +438,7 @@ static void CallCombine( wrath_GLUtesselator *tess, GLUvertex *isect,
 }
 
 static void SpliceMergeVertices( wrath_GLUtesselator *tess, GLUhalfEdge *e1,
-				 GLUhalfEdge *e2 )
+                                 GLUhalfEdge *e2 )
 /*
  * Two vertices with idential coordinates are combined into one.
  * e1->Org is kept, while e2->Org is discarded.
@@ -454,7 +454,7 @@ static void SpliceMergeVertices( wrath_GLUtesselator *tess, GLUhalfEdge *e1,
 }
 
 static void VertexWeights( GLUvertex *isect, GLUvertex *org, GLUvertex *dst,
-			   float *weights )
+                           float *weights )
 /*
  * Find some weights which describe how the intersection vertex is
  * a linear combination of "org" and "dest".  Each of the two edges
@@ -633,11 +633,11 @@ static int CheckForIntersect( wrath_GLUtesselator *tess, ActiveRegion *regUp )
   assert( orgUp != tess->event && orgLo != tess->event );
   assert( ! regUp->fixUpperEdge && ! regLo->fixUpperEdge );
 
-  if( orgUp == orgLo ) return FALSE;	/* right endpoints are the same */
+  if( orgUp == orgLo ) return FALSE;    /* right endpoints are the same */
 
   tMinUp = MIN( orgUp->t, dstUp->t );
   tMaxLo = MAX( orgLo->t, dstLo->t );
-  if( tMinUp > tMaxLo ) return FALSE;	/* t ranges do not overlap */
+  if( tMinUp > tMaxLo ) return FALSE;   /* t ranges do not overlap */
 
   if( VertLeq( orgUp, orgLo )) {
     if( EdgeSign( dstLo, orgUp, orgLo ) > 0 ) return FALSE;
@@ -683,10 +683,10 @@ static int CheckForIntersect( wrath_GLUtesselator *tess, ActiveRegion *regUp )
     return FALSE;
   }
 
-  if(	 (! VertEq( dstUp, tess->event )
-	  && EdgeSign( dstUp, tess->event, &isect ) >= 0)
+  if(    (! VertEq( dstUp, tess->event )
+          && EdgeSign( dstUp, tess->event, &isect ) >= 0)
       || (! VertEq( dstLo, tess->event )
-	  && EdgeSign( dstLo, tess->event, &isect ) <= 0 ))
+          && EdgeSign( dstLo, tess->event, &isect ) <= 0 ))
   {
     /* Very unusual -- the new upper or lower edge would pass on the
      * wrong side of the sweep event, or through it.  This can happen
@@ -750,7 +750,7 @@ static int CheckForIntersect( wrath_GLUtesselator *tess, ActiveRegion *regUp )
   eUp->Org->t = isect.t;
   eUp->Org->pqHandle = pqInsert( tess->pq, eUp->Org ); /* __wrath__gl_pqSortInsert */
   if (eUp->Org->pqHandle == LONG_MAX) {
-     pqDeletePriorityQ(tess->pq);	/* __wrath__gl_pqSortDeletePriorityQ */
+     pqDeletePriorityQ(tess->pq);       /* __wrath__gl_pqSortDeletePriorityQ */
      tess->pq = NULL;
      longjmp(tess->env,1);
   }
@@ -782,8 +782,8 @@ static void WalkDirtyRegions( wrath_GLUtesselator *tess, ActiveRegion *regUp )
       regLo = regUp;
       regUp = RegionAbove( regUp );
       if( regUp == NULL || ! regUp->dirty ) {
-	/* We've walked all the dirty regions */
-	return;
+        /* We've walked all the dirty regions */
+        return;
       }
     }
     regUp->dirty = FALSE;
@@ -794,45 +794,45 @@ static void WalkDirtyRegions( wrath_GLUtesselator *tess, ActiveRegion *regUp )
       /* Check that the edge ordering is obeyed at the Dst vertices. */
       if( CheckForLeftSplice( tess, regUp )) {
 
-	/* If the upper or lower edge was marked fixUpperEdge, then
-	 * we no longer need it (since these edges are needed only for
-	 * vertices which otherwise have no right-going edges).
-	 */
-	if( regLo->fixUpperEdge ) {
-	  DeleteRegion( tess, regLo );
-	  if ( !__wrath__gl_meshDelete( eLo ) ) longjmp(tess->env,1);
-	  regLo = RegionBelow( regUp );
-	  eLo = regLo->eUp;
-	} else if( regUp->fixUpperEdge ) {
-	  DeleteRegion( tess, regUp );
-	  if ( !__wrath__gl_meshDelete( eUp ) ) longjmp(tess->env,1);
-	  regUp = RegionAbove( regLo );
-	  eUp = regUp->eUp;
-	}
+        /* If the upper or lower edge was marked fixUpperEdge, then
+         * we no longer need it (since these edges are needed only for
+         * vertices which otherwise have no right-going edges).
+         */
+        if( regLo->fixUpperEdge ) {
+          DeleteRegion( tess, regLo );
+          if ( !__wrath__gl_meshDelete( eLo ) ) longjmp(tess->env,1);
+          regLo = RegionBelow( regUp );
+          eLo = regLo->eUp;
+        } else if( regUp->fixUpperEdge ) {
+          DeleteRegion( tess, regUp );
+          if ( !__wrath__gl_meshDelete( eUp ) ) longjmp(tess->env,1);
+          regUp = RegionAbove( regLo );
+          eUp = regUp->eUp;
+        }
       }
     }
     if( eUp->Org != eLo->Org ) {
       if(    eUp->Dst != eLo->Dst
-	  && ! regUp->fixUpperEdge && ! regLo->fixUpperEdge
-	  && (eUp->Dst == tess->event || eLo->Dst == tess->event) )
+          && ! regUp->fixUpperEdge && ! regLo->fixUpperEdge
+          && (eUp->Dst == tess->event || eLo->Dst == tess->event) )
       {
-	/* When all else fails in CheckForIntersect(), it uses tess->event
-	 * as the intersection location.  To make this possible, it requires
-	 * that tess->event lie between the upper and lower edges, and also
-	 * that neither of these is marked fixUpperEdge (since in the worst
-	 * case it might splice one of these edges into tess->event, and
-	 * violate the invariant that fixable edges are the only right-going
-	 * edge from their associated vertex).
-	 */
-	if( CheckForIntersect( tess, regUp )) {
-	  /* WalkDirtyRegions() was called recursively; we're done */
-	  return;
-	}
+        /* When all else fails in CheckForIntersect(), it uses tess->event
+         * as the intersection location.  To make this possible, it requires
+         * that tess->event lie between the upper and lower edges, and also
+         * that neither of these is marked fixUpperEdge (since in the worst
+         * case it might splice one of these edges into tess->event, and
+         * violate the invariant that fixable edges are the only right-going
+         * edge from their associated vertex).
+         */
+        if( CheckForIntersect( tess, regUp )) {
+          /* WalkDirtyRegions() was called recursively; we're done */
+          return;
+        }
       } else {
-	/* Even though we can't use CheckForIntersect(), the Org vertices
-	 * may violate the dictionary edge ordering.  Check and correct this.
-	 */
-	(void) CheckForRightSplice( tess, regUp );
+        /* Even though we can't use CheckForIntersect(), the Org vertices
+         * may violate the dictionary edge ordering.  Check and correct this.
+         */
+        (void) CheckForRightSplice( tess, regUp );
       }
     }
     if( eUp->Org == eLo->Org && eUp->Dst == eLo->Dst ) {
@@ -847,7 +847,7 @@ static void WalkDirtyRegions( wrath_GLUtesselator *tess, ActiveRegion *regUp )
 
 
 static void ConnectRightVertex( wrath_GLUtesselator *tess, ActiveRegion *regUp,
-				GLUhalfEdge *eBottomLeft )
+                                GLUhalfEdge *eBottomLeft )
 /*
  * Purpose: connect a "right" vertex vEvent (one where all edges go left)
  * to the unprocessed portion of the mesh.  Since there are no right-going
@@ -938,10 +938,10 @@ static void ConnectRightVertex( wrath_GLUtesselator *tess, ActiveRegion *regUp,
  * TOLERANCE_NONZERO will be useful.  They were debugged before the
  * code to merge identical vertices in the main loop was added.
  */
-#define TOLERANCE_NONZERO	FALSE
+#define TOLERANCE_NONZERO       FALSE
 
 static void ConnectLeftDegenerate( wrath_GLUtesselator *tess,
-				   ActiveRegion *regUp, GLUvertex *vEvent )
+                                   ActiveRegion *regUp, GLUvertex *vEvent )
 /*
  * The event vertex lies exacty on an already-processed edge or vertex.
  * Adding the new vertex involves splicing it into the already-processed
@@ -1012,9 +1012,9 @@ static void ConnectLeftVertex( wrath_GLUtesselator *tess, GLUvertex *vEvent )
  *
  * - the degenerate case: if vEvent is close enough to U or L, we
  *   merge vEvent into that edge chain.  The subcases are:
- *	- merging with the rightmost vertex of U or L
- *	- merging with the active edge of U or L
- *	- merging with an already-processed portion of U or L
+ *      - merging with the rightmost vertex of U or L
+ *      - merging with the active edge of U or L
+ *      - merging with an already-processed portion of U or L
  */
 {
   ActiveRegion *regUp, *regLo, *reg;
@@ -1076,7 +1076,7 @@ static void SweepEvent( wrath_GLUtesselator *tess, GLUvertex *vEvent )
   ActiveRegion *regUp, *reg;
   GLUhalfEdge *e, *eTopLeft, *eBottomLeft;
 
-  tess->event = vEvent; 	/* for access in EdgeLeq() */
+  tess->event = vEvent;         /* for access in EdgeLeq() */
   DebugEvent( tess );
 
   /* Check if this vertex is the right endpoint of an edge that is
@@ -1125,7 +1125,7 @@ static void SweepEvent( wrath_GLUtesselator *tess, GLUvertex *vEvent )
  * input contour and the maximum tolerance of 1.0, no merging will be
  * done with coordinates larger than 3 * WRATH_GLU_TESS_MAX_COORD).
  */
-#define SENTINEL_COORD	(4 * WRATH_GLU_TESS_MAX_COORD)
+#define SENTINEL_COORD  (4 * WRATH_GLU_TESS_MAX_COORD)
 
 static void AddSentinel( wrath_GLUtesselator *tess, double t )
 /*
@@ -1144,7 +1144,7 @@ static void AddSentinel( wrath_GLUtesselator *tess, double t )
   e->Org->t = t;
   e->Dst->s = -SENTINEL_COORD;
   e->Dst->t = t;
-  tess->event = e->Dst; 	/* initialize it */
+  tess->event = e->Dst;         /* initialize it */
 
   reg->eUp = e;
   reg->windingNumber = 0;
@@ -1214,7 +1214,7 @@ static void RemoveDegenerateEdges( wrath_GLUtesselator *tess )
     if( VertEq( e->Org, e->Dst ) && e->Lnext->Lnext != e ) {
       /* Zero-length edge, contour has at least 3 edges */
 
-      SpliceMergeVertices( tess, eLnext, e );	/* deletes e->Org */
+      SpliceMergeVertices( tess, eLnext, e );   /* deletes e->Org */
       if ( !__wrath__gl_meshDelete( e ) ) longjmp(tess->env,1); /* e is a self-loop */
       e = eLnext;
       eLnext = e->Lnext;
@@ -1223,8 +1223,8 @@ static void RemoveDegenerateEdges( wrath_GLUtesselator *tess )
       /* Degenerate contour (one or two edges) */
 
       if( eLnext != e ) {
-	if( eLnext == eNext || eLnext == eNext->Sym ) { eNext = eNext->next; }
-	if ( !__wrath__gl_meshDelete( eLnext ) ) longjmp(tess->env,1);
+        if( eLnext == eNext || eLnext == eNext->Sym ) { eNext = eNext->next; }
+        if ( !__wrath__gl_meshDelete( eLnext ) ) longjmp(tess->env,1);
       }
       if( e == eNext || e == eNext->Sym ) { eNext = eNext->next; }
       if ( !__wrath__gl_meshDelete( e ) ) longjmp(tess->env,1);
@@ -1251,7 +1251,7 @@ static int InitPriorityQ( wrath_GLUtesselator *tess )
     if (v->pqHandle == LONG_MAX) break;
   }
   if (v != vHead || !pqInit( pq ) ) { /* __wrath__gl_pqSortInit */
-    pqDeletePriorityQ(tess->pq);	/* __wrath__gl_pqSortDeletePriorityQ */
+    pqDeletePriorityQ(tess->pq);        /* __wrath__gl_pqSortDeletePriorityQ */
     tess->pq = NULL;
     return 0;
   }
@@ -1317,7 +1317,7 @@ int __wrath__gl_computeInterior( wrath_GLUtesselator *tess )
    * all the vertices in a priority queue.  Events are processed in
    * lexicographic order, ie.
    *
-   *	e1 < e2  iff  e1.x < e2.x || (e1.x == e2.x && e1.y < e2.y)
+   *    e1 < e2  iff  e1.x < e2.x || (e1.x == e2.x && e1.y < e2.y)
    */
   RemoveDegenerateEdges( tess );
   if ( !InitPriorityQ( tess ) ) return 0; /* if error */

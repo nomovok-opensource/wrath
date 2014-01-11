@@ -513,25 +513,25 @@ format_text(const WRATHTextData &raw_data,
       if(gl==NULL or gl->texel_size()==ivec2(0,0))
         {
           word_break_ok=m_layout.m_empty_glyph_word_break
-	    or m_layout.m_break_words
+            or m_layout.m_break_words
             or (m_layout.m_word_breakers.find(ch)!=m_layout.m_word_breakers.end());
         }
       else
         {
           word_break_ok=m_layout.m_break_words
-	    or (m_layout.m_word_breakers.find(ch)!=m_layout.m_word_breakers.end());
+            or (m_layout.m_word_breakers.find(ch)!=m_layout.m_word_breakers.end());
         }
       
       /*
-	word_ends means that a word really ended, so add word_spacing
+        word_ends means that a word really ended, so add word_spacing
         should we add \t to the check? other white spaces? maybe
         just a function to say if something is a white space?
        */
       word_ends=word_ends or ch==WRATHTextData::character(' ');
       if(!is_control_space_char and !last_character_is_white_space and word_ends)
-	{
-	  m_pen_position[m_advance_character_index]+=word_spacing;
-	}
+        {
+          m_pen_position[m_advance_character_index]+=word_spacing;
+        }
 
 
       if(kerning_enabled and G.first==m_previous_glyph.first and G.second.valid() and m_previous_glyph.second.valid())
@@ -588,31 +588,31 @@ format_text(const WRATHTextData &raw_data,
           float adv(gl->advance()[m_advance_character_index]*horiz_vert_stretch[m_advance_character_index]);
           float advance(0.0f);
 
-	  /*
-	    empty glyph means white space as far as we are concerned.
-	   */
-	  if(!last_character_is_white_space 
-	     or !m_layout.m_eat_white_spaces 
-	     or gl->texel_size()!=ivec2(0,0))
-	    {
-	      if(offset_change[m_advance_line_index])
-		{
-		  advance=m_scaled_factor[m_advance_character_index]*bb[m_advance_character_index];
-		}
-	      else
-		{
-		  advance=m_scaled_factor[m_advance_character_index]*adv;
-		}
-	      
-	      if(letter_spacing_type==WRATHText::letter_spacing_absolute)
-		{
-		  advance+=letter_spacing;
-		}
-	      else
-		{
-		  advance+=letter_spacing*bb_size[m_advance_line_index];
-		}
-	    }
+          /*
+            empty glyph means white space as far as we are concerned.
+           */
+          if(!last_character_is_white_space 
+             or !m_layout.m_eat_white_spaces 
+             or gl->texel_size()!=ivec2(0,0))
+            {
+              if(offset_change[m_advance_line_index])
+                {
+                  advance=m_scaled_factor[m_advance_character_index]*bb[m_advance_character_index];
+                }
+              else
+                {
+                  advance=m_scaled_factor[m_advance_character_index]*adv;
+                }
+              
+              if(letter_spacing_type==WRATHText::letter_spacing_absolute)
+                {
+                  advance+=letter_spacing;
+                }
+              else
+                {
+                  advance+=letter_spacing*bb_size[m_advance_line_index];
+                }
+            }
             
           m_pen_position[m_advance_character_index]+=advance;
 

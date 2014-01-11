@@ -43,7 +43,7 @@ typedef struct GLUvertex GLUvertex;
 typedef struct GLUface GLUface;
 typedef struct GLUhalfEdge GLUhalfEdge;
 
-typedef struct ActiveRegion ActiveRegion;	/* Internal data */
+typedef struct ActiveRegion ActiveRegion;       /* Internal data */
 
 /* The mesh structure is similar in spirit, notation, and operations
  * to the "quad-edge" structure (see L. Guibas and J. Stolfi, Primitives
@@ -65,11 +65,11 @@ typedef struct ActiveRegion ActiveRegion;	/* Internal data */
  * pointer for the global edge list (see below).
  *
  * The notation used for mesh navigation:
- *	Sym   = the mate of a half-edge (same edge, but opposite direction)
- *	Onext = edge CCW around origin vertex (keep same origin)
- *	Dnext = edge CCW around destination vertex (keep same dest)
- *	Lnext = edge CCW around left face (dest becomes new origin)
- *	Rnext = edge CCW around right face (origin becomes new dest)
+ *      Sym   = the mate of a half-edge (same edge, but opposite direction)
+ *      Onext = edge CCW around origin vertex (keep same origin)
+ *      Dnext = edge CCW around destination vertex (keep same dest)
+ *      Lnext = edge CCW around left face (dest becomes new origin)
+ *      Rnext = edge CCW around right face (origin becomes new dest)
  *
  * "prev" means to substitute CW for CCW in the definitions above.
  *
@@ -112,62 +112,62 @@ typedef struct ActiveRegion ActiveRegion;	/* Internal data */
  */
 
 struct GLUvertex {
-  GLUvertex	*next;		/* next vertex (never NULL) */
-  GLUvertex	*prev;		/* previous vertex (never NULL) */
-  GLUhalfEdge	*anEdge;	/* a half-edge with this origin */
-  void		*data;		/* client's data */
+  GLUvertex     *next;          /* next vertex (never NULL) */
+  GLUvertex     *prev;          /* previous vertex (never NULL) */
+  GLUhalfEdge   *anEdge;        /* a half-edge with this origin */
+  void          *data;          /* client's data */
 
   /* Internal data (keep hidden) */
-  double	coords[3];	/* vertex location in 3D */
-  double	s, t;		/* projection onto the sweep plane */
-  long		pqHandle;	/* to allow deletion from priority queue */
+  double        coords[3];      /* vertex location in 3D */
+  double        s, t;           /* projection onto the sweep plane */
+  long          pqHandle;       /* to allow deletion from priority queue */
 };
 
 
 struct GLUface {
-  GLUface	*next;		/* next face (never NULL) */
-  GLUface	*prev;		/* previous face (never NULL) */
-  GLUhalfEdge	*anEdge;	/* a half edge with this left face */
-  void		*data;		/* room for client's data */
+  GLUface       *next;          /* next face (never NULL) */
+  GLUface       *prev;          /* previous face (never NULL) */
+  GLUhalfEdge   *anEdge;        /* a half edge with this left face */
+  void          *data;          /* room for client's data */
 
   /* Internal data (keep hidden) */
-  GLUface	*trail;		/* "stack" for conversion to strips */
-  WRATH_GLUboolean	marked;		/* flag for conversion to strips */
-  WRATH_GLUboolean	inside;		/* this face is in the polygon interior */
+  GLUface       *trail;         /* "stack" for conversion to strips */
+  WRATH_GLUboolean      marked;         /* flag for conversion to strips */
+  WRATH_GLUboolean      inside;         /* this face is in the polygon interior */
 
   int winding_number;
 };
 
 struct GLUhalfEdge {
-  GLUhalfEdge	*next;		/* doubly-linked list (prev==Sym->next) */
-  GLUhalfEdge	*Sym;		/* same edge, opposite direction */
-  GLUhalfEdge	*Onext;		/* next edge CCW around origin */
-  GLUhalfEdge	*Lnext;		/* next edge CCW around left face */
-  GLUvertex	*Org;		/* origin vertex (Overtex too long) */
-  GLUface	*Lface;		/* left face */
+  GLUhalfEdge   *next;          /* doubly-linked list (prev==Sym->next) */
+  GLUhalfEdge   *Sym;           /* same edge, opposite direction */
+  GLUhalfEdge   *Onext;         /* next edge CCW around origin */
+  GLUhalfEdge   *Lnext;         /* next edge CCW around left face */
+  GLUvertex     *Org;           /* origin vertex (Overtex too long) */
+  GLUface       *Lface;         /* left face */
 
   /* Internal data (keep hidden) */
-  ActiveRegion	*activeRegion;	/* a region with this upper edge (sweep.c) */
-  int		winding;	/* change in winding number when crossing
+  ActiveRegion  *activeRegion;  /* a region with this upper edge (sweep.c) */
+  int           winding;        /* change in winding number when crossing
                                    from the right face to the left face */
 };
 
-#define	Rface	Sym->Lface
-#define Dst	Sym->Org
+#define Rface   Sym->Lface
+#define Dst     Sym->Org
 
-#define Oprev	Sym->Lnext
+#define Oprev   Sym->Lnext
 #define Lprev   Onext->Sym
-#define Dprev	Lnext->Sym
-#define Rprev	Sym->Onext
-#define Dnext	Rprev->Sym	/* 3 pointers */
-#define Rnext	Oprev->Sym	/* 3 pointers */
+#define Dprev   Lnext->Sym
+#define Rprev   Sym->Onext
+#define Dnext   Rprev->Sym      /* 3 pointers */
+#define Rnext   Oprev->Sym      /* 3 pointers */
 
 
 struct GLUmesh {
-  GLUvertex	vHead;		/* dummy header for vertex list */
-  GLUface	fHead;		/* dummy header for face list */
-  GLUhalfEdge	eHead;		/* dummy header for edge list */
-  GLUhalfEdge	eHeadSym;	/* and its symmetric counterpart */
+  GLUvertex     vHead;          /* dummy header for vertex list */
+  GLUface       fHead;          /* dummy header for face list */
+  GLUhalfEdge   eHead;          /* dummy header for edge list */
+  GLUhalfEdge   eHeadSym;       /* and its symmetric counterpart */
 };
 
 /* The mesh operations below have three motivations: completeness,
@@ -191,8 +191,8 @@ struct GLUmesh {
  *
  * __wrath__gl_meshSplice( eOrg, eDst ) is the basic operation for changing the
  * mesh connectivity and topology.  It changes the mesh so that
- *	eOrg->Onext <- OLD( eDst->Onext )
- *	eDst->Onext <- OLD( eOrg->Onext )
+ *      eOrg->Onext <- OLD( eDst->Onext )
+ *      eDst->Onext <- OLD( eOrg->Onext )
  * where OLD(...) means the value before the meshSplice operation.
  *
  * This can have two effects on the vertex structure:
@@ -247,23 +247,23 @@ struct GLUmesh {
  * __wrath__gl_meshCheckMesh( mesh ) checks a mesh for self-consistency.
  */
 
-GLUhalfEdge	*__wrath__gl_meshMakeEdge( GLUmesh *mesh );
-int		__wrath__gl_meshSplice( GLUhalfEdge *eOrg, GLUhalfEdge *eDst );
-int		__wrath__gl_meshDelete( GLUhalfEdge *eDel );
+GLUhalfEdge     *__wrath__gl_meshMakeEdge( GLUmesh *mesh );
+int             __wrath__gl_meshSplice( GLUhalfEdge *eOrg, GLUhalfEdge *eDst );
+int             __wrath__gl_meshDelete( GLUhalfEdge *eDel );
 
-GLUhalfEdge	*__wrath__gl_meshAddEdgeVertex( GLUhalfEdge *eOrg );
-GLUhalfEdge	*__wrath__gl_meshSplitEdge( GLUhalfEdge *eOrg );
-GLUhalfEdge	*__wrath__gl_meshConnect( GLUhalfEdge *eOrg, GLUhalfEdge *eDst );
+GLUhalfEdge     *__wrath__gl_meshAddEdgeVertex( GLUhalfEdge *eOrg );
+GLUhalfEdge     *__wrath__gl_meshSplitEdge( GLUhalfEdge *eOrg );
+GLUhalfEdge     *__wrath__gl_meshConnect( GLUhalfEdge *eOrg, GLUhalfEdge *eDst );
 
-GLUmesh		*__wrath__gl_meshNewMesh( void );
-GLUmesh		*__wrath__gl_meshUnion( GLUmesh *mesh1, GLUmesh *mesh2 );
-void		__wrath__gl_meshDeleteMesh( GLUmesh *mesh );
-void		__wrath__gl_meshZapFace( GLUface *fZap );
+GLUmesh         *__wrath__gl_meshNewMesh( void );
+GLUmesh         *__wrath__gl_meshUnion( GLUmesh *mesh1, GLUmesh *mesh2 );
+void            __wrath__gl_meshDeleteMesh( GLUmesh *mesh );
+void            __wrath__gl_meshZapFace( GLUface *fZap );
 
 #ifdef NDEBUG
-#define		__wrath__gl_meshCheckMesh( mesh )
+#define         __wrath__gl_meshCheckMesh( mesh )
 #else
-void		__wrath__gl_meshCheckMesh( GLUmesh *mesh );
+void            __wrath__gl_meshCheckMesh( GLUmesh *mesh );
 #endif
 
 #endif

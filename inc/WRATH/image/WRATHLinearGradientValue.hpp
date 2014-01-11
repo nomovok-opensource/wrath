@@ -44,10 +44,10 @@ public:
   enum
     {
       /*!
-	Enumeration specifyig how many
-	per node values needed to store
-	the packed data of a 
-	WRATHLinearGradientValue object
+        Enumeration specifyig how many
+        per node values needed to store
+        the packed data of a 
+        WRATHLinearGradientValue object
        */
       number_per_node_values=WRATHGradientValueBase::number_per_node_values + 4
     };
@@ -60,7 +60,7 @@ public:
                 of the linear gradient 
    */
   WRATHLinearGradientValue(const vec2 &pstart=vec2(0.0f, 0.0f),
-			   const vec2 &pend=vec2(1.0f, 1.0f))
+                           const vec2 &pend=vec2(1.0f, 1.0f))
   {
     set_gradient(pstart, pend);
   }
@@ -163,8 +163,8 @@ public:
   static
   void
   add_per_node_values_at(int start_index,
-			   WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
-			   const WRATHLayerNodeValuePackerBase::function_packet &available);
+                           WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
+                           const WRATHLayerNodeValuePackerBase::function_packet &available);
 
   /*!\fn const WRATHGradientSourceBase* gradient_source
     Returns the WRATHGradientSource object

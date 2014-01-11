@@ -40,20 +40,20 @@ shader_hoard(void)
 {
   WRATHStaticInit();
   static WRATHShaderBrushSourceHoard R(WRATHGLShader::shader_source_collection()
-				       .absorb_shader_stage(GL_VERTEX_SHADER, 
-							    WRATHGLShader::shader_source()
+                                       .absorb_shader_stage(GL_VERTEX_SHADER, 
+                                                            WRATHGLShader::shader_source()
                                                             .add_macro("WRATH_APPLY_BRUSH")
-							    .add_source("shape.vert.wrath-shader.glsl", 
-									WRATHGLShader::from_resource))
+                                                            .add_source("shape.vert.wrath-shader.glsl", 
+                                                                        WRATHGLShader::from_resource))
 
-				       .absorb_shader_stage(GL_FRAGMENT_SHADER,
-							    WRATHGLShader::shader_source()
+                                       .absorb_shader_stage(GL_FRAGMENT_SHADER,
+                                                            WRATHGLShader::shader_source()
                                                             .specify_extension("GL_OES_standard_derivatives",
                                                                                WRATHGLShader::enable_extension)
                                                             .add_macro("WRATH_APPLY_BRUSH")
-							    .add_source("shape.frag.wrath-shader.glsl", 
-									WRATHGLShader::from_resource) ));
-						
+                                                            .add_source("shape.frag.wrath-shader.glsl", 
+                                                                        WRATHGLShader::from_resource) ));
+                                                
   return R;
 }
 

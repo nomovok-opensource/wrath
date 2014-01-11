@@ -157,7 +157,7 @@ add_shader_source_code_specify_interpolation_implementation(enum interpolation_b
     .add_macro("WRATH_REPEAT_GRADIENT_pre_compute", "pre_compute_gradient"+suffix)
     .add_macro("WRATH_REPEAT_VARYING_LABEL", varying_label)
     .add_source("repeat-gradient.pre-compute.wrath-shader.glsl",
-		WRATHGLShader::from_resource)
+                WRATHGLShader::from_resource)
     .add_source("\n#undef WRATH_REPEAT_GRADIENT_PREC", WRATHGLShader::from_string)
     .add_source("\n#undef WRATH_REPEAT_GRADIENT_UNDERLYING_GRADIENT_pre_compute", WRATHGLShader::from_string)
     .add_source("\n#undef WRATH_REPEAT_GRADIENT_pre_compute", WRATHGLShader::from_string)
@@ -173,7 +173,7 @@ add_shader_source_code_specify_interpolation_implementation(enum interpolation_b
     .add_macro("WRATH_REPEAT_GRADIENT_compute", "compute_gradient"+suffix)
     .add_macro("WRATH_REPEAT_VARYING_LABEL", varying_label)
     .add_source("repeat-gradient.wrath-shader.glsl",
-		WRATHGLShader::from_resource)
+                WRATHGLShader::from_resource)
     .add_source("\n#undef WRATH_REPEAT_GRADIENT_PREC", WRATHGLShader::from_string)
     .add_source("\n#undef WRATH_REPEAT_GRADIENT_UNDERLYING_GRADIENT_compute", WRATHGLShader::from_string)
     .add_source("\n#undef WRATH_REPEAT_GRADIENT_compute", WRATHGLShader::from_string)
@@ -202,18 +202,18 @@ add_per_node_values_at(int start,
     {
      
       spec
-	.add_source(start+0, "WRATH_GRADIENT_window_x", GL_FRAGMENT_SHADER)
-	.add_source(start+1, "WRATH_GRADIENT_window_y", GL_FRAGMENT_SHADER)
-	.add_source(start+2, "WRATH_GRADIENT_window_delta_x", GL_FRAGMENT_SHADER)
-	.add_source(start+3, "WRATH_GRADIENT_window_delta_y", GL_FRAGMENT_SHADER);
+        .add_source(start+0, "WRATH_GRADIENT_window_x", GL_FRAGMENT_SHADER)
+        .add_source(start+1, "WRATH_GRADIENT_window_y", GL_FRAGMENT_SHADER)
+        .add_source(start+2, "WRATH_GRADIENT_window_delta_x", GL_FRAGMENT_SHADER)
+        .add_source(start+3, "WRATH_GRADIENT_window_delta_y", GL_FRAGMENT_SHADER);
     }
   else
     {
       spec
-	.add_source(start+0, "WRATH_GRADIENT_window_x", GL_VERTEX_SHADER)
-	.add_source(start+1, "WRATH_GRADIENT_window_y", GL_VERTEX_SHADER)
-	.add_source(start+2, "WRATH_GRADIENT_window_delta_x", GL_VERTEX_SHADER)
-	.add_source(start+3, "WRATH_GRADIENT_window_delta_y", GL_VERTEX_SHADER);
+        .add_source(start+0, "WRATH_GRADIENT_window_x", GL_VERTEX_SHADER)
+        .add_source(start+1, "WRATH_GRADIENT_window_y", GL_VERTEX_SHADER)
+        .add_source(start+2, "WRATH_GRADIENT_window_delta_x", GL_VERTEX_SHADER)
+        .add_source(start+3, "WRATH_GRADIENT_window_delta_y", GL_VERTEX_SHADER);
     }
 }
 

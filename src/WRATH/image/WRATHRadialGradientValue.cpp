@@ -171,8 +171,8 @@ update_pack_values(void)
 void
 WRATHRadialGradientValue::
 add_per_node_values_at(int start, 
-			 WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
-			 const WRATHLayerNodeValuePackerBase::function_packet &fpt)
+                         WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
+                         const WRATHLayerNodeValuePackerBase::function_packet &fpt)
 {
   WRATHGradientValueBase::add_per_node_values_at(start, spec, fpt);
   start+=WRATHGradientValueBase::number_per_node_values;

@@ -972,25 +972,25 @@ private:
   void
   draw_implement(const float4x4 *pre_modelview_transform,
                  draw_state &state_stack,
-		 WRATHRawDrawData::DrawState &gl_state,
+                 WRATHRawDrawData::DrawState &gl_state,
                  draw_information &stats,
                  WRATHLayer *from);
 
   bool
   push_clipping(draw_state &state_stack, bool &have_clip_items,
-		WRATHRawDrawData::DrawState &gl_state);
+                WRATHRawDrawData::DrawState &gl_state);
 
   void
   push_clipped_in_items(draw_state &state_stack, bool &have_clip_items,
-			WRATHRawDrawData::DrawState &gl_state);
+                        WRATHRawDrawData::DrawState &gl_state);
 
   void
   pop_clipping(draw_state &state_stack, bool have_clip_items,
-	       WRATHRawDrawData::DrawState &gl_state);
+               WRATHRawDrawData::DrawState &gl_state);
 
   void
   pop_clipped_in_items(draw_state &state_stack, bool have_clip_items,
-		       WRATHRawDrawData::DrawState &gl_state);
+                       WRATHRawDrawData::DrawState &gl_state);
 
   void
   on_end_simulation_frame(void);

@@ -24,19 +24,19 @@
 void
 WRATHTransformGradientValue::
 add_per_node_values_at(int start,
-			 WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
-			 const WRATHLayerNodeValuePackerBase::function_packet &fpt,
-			 uint32_t add_to_shader_stage_flags)
+                         WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
+                         const WRATHLayerNodeValuePackerBase::function_packet &fpt,
+                         uint32_t add_to_shader_stage_flags)
 { 
   if((add_to_shader_stage_flags&add_to_fragment_shader)!=0 
      and fpt.supports_per_node_value(GL_FRAGMENT_SHADER))
     {
       GLenum shader_stage=GL_FRAGMENT_SHADER;
       spec
-	.add_source(start+0, "WRATH_TRANSFORM_GRADIENT_tx", shader_stage)
-	.add_source(start+1, "WRATH_TRANSFORM_GRADIENT_ty", shader_stage)
-	.add_source(start+2, "WRATH_TRANSFORM_GRADIENT_rx", shader_stage)
-	.add_source(start+3, "WRATH_TRANSFORM_GRADIENT_ry", shader_stage);
+        .add_source(start+0, "WRATH_TRANSFORM_GRADIENT_tx", shader_stage)
+        .add_source(start+1, "WRATH_TRANSFORM_GRADIENT_ty", shader_stage)
+        .add_source(start+2, "WRATH_TRANSFORM_GRADIENT_rx", shader_stage)
+        .add_source(start+3, "WRATH_TRANSFORM_GRADIENT_ry", shader_stage);
     }
 
   if((add_to_shader_stage_flags&add_to_fragment_shader)!=0 
@@ -44,9 +44,9 @@ add_per_node_values_at(int start,
     {
       GLenum shader_stage=GL_VERTEX_SHADER;
       spec
-	.add_source(start+0, "WRATH_TRANSFORM_GRADIENT_tx", shader_stage)
-	.add_source(start+1, "WRATH_TRANSFORM_GRADIENT_ty", shader_stage)
-	.add_source(start+2, "WRATH_TRANSFORM_GRADIENT_rx", shader_stage)
-	.add_source(start+3, "WRATH_TRANSFORM_GRADIENT_ry", shader_stage);
+        .add_source(start+0, "WRATH_TRANSFORM_GRADIENT_tx", shader_stage)
+        .add_source(start+1, "WRATH_TRANSFORM_GRADIENT_ty", shader_stage)
+        .add_source(start+2, "WRATH_TRANSFORM_GRADIENT_rx", shader_stage)
+        .add_source(start+3, "WRATH_TRANSFORM_GRADIENT_ry", shader_stage);
     }
 }

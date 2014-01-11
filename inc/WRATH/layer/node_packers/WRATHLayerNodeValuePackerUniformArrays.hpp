@@ -44,8 +44,8 @@ public:
     \param spec passed to ctor of \ref WRATHLayerNodeValuePackerBase
    */
   WRATHLayerNodeValuePackerUniformArrays(WRATHLayerBase *layer,
-					 const SpecDataProcessedPayload::const_handle &payload,
-					 const ProcessedActiveNodeValuesCollection &spec);
+                                         const SpecDataProcessedPayload::const_handle &payload,
+                                         const ProcessedActiveNodeValuesCollection &spec);
 
   virtual
   ~WRATHLayerNodeValuePackerUniformArrays();

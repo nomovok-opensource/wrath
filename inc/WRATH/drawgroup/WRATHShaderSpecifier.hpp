@@ -245,8 +245,8 @@ public:
 
   /*!\fn WRATHShaderSpecifier(const WRATHGLShader::shader_source &vs=WRATHGLShader::shader_source(),
                               const WRATHGLShader::shader_source &fs=WRATHGLShader::shader_source(),
-			      const Initializer &initers=Initializer(),
-			      const WRATHGLProgramOnBindActionArray &on_bind_actions=WRATHGLProgramOnBindActionArray())
+                              const Initializer &initers=Initializer(),
+                              const WRATHGLProgramOnBindActionArray &on_bind_actions=WRATHGLProgramOnBindActionArray())
     Ctor. Will not be tracked by the resource manager of WRATHShaderSpecifier.
     \param vs initial value to give the vertex shader source (see \ref vertex_shader_source())
     \param fs initial value to give the fragment shader source (see \ref fragment_shader_source())

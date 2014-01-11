@@ -28,7 +28,7 @@ namespace
   {
   public:
     FontSizeMagic(WRATHTextureFont *font, 
-		  int texture_page, const std::string &pname):
+                  int texture_page, const std::string &pname):
       m_name(pname),
       m_ready(false),
       m_texture_reciprocal_location(-1),

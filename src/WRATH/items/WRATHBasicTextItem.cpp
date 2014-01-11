@@ -379,7 +379,7 @@ generate_key(std::set<WRATHItemDrawState> &skey,
 {
 
   m_packer->attribute_key(attribute_key,
-			  m_font->glyph_glsl()->m_custom_data_use.size());
+                          m_font->glyph_glsl()->m_custom_data_use.size());
 
   for(int i=0, end_i=m_passes.size(); i!=end_i; ++i)
     {

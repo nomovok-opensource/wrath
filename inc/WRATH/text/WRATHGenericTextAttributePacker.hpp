@@ -212,7 +212,7 @@ public:
     this WRATHGenericTextAttributePacker packs.
     \param number_custom_data_to_use indicates the size of \ref
                                      WRATHTextureFont::GlyphGLSL::m_custom_data_use
-				     which are to also be packed into attributes
+                                     which are to also be packed into attributes
    */
   virtual
   size_t
@@ -339,7 +339,7 @@ public:
                  const glyph_data &in_glyph,
                  const vec2 &normalized_glyph_coordinate_float,
                  vecN<GLshort,2> normalized_glyph_coordinate_short,
-		 const std::vector<int> &custom_data_use,
+                 const std::vector<int> &custom_data_use,
                  c_array<uint8_t> packing_destination,
                  const PackerState &packer_state) const=0;
 

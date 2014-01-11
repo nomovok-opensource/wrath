@@ -55,8 +55,8 @@ absorb(const ActiveNodeValues &obj, const Filter::const_handle &hnd)
     basically walk obj, and add its entries:
    */
   for(map_type::const_iterator 
-	source_iter=obj.m_data.begin(),
-	source_end=obj.m_data.end(); 
+        source_iter=obj.m_data.begin(),
+        source_end=obj.m_data.end(); 
       source_iter!=source_end; ++source_iter)
     {
       if(!hnd.valid() or hnd->absorb_active_node_value(source_iter->second))
@@ -89,9 +89,9 @@ fetch_source_iterator(unsigned int source_index)
       entry.m_offset=number_active();
 
       if(m_permutation_array.size() <= source_index)
-	{
-	  m_permutation_array.resize(1+source_index, -1);
-	}
+        {
+          m_permutation_array.resize(1+source_index, -1);
+        }
       m_permutation_array[source_index]=entry.m_offset;
       
       iter=m_data.insert(map_type::value_type(entry.m_source_index, entry)).first;
@@ -202,12 +202,12 @@ namespace
 
       iter=find(K);
       if(iter==end())
-	{
-	  helper_map_value V;
+        {
+          helper_map_value V;
 
-	  V.m_index=size();
-	  iter=insert( value_type(K, V)).first;
-	}
+          V.m_index=size();
+          iter=insert( value_type(K, V)).first;
+        }
       iter->second.m_shader_stages[shader]=f;
     }
   }; 
@@ -230,14 +230,14 @@ set(const NodeDataPackParametersCollection &parameters,
      1) keyed by packer_set
      2) value is a struct holding
         a) an index (m_index)
-	b) a list of shaders used by the packer_set of the key (std::map<GLenum, Filter>)
+        b) a list of shaders used by the packer_set of the key (std::map<GLenum, Filter>)
      the function note_shader correctly updates the map to note the shader and filter applied to it.
    */
   helper_map helper;
 
   for(std::map<GLenum, ActiveNodeValues::Filter::const_handle>::const_iterator 
-	iter=active_shader_stages.begin(),
-	end=active_shader_stages.end();
+        iter=active_shader_stages.begin(),
+        end=active_shader_stages.end();
       iter!=end; ++iter)
     {
       if(input.active_entry(iter->first))
@@ -249,8 +249,8 @@ set(const NodeDataPackParametersCollection &parameters,
  
   m_values.resize(helper.size());
   for(helper_map::const_iterator 
-	iter=helper.begin(),
-	end=helper.end();
+        iter=helper.begin(),
+        end=helper.end();
       iter!=end; ++iter)
     {
       const helper_map_value &current(iter->second);
@@ -264,19 +264,19 @@ set(const NodeDataPackParametersCollection &parameters,
         from active_shader_stages
        */
       for(std::map<GLenum, ActiveNodeValues::Filter::const_handle>::const_iterator 
-	    siter=current.m_shader_stages.begin(),
-	    send=current.m_shader_stages.end();
-	  siter!=send; ++siter)
-	{
-	  ActiveNodeValuesCollection::map_type::const_iterator mm;
-	  
-	  m_index_for_stage[siter->first]=current.m_index;
-	  mm=input.entries().find(siter->first);
-	  if(mm!=input.entries().end() and siter->second.valid())
-	    {
-	      m_values[current.m_index].second.absorb(mm->second, siter->second);
-	    }
-	}
+            siter=current.m_shader_stages.begin(),
+            send=current.m_shader_stages.end();
+          siter!=send; ++siter)
+        {
+          ActiveNodeValuesCollection::map_type::const_iterator mm;
+          
+          m_index_for_stage[siter->first]=current.m_index;
+          mm=input.entries().find(siter->first);
+          if(mm!=input.entries().end() and siter->second.valid())
+            {
+              m_values[current.m_index].second.absorb(mm->second, siter->second);
+            }
+        }
     }
 }
 
@@ -465,7 +465,7 @@ data_to_pack_to_GL_restrict(void) const
   int I(p->m_parent->triple_buffer_enabler()->present_ID());
   int num_slots(p->m_parent->m_number_slots_to_pack_to_GL[I]);
   int size(num_slots*p->m_padded_row_size_in_floats);
-	    
+            
 
   return(p->m_packing_type==NodeDataPackParameters::packed_by_node and p->m_padded_row_size_in_floats>0)?
     p->m_data_to_pack_to_GL[I].sub_array(0, size):
@@ -487,7 +487,7 @@ non_empty(void) const
 WRATHLayerNodeValuePackerBase::
 WRATHLayerNodeValuePackerBase(WRATHLayerBase *layer,
                               const SpecDataProcessedPayload::const_handle &ppayload,
-			      const ProcessedActiveNodeValuesCollection &spec):
+                              const ProcessedActiveNodeValuesCollection &spec):
   WRATHLayerBase::GLStateOfNodeCollection(layer->triple_buffer_enabler()),
   m_payload(ppayload),  
   m_highest_slot(-1),

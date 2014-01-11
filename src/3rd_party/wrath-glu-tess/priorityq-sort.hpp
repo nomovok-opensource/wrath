@@ -51,12 +51,12 @@
 
 /* Use #define's so that another heap implementation can use this one */
 
-#define PQkey			PQSortKey
-#define PQhandle		PQSortHandle
-#define PriorityQ		PriorityQSort
+#define PQkey                   PQSortKey
+#define PQhandle                PQSortHandle
+#define PriorityQ               PriorityQSort
 
-#define pqNewPriorityQ(leq)	__wrath__gl_pqSortNewPriorityQ(leq)
-#define pqDeletePriorityQ(pq)	__wrath__gl_pqSortDeletePriorityQ(pq)
+#define pqNewPriorityQ(leq)     __wrath__gl_pqSortNewPriorityQ(leq)
+#define pqDeletePriorityQ(pq)   __wrath__gl_pqSortDeletePriorityQ(pq)
 
 /* The basic operations are insertion of a new key (pqInsert),
  * and examination/extraction of a key whose value is minimum
@@ -71,12 +71,12 @@
  * If the heap is empty, pqMinimum/pqExtractMin will return a NULL key.
  * This may also be tested with pqIsEmpty.
  */
-#define pqInit(pq)		__wrath__gl_pqSortInit(pq)
-#define pqInsert(pq,key)	__wrath__gl_pqSortInsert(pq,key)
-#define pqMinimum(pq)		__wrath__gl_pqSortMinimum(pq)
-#define pqExtractMin(pq)	__wrath__gl_pqSortExtractMin(pq)
-#define pqDelete(pq,handle)	__wrath__gl_pqSortDelete(pq,handle)
-#define pqIsEmpty(pq)		__wrath__gl_pqSortIsEmpty(pq)
+#define pqInit(pq)              __wrath__gl_pqSortInit(pq)
+#define pqInsert(pq,key)        __wrath__gl_pqSortInsert(pq,key)
+#define pqMinimum(pq)           __wrath__gl_pqSortMinimum(pq)
+#define pqExtractMin(pq)        __wrath__gl_pqSortExtractMin(pq)
+#define pqDelete(pq,handle)     __wrath__gl_pqSortDelete(pq,handle)
+#define pqIsEmpty(pq)           __wrath__gl_pqSortIsEmpty(pq)
 
 
 /* Since we support deletion the data structure is a little more
@@ -95,23 +95,23 @@ typedef PQHeapHandle PQhandle;
 typedef struct PriorityQ PriorityQ;
 
 struct PriorityQ {
-  PriorityQHeap	*heap;
-  PQkey		*keys;
-  PQkey		**order;
-  PQhandle	size, max;
-  int		initialized;
-  int		(*leq)(PQkey key1, PQkey key2);
+  PriorityQHeap *heap;
+  PQkey         *keys;
+  PQkey         **order;
+  PQhandle      size, max;
+  int           initialized;
+  int           (*leq)(PQkey key1, PQkey key2);
 };
   
-PriorityQ	*pqNewPriorityQ( int (*leq)(PQkey key1, PQkey key2) );
-void		pqDeletePriorityQ( PriorityQ *pq );
+PriorityQ       *pqNewPriorityQ( int (*leq)(PQkey key1, PQkey key2) );
+void            pqDeletePriorityQ( PriorityQ *pq );
 
-int		pqInit( PriorityQ *pq );
-PQhandle	pqInsert( PriorityQ *pq, PQkey key );
-PQkey		pqExtractMin( PriorityQ *pq );
-void		pqDelete( PriorityQ *pq, PQhandle handle );
+int             pqInit( PriorityQ *pq );
+PQhandle        pqInsert( PriorityQ *pq, PQkey key );
+PQkey           pqExtractMin( PriorityQ *pq );
+void            pqDelete( PriorityQ *pq, PQhandle handle );
 
-PQkey		pqMinimum( PriorityQ *pq );
-int		pqIsEmpty( PriorityQ *pq );
+PQkey           pqMinimum( PriorityQ *pq );
+int             pqIsEmpty( PriorityQ *pq );
 
 #endif

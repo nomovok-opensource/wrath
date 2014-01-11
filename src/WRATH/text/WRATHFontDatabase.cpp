@@ -69,13 +69,13 @@ namespace WRATHFontDatabase
      */
     Font::const_handle
     fetch_font(const std::string &pfilename, int pindex,
-	       const FontMemorySource::const_handle &h,
-	       bool register_font);
+               const FontMemorySource::const_handle &h,
+               bool register_font);
 
     std::vector<Font::const_handle>
     fetch_fonts(const std::string &pfilename, 
-		const FontMemorySource::const_handle &h,
-		bool register_font);
+                const FontMemorySource::const_handle &h,
+                bool register_font);
 
     /*
       attempts a match...
@@ -229,8 +229,8 @@ fetch_meta_font(const FontProperties &prop, int idx)
 std::vector<WRATHFontDatabase::Font::const_handle>
 WRATHFontDatabase::FontDatabaseImplement::
 fetch_fonts(const std::string &pfilename, 
-	    const FontMemorySource::const_handle &h,
-	    bool register_font)
+            const FontMemorySource::const_handle &h,
+            bool register_font)
 {
   FT_Face face(NULL);
   FT_Library lib(NULL);
@@ -246,26 +246,26 @@ fetch_fonts(const std::string &pfilename,
   if(!h.valid())
     {
       face_error=FT_New_Face(lib,
-			     pfilename.c_str(),
-			     0, &face);
+                             pfilename.c_str(),
+                             0, &face);
     }
   else
     {
       /*
-	read from memory
+        read from memory
        */
       face_error=FT_New_Memory_Face(lib,
-				    h->data().c_ptr(),
-				    h->data().size(),
-				    0, &face);
+                                    h->data().c_ptr(),
+                                    h->data().size(),
+                                    0, &face);
     }
 
   if(face_error!=0 or face==NULL)
     {
       if(face!=NULL)
-	{
-	  FT_Done_Face(face);
-	}
+        {
+          FT_Done_Face(face);
+        }
       FT_Done_FreeType(lib);
       return H;
     }
@@ -277,9 +277,9 @@ fetch_fonts(const std::string &pfilename,
       R=fetch_font(pfilename, i, h, register_font);
 
       if(R.valid())
-	{
-	  H.push_back(R);
-	}
+        {
+          H.push_back(R);
+        }
     }
   return H;
 }
@@ -287,8 +287,8 @@ fetch_fonts(const std::string &pfilename,
 WRATHFontDatabase::Font::const_handle
 WRATHFontDatabase::FontDatabaseImplement::
 fetch_font(const std::string &pfilename, int pindex,
-	   const FontMemorySource::const_handle &h,
-	   bool register_font)
+           const FontMemorySource::const_handle &h,
+           bool register_font)
 {
   std::map<font_key, Font::handle>::iterator iter;
 
@@ -298,9 +298,9 @@ fetch_font(const std::string &pfilename, int pindex,
     {
       iter=m_fonts.find( font_key(pfilename, pindex));
       if(iter!=m_fonts.end())
-	{
-	  return iter->second;
-	}
+        {
+          return iter->second;
+        }
     }
 
   Font::handle H;
@@ -321,26 +321,26 @@ fetch_font(const std::string &pfilename, int pindex,
   if(!h.valid())
     {
       face_error=FT_New_Face(lib,
-			     pfilename.c_str(),
-			     pindex, &face);
+                             pfilename.c_str(),
+                             pindex, &face);
     }
   else
     {
       /*
-	read from memory
+        read from memory
        */
       face_error=FT_New_Memory_Face(lib,
-				    h->data().c_ptr(),
-				    h->data().size(),
-				    pindex, &face);
+                                    h->data().c_ptr(),
+                                    h->data().size(),
+                                    pindex, &face);
     }
 
   if(face_error!=0 or face==NULL or (face->face_flags&FT_FACE_FLAG_SCALABLE)==0) 
     {
       if(face!=NULL)
-	  {
-	    FT_Done_Face(face);
-	  }
+          {
+            FT_Done_Face(face);
+          }
       FT_Done_FreeType(lib);
       return H;
     }
@@ -527,11 +527,11 @@ add_font(const Font::const_handle &hnd)
 WRATHFontDatabase::MetaFont::connect_t
 WRATHFontDatabase::MetaFont::
 connect_and_append(const signal_t::slot_type &subscriber, int gp_order, 
-		   std::list<Font::const_handle> &out_list) const
+                   std::list<Font::const_handle> &out_list) const
 {
   WRATHAutoLockMutex(m_mutex);
   std::copy(m_font_list.begin(), m_font_list.end(),
-	    std::inserter(out_list, out_list.end()) );
+            std::inserter(out_list, out_list.end()) );
   return m_signal.connect(gp_order, subscriber);
 }
 
@@ -581,21 +581,21 @@ namespace WRATHFontDatabase
   
   Font::const_handle
   fetch_font_entry(const std::string &pfilename, int pface_index,
-		   const FontMemorySource::const_handle &h)
+                   const FontMemorySource::const_handle &h)
   {
     return font_database().fetch_font(pfilename, pface_index, h, true);
   }
 
   std::vector<Font::const_handle>
   fetch_font_entries(const std::string &pfilename,
-		     const FontMemorySource::const_handle &h)
+                     const FontMemorySource::const_handle &h)
   {
     return font_database().fetch_fonts(pfilename, h, true);
   }
 
   Font::const_handle
   create_unregistered_font(const std::string &pfilename, int pface_index,
-			   const FontMemorySource::const_handle &h)
+                           const FontMemorySource::const_handle &h)
   {
     return font_database().fetch_font(pfilename, pface_index, h, false);
   }
@@ -603,7 +603,7 @@ namespace WRATHFontDatabase
   
   std::vector<Font::const_handle>
   create_unregistered_fonts(const std::string &pname, 
-			    const FontMemorySource::const_handle &h)
+                            const FontMemorySource::const_handle &h)
   {
     return font_database().fetch_fonts(pname, h, false);
   }

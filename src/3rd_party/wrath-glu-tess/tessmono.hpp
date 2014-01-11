@@ -66,6 +66,6 @@ int __wrath__gl_meshTessellateMonoRegion( GLUface *face );
 int __wrath__gl_meshTessellateInterior( GLUmesh *mesh );
 void __wrath__gl_meshDiscardExterior( GLUmesh *mesh );
 int __wrath__gl_meshSetWindingNumber( GLUmesh *mesh, int value,
-			        WRATH_GLUboolean keepOnlyBoundary );
+                                WRATH_GLUboolean keepOnlyBoundary );
 
 #endif

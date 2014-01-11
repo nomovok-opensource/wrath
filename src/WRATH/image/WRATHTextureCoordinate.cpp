@@ -214,7 +214,7 @@ LocalAllSources::
 void
 WRATHTextureCoordinate::
 add_per_node_values_at(int start, WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
-			 const WRATHLayerNodeValuePackerBase::function_packet &func)
+                         const WRATHLayerNodeValuePackerBase::function_packet &func)
 {    
   add_per_node_values_at_implement(start, spec, GL_VERTEX_SHADER);
   if(func.supports_per_node_value(GL_FRAGMENT_SHADER))

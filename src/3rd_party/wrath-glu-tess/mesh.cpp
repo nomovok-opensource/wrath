@@ -132,7 +132,7 @@ static void Splice( GLUhalfEdge *a, GLUhalfEdge *b )
  * list will not see the newly created vertices.
  */
 static void MakeVertex( GLUvertex *newVertex, 
-			GLUhalfEdge *eOrig, GLUvertex *vNext )
+                        GLUhalfEdge *eOrig, GLUvertex *vNext )
 {
   GLUhalfEdge *e;
   GLUvertex *vPrev;
@@ -304,8 +304,8 @@ GLUhalfEdge *__wrath__gl_meshMakeEdge( GLUmesh *mesh )
 
 /* __wrath__gl_meshSplice( eOrg, eDst ) is the basic operation for changing the
  * mesh connectivity and topology.  It changes the mesh so that
- *	eOrg->Onext <- OLD( eDst->Onext )
- *	eDst->Onext <- OLD( eOrg->Onext )
+ *      eOrg->Onext <- OLD( eDst->Onext )
+ *      eDst->Onext <- OLD( eOrg->Onext )
  * where OLD(...) means the value before the meshSplice operation.
  *
  * This can have two effects on the vertex structure:
@@ -486,9 +486,9 @@ GLUhalfEdge *__wrath__gl_meshSplitEdge( GLUhalfEdge *eOrg )
 
   /* Set the vertex and face information */
   eOrg->Dst = eNew->Org;
-  eNew->Dst->anEdge = eNew->Sym;	/* may have pointed to eOrg->Sym */
+  eNew->Dst->anEdge = eNew->Sym;        /* may have pointed to eOrg->Sym */
   eNew->Rface = eOrg->Rface;
-  eNew->winding = eOrg->winding;	/* copy old winding information */
+  eNew->winding = eOrg->winding;        /* copy old winding information */
   eNew->Sym->winding = eOrg->Sym->winding;
 
   return eNew;
@@ -569,19 +569,19 @@ void __wrath__gl_meshZapFace( GLUface *fZap )
       /* delete the edge -- see __wrath__gl_MeshDelete above */
 
       if( e->Onext == e ) {
-	KillVertex( e->Org, NULL );
+        KillVertex( e->Org, NULL );
       } else {
-	/* Make sure that e->Org points to a valid half-edge */
-	e->Org->anEdge = e->Onext;
-	Splice( e, e->Oprev );
+        /* Make sure that e->Org points to a valid half-edge */
+        e->Org->anEdge = e->Onext;
+        Splice( e, e->Oprev );
       }
       eSym = e->Sym;
       if( eSym->Onext == eSym ) {
-	KillVertex( eSym->Org, NULL );
+        KillVertex( eSym->Org, NULL );
       } else {
-	/* Make sure that eSym->Org points to a valid half-edge */
-	eSym->Org->anEdge = eSym->Onext;
-	Splice( eSym, eSym->Oprev );
+        /* Make sure that eSym->Org points to a valid half-edge */
+        eSym->Org->anEdge = eSym->Onext;
+        Splice( eSym, eSym->Oprev );
       }
       KillEdge( e );
     }

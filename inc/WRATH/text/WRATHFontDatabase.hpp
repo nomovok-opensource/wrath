@@ -373,14 +373,14 @@ namespace WRATHFontDatabase
       \param subscriber slot called on signal fire
       \param gp_order order of slot call. Lower values of gp_order
                       are guarnteed to be call those of higher values
-		      of gp_order. Slots connected with the same
-		      value of gp_order are called in a non-deterministic
-		      order (i.e. order of calling connect_dtor does
-		      not imply any order about the order of being called).
+                      of gp_order. Slots connected with the same
+                      value of gp_order are called in a non-deterministic
+                      order (i.e. order of calling connect_dtor does
+                      not imply any order about the order of being called).
      */
     connect_t
     connect_unregistered_delete(const signal_t::slot_type &subscriber, 
-				int gp_order=0) const
+                                int gp_order=0) const
     {
       WRATHassert(!m_is_registered_font);
       return m_signal.connect(gp_order, subscriber);
@@ -390,7 +390,7 @@ namespace WRATHFontDatabase
 
     friend class FontDatabaseImplement;
     Font(const FontMemorySource::const_handle &h, 
-	 const std::string &pfilename, int pindex, FT_Face pface);
+         const std::string &pfilename, int pindex, FT_Face pface);
 
     FontMemorySource::const_handle m_memory_source;
     std::string m_filename;
@@ -431,8 +431,8 @@ namespace WRATHFontDatabase
     first_font(void) const
     {
       return (!m_font_list.empty())?
-	m_font_list.front():
-	Font::const_handle();
+        m_font_list.front():
+        Font::const_handle();
     }
 
     /*!\fn connect_t connect(const signal_t::slot_type&, int gp_order) const
@@ -441,10 +441,10 @@ namespace WRATHFontDatabase
       \param subscriber slot called on signal fire
       \param gp_order order of slot call. Lower values of gp_order
                       are guarnteed to be call those of higher values
-		      of gp_order. Slots connected with the same
-		      value of gp_order are called in a non-deterministic
-		      order (i.e. order of calling connect_dtor does
-		      not imply any order about the order of being called).
+                      of gp_order. Slots connected with the same
+                      value of gp_order are called in a non-deterministic
+                      order (i.e. order of calling connect_dtor does
+                      not imply any order about the order of being called).
     */
     connect_t
     connect(const signal_t::slot_type &subscriber, int gp_order=0) const
@@ -466,15 +466,15 @@ namespace WRATHFontDatabase
                         which the connection was made. You have been warned.
       \param gp_order order of slot call. Lower values of gp_order
                       are guarnteed to be call those of higher values
-		      of gp_order. Slots connected with the same
-		      value of gp_order are called in a non-deterministic
-		      order (i.e. order of calling connect_dtor does
-		      not imply any order about the order of being called)
+                      of gp_order. Slots connected with the same
+                      value of gp_order are called in a non-deterministic
+                      order (i.e. order of calling connect_dtor does
+                      not imply any order about the order of being called)
       \param out_list std::list to which to append the font list
     */
     connect_t
     connect_and_append(const signal_t::slot_type &subscriber, int gp_order, 
-		       std::list<Font::const_handle> &out_list) const;
+                       std::list<Font::const_handle> &out_list) const;
 
     /*!\fn connect_t connect_and_append(const signal_t::slot_type &,std::list<Font::const_handle> &) const
       Provided as a conveniance, equivalent to
@@ -486,7 +486,7 @@ namespace WRATHFontDatabase
      */
     connect_t
     connect_and_append(const signal_t::slot_type &subscriber, 
-		       std::list<Font::const_handle> &out_list) const
+                       std::list<Font::const_handle> &out_list) const
     {
       return connect_and_append(subscriber, 0, out_list);
     }
@@ -515,7 +515,7 @@ namespace WRATHFontDatabase
   master_meta_font(void);
 
   /*!\fn Font::const_handle fetch_font_entry(const std::string&, int,
-		                             const FontMemorySource::const_handle&) 
+                                             const FontMemorySource::const_handle&) 
     Returns a handle to a Font sourcing from
     the specified filename and face index
     or from a FontMemorySource. 
@@ -552,11 +552,11 @@ namespace WRATHFontDatabase
                        to source the font
     \param h if valid indicates to source the file from a
              FontMemorySource and thus pfilename gives the
-	     name of the font rather than a filename
+             name of the font rather than a filename
    */
   Font::const_handle
   fetch_font_entry(const std::string &pfilename, int pface_index,
-		   const FontMemorySource::const_handle &h=FontMemorySource::const_handle());
+                   const FontMemorySource::const_handle &h=FontMemorySource::const_handle());
 
   
   /*!\fn std::vector<Font::const_handle> fetch_font_entries(const std::string&, 
@@ -567,11 +567,11 @@ namespace WRATHFontDatabase
     \param pfilename filename from which to source the fonts
     \param h if valid indicates to source the file from a
              FontMemorySource and thus pfilename gives the
-	     name of the fonts rather than a filename
+             name of the fonts rather than a filename
    */
   std::vector<Font::const_handle>
   fetch_font_entries(const std::string &pfilename,
-		     const FontMemorySource::const_handle &h=FontMemorySource::const_handle());
+                     const FontMemorySource::const_handle &h=FontMemorySource::const_handle());
 
  
 
@@ -587,15 +587,15 @@ namespace WRATHFontDatabase
 
      \param pname specifies the name of the font, this value is the return
                   value for Font::name(), but has no impact on the font
-		  database since the font is not added to the database.
+                  database since the font is not added to the database.
      \param pface_index specifies the face index of the font
      \param h a handle to the FontMemorySource from which to source
               the font. If the handle is not valid, then sources
-	      from a file.
+              from a file.
    */
   Font::const_handle
   create_unregistered_font(const std::string &pname, int pface_index,
-			   const FontMemorySource::const_handle &h);
+                           const FontMemorySource::const_handle &h);
 
 
   /*!\fn std::vector<Font::const_handle> create_unregistered_fonts(const std::string&, 
@@ -603,15 +603,15 @@ namespace WRATHFontDatabase
      An analogue of fetch_font_entries() for unregistered fonts.
      \param pname specifies the name of the fonts, this value is the return
                   value for Font::name(), but has no impact on the font
-		  database since the font is not added to the database.
+                  database since the font is not added to the database.
      \param h a handle to the FontMemorySource from which to source
               the font. If the handle is not valid, then sources
-	      from a file.
+              from a file.
     
    */
   std::vector<Font::const_handle>
   create_unregistered_fonts(const std::string &pname, 
-			    const FontMemorySource::const_handle &h);
+                            const FontMemorySource::const_handle &h);
 
   /*!\fn enum return_code release_unregistered_font(const Font::const_handle&)
     For a font created with create_unregistered_font()
@@ -641,7 +641,7 @@ namespace WRATHFontDatabase
   {
     for(;begin!=end; ++begin)
       {
-	release_unregistered_font(*begin);
+        release_unregistered_font(*begin);
       }
   }
 

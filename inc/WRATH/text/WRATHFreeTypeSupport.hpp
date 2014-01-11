@@ -3513,7 +3513,7 @@ namespace WRATHFreeTypeSupport
 
     \param fnt handle to WRATHFontDatabase::Font from which to source font data,
                specifies from where to source the Font (file, memory, etc)
-	       and what face index to use
+               and what face index to use
    */
   LockableFace::handle
   load_face(const WRATHFontDatabase::Font::const_handle &fnt);

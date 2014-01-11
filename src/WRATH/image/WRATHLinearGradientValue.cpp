@@ -132,7 +132,7 @@ namespace
 void
 WRATHLinearGradientValue::
 add_per_node_values_at(int start, WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
-			 const WRATHLayerNodeValuePackerBase::function_packet &func)
+                         const WRATHLayerNodeValuePackerBase::function_packet &func)
 {
   WRATHGradientValueBase::add_per_node_values_at(start, spec, func);
   start+=WRATHGradientValueBase::number_per_node_values;

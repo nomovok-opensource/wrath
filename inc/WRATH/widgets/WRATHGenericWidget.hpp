@@ -33,12 +33,12 @@
   WRATHGenericWidget create a widget type from an item type.
   \tparam pItemType the type for the underling UI item, must
                     be derived from WRATHBaseItem and provide
-		    the member type parameters and the ctor 
-		    of the item is of the form \code 
-		    pItemType(const WRATHItemDrawerFactory &fact, int subdrawer_id,
-		              WRATHCanvas *canvas,
-			      const WRATHCanvas::SubKeyBase &subkey,
-			      const pItemType::parameters &p)
+                    the member type parameters and the ctor 
+                    of the item is of the form \code 
+                    pItemType(const WRATHItemDrawerFactory &fact, int subdrawer_id,
+                              WRATHCanvas *canvas,
+                              const WRATHCanvas::SubKeyBase &subkey,
+                              const pItemType::parameters &p)
                     \endcode
   \tparam pWidgetBase type defined by \ref WRATHWidgetBase providing 
                       node type, canvas type, etc for the widget  
@@ -78,7 +78,7 @@ public:
     \param params parameters to specify the ctor for the underling item
    */  
   WRATHGenericWidget(Canvas *pcanvas,
-		     const parameters &params):
+                     const parameters &params):
     WidgetBase(pcanvas),
     item_type(typename WidgetBase::DrawerFactory(), 
               WidgetBase::subdrawer_id(),
@@ -97,7 +97,7 @@ public:
    */  
   template<typename WidgetType>
   WRATHGenericWidget(WidgetType *parent_widget,
-		     const parameters &params):
+                     const parameters &params):
     WidgetBase(parent_widget->node()),
     item_type(typename WidgetBase::DrawerFactory(), 
               WidgetBase::subdrawer_id(),
@@ -118,8 +118,8 @@ public:
    */  
   template<typename ParentType>
   WRATHGenericWidget(ParentType *parent,
-		     Canvas *pcanvas,
-		     const parameters &params):
+                     Canvas *pcanvas,
+                     const parameters &params):
     WidgetBase(parent),
     item_type(typename WidgetBase::DrawerFactory(), 
               WidgetBase::subdrawer_id(),

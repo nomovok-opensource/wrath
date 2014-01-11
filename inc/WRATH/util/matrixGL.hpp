@@ -258,11 +258,11 @@ public:
 
     for(unsigned int i=0;i<N;++i)
       {
-	retval[i]=T(0);
-	for(unsigned int j=0;j<M;++j)
-	  {
-	    retval[i]+=operator()(i,j)*in[j];
-	  }
+        retval[i]=T(0);
+        for(unsigned int j=0;j<M;++j)
+          {
+            retval[i]+=operator()(i,j)*in[j];
+          }
       }
 
     return retval;
@@ -282,11 +282,11 @@ public:
 
     for(unsigned int i=0;i<M;++i)
       {
-	retval[i]=T(0);
-	for(unsigned int j=0;j<N;++j)
-	  {
-	    retval[i]+=in[j]*matrix.operator()(j,i);
-	  }
+        retval[i]=T(0);
+        for(unsigned int j=0;j<N;++j)
+          {
+            retval[i]+=in[j]*matrix.operator()(j,i);
+          }
       }
     return retval;
   }

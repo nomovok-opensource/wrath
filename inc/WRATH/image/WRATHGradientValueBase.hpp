@@ -53,10 +53,10 @@ public:
   enum
     {
       /*!
-	Enumeration specifyig how many
-	per node values needed to store
-	the packed data of a 
-	WRATHGradientValueBase object
+        Enumeration specifyig how many
+        per node values needed to store
+        the packed data of a 
+        WRATHGradientValueBase object
        */
       number_per_node_values=1
     };
@@ -142,8 +142,8 @@ public:
   static
   void
   add_per_node_values_at(int start_index,
-			   WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
-			   const WRATHLayerNodeValuePackerBase::function_packet &available);
+                           WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
+                           const WRATHLayerNodeValuePackerBase::function_packet &available);
 
 private:
   float m_y_texture_coordinate;

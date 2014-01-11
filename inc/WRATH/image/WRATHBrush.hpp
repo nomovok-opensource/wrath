@@ -49,37 +49,37 @@ namespace WRATHBrushBits
   enum brush_bits
     {
       /*!
-	Bit up indicates to add anti-aliasing logic
-	to shading. 
+        Bit up indicates to add anti-aliasing logic
+        to shading. 
        */
       anti_alias_bit=1,
 
       /*!
-	Bit up indicates to perform alpha test
-	against image alpha
+        Bit up indicates to perform alpha test
+        against image alpha
        */
       image_alpha_test_bit=2,
 
       /*!
-	Bit up indicates to perform alpha test
-	against gradient alpha
+        Bit up indicates to perform alpha test
+        against gradient alpha
        */
       gradient_alpha_test_bit=4,
 
       /*!
-	Bit up indicates to perform alpha
-	test on const-color value
+        Bit up indicates to perform alpha
+        test on const-color value
        */
       color_alpha_test_bit=8,
 
       /*!
-	Bit up indicates to perform alpha
-	test on final, cumalative, color value.
+        Bit up indicates to perform alpha
+        test on final, cumalative, color value.
        */
       final_color_alpha_test_bit=16,
 
       /*!
-	Bit up indicates to pre-multiply alpha
+        Bit up indicates to pre-multiply alpha
        */
       premultiply_alpha_bit=32,
 
@@ -180,9 +180,9 @@ class WRATHShaderBrush:public WRATHBrushBits::BrushBits<WRATHShaderBrush>
 {
 public:
   /*!\fn WRATHShaderBrush(const WRATHGradientSourceBase*,
-		   const WRATHTextureCoordinateSourceBase*,
-		   const WRATHColorValueSource*,
-		   uint32_t)
+                   const WRATHTextureCoordinateSourceBase*,
+                   const WRATHColorValueSource*,
+                   uint32_t)
     Ctor.
     \param grad value to which to initalize \ref m_gradient_source
     \param tex value to which to initalize \ref m_texture_coordinate_source
@@ -191,9 +191,9 @@ public:
                  \ref WRATHBrushBits::BrushBits
    */
   WRATHShaderBrush(const WRATHGradientSourceBase *grad=NULL,
-		   const WRATHTextureCoordinateSourceBase *tex=NULL,
-		   const WRATHColorValueSource *color=NULL,
-		   uint32_t pbits=0):
+                   const WRATHTextureCoordinateSourceBase *tex=NULL,
+                   const WRATHColorValueSource *color=NULL,
+                   uint32_t pbits=0):
     WRATHBrushBits::BrushBits<WRATHShaderBrush>(pbits),
     m_gradient_source(grad),
     m_texture_coordinate_source(tex),

@@ -336,7 +336,7 @@ namespace
     on_combine_vertex(vec2 vertex_position,
                       const_c_array<void*> vertex_source_datums,
                       const_c_array<float> vertex_weights,
-		      unsigned int &increment_on_create_pt);
+                      unsigned int &increment_on_create_pt);
 
     const WRATHShapeTriangulatorPayload::PointBase*
     point(unsigned int I) const
@@ -523,8 +523,8 @@ namespace
     /*
       basic idea,
         whenever a combine vertex is called, first check
-	if it is already in m_values, if it is return the
-	premade one, otherwise make a new one.
+        if it is already in m_values, if it is return the
+        premade one, otherwise make a new one.
      */
     typedef std::list<unsigned int*> point_id_list;
     std::map<ivec4, point_id_list> m_values;
@@ -594,7 +594,7 @@ namespace
       WRATHunused(polygon_data);
       return m_point_holder->on_combine_vertex(vertex_position, 
                                                vertex_source_datums, vertex_weights, 
-					       m_combine_vertices_added); 
+                                               m_combine_vertices_added); 
     }
     
     unsigned int
@@ -1245,7 +1245,7 @@ PointHolder::
 on_combine_vertex(vec2 vertex_position,
                   const_c_array<void*> vertex_source_datums,
                   const_c_array<float> vertex_weights,
-		  unsigned int &increment_on_create_pt)
+                  unsigned int &increment_on_create_pt)
 {
   vecN<unsigned int, 4> ids;
   const_c_array<unsigned int> ids_carray(ids);
@@ -1275,15 +1275,15 @@ on_combine_vertex(vec2 vertex_position,
   if(iter!=m_values.end())
     {
       for(point_id_list::iterator i=iter->second.begin(), e=iter->second.end(); i!=e; ++i)
-	{
-	  vec2 delta;
+        {
+          vec2 delta;
 
-	  delta=point(**i)->m_position - vertex_position;
-	  if(delta.L1norm()<0.00001f)
-	    {
-	      return *i;
-	    }
-	}
+          delta=point(**i)->m_position - vertex_position;
+          if(delta.L1norm()<0.00001f)
+            {
+              return *i;
+            }
+        }
     }
   
   ids_carray=ids_carray.sub_array(0, vertex_source_datums.size());

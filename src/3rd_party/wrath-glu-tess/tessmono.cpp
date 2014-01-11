@@ -39,8 +39,8 @@
 #include "tessmono.hpp"
 #include <assert.h>
 
-#define AddWinding(eDst,eSrc)	(eDst->winding += eSrc->winding, \
-				 eDst->Sym->winding += eSrc->Sym->winding)
+#define AddWinding(eDst,eSrc)   (eDst->winding += eSrc->winding, \
+                                 eDst->Sym->winding += eSrc->Sym->winding)
 
 /* __wrath__gl_meshTessellateMonoRegion( face ) tessellates a monotone region
  * (what else would it do??)  The region must consist of a single
@@ -94,19 +94,19 @@ int __wrath__gl_meshTessellateMonoRegion( GLUface *face )
        * are CW, given that the upper and lower chains are truly monotone.
        */
       while( lo->Lnext != up && (EdgeGoesLeft( lo->Lnext )
-	     || EdgeSign( lo->Org, lo->Dst, lo->Lnext->Dst ) <= 0 )) {
-	GLUhalfEdge *tempHalfEdge= __wrath__gl_meshConnect( lo->Lnext, lo );
-	if (tempHalfEdge == NULL) return 0;
-	lo = tempHalfEdge->Sym;
+             || EdgeSign( lo->Org, lo->Dst, lo->Lnext->Dst ) <= 0 )) {
+        GLUhalfEdge *tempHalfEdge= __wrath__gl_meshConnect( lo->Lnext, lo );
+        if (tempHalfEdge == NULL) return 0;
+        lo = tempHalfEdge->Sym;
       }
       lo = lo->Lprev;
     } else {
       /* lo->Org is on the left.  We can make CCW triangles from up->Dst. */
       while( lo->Lnext != up && (EdgeGoesRight( up->Lprev )
-	     || EdgeSign( up->Dst, up->Org, up->Lprev->Org ) >= 0 )) {
-	GLUhalfEdge *tempHalfEdge= __wrath__gl_meshConnect( up, up->Lprev );
-	if (tempHalfEdge == NULL) return 0;
-	up = tempHalfEdge->Sym;
+             || EdgeSign( up->Dst, up->Org, up->Lprev->Org ) >= 0 )) {
+        GLUhalfEdge *tempHalfEdge= __wrath__gl_meshConnect( up, up->Lprev );
+        if (tempHalfEdge == NULL) return 0;
+        up = tempHalfEdge->Sym;
       }
       up = up->Lnext;
     }
@@ -166,7 +166,7 @@ void __wrath__gl_meshDiscardExterior( GLUmesh *mesh )
   }
 }
 
-#define MARKED_FOR_DELETION	0x7fffffff
+#define MARKED_FOR_DELETION     0x7fffffff
 
 /* __wrath__gl_meshSetWindingNumber( mesh, value, keepOnlyBoundary ) resets the
  * winding numbers on all edges so that regions marked "inside" the
@@ -177,7 +177,7 @@ void __wrath__gl_meshDiscardExterior( GLUmesh *mesh )
  * separate an interior region from an exterior one.
  */
 int __wrath__gl_meshSetWindingNumber( GLUmesh *mesh, int value,
-			        WRATH_GLUboolean keepOnlyBoundary )
+                                WRATH_GLUboolean keepOnlyBoundary )
 {
   GLUhalfEdge *e, *eNext;
 
@@ -191,9 +191,9 @@ int __wrath__gl_meshSetWindingNumber( GLUmesh *mesh, int value,
 
       /* Both regions are interior, or both are exterior. */
       if( ! keepOnlyBoundary ) {
-	e->winding = 0;
+        e->winding = 0;
       } else {
-	if ( !__wrath__gl_meshDelete( e ) ) return 0;
+        if ( !__wrath__gl_meshDelete( e ) ) return 0;
       }
     }
   }

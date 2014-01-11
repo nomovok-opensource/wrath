@@ -217,7 +217,7 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
         .add_sampler_initializer(fs_source->m_sampler_names[i], i);
 
       new_specifier->append_bindings()
-	.add_texture_binding(GL_TEXTURE0+i);
+        .add_texture_binding(GL_TEXTURE0+i);
     }
 
   for(std::map<unsigned int, std::string>::const_iterator iter=m_additional_textures.begin(),
@@ -231,7 +231,7 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
         .add_sampler_initializer(iter->second, S);
 
       new_specifier->append_bindings()
-	.add_texture_binding(GL_TEXTURE0+S);
+        .add_texture_binding(GL_TEXTURE0+S);
     }
 
   /*
@@ -263,14 +263,14 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
   if(number_custom_to_use!=0)
     {
       const char *struct_def=
-	"\nstruct wrath_font_custom_data_t"
-	"\n{"
-	"\n\tfloat highp values[WRATH_FONT_CUSTOM_DATA];"
-	"\n};\n";
+        "\nstruct wrath_font_custom_data_t"
+        "\n{"
+        "\n\tfloat highp values[WRATH_FONT_CUSTOM_DATA];"
+        "\n};\n";
 
       cst
-	.add_macro("WRATH_FONT_CUSTOM_DATA", number_custom_to_use)
-	.add_source(struct_def, WRATHGLShader::from_string);
+        .add_macro("WRATH_FONT_CUSTOM_DATA", number_custom_to_use)
+        .add_source(struct_def, WRATHGLShader::from_string);
       
       text_packer->generate_custom_data_glsl(cst, number_custom_to_use);
     }

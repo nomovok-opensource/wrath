@@ -41,7 +41,7 @@ namespace
                                       glyph_bottom_left_type, //glyph bottom left -- 3
                                       glyph_normalized_coordinate_type, //glyph_normalized -- 4
                                       color_type //color --5
-				      >  
+                                      >  
   {
   public:
 
@@ -234,8 +234,8 @@ attribute_names(std::vector<std::string> &out_names, int number_custom_data) con
   
   out_names.resize(packer_attribute_names().size()+N);
   std::copy(packer_attribute_names().begin(),
-	    packer_attribute_names().end(),
-	    out_names.begin());
+            packer_attribute_names().end(),
+            out_names.begin());
   for(unsigned int i=0, k=packer_attribute_names().size(); i<N; ++i, ++k)
     {
       std::ostringstream ostr;
@@ -248,7 +248,7 @@ attribute_names(std::vector<std::string> &out_names, int number_custom_data) con
 void
 WRATHDefaultTextAttributePacker::
 generate_custom_data_glsl(WRATHGLShader::shader_source &out_src,
-			  int number_custom_data_to_use) const
+                          int number_custom_data_to_use) const
 {
   int N, R, idx;
   const char *swizzle[]={".x", ".y", ".z", ".w" };
@@ -280,24 +280,24 @@ generate_custom_data_glsl(WRATHGLShader::shader_source &out_src,
   for(int i=0; i<N; ++i)
     {
       for(int j=0; j<4; ++j, ++idx)
-	{
-	  ostr << "\n\tv.values[" << idx << "]=" 
-	       << "custom_data" << i << swizzle[j] << ";";
-	}
+        {
+          ostr << "\n\tv.values[" << idx << "]=" 
+               << "custom_data" << i << swizzle[j] << ";";
+        }
     }
 
   if(R==1)
     {
       ostr << "\n\tv.values[" << idx 
-	   << "]=custom_data" << N << ";";
+           << "]=custom_data" << N << ";";
     }
   else
     {
       for(int j=0; j<R; ++j, ++idx)
-	{
-	  ostr << "\n\tv.values[" << idx << "]=" 
-	       << "custom_data" << N << swizzle[j] << ";";
-	}
+        {
+          ostr << "\n\tv.values[" << idx << "]=" 
+               << "custom_data" << N << swizzle[j] << ";";
+        }
     }
   ostr << "\n}\n";
 
@@ -307,7 +307,7 @@ generate_custom_data_glsl(WRATHGLShader::shader_source &out_src,
 void
 WRATHDefaultTextAttributePacker::
 attribute_key(WRATHAttributeStoreKey &pkey,
-	      int number_custom_floats) const
+              int number_custom_floats) const
 {
   pkey
     .type_and_format(type_tag<character_attribute>());
@@ -323,13 +323,13 @@ attribute_key(WRATHAttributeStoreKey &pkey,
       int attr_slot, num_remaining;
 
       /*
-	we are going to potentially unsafely assume that
-	sizeof(character_attribute_with_custom<N+1>) is
-	same as sizeof(character_attribute_with_custom<N>) + 4
-	for N>=1
+        we are going to potentially unsafely assume that
+        sizeof(character_attribute_with_custom<N+1>) is
+        same as sizeof(character_attribute_with_custom<N>) + 4
+        for N>=1
        */
       pkey.m_type_size = sizeof(character_attribute_with_custom<1>)
-	+ sizeof(float)*(number_custom_floats-1);
+        + sizeof(float)*(number_custom_floats-1);
 
       p1=reinterpret_cast<const char*>(boost::addressof(conveniance));
       p2=reinterpret_cast<const char*>(boost::addressof(conveniance.m_custom[0]));
@@ -338,50 +338,50 @@ attribute_key(WRATHAttributeStoreKey &pkey,
 
       attr_slot=character_attribute::number_attributes;
       /*
-	every 4 custom values adds a new vec4 attribute
+        every 4 custom values adds a new vec4 attribute
        */      
       for(;num_remaining>=4 and attr_slot<WRATHDrawCallSpec::attribute_count;
-	  num_remaining-=4, ++attr_slot, offset+=4*sizeof(float))
-	{
-	  pkey.m_attribute_format_location[attr_slot].m_offset=offset;
-	  pkey.m_attribute_format_location[attr_slot].traits( type_tag<vec4>() );
-	}
+          num_remaining-=4, ++attr_slot, offset+=4*sizeof(float))
+        {
+          pkey.m_attribute_format_location[attr_slot].m_offset=offset;
+          pkey.m_attribute_format_location[attr_slot].traits( type_tag<vec4>() );
+        }
       /*
-	remaining values use a float, vec2, or vec3
+        remaining values use a float, vec2, or vec3
        */
       if(attr_slot<WRATHDrawCallSpec::attribute_count)
-	{
-	  WRATHassert(num_remaining<4);
-	  switch(num_remaining)
-	    {
-	    case 0:
-	      break;
+        {
+          WRATHassert(num_remaining<4);
+          switch(num_remaining)
+            {
+            case 0:
+              break;
 
-	    case 1:
-	      pkey.m_attribute_format_location[attr_slot].m_offset=offset;
-	      pkey.m_attribute_format_location[attr_slot].traits( type_tag<float>() );
-	      ++attr_slot;
-	      break;
+            case 1:
+              pkey.m_attribute_format_location[attr_slot].m_offset=offset;
+              pkey.m_attribute_format_location[attr_slot].traits( type_tag<float>() );
+              ++attr_slot;
+              break;
 
-	    case 2:
-	      pkey.m_attribute_format_location[attr_slot].m_offset=offset;
-	      pkey.m_attribute_format_location[attr_slot].traits( type_tag<vec2>() );
-	      ++attr_slot;
-	      break;
+            case 2:
+              pkey.m_attribute_format_location[attr_slot].m_offset=offset;
+              pkey.m_attribute_format_location[attr_slot].traits( type_tag<vec2>() );
+              ++attr_slot;
+              break;
 
-	    case 3:
-	      pkey.m_attribute_format_location[attr_slot].m_offset=offset;
-	      pkey.m_attribute_format_location[attr_slot].traits( type_tag<vec3>() );
-	      ++attr_slot;
-	      break;
-	    }
-	}
+            case 3:
+              pkey.m_attribute_format_location[attr_slot].m_offset=offset;
+              pkey.m_attribute_format_location[attr_slot].traits( type_tag<vec3>() );
+              ++attr_slot;
+              break;
+            }
+        }
 
       //now adjust the stride:
       for(int i=0; i<attr_slot; ++i)
-	{
-	  pkey.m_attribute_format_location[i].m_stride = pkey.m_type_size;	    
-	}
+        {
+          pkey.m_attribute_format_location[i].m_stride = pkey.m_type_size;          
+        }
     }
 }
 
@@ -395,7 +395,7 @@ pack_attribute(enum WRATHFormattedTextStream::corner_type ct,
                const glyph_data &in_glyph,
                const vec2 &normalized_glyph_coordinate_float,
                vecN<GLshort,2> normalized_glyph_coordinate_short,
-	       const std::vector<int> &custom_data_use,
+               const std::vector<int> &custom_data_use,
                c_array<uint8_t> packing_destination,
                const PackerState&) const
 {
@@ -409,11 +409,11 @@ pack_attribute(enum WRATHFormattedTextStream::corner_type ct,
   ivec2 native_sz(in_glyph.m_glyph->texel_size());
 
   attr[0].position()=position_type(in_glyph.m_native_position[0].x(), 
-				   in_glyph.m_native_position[0].y(), 
-				   in_glyph.m_z_position, 
-				   in_glyph.m_scale);
+                                   in_glyph.m_native_position[0].y(), 
+                                   in_glyph.m_z_position, 
+                                   in_glyph.m_scale);
   attr[0].glyph_stretch()=glyph_stretch_type(in_glyph.m_horizontal_stretching,
-					     in_glyph.m_vertical_stretching);
+                                             in_glyph.m_vertical_stretching);
   attr[0].glyph_size()=glyph_size_type(native_sz.x(), native_sz.y());
   attr[0].glyph_bottom_left()=glyph_bottom_left_type(native_bl.x(), native_bl.y());  
   attr[0].glyph_normalized_coordinate()=normalized_glyph_coordinate_short;
@@ -421,7 +421,7 @@ pack_attribute(enum WRATHFormattedTextStream::corner_type ct,
   if(ct==WRATHFormattedTextStream::not_corner)
     {
       attr[0].color()=interpolate_color(in_glyph.m_color,
-					       normalized_glyph_coordinate_float);
+                                               normalized_glyph_coordinate_float);
     }
   else
     {
@@ -432,15 +432,15 @@ pack_attribute(enum WRATHFormattedTextStream::corner_type ct,
     {
       c_array<character_attribute_with_custom<1> > attr_with;
       attr_with=packing_destination
-	.sub_array(0, sizeof(character_attribute_with_custom<1>))
-	.reinterpret_pointer<character_attribute_with_custom<1> >();
+        .sub_array(0, sizeof(character_attribute_with_custom<1>))
+        .reinterpret_pointer<character_attribute_with_custom<1> >();
 
       WRATHassert(&attr_with[0].m_base==&attr[0]);
 
       for(int i=0, endi=custom_data_use.size(); i<endi; ++i)
-	{
-	  attr_with[0].m_custom[i]=in_glyph.m_glyph->fetch_custom_float(custom_data_use[i]);
-	}
+        {
+          attr_with[0].m_custom[i]=in_glyph.m_glyph->fetch_custom_float(custom_data_use[i]);
+        }
     }
 }
 

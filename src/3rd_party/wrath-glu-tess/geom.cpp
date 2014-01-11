@@ -171,14 +171,14 @@ int __wrath__gl_vertCCW( GLUvertex *u, GLUvertex *v, GLUvertex *w )
  * MIN(x,y) <= r <= MAX(x,y), and the results are very accurate
  * even when a and b differ greatly in magnitude.
  */
-#define RealInterpolate(a,x,b,y)			\
-  (a = (a < 0) ? 0 : a, b = (b < 0) ? 0 : b,		\
-  ((a <= b) ? ((b == 0) ? ((x+y) / 2)			\
-                        : (x + (y-x) * (a/(a+b))))	\
+#define RealInterpolate(a,x,b,y)                        \
+  (a = (a < 0) ? 0 : a, b = (b < 0) ? 0 : b,            \
+  ((a <= b) ? ((b == 0) ? ((x+y) / 2)                   \
+                        : (x + (y-x) * (a/(a+b))))      \
             : (y + (x-y) * (b/(a+b)))))
 
 #ifndef FOR_TRITE_TEST_PROGRAM
-#define Interpolate(a,x,b,y)	RealInterpolate(a,x,b,y)
+#define Interpolate(a,x,b,y)    RealInterpolate(a,x,b,y)
 #else
 
 /* Claim: the ONLY property the sweep algorithm relies on is that
@@ -200,11 +200,11 @@ printf("*********************%d\n",RandomInterpolate);
 
 #endif
 
-#define Swap(a,b)	do { GLUvertex *t = a; a = b; b = t; } while (0)
+#define Swap(a,b)       do { GLUvertex *t = a; a = b; b = t; } while (0)
 
 void __wrath__gl_edgeIntersect( GLUvertex *o1, GLUvertex *d1,
-			 GLUvertex *o2, GLUvertex *d2,
-			 GLUvertex *v )
+                         GLUvertex *o2, GLUvertex *d2,
+                         GLUvertex *v )
 /* Given edges (o1,d1) and (o2,d2), compute their point of intersection.
  * The computed point is guaranteed to lie in the intersection of the
  * bounding rectangles defined by each edge.

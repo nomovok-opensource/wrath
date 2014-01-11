@@ -178,35 +178,35 @@ namespace
     std::string prefix;
 
     oprefix << "\n[FontConfig] ("
-	    << v->name()
-	    << ", " 
-	    << v->face_index()
-	    << "):";
+            << v->name()
+            << ", " 
+            << v->face_index()
+            << "):";
     prefix=oprefix.str();
 
     ostr << prefix << infont_print_helper<std::string>(obj.m_family_name, FC_FAMILY)
-	 << prefix << infont_print_helper<std::string>(obj.m_foundary_name, FC_FOUNDRY)
-	 << prefix << infont_print_helper<std::string>(obj.m_style, FC_STYLE)
-	 << prefix << infont_print_helper<int>(obj.m_weight, FC_WEIGHT)
-	 << prefix << infont_print_helper<int>(obj.m_slant, FC_SLANT)
-	 << prefix << " font-family: \"" << v->properties().m_family_name << "\""
-	 << prefix << " font-foundry: \"" << v->properties().m_foundry_name << "\""
-	 << prefix << " font-style: \"" << v->properties().m_style_name << "\""
-	 << prefix << " bold-italic: \"" << vec2(v->properties().m_bold, v->properties().m_italic)<< "\"";
+         << prefix << infont_print_helper<std::string>(obj.m_foundary_name, FC_FOUNDRY)
+         << prefix << infont_print_helper<std::string>(obj.m_style, FC_STYLE)
+         << prefix << infont_print_helper<int>(obj.m_weight, FC_WEIGHT)
+         << prefix << infont_print_helper<int>(obj.m_slant, FC_SLANT)
+         << prefix << " font-family: \"" << v->properties().m_family_name << "\""
+         << prefix << " font-foundry: \"" << v->properties().m_foundry_name << "\""
+         << prefix << " font-style: \"" << v->properties().m_style_name << "\""
+         << prefix << " bold-italic: \"" << vec2(v->properties().m_bold, v->properties().m_italic)<< "\"";
     
     if(!obj.m_languages.empty())
       {
-	ostr << prefix << FC_LANG << ":" << "{";
-	for(std::set<std::string>::iterator iter=obj.m_languages.begin(),
-	      end=obj.m_languages.end(); iter!=end; ++iter)
-	  {
-	    if(iter!=obj.m_languages.begin())
-	      {
-		ostr << ", ";
-	      }
-	    ostr << "\"" << *iter << "\"";
-	  }
-	ostr << "}";
+        ostr << prefix << FC_LANG << ":" << "{";
+        for(std::set<std::string>::iterator iter=obj.m_languages.begin(),
+              end=obj.m_languages.end(); iter!=end; ++iter)
+          {
+            if(iter!=obj.m_languages.begin())
+              {
+                ostr << ", ";
+              }
+            ostr << "\"" << *iter << "\"";
+          }
+        ostr << "}";
       }
     ostr << "\n[FontConfig]\n";
   }
@@ -301,7 +301,7 @@ font_config_magic_class(void)
 
   /*
   for(FontList::const_iterator iter=m_font_list.begin(),
-	end=m_font_list.end(); iter!=end; ++iter)
+        end=m_font_list.end(); iter!=end; ++iter)
     {
       print_pretty_formatted(std::cout, iter->second);
     }
@@ -346,26 +346,26 @@ add_entry(FcPattern *p)
       
       #if (FC_MAJOR>=2 && FC_MINOR>=7) || (FC_MAJOR>=3)   
       {        
-	FcGetMagicValue(p, FC_LANG, lang);
-	if(lang.m_exists)
-	  {
-	    FcStrSet *langs_as_strs;
-	    FcStrList *iter;
-	    FcChar8 *current;
+        FcGetMagicValue(p, FC_LANG, lang);
+        if(lang.m_exists)
+          {
+            FcStrSet *langs_as_strs;
+            FcStrList *iter;
+            FcChar8 *current;
             
-	    langs_as_strs=FcLangSetGetLangs(lang.m_value);
-	    iter=FcStrListCreate(langs_as_strs);
+            langs_as_strs=FcLangSetGetLangs(lang.m_value);
+            iter=FcStrListCreate(langs_as_strs);
             
-	    for(current=FcStrListNext(iter); current; current=FcStrListNext(iter))
-	      {
-		const char *str(reinterpret_cast<const char*>(current));
-		entry.m_fontconfig_details.m_languages.insert(std::string(str));
-	      }
-	    FcStrListDone(iter);
-	  }
+            for(current=FcStrListNext(iter); current; current=FcStrListNext(iter))
+              {
+                const char *str(reinterpret_cast<const char*>(current));
+                entry.m_fontconfig_details.m_languages.insert(std::string(str));
+              }
+            FcStrListDone(iter);
+          }
       }
       #endif
-	      
+              
       WRATHassert(m_font_list.find(entry.font())==m_font_list.end());
       m_font_list[entry.font()]=entry;
     }
@@ -418,11 +418,11 @@ fetch_font_entry(const WRATHFontConfig::InFontSpecification &in_spec)
     {
       fc_langs=FcLangSetCreate();
       for(std::set<std::string>::iterator iter=in_spec.m_languages.begin(),
-	    end=in_spec.m_languages.end(); iter!=end; ++iter)
-	{
-	  FcLangSetAdd(fc_langs,
-		       reinterpret_cast<const FcChar8*>(iter->c_str()));
-	}
+            end=in_spec.m_languages.end(); iter!=end; ++iter)
+        {
+          FcLangSetAdd(fc_langs,
+                       reinterpret_cast<const FcChar8*>(iter->c_str()));
+        }
       FcPatternAddLangSet(fc_filter, FC_LANG, fc_langs);
     }
   
@@ -440,15 +440,15 @@ fetch_font_entry(const WRATHFontConfig::InFontSpecification &in_spec)
       FcGetMagicValue(fc_font_choice, FC_INDEX, font_index);
       
       if(file_name.m_exists)
-	{
-	  const char *fname(reinterpret_cast<const char*>(file_name.m_value));
-	  
-	  if(!font_index.m_exists)
-	    {
-	      font_index.m_value=0;
-	    }
-	  R=WRATHFontDatabase::fetch_font_entry(fname, font_index.m_value);
-	}
+        {
+          const char *fname(reinterpret_cast<const char*>(file_name.m_value));
+          
+          if(!font_index.m_exists)
+            {
+              font_index.m_value=0;
+            }
+          R=WRATHFontDatabase::fetch_font_entry(fname, font_index.m_value);
+        }
       FcPatternDestroy(fc_font_choice);
     }
   
@@ -557,27 +557,27 @@ namespace WRATHFontDatabase
 
     if(!properties.m_style_name.empty())
       {
-	spec.style(properties.m_style_name);
+        spec.style(properties.m_style_name);
       }
     
     if(!properties.m_family_name.empty())
       {
-	spec.family_name(properties.m_family_name);
+        spec.family_name(properties.m_family_name);
       }
     
     if(!properties.m_foundry_name.empty())
       {
-	spec.foundry_name(properties.m_foundry_name);
+        spec.foundry_name(properties.m_foundry_name);
       }
     
     
     spec.weight(properties.m_bold?
-		FC_WEIGHT_BOLD:
-		FC_WEIGHT_NORMAL);
+                FC_WEIGHT_BOLD:
+                FC_WEIGHT_NORMAL);
     
     spec.slant(properties.m_italic?
-	       FC_SLANT_ITALIC: //or should it be FC_SLANT_OBLIQUE?
-	       FC_SLANT_ROMAN);
+               FC_SLANT_ITALIC: //or should it be FC_SLANT_OBLIQUE?
+               FC_SLANT_ROMAN);
 
     return WRATHFontConfig::fetch_font_entry(spec);
   }

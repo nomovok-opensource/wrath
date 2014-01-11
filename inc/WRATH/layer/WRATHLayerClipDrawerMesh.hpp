@@ -77,10 +77,10 @@ public:
                      for the vertices of the triangle soup.
    */
   WRATHLayerClipDrawerMesh(WRATHGLProgram *prog,
-			   const WRATHTripleBufferEnabler::handle &h,
-			   const std::string &zdepthvalue_uniform_name,
-			   const std::string &matrix_uniform_name,
-			   const std::string &attr_name);
+                           const WRATHTripleBufferEnabler::handle &h,
+                           const std::string &zdepthvalue_uniform_name,
+                           const std::string &matrix_uniform_name,
+                           const std::string &attr_name);
 
   virtual
   ~WRATHLayerClipDrawerMesh();

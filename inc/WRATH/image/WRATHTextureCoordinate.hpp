@@ -55,10 +55,10 @@ public:
   enum
     {
       /*!
-	Enumeration specifyig how many
-	per node values needed to store
-	the packed data of a 
-	WRATHTextureCoordinate object
+        Enumeration specifyig how many
+        per node values needed to store
+        the packed data of a 
+        WRATHTextureCoordinate object
        */
       number_per_node_values=4
     };
@@ -199,8 +199,8 @@ public:
   static
   void
   add_per_node_values_at(int start_index,
-			   WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
-			   const WRATHLayerNodeValuePackerBase::function_packet &available);
+                           WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
+                           const WRATHLayerNodeValuePackerBase::function_packet &available);
 
   /*!\fn const WRATHTextureCoordinateSourceBase* source(enum repeat_mode_type, enum repeat_mode_type)
     Return a WRATHTextureCoordinateSourceBase for the specified 

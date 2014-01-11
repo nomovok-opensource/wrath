@@ -56,7 +56,7 @@
 /* Boolean */
 #define WRATH_GLU_FALSE                          0
 #define WRATH_GLU_TRUE                           1
-typedef unsigned char	WRATH_GLUboolean;
+typedef unsigned char   WRATH_GLUboolean;
 typedef unsigned int    WRATH_GLUenum;
 
 

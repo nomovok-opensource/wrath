@@ -44,7 +44,7 @@ namespace WRATHQT
    */
   void
   generate_font_properties(const QFont &in_fnt, 
-			   WRATHFontFetch::FontProperties &spec);
+                           WRATHFontFetch::FontProperties &spec);
 
   
   /*!\fn WRATHFontFetch::FontProperties generate_font_properties(const QFont&)

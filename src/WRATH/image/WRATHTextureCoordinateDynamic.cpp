@@ -123,7 +123,7 @@ set(enum repeat_mode_type pxmode,
 void
 WRATHTextureCoordinateDynamic::
 add_per_node_values_at(int start, WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
-			 const WRATHLayerNodeValuePackerBase::function_packet &func)
+                         const WRATHLayerNodeValuePackerBase::function_packet &func)
 {
   WRATHTextureCoordinate::add_per_node_values_at(start, spec, func);
 

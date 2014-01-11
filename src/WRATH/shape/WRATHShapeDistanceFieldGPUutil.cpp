@@ -172,8 +172,8 @@ init_and_bind_fbo(ivec2 pdims, bool)
 
       //and create a new one:
       if(m_fbo==0)
-	{
-	  glGenFramebuffers(1, &m_fbo);
+        {
+          glGenFramebuffers(1, &m_fbo);
           if(m_fbo==0)
             {
               /*
@@ -186,7 +186,7 @@ init_and_bind_fbo(ivec2 pdims, bool)
               glViewport(0, 0, m_current_dim.x(), m_current_dim.y());
               return routine_success;
             }
-	}
+        }
 
       glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 

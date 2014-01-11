@@ -482,32 +482,32 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
   if(!WRATHGPUConfig::use_in_out_in_shaders())
     {
       /*
-	add macros defining in and out correctly for 
-	GLES2, the symbol __gl2_h_ is defined in GLES2/gl2.h 
-	as it's header guard.
+        add macros defining in and out correctly for 
+        GLES2, the symbol __gl2_h_ is defined in GLES2/gl2.h 
+        as it's header guard.
       */
       if(shader_type==GL_VERTEX_SHADER)
-	{
-	  output_glsl_source_code << "\n#define shader_in attribute";
-	}
+        {
+          output_glsl_source_code << "\n#define shader_in attribute";
+        }
       else
-	{
-	  output_glsl_source_code << "\n#define shader_in varying";
-	}
+        {
+          output_glsl_source_code << "\n#define shader_in varying";
+        }
       
       if(shader_type!=GL_FRAGMENT_SHADER)
-	{
-	  output_glsl_source_code << "\n#define shader_out varying";
-	}
+        {
+          output_glsl_source_code << "\n#define shader_out varying";
+        }
       else
-	{
-	  output_glsl_source_code << "\n#define shader_out out";
-	}
+        {
+          output_glsl_source_code << "\n#define shader_out out";
+        }
     }
   else
     {
       output_glsl_source_code << "\n#define shader_in in"
-			      << "\n#define shader_out out";
+                              << "\n#define shader_out out";
     }
 
   
@@ -563,58 +563,58 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
   #if defined(WRATH_TEGRA_PREC_HACK)
     {
       /*
-	some older TEGRA2 GL drivers have the precision
-	qualifier order messed up, they expect 
-	mediump in vec2 instead of the correct
-	in mediump vec2. The work around is a hack:
-	we set the defaults precision qualifiers for 
-	all types and then add defines removing the 
-	precision  qualifier symbols.
+        some older TEGRA2 GL drivers have the precision
+        qualifier order messed up, they expect 
+        mediump in vec2 instead of the correct
+        in mediump vec2. The work around is a hack:
+        we set the defaults precision qualifiers for 
+        all types and then add defines removing the 
+        precision  qualifier symbols.
       */
       
       if(shader_type==GL_FRAGMENT_SHADER)
-	{
-	  output_glsl_source_code << "\nprecision mediump float;"
-				  << "\nprecision mediump int;"
-				  << "\nprecision mediump sampler2D;";
-	}
+        {
+          output_glsl_source_code << "\nprecision mediump float;"
+                                  << "\nprecision mediump int;"
+                                  << "\nprecision mediump sampler2D;";
+        }
       else
-	{
-	  output_glsl_source_code << "\nprecision highp float;"
-				  << "\nprecision highp int;";
-	}
+        {
+          output_glsl_source_code << "\nprecision highp float;"
+                                  << "\nprecision highp int;";
+        }
 
 
       output_glsl_source_code << "\n#define lowp"
-			      << "\n#define highp"
-			      << "\n#define mediump\n\n";
+                              << "\n#define highp"
+                              << "\n#define mediump\n\n";
     }
   #elif defined(WRATH_GL_VERSION) or defined(WRATH_REMOVE_PRECISION_QUALIFIERS)
     {
       output_glsl_source_code << "\n#define lowp"
-			      << "\n#define highp"
-			      << "\n#define mediump\n\n";
+                              << "\n#define highp"
+                              << "\n#define mediump\n\n";
     }
   #else
     {
       if(m_force_highp)
-	{
-	  output_glsl_source_code << "\n#define lowp highp"
-				  << "\n#define mediump highp\n";
-	}
+        {
+          output_glsl_source_code << "\n#define lowp highp"
+                                  << "\n#define mediump highp\n";
+        }
       else if(shader_type==GL_FRAGMENT_SHADER)
-	{
-	  /*
-	    code hackery to force highp to mediump 
-	    for platforms that do not support
-	    highp in the fragment shader
-	  */
-	  output_glsl_source_code << "\n#ifdef GL_ES"
-				  << "\n#ifndef GL_FRAGMENT_PRECISION_HIGH"
-				  << "\n#define highp mediump"
-				  << "\n#endif"
-				  << "\n#endif\n\n";
-	}
+        {
+          /*
+            code hackery to force highp to mediump 
+            for platforms that do not support
+            highp in the fragment shader
+          */
+          output_glsl_source_code << "\n#ifdef GL_ES"
+                                  << "\n#ifndef GL_FRAGMENT_PRECISION_HIGH"
+                                  << "\n#define highp mediump"
+                                  << "\n#endif"
+                                  << "\n#endif\n\n";
+        }
     }
   #endif
 
@@ -649,7 +649,7 @@ absorb(const shader_source &obj)
   
   m_values.splice(m_values.end(), vs);
   std::copy(obj.m_extensions.begin(), obj.m_extensions.end(),
-	    std::inserter(m_extensions, m_extensions.end()) );
+            std::inserter(m_extensions, m_extensions.end()) );
   
   m_force_highp=m_force_highp or obj.m_force_highp;
   if(!obj.m_version.empty())
@@ -1045,7 +1045,7 @@ assemble(void)
 
       #if defined(WRATHDEBUG)
       {
-	if(post_action_warning)
+        if(post_action_warning)
           {
             WRATHwarning("\nAction warning log for \"" 
                          << resource_name() << "\":\n"

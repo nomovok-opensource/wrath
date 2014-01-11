@@ -191,18 +191,18 @@ public:
                      attribute names
     \param number_custom_data_to_use indicates the size of \ref
                                      WRATHTextureFont::GlyphGLSL::m_custom_data_use
-				     which are to also be packed into attributes
+                                     which are to also be packed into attributes
    */
   virtual
   void
   attribute_names(std::vector<std::string> &out_names,
-		  int number_custom_data_to_use) const=0;
+                  int number_custom_data_to_use) const=0;
 
   /*!\fn fetch_attribute_packer
     Returns the WRATHAttributePacker of this WRATHTextAttributePacker
     \param number_custom_data_to_use indicates the size of \ref
                                      WRATHTextureFont::GlyphGLSL::m_custom_data_use
-				     which are to also be packed into attributes
+                                     which are to also be packed into attributes
    */
   const WRATHAttributePacker*
   fetch_attribute_packer(int number_custom_data_to_use) const;
@@ -223,12 +223,12 @@ public:
     is previously defined and N=number_custom_data_to_use
     \param number_custom_data_to_use indicates the size of \ref
                                      WRATHTextureFont::GlyphGLSL::m_custom_data_use
-				     which are to also be packed into attributes
+                                     which are to also be packed into attributes
    */
   virtual
   void
   generate_custom_data_glsl(WRATHGLShader::shader_source &out_src,
-			    int number_custom_data_to_use) const=0;
+                            int number_custom_data_to_use) const=0;
 
   /*!\fn allocation_requirement_type allocation_requirement
     To be implemented by a derived class to indicate
@@ -419,12 +419,12 @@ public:
     \param attrib_key WRATHAttributeStoreKey to which to set
     \param number_custom_data_to_use indicates the size of \ref
                                      WRATHTextureFont::GlyphGLSL::m_custom_data_use
-				     which are to also be packed into attributes
+                                     which are to also be packed into attributes
    */
   virtual
   void
   attribute_key(WRATHAttributeStoreKey &attrib_key,
-		int number_custom_data_to_use) const=0;
+                int number_custom_data_to_use) const=0;
 
   /*!\fn unsigned int number_of_characters(range_type<int>, 
                                            const WRATHFormattedTextStream&,

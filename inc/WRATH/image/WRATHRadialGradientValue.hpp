@@ -42,10 +42,10 @@ public:
   enum
     {
       /*!
-	Enumeration specifyig how many
-	per node values needed to store
-	the packed data of a 
-	WRATHRadialGradientValue object
+        Enumeration specifyig how many
+        per node values needed to store
+        the packed data of a 
+        WRATHRadialGradientValue object
        */
       number_per_node_values=WRATHGradientValueBase::number_per_node_values + 7
     };

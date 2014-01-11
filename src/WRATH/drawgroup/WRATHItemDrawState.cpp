@@ -64,11 +64,11 @@ namespace
     {
       #ifdef WRATHDEBUG
       {
-	if(!m_map.empty())
-	  {
-	    WRATHwarning("WARNING: FetchHoard, T=" << typeid(T).name()
-			 << " non-empty");
-	  }
+        if(!m_map.empty())
+          {
+            WRATHwarning("WARNING: FetchHoard, T=" << typeid(T).name()
+                         << " non-empty");
+          }
       }
       #endif
     }
@@ -82,16 +82,16 @@ namespace
 
       iter=m_map.find(k);
       if(iter==m_map.end())
-	{
-	  SignalDtor<T> *new_value;
-	  new_value=WRATHNew SignalDtor<T>();
-	  new_value->add(k.begin(), k.end());
+        {
+          SignalDtor<T> *new_value;
+          new_value=WRATHNew SignalDtor<T>();
+          new_value->add(k.begin(), k.end());
 
-	  iter=m_map.insert(value_type(k, new_value)).first;
-	  new_value->m_sig.connect(boost::bind(&FetchHoard::auto_remove,
-					       this,
-					       iter));
-	}
+          iter=m_map.insert(value_type(k, new_value)).first;
+          new_value->m_sig.connect(boost::bind(&FetchHoard::auto_remove,
+                                               this,
+                                               iter));
+        }
 
       return return_type(iter->second);
     }

@@ -51,83 +51,83 @@ enum TessState { T_DORMANT, T_IN_POLYGON, T_IN_CONTOUR };
 /* We cache vertex data for single-contour polygons so that we can
  * try a quick-and-dirty decomposition first.
  */
-#define TESS_MAX_CACHE	100
+#define TESS_MAX_CACHE  100
 
 typedef struct CachedVertex {
-  double	coords[3];
-  void		*data;
+  double        coords[3];
+  void          *data;
 } CachedVertex;
 
 struct wrath_GLUtesselator {
 
   /*** state needed for collecting the input data ***/
 
-  enum TessState state;		/* what begin/end calls have we seen? */
+  enum TessState state;         /* what begin/end calls have we seen? */
 
-  GLUhalfEdge	*lastEdge;	/* lastEdge->Org is the most recent vertex */
-  GLUmesh	*mesh;		/* stores the input contours, and eventually
+  GLUhalfEdge   *lastEdge;      /* lastEdge->Org is the most recent vertex */
+  GLUmesh       *mesh;          /* stores the input contours, and eventually
                                    the tessellation itself */
 
-  void		(REGALWRATH_GLU_CALL *callError)( WRATH_GLUenum errnum );
+  void          (REGALWRATH_GLU_CALL *callError)( WRATH_GLUenum errnum );
 
   /*** state needed for projecting onto the sweep plane ***/
 
-  double	normal[3];	/* user-specified normal (if provided) */
-  double	sUnit[3];	/* unit vector in s-direction (debugging) */
-  double	tUnit[3];	/* unit vector in t-direction (debugging) */
+  double        normal[3];      /* user-specified normal (if provided) */
+  double        sUnit[3];       /* unit vector in s-direction (debugging) */
+  double        tUnit[3];       /* unit vector in t-direction (debugging) */
 
   /*** state needed for the line sweep ***/
 
-  double	relTolerance;	/* tolerance for merging features */
-  //WRATH_GLUenum	windingRule;	/* rule for determining polygon interior */
-  WRATH_GLUboolean	fatalError;	/* fatal error: needed combine callback */
+  double        relTolerance;   /* tolerance for merging features */
+  //WRATH_GLUenum       windingRule;    /* rule for determining polygon interior */
+  WRATH_GLUboolean      fatalError;     /* fatal error: needed combine callback */
 
-  Dict		*dict;		/* edge dictionary for sweep line */
-  PriorityQ	*pq;		/* priority queue of vertex events */
-  GLUvertex	*event;		/* current sweep event being processed */
+  Dict          *dict;          /* edge dictionary for sweep line */
+  PriorityQ     *pq;            /* priority queue of vertex events */
+  GLUvertex     *event;         /* current sweep event being processed */
 
-  void		(REGALWRATH_GLU_CALL *callCombine)( double coords[3], void *data[4],
-			        float weight[4], void **outData );
+  void          (REGALWRATH_GLU_CALL *callCombine)( double coords[3], void *data[4],
+                                float weight[4], void **outData );
 
   /*** state needed for rendering callbacks (see render.c) ***/
 
-  WRATH_GLUboolean	flagBoundary;	/* mark boundary edges (use EdgeFlag) */
-  WRATH_GLUboolean	boundaryOnly;	/* Extract contours, not triangles */
-  GLUface	*lonelyTriList;
+  WRATH_GLUboolean      flagBoundary;   /* mark boundary edges (use EdgeFlag) */
+  WRATH_GLUboolean      boundaryOnly;   /* Extract contours, not triangles */
+  GLUface       *lonelyTriList;
     /* list of triangles which could not be rendered as strips or fans */
 
-  void		(REGALWRATH_GLU_CALL *callBegin)( WRATH_GLUenum type, int winding_number );
-  void		(REGALWRATH_GLU_CALL *callEdgeFlag)( WRATH_GLUboolean boundaryEdge );
-  void		(REGALWRATH_GLU_CALL *callVertex)( void *data );
-  void		(REGALWRATH_GLU_CALL *callEnd)( void );
-  void		(REGALWRATH_GLU_CALL *callMesh)( GLUmesh *mesh );
+  void          (REGALWRATH_GLU_CALL *callBegin)( WRATH_GLUenum type, int winding_number );
+  void          (REGALWRATH_GLU_CALL *callEdgeFlag)( WRATH_GLUboolean boundaryEdge );
+  void          (REGALWRATH_GLU_CALL *callVertex)( void *data );
+  void          (REGALWRATH_GLU_CALL *callEnd)( void );
+  void          (REGALWRATH_GLU_CALL *callMesh)( GLUmesh *mesh );
 
-  WRATH_GLUboolean		(REGALWRATH_GLU_CALL *callWinding)(int winding_number);
+  WRATH_GLUboolean              (REGALWRATH_GLU_CALL *callWinding)(int winding_number);
 
 
   /*** state needed to cache single-contour polygons for renderCache() */
 
-  WRATH_GLUboolean	emptyCache;		/* empty cache on next vertex() call */
-  int		cacheCount;		/* number of cached vertices */
-  CachedVertex	cache[TESS_MAX_CACHE];	/* the vertex data */
+  WRATH_GLUboolean      emptyCache;             /* empty cache on next vertex() call */
+  int           cacheCount;             /* number of cached vertices */
+  CachedVertex  cache[TESS_MAX_CACHE];  /* the vertex data */
 
   /*** rendering callbacks that also pass polygon data  ***/ 
-  void		(REGALWRATH_GLU_CALL *callBeginData)( WRATH_GLUenum type, int winding_number, void *polygonData);
-  void		(REGALWRATH_GLU_CALL *callEdgeFlagData)( WRATH_GLUboolean boundaryEdge, 
-				     void *polygonData );
-  void		(REGALWRATH_GLU_CALL *callVertexData)( void *data, void *polygonData );
-  void		(REGALWRATH_GLU_CALL *callEndData)( void *polygonData );
-  void		(REGALWRATH_GLU_CALL *callErrorData)( WRATH_GLUenum errnum, void *polygonData );
-  void		(REGALWRATH_GLU_CALL *callCombineData)( double coords[3], void *data[4],
-				    float weight[4], void **outData,
-				    void *polygonData );
+  void          (REGALWRATH_GLU_CALL *callBeginData)( WRATH_GLUenum type, int winding_number, void *polygonData);
+  void          (REGALWRATH_GLU_CALL *callEdgeFlagData)( WRATH_GLUboolean boundaryEdge, 
+                                     void *polygonData );
+  void          (REGALWRATH_GLU_CALL *callVertexData)( void *data, void *polygonData );
+  void          (REGALWRATH_GLU_CALL *callEndData)( void *polygonData );
+  void          (REGALWRATH_GLU_CALL *callErrorData)( WRATH_GLUenum errnum, void *polygonData );
+  void          (REGALWRATH_GLU_CALL *callCombineData)( double coords[3], void *data[4],
+                                    float weight[4], void **outData,
+                                    void *polygonData );
 
   WRATH_GLUboolean    (REGALWRATH_GLU_CALL *callWindingData)(int winding_number,
                                                              void *polygonData );
 
-  jmp_buf env;			/* place to jump to when memAllocs fail */
+  jmp_buf env;                  /* place to jump to when memAllocs fail */
 
-  void *polygonData;		/* client data for current polygon */
+  void *polygonData;            /* client data for current polygon */
 };
 
 void REGALWRATH_GLU_CALL __wrath__gl_noBeginData( WRATH_GLUenum type, int winding_number, void *polygonData );
@@ -136,8 +136,8 @@ void REGALWRATH_GLU_CALL __wrath__gl_noVertexData( void *data, void *polygonData
 void REGALWRATH_GLU_CALL __wrath__gl_noEndData( void *polygonData );
 void REGALWRATH_GLU_CALL __wrath__gl_noErrorData( WRATH_GLUenum errnum, void *polygonData );
 void REGALWRATH_GLU_CALL __wrath__gl_noCombineData( double coords[3], void *data[4],
-			 float weight[4], void **outData,
-			 void *polygonData );
+                         float weight[4], void **outData,
+                         void *polygonData );
 WRATH_GLUboolean REGALWRATH_GLU_CALL __wrath__gl_noWindingData(int winding_rule,
                                             void *polygonData);
 

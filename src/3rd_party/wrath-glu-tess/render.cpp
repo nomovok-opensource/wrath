@@ -51,9 +51,9 @@
  * primitive is able to use the most triangles.
  */
 struct FaceCount {
-  long		size;		/* number of triangles used */
-  GLUhalfEdge	*eStart;	/* edge where this primitive starts */
-  void		(*render)(wrath_GLUtesselator *, GLUhalfEdge *, long);
+  long          size;           /* number of triangles used */
+  GLUhalfEdge   *eStart;        /* edge where this primitive starts */
+  void          (*render)(wrath_GLUtesselator *, GLUhalfEdge *, long);
                                 /* routine to render this primitive */
 };
 
@@ -63,7 +63,7 @@ static struct FaceCount MaximumStrip( GLUhalfEdge *eOrig );
 static void RenderFan( wrath_GLUtesselator *tess, GLUhalfEdge *eStart, long size );
 static void RenderStrip( wrath_GLUtesselator *tess, GLUhalfEdge *eStart, long size );
 static void RenderTriangle( wrath_GLUtesselator *tess, GLUhalfEdge *eStart,
-			    long size );
+                            long size );
 
 static void RenderMaximumFaceGroup( wrath_GLUtesselator *tess, GLUface *fOrig );
 static void RenderLonelyTriangles( wrath_GLUtesselator *tess, GLUface *head );
@@ -143,15 +143,15 @@ static void RenderMaximumFaceGroup( wrath_GLUtesselator *tess, GLUface *fOrig )
  * more complicated, and we need a general tracking method like the
  * one here.
  */
-#define Marked(f)	(! (f)->inside || (f)->marked)
+#define Marked(f)       (! (f)->inside || (f)->marked)
 
-#define AddToTrail(f,t)	((f)->trail = (t), (t) = (f), (f)->marked = TRUE)
+#define AddToTrail(f,t) ((f)->trail = (t), (t) = (f), (f)->marked = TRUE)
 
-#define FreeTrail(t)	do { \
-			  while( (t) != NULL ) { \
-			    (t)->marked = FALSE; t = (t)->trail; \
-			  } \
-			} while(0) /* absorb trailing semicolon */
+#define FreeTrail(t)    do { \
+                          while( (t) != NULL ) { \
+                            (t)->marked = FALSE; t = (t)->trail; \
+                          } \
+                        } while(0) /* absorb trailing semicolon */
 
 
 
@@ -180,7 +180,7 @@ static struct FaceCount MaximumFan( GLUhalfEdge *eOrig )
 }
 
 
-#define IsEven(n)	(((n) & 1) == 0)
+#define IsEven(n)       (((n) & 1) == 0)
 
 static struct FaceCount MaximumStrip( GLUhalfEdge *eOrig )
 {
@@ -252,7 +252,7 @@ static void RenderLonelyTriangles( wrath_GLUtesselator *tess, GLUface *f )
    */
   GLUhalfEdge *e;
   int newState;
-  int edgeState = -1;	/* force edge state output for first vertex */
+  int edgeState = -1;   /* force edge state output for first vertex */
 
   CALL_BEGIN_OR_BEGIN_DATA( WRATH_GLU_TRIANGLES, f->winding_number );
 
@@ -262,14 +262,14 @@ static void RenderLonelyTriangles( wrath_GLUtesselator *tess, GLUface *f )
     e = f->anEdge;
     do {
       if( tess->flagBoundary ) {
-	/* Set the "edge state" to TRUE just before we output the
-	 * first vertex of each edge on the polygon boundary.
-	 */
-	newState = ! e->Rface->inside;
-	if( edgeState != newState ) {
-	  edgeState = newState;
+        /* Set the "edge state" to TRUE just before we output the
+         * first vertex of each edge on the polygon boundary.
+         */
+        newState = ! e->Rface->inside;
+        if( edgeState != newState ) {
+          edgeState = newState;
           CALL_EDGE_FLAG_OR_EDGE_FLAG_DATA( edgeState );
-	}
+        }
       }
       CALL_VERTEX_OR_VERTEX_DATA( e->Org->data );
 
@@ -347,7 +347,7 @@ void __wrath__gl_renderBoundary( wrath_GLUtesselator *tess, GLUmesh *mesh )
       e = f->anEdge;
       do {
         CALL_VERTEX_OR_VERTEX_DATA( e->Org->data ); 
-	e = e->Lnext;
+        e = e->Lnext;
       } while( e != f->anEdge );
       CALL_END_OR_END_DATA();
     }
@@ -413,18 +413,18 @@ static int ComputeNormal( wrath_GLUtesselator *tess, double norm[3], int check )
        * a reasonable normal for self-intersecting polygons (see above)
        */
       if( dot >= 0 ) {
-	norm[0] += n[0]; norm[1] += n[1]; norm[2] += n[2];
+        norm[0] += n[0]; norm[1] += n[1]; norm[2] += n[2];
       } else {
-	norm[0] -= n[0]; norm[1] -= n[1]; norm[2] -= n[2];
+        norm[0] -= n[0]; norm[1] -= n[1]; norm[2] -= n[2];
       }
     } else if( dot != 0 ) {
       /* Check the new orientation for consistency with previous triangles */
       if( dot > 0 ) {
-	if( sign < 0 ) return SIGN_INCONSISTENT;
-	sign = 1;
+        if( sign < 0 ) return SIGN_INCONSISTENT;
+        sign = 1;
       } else {
-	if( sign > 0 ) return SIGN_INCONSISTENT;
-	sign = -1;
+        if( sign > 0 ) return SIGN_INCONSISTENT;
+        sign = -1;
       }
     }
   }

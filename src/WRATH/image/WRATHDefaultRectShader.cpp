@@ -40,20 +40,20 @@ shader_hoard(void)
 {
   WRATHStaticInit();
   static WRATHShaderBrushSourceHoard R(WRATHGLShader::shader_source_collection()
-				       .absorb_shader_stage(GL_VERTEX_SHADER, 
-							    WRATHGLShader::shader_source()
+                                       .absorb_shader_stage(GL_VERTEX_SHADER, 
+                                                            WRATHGLShader::shader_source()
                                                             .add_macro("WRATH_APPLY_BRUSH")
-							    .add_source("image.vert.wrath-shader.glsl", 
-									WRATHGLShader::from_resource))
+                                                            .add_source("image.vert.wrath-shader.glsl", 
+                                                                        WRATHGLShader::from_resource))
 
-				       .absorb_shader_stage(GL_FRAGMENT_SHADER,
-							    WRATHGLShader::shader_source()
+                                       .absorb_shader_stage(GL_FRAGMENT_SHADER,
+                                                            WRATHGLShader::shader_source()
                                                             .add_macro("WRATH_APPLY_BRUSH")
-							    .add_source("image.frag.wrath-shader.glsl", 
-									WRATHGLShader::from_resource) ),
+                                                            .add_source("image.frag.wrath-shader.glsl", 
+                                                                        WRATHGLShader::from_resource) ),
                                        0, //no custom bits
                                        ~WRATHBrushBits::anti_alias_bit); //ignore anti-alias bit.
-						
+                                                
   return R;
 }
 

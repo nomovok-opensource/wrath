@@ -80,13 +80,13 @@ public:
 
     \param pfetcher function pointer with which to construct
                     sibling fonts, i.e texture fonts of the exact 
-		    same type sourced from different 
-		    WRATHFontDatabase::Font::const_handle
-		    objects
+                    same type sourced from different 
+                    WRATHFontDatabase::Font::const_handle
+                    objects
    */
   WRATHTextureFontFreeType(WRATHFreeTypeSupport::LockableFace::handle pface, 
                            const WRATHTextureFontKey &presource_name,
-			   font_fetcher_t pfetcher):
+                           font_fetcher_t pfetcher):
     WRATHTextureFont(presource_name, pfetcher),
     m_glyph_data(this, pface)
   {

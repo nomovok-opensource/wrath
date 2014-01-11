@@ -94,7 +94,7 @@ namespace
       v->current_render_transformation().m_composed_projection:
       v->current_render_transformation().m_composed_modelview;
   }
-	
+        
   
   void 
   disable_color_buffer_write(WRATHRawDrawData::DrawState &gl_state)
@@ -102,18 +102,18 @@ namespace
     #ifdef HARMATTAN
     {
        /**
-	 N9's GLES2 implementation how do I hate thee.
-	 Doing glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE)
-	 also disables depth and stencil writes.
-	 
-	 So to get around one does:
+         N9's GLES2 implementation how do I hate thee.
+         Doing glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE)
+         also disables depth and stencil writes.
+         
+         So to get around one does:
           
           glEnable(GL_BLEND);
-	  glBlendFunc(GL_ZERO, GL_ONE);
-	  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+          glBlendFunc(GL_ZERO, GL_ONE);
+          glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
         but we also need to note the state vector,
-	so what we do is that we make the "current"
+        so what we do is that we make the "current"
         state change NULL making it so that the
         if there is a state change on the next drawing
         which is the same as the current one,
@@ -133,7 +133,7 @@ namespace
     }
     #endif
   }
-	
+        
   void 
   enable_color_buffer_write(WRATHRawDrawData::DrawState &gl_state)
   {
@@ -359,8 +359,8 @@ WRATHLayer(const WRATHTripleBufferEnabler::handle &tr,
     simulation frame.
    */
   m_sim_connect=connect(WRATHTripleBufferEnabler::on_complete_simulation_frame,
-			WRATHTripleBufferEnabler::post_update_no_lock,
-			boost::bind(&WRATHLayer::on_end_simulation_frame, this));
+                        WRATHTripleBufferEnabler::post_update_no_lock,
+                        boost::bind(&WRATHLayer::on_end_simulation_frame, this));
 
   
 }
@@ -386,8 +386,8 @@ WRATHLayer(WRATHLayer *pparent,
     simulation frame.
    */
   m_sim_connect=connect(WRATHTripleBufferEnabler::on_complete_simulation_frame,
-			WRATHTripleBufferEnabler::post_update_no_lock,
-			boost::bind(&WRATHLayer::on_end_simulation_frame, this));
+                        WRATHTripleBufferEnabler::post_update_no_lock,
+                        boost::bind(&WRATHLayer::on_end_simulation_frame, this));
 }
 
 
@@ -412,8 +412,8 @@ WRATHLayer(WRATHLayer *pparent,
     simulation frame.
    */
   m_sim_connect=connect(WRATHTripleBufferEnabler::on_complete_simulation_frame,
-			WRATHTripleBufferEnabler::post_update_no_lock,
-			boost::bind(&WRATHLayer::on_end_simulation_frame, this));
+                        WRATHTripleBufferEnabler::post_update_no_lock,
+                        boost::bind(&WRATHLayer::on_end_simulation_frame, this));
 }
 
 
@@ -467,34 +467,34 @@ parent(WRATHLayer *p)
     WRATHAutoLockMutex(m_parent_mutex);
     if(m_parent==p)
       {
-	return routine_success;
+        return routine_success;
       }
 
     old_parent=m_parent;
     if(p!=NULL)
       {
-	for(WRATHLayer *q=p->parent(); q!=NULL; q=q->parent())
-	  {
-	    if(q==this)
-	      {
-		return routine_fail;
-	      }
-	  }
+        for(WRATHLayer *q=p->parent(); q!=NULL; q=q->parent())
+          {
+            if(q==this)
+              {
+                return routine_fail;
+              }
+          }
       }
     
     if(m_parent!=NULL)
       {
-	m_parent->remove_child(this);
+        m_parent->remove_child(this);
       }
     
     if(p!=NULL)
       {
-	m_root=p->m_root;
-	p->add_child(this);
+        m_root=p->m_root;
+        p->add_child(this);
       }
     else
       {
-	m_root=this;
+        m_root=this;
       }
     WRATHassert(p==m_parent);
   } //scope mutex lock
@@ -517,10 +517,10 @@ add_child(WRATHLayer *child)
     add_child_implement(&m_children, child, &child->m_slot);
     
     schedule_rendering_action( boost::bind(&WRATHLayer::mark_render_sort_order_dirty,
-					   this));
+                                           this));
     schedule_rendering_action( boost::bind(&WRATHLayer::add_child_implement,
-					   this, &m_render_children, 
-					   child, &child->m_render_slot));
+                                           this, &m_render_children, 
+                                           child, &child->m_render_slot));
   
     ++m_child_count;
   }
@@ -546,8 +546,8 @@ remove_child(WRATHLayer *child)
       the child list is an std::list
     */
     schedule_rendering_action( boost::bind(&WRATHLayer::remove_child_implement,
-					   this, &m_render_children, 
-					   child, &child->m_render_slot));
+                                           this, &m_render_children, 
+                                           child, &child->m_render_slot));
     --m_child_count;
   }
   m_child_remove_signal(child);
@@ -729,7 +729,7 @@ void
 WRATHLayer::
 draw_implement(const float4x4 *pre_modelview_matrix,
                draw_state &state_stack,
-	       WRATHRawDrawData::DrawState &gl_state,
+               WRATHRawDrawData::DrawState &gl_state,
                draw_information &stats,
                WRATHLayer *from)
 {
@@ -886,7 +886,7 @@ draw_content_post_children(WRATHRawDrawData::DrawState &gl_state)
 void
 WRATHLayer::
 push_clipped_in_items(draw_state &state_stack, bool &have_clip_items,
-		      WRATHRawDrawData::DrawState &gl_state)
+                      WRATHRawDrawData::DrawState &gl_state)
 {
   std::map<int, WRATHRawDrawData*>::const_iterator i, e;
 
@@ -937,7 +937,7 @@ push_clipped_in_items(draw_state &state_stack, bool &have_clip_items,
 void
 WRATHLayer::
 pop_clipped_in_items(draw_state &state_stack, bool have_clip_items,
-		     WRATHRawDrawData::DrawState &gl_state)
+                     WRATHRawDrawData::DrawState &gl_state)
 {
   if(have_clip_items)
     {
@@ -984,7 +984,7 @@ pop_clipped_in_items(draw_state &state_stack, bool have_clip_items,
 bool
 WRATHLayer::
 push_clipping(draw_state &state_stack, bool &have_clip_items,
-	      WRATHRawDrawData::DrawState &gl_state)
+              WRATHRawDrawData::DrawState &gl_state)
 {
   WRATHLayerClipDrawer::DrawStateElementClipping cl(WRATHLayerClipDrawer::layer_unclipped);
   int current_stencil;
@@ -1089,7 +1089,7 @@ push_clipping(draw_state &state_stack, bool &have_clip_items,
 void
 WRATHLayer::
 pop_clipping(draw_state &state_stack, bool have_clip_items,
-	     WRATHRawDrawData::DrawState &gl_state)
+             WRATHRawDrawData::DrawState &gl_state)
 { 
 
   const draw_state_element &v(state_stack.back());

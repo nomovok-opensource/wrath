@@ -2892,40 +2892,40 @@ namespace WRATHFreeTypeSupport
 
     if(!fnt.valid())
       {
-	return LockableFace::handle();
+        return LockableFace::handle();
       }
 
     load_lib_error_code=FT_Init_FreeType(&lib);
     if(load_lib_error_code!=0)
       {
-	return LockableFace::handle();
+        return LockableFace::handle();
       }
   
     if(!fnt->memory_source().valid())
       {
-	load_font_error_code=FT_New_Face(lib,
-					 fnt->name().c_str(),
-					 fnt->face_index(),
-					 &face);
+        load_font_error_code=FT_New_Face(lib,
+                                         fnt->name().c_str(),
+                                         fnt->face_index(),
+                                         &face);
       }
     else
       {
-	load_font_error_code=FT_New_Memory_Face(lib,
-						fnt->memory_source()->data().c_ptr(),
-						fnt->memory_source()->data().size(),
-						fnt->face_index(),
-						&face);
+        load_font_error_code=FT_New_Memory_Face(lib,
+                                                fnt->memory_source()->data().c_ptr(),
+                                                fnt->memory_source()->data().size(),
+                                                fnt->face_index(),
+                                                &face);
       }
-	  
+          
 
     if(load_font_error_code!=0 or face==NULL or (face->face_flags&FT_FACE_FLAG_SCALABLE)==0) 
       {
-	if(face!=NULL)
-	  {
-	    FT_Done_Face(face);
-	  }
-	FT_Done_FreeType(lib);
-	return LockableFace::handle();
+        if(face!=NULL)
+          {
+            FT_Done_Face(face);
+          }
+        FT_Done_FreeType(lib);
+        return LockableFace::handle();
       }
     
     return WRATHNew face_with_private_library(face, lib);

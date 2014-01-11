@@ -24,7 +24,7 @@
 void
 WRATHGradientValueBase::
 add_per_node_values_at(int start, WRATHLayerNodeValuePackerBase::ActiveNodeValuesCollection &spec,
-			 const WRATHLayerNodeValuePackerBase::function_packet &func)
+                         const WRATHLayerNodeValuePackerBase::function_packet &func)
 {
   /*
     TODO:

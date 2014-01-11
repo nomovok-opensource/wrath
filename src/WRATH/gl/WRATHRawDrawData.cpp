@@ -214,17 +214,17 @@ texture(const WRATHTextureChoice::const_handle &hnd)
   if(m_tex!=hnd)
     {
       if(hnd.valid())
-	{
+        {
           int ct;
 
           flush_draws();
-	  ct=hnd->bind_textures(m_tex);
+          ct=hnd->bind_textures(m_tex);
           m_draw_information_ptr->m_texture_choice_count+=ct;
-	}
+        }
       else //since m_tex!=hnd and hnd is not valid, m_tex must be valid
-	{
-	  m_tex->unbind_textures();
-	}
+        {
+          m_tex->unbind_textures();
+        }
       m_tex=hnd;
     }
 }
@@ -256,10 +256,10 @@ uniform(const WRATHUniformData::const_handle &hnd)
     {
       flush_draws();
       if(hnd.valid())
-	{
+        {
           make_program_active();
-	  hnd->execute_gl_commands(m_current_glsl);
-	}
+          hnd->execute_gl_commands(m_current_glsl);
+        }
       m_uniform=hnd;
     }
 }

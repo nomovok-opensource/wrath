@@ -398,7 +398,7 @@ common_analytic_texture_data(void):
   {  
     for(unsigned int i=0; i<WRATHTextureFont::GlyphGLSL::num_linearity_types; ++i)
       {
-	m_glyph_glsl.m_fragment_processor[i].add_macro("WRATH_FONT_USE_LA_LOOKUP");
+        m_glyph_glsl.m_fragment_processor[i].add_macro("WRATH_FONT_USE_LA_LOOKUP");
       }
   }
   #endif
@@ -427,7 +427,7 @@ common_analytic_texture_data(void):
   {  
     for(unsigned int i=0; i<WRATHTextureFont::GlyphGLSL::num_linearity_types; ++i)
       {
-	m_glyph_glsl.m_fragment_processor[i].remove_macro("WRATH_FONT_USE_LA_LOOKUP");
+        m_glyph_glsl.m_fragment_processor[i].remove_macro("WRATH_FONT_USE_LA_LOOKUP");
       }
   }
   #endif
@@ -451,7 +451,7 @@ common_analytic_texture_data::
 const WRATHTextureFont::GlyphGLSL*
 common_analytic_texture_data::
 glyph_glsl(enum WRATHTextureFontFreeType_Analytic::texture_mode_type pmode,
-	   unsigned int pmipmap_levels)
+           unsigned int pmipmap_levels)
 {
   WRATHAutoLockMutex(m_mutex);
   if(pmode!=WRATHTextureFontFreeType_Analytic::local_pixel_coordinates)
@@ -478,17 +478,17 @@ glyph_glsl(enum WRATHTextureFontFreeType_Analytic::texture_mode_type pmode,
       ostr << (1<<old_sz) << ".0";
 
       for(unsigned int i=0; i<WRATHTextureFont::GlyphGLSL::num_linearity_types; ++i)
-	{
-	  m_relative_glyph_glsl[old_sz]->m_fragment_processor[i]
-	    .add_macro("WRATH_FONT_ANALYTIC_PIXEL_RELATIVE_COORDINATES")
-	    .add_macro("WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE", ostr.str())
-	    .absorb(m_glyph_glsl.m_fragment_processor[i])
-	    .remove_macro("WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE")
-	    .remove_macro("WRATH_FONT_ANALYTIC_PIXEL_RELATIVE_COORDINATES");
-	  
-	  m_relative_glyph_glsl[old_sz]->m_vertex_processor[i]
-	    .absorb(m_glyph_glsl.m_vertex_processor[i]);
-	}
+        {
+          m_relative_glyph_glsl[old_sz]->m_fragment_processor[i]
+            .add_macro("WRATH_FONT_ANALYTIC_PIXEL_RELATIVE_COORDINATES")
+            .add_macro("WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE", ostr.str())
+            .absorb(m_glyph_glsl.m_fragment_processor[i])
+            .remove_macro("WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE")
+            .remove_macro("WRATH_FONT_ANALYTIC_PIXEL_RELATIVE_COORDINATES");
+          
+          m_relative_glyph_glsl[old_sz]->m_vertex_processor[i]
+            .absorb(m_glyph_glsl.m_vertex_processor[i]);
+        }
     }
 
   return m_relative_glyph_glsl[pmipmap_levels];

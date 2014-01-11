@@ -34,11 +34,11 @@ namespace
       m_pixel_size(64)
     {
       /*
-	make sure that the WRATHFontDatabase is filled, do this by 
-	using fetch_font_entry_naive().
+        make sure that the WRATHFontDatabase is filled, do this by 
+        using fetch_font_entry_naive().
        */
       m_default_font=WRATHFontFetch::fetch_font_entry_naive(WRATHFontFetch::FontProperties()
-							    .family_name("DejaVuSans")) ;
+                                                            .family_name("DejaVuSans")) ;
     }
 
     WRATHFontFetch::font_fetcher_t 

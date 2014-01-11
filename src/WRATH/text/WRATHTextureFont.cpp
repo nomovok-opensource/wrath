@@ -36,8 +36,8 @@ namespace
 
     explicit
     MetaTextureFont(const WRATHFontDatabase::MetaFont &psrc,
-		    WRATHTextureFont::font_fetcher_t pfetcher,
-		    int ppixel_size);
+                    WRATHTextureFont::font_fetcher_t pfetcher,
+                    int ppixel_size);
 
     ~MetaTextureFont();
 
@@ -67,8 +67,8 @@ namespace
   {
   public:
     typedef boost::tuple<int, 
-			 WRATHTextureFont::font_fetcher_t,
-			 const WRATHFontDatabase::MetaFont*> key;
+                         WRATHTextureFont::font_fetcher_t,
+                         const WRATHFontDatabase::MetaFont*> key;
 
     ~MetaTextureFontCollection();
 
@@ -92,8 +92,8 @@ namespace
 
   MetaTextureFont*
   fetch_meta_texture_font(int pixel_size,
-			  WRATHTextureFont::font_fetcher_t fetcher,
-			  const WRATHFontDatabase::MetaFont *pfont)
+                          WRATHTextureFont::font_fetcher_t fetcher,
+                          const WRATHFontDatabase::MetaFont *pfont)
   {
     MetaTextureFontCollection::key K(pixel_size, fetcher, pfont);
     return meta_texture_font_collection().fetch(K);
@@ -101,15 +101,15 @@ namespace
 
   MetaTextureFont*
   fetch_meta_texture_font(int pixel_size,
-			  WRATHTextureFont::font_fetcher_t fetcher,
-			  WRATHFontDatabase::Font::const_handle fnt,
-			  int IDX)
+                          WRATHTextureFont::font_fetcher_t fetcher,
+                          WRATHFontDatabase::Font::const_handle fnt,
+                          int IDX)
   {
     enum WRATHFontDatabase::meta_font_matching v;
 
     v=static_cast<enum WRATHFontDatabase::meta_font_matching>(IDX);
     return fetch_meta_texture_font(pixel_size, fetcher,
-				   fnt->meta_font(v));
+                                   fnt->meta_font(v));
   }
 }
 
@@ -121,7 +121,7 @@ MetaTextureFontCollection::
 {
   WRATHAutoLockMutex(m_mutex);
   for(map_type::iterator iter=m_map.begin(),
-	end=m_map.end(); iter!=end; ++iter)
+        end=m_map.end(); iter!=end; ++iter)
     {
       WRATHDelete(iter->second);
     }
@@ -159,8 +159,8 @@ fetch(const key &K)
 // MetaTextureFont methods
 MetaTextureFont::
 MetaTextureFont(const WRATHFontDatabase::MetaFont &psrc,
-		WRATHTextureFont::font_fetcher_t pfetcher,
-		int ppixel_size):
+                WRATHTextureFont::font_fetcher_t pfetcher,
+                int ppixel_size):
   m_meta_font(psrc),
   m_fetcher(pfetcher),
   m_pixel_size(ppixel_size)
@@ -168,8 +168,8 @@ MetaTextureFont(const WRATHFontDatabase::MetaFont &psrc,
   WRATHAutoLockMutex(m_mutex);
   m_connection=
     m_meta_font.connect_and_append(boost::bind(&MetaTextureFont::on_font_add,
-					       this, _1),
-				   m_fonts_to_register);
+                                               this, _1),
+                                   m_fonts_to_register);
 }
 
 MetaTextureFont::
@@ -191,23 +191,23 @@ MetaTextureFont::
 flush_dirty_list(void)
 {
   for(std::list<WRATHFontDatabase::Font::const_handle>::iterator
-	iter=m_fonts_to_register.begin(), end=m_fonts_to_register.end();
+        iter=m_fonts_to_register.begin(), end=m_fonts_to_register.end();
       iter!=end; ++iter)
     {
       WRATHTextureFont *fnt;
 
       fnt=m_fetcher(m_pixel_size, *iter);
       for(int G=0, endG=fnt->number_glyphs(); G<endG; ++G)
-	{
-	  glyph_index_type gl(G);
-	  character_code_type ch;
+        {
+          glyph_index_type gl(G);
+          character_code_type ch;
 
-	  ch=fnt->character_code(gl);
-	  if(ch.m_value!=0)
-	    {
-	      m_map[ch]=font_glyph_index(fnt, gl);
-	    }
-	}
+          ch=fnt->character_code(gl);
+          if(ch.m_value!=0)
+            {
+              m_map[ch]=font_glyph_index(fnt, gl);
+            }
+        }
     }
 
   m_fonts_to_register.clear();
@@ -254,7 +254,7 @@ set(const WRATHTextureFont::glyph_data_type &in_glyph,
   
   m_texel_coordinates=in_glyph.texel_lower_left()
     + ivec2(relative_native_texel_coordinate_x, 
-	    relative_native_texel_coordinate_y);
+            relative_native_texel_coordinate_y);
 }
 
 //////////////////////////////////
@@ -263,7 +263,7 @@ WRATH_RESOURCE_MANAGER_IMPLEMENT(WRATHTextureFont, WRATHTextureFontKey);
 
 WRATHTextureFont::
 WRATHTextureFont(const WRATHTextureFontKey &pname,
-		 WRATHTextureFont::font_fetcher_t pfetcher):
+                 WRATHTextureFont::font_fetcher_t pfetcher):
   m_name(pname),
   m_fetcher(pfetcher),
   m_use_count(0),
@@ -277,8 +277,8 @@ WRATHTextureFont(const WRATHTextureFontKey &pname,
   for(unsigned int i=0; i<m_meta_texture_font.size(); ++i)
     {
       m_meta_texture_font[i]=fetch_meta_texture_font(pixel_size(),
-						     m_fetcher,
-						     source_font(), i);
+                                                     m_fetcher,
+                                                     source_font(), i);
     }
 
   if(!source_font()->is_registered_font())
@@ -341,9 +341,9 @@ glyph_index_meta(WRATHTextureFont::character_code_type ch)
       fnt=static_cast<MetaTextureFont*>(m_meta_texture_font[i]);
 
       if(fnt!=NULL)
-	{
-	  return_value=fnt->fetch(ch);
-	}
+        {
+          return_value=fnt->fetch(ch);
+        }
     }
 
   if(!return_value.second.valid())

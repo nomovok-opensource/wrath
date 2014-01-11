@@ -52,7 +52,7 @@ namespace WRATHDefaultRectShader
   */
   const WRATHShaderSpecifier&
   shader_brush(const WRATHShaderBrush &brush, 
-	       enum WRATHBaseSource::precision_t prec);
+               enum WRATHBaseSource::precision_t prec);
   
   /*!\fn const WRATHShaderSpecifier& shader_simple(void)
     Fetches (and if necessary generates) a 

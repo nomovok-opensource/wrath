@@ -312,8 +312,8 @@ generate_multi_glsl_program(const WRATHShaderSpecifier *shader_specifier,
       should then be ignored.
    */
   out_spec.set(payload->m_packer_parameters, 
-	       in_spec, 
-	       visited_stages_of_node_values);
+               in_spec, 
+               visited_stages_of_node_values);
                
   
   
