@@ -851,105 +851,13 @@ namespace WRATHText
     return -1-S;
   }
 
-  /*!\class additional_texture
-    Type to specify an additional texture to
+  /*!\typedef additional_texture
+    Conveniance typedef to 
+    to specify an additional texture to
     use in addition to the textures from
-    a WRATHTextureFont. 
+    a WRATHTextureFont.
    */
-  class additional_texture
-  {
-  public:
-    /*!\fn additional_texture
-      Default ctor, does NOT initialize values.
-     */
-    additional_texture(void)
-    {}
-
-    /*!\fn additional_texture(const WRATHTextureChoice::texture_base::handle&, bool)
-      Ctor
-      \param v value to which to initialize \ref m_value
-      \param a value to which to initialize \ref m_include_texture_size_uniform
-     */
-    additional_texture(const WRATHTextureChoice::texture_base::handle &v, bool a=false):
-      m_value(v),
-      m_include_texture_size_uniform(a)
-    {}
-
-    /*!var m_value
-      Texture from which to sample
-     */
-    WRATHTextureChoice::texture_base::handle m_value;
-
-    /*!var m_include_texture_size_uniform
-      If true, include a uniform indicating the size of the texture.
-      The name of the uniform is name+"Size" where name is as
-      in WRATHFontShaderSpecifier::add_sampler() 
-     */
-    bool m_include_texture_size_uniform;
-
-    /*!\fn bool operator==(const additional_texture&) const
-      Comparison operator.
-      \param v value to which to compare
-     */
-    bool 
-    operator==(const additional_texture &v) const
-    { 
-      return m_value==v.m_value and 
-        m_include_texture_size_uniform==v.m_include_texture_size_uniform;
-    }
-
-    /*!\fn bool operator!=(const additional_texture&) const
-      Comparison operator.
-      \param v value to which to compare
-     */
-    bool 
-    operator!=(const additional_texture &v) const 
-    { 
-      return !operator==(v);
-    }
-
-    /*!\fn bool operator<(const additional_texture&) const
-      Comparison operator.
-      \param v value to which to compare
-     */
-    bool
-    operator<(const additional_texture &v) const 
-    { 
-      return m_value<v.m_value
-        or (m_value==v.m_value and m_include_texture_size_uniform<v.m_include_texture_size_uniform);
-    }
-
-    /*!\fn bool operator<=(const additional_texture&) const
-      Comparison operator.
-      \param v value to which to compare
-     */
-    bool
-    operator<=(const additional_texture &v) const 
-    {
-      return m_value<v.m_value 
-        or (m_value==v.m_value and m_include_texture_size_uniform<=v.m_include_texture_size_uniform);
-    }
-
-    /*!\fn bool operator>(const additional_texture&) const
-      Comparison operator.
-      \param v value to which to compare
-     */
-    bool
-    operator>(const additional_texture &v) const 
-    { 
-      return v.operator<(*this);
-    }
-
-    /*!\fn bool operator>=(const additional_texture&) const
-      Comparison operator.
-      \param v value to which to compare
-     */
-    bool
-    operator>=(const additional_texture &v) const 
-    { 
-      return v.operator<=(*this);
-    }
-  };
+  typedef WRATHTextureChoice::texture_base::handle additional_texture;
   
   /*!\fn set_state_type<additional_texture> set_additional_sampler(int, const additional_texture&)
     "Manipulator" to set an additional sampler value

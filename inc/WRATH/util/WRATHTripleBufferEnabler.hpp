@@ -574,8 +574,8 @@ public:
     \param tp signal type to which to hook
     \param tm time specification
     \param subscriber functor to call
-    \param gp_order Calling of slots from a specific
-                    (signal_type, signal_time) order
+    \param gp_order Calling order of slots from a specific
+                    (signal_type, signal_time) 
                     can be specified by setting gp_order,
                     slots connected with a lower gp_order 
                     are guaranteed to be called before slots 

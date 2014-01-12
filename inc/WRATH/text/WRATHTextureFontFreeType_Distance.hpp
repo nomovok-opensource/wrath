@@ -149,8 +149,12 @@ public:
   texture_binder(int texture_page);
 
   virtual
-  ivec2
-  texture_size(int texture_page);
+  int
+  texture_page_data_size(void) const;
+
+  virtual
+  float
+  texture_page_data(int texture_page, int idx) const;
 
   virtual
   int
@@ -305,10 +309,12 @@ private:
       number_textures_per_page=1
     };
 
-     
-
   void
   ctor_init(void);
+
+  void
+  on_create_texture_page(ivec2 texture_size,
+                         std::vector<float> &custom_data);
   
   /*
     Note: performs an std::swap with

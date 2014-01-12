@@ -69,7 +69,9 @@ namespace
     {
       m_allocator=WRATHImage::create_texture_allocator(true, m_texture_creation_size);
 
-       m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
+      m_glyph_glsl.m_texture_page_data_size=2;
+
+      m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
         .add_source("font_coverage_linear.vert.wrath-shader.glsl",
                     WRATHGLShader::from_resource);
 
@@ -198,6 +200,8 @@ WRATHTextureFontFreeType_Coverage(WRATHFreeTypeSupport::LockableFace::handle pfa
   m_total_pixel_use(0)
 {
   ctor_init();
+  m_page_tracker.connect(boost::bind(&WRATHTextureFontFreeType_Coverage::on_create_texture_page, this,
+                                     _2, _4));
 }
 
 
@@ -242,13 +246,31 @@ texture_binder(int pg)
   return m_page_tracker.texture_binder(pg);
 }
 
-
-ivec2
+void
 WRATHTextureFontFreeType_Coverage::
-texture_size(int pg)
-{  
-  return m_page_tracker.main_texture_size(pg);
-} 
+on_create_texture_page(ivec2 texture_size,
+                       std::vector<float> &custom_data)
+{
+  custom_data.resize(2);
+  custom_data[0]=1.0f/static_cast<float>(std::max(1, texture_size.x()) );
+  custom_data[1]=1.0f/static_cast<float>(std::max(1, texture_size.y()) );
+}
+
+int
+WRATHTextureFontFreeType_Coverage::
+texture_page_data_size(void) const
+{
+  return 2; //reciprocal texture size
+}
+
+float
+WRATHTextureFontFreeType_Coverage::
+texture_page_data(int texture_page, int idx) const
+{
+  return (0<=idx and idx<2)?
+    m_page_tracker.custom_data(texture_page)[idx]:
+    0;
+}
 
 int
 WRATHTextureFontFreeType_Coverage::

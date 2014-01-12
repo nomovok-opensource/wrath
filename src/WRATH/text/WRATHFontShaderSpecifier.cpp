@@ -253,13 +253,7 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
     WRATHTextureFont::GlyphGLSL::linear_glyph_position:
     WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position;
   
-  /*
-    we need to respect fs_source->m_custom_data_use;
-    We need to rig this as a collection of vec4's
-    and a vecN with N=sz%4, sz=m_custom_data_use.size()%4
-   */
   WRATHGLShader::shader_source cst;
-
   if(number_custom_to_use!=0)
     {
       const char *struct_def=
@@ -279,42 +273,62 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
       cst.add_macro("WRATH_FONT_NO_CUSTOM_DATA");
     }
 
+  
   /*
     pre-shader source codes.
    */
   new_specifier->append_pre_vertex_shader_source()
     .add_macro(linearity_macro[v])
-    .absorb(vertex_pre_shader_source())
-    .absorb(fs_source->m_pre_vertex_processor[v]);
+    .absorb(vertex_pre_shader_source());
   
   new_specifier->append_pre_fragment_shader_source()
     .add_macro(linearity_macro[v])
-    .absorb(fragment_pre_shader_source())
-    .absorb(fs_source->m_pre_fragment_processor[v]);
+    .absorb(fragment_pre_shader_source());
     
+
+  if(fs_source->m_texture_page_data_size==0)
+    {
+      new_specifier->append_vertex_shader_source()
+        .add_macro("WRATH_FONT_TEXTURE_PAGE_DATA_EMPTY");
+
+      new_specifier->append_fragment_shader_source()
+        .add_macro("WRATH_FONT_TEXTURE_PAGE_DATA_EMPTY");
+    }
   
   /*
     append shader codes
    */
   new_specifier->append_vertex_shader_source()
+    .add_macro("WRATH_FONT_TEXTURE_PAGE_DATA_SIZE", 
+               fs_source->m_texture_page_data_size)
+    .add_source("font_shader_texture_page_data.wrath-shader.glsl", 
+                WRATHGLShader::from_resource)
     .absorb(fs_source->m_vertex_processor[v])
     .absorb(cst)
     .absorb(vertex_shader_source());
   
   new_specifier->append_fragment_shader_source()
+    .add_macro("WRATH_FONT_TEXTURE_PAGE_DATA_SIZE", 
+               fs_source->m_texture_page_data_size)
+    .add_source("font_shader_texture_page_data.wrath-shader.glsl", 
+                WRATHGLShader::from_resource)
     .absorb(fs_source->m_fragment_processor[v])
     .absorb(fragment_shader_source());
   
-  
-  new_specifier->append_pre_fragment_shader_source()
-    .specify_extension("GL_OES_standard_derivatives",
-                       WRATHGLShader::enable_extension);
-  
+  #if defined(WRATH_GLES_VERSION)
+  {
+    new_specifier->append_pre_fragment_shader_source()
+      .specify_extension("GL_OES_standard_derivatives",
+                         WRATHGLShader::enable_extension);
+  }
+  #endif
   
   m_actual_creators[fs_source]=new_specifier;
 
   
-  return new_specifier->fetch_two_pass_drawer<WRATHTextureFontDrawer>(factory, attribute_packer, sub_drawer_id, true);
+  return new_specifier->fetch_two_pass_drawer<WRATHTextureFontDrawer>(factory, 
+                                                                      attribute_packer, 
+                                                                      sub_drawer_id, true);
 }
 
 const WRATHGLShader::shader_source&

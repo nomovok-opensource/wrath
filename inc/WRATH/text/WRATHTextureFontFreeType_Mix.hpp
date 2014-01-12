@@ -156,13 +156,25 @@ public:
   {
     return m_page_tracker.texture_binder(texture_page);
   }
+  
+  virtual
+  int
+  texture_page_data_size(void) const
+  {
+    //TODO: 
+    // m_native_src->texture_page_data_size()
+    // + m_native_src->texture_page_data_size()
+    // + 2; //2 extra is for glyph minified bottom_left
+    return m_native_src->texture_page_data_size();
+  }
 
   virtual
-  ivec2
-  texture_size(int texture_page)
+  float
+  texture_page_data(int texture_page, int idx) const
   {
-    return m_page_tracker.main_texture_size(texture_page);
-    //m_page_tracker.secondary_texture_size(texture_page);
+    //TODO:
+    // m_page_tracker.custom_data(texture_page)[idx];
+    return m_native_src->texture_page_data(texture_page, idx);
   }
 
   virtual

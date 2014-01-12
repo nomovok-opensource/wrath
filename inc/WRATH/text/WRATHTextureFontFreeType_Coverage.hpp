@@ -109,8 +109,12 @@ public:
   texture_binder(int texture_page);
 
   virtual
-  ivec2
-  texture_size(int texture_page);
+  int
+  texture_page_data_size(void) const;
+
+  virtual
+  float
+  texture_page_data(int texture_page, int idx) const;
 
   virtual
   int
@@ -369,12 +373,14 @@ private:
     std::vector<uint8_t> m_raw_pixels_from_freetype;
     std::vector<uint8_t> m_pixels;
   };
-
-   
-  
    
   void
   ctor_init(void);
+  
+  void
+  on_create_texture_page(ivec2 texture_size,
+                         std::vector<float> &custom_data);
+
  
   glyph_data_type*
   generate_character(glyph_index_type G);

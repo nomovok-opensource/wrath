@@ -115,15 +115,17 @@ public:
                                          const WRATHTextureFontKey &presource_name);
 
   
-
-  virtual
-  ivec2
-  texture_size(int texture_page);
-
-  
   virtual
   const_c_array<WRATHTextureChoice::texture_base::handle>
   texture_binder(int texture_page);
+
+  virtual
+  int
+  texture_page_data_size(void) const;
+
+  virtual
+  float
+  texture_page_data(int texture_page, int idx) const;
 
   virtual
   int
@@ -358,6 +360,10 @@ private:
   virtual
   glyph_data_type*
   generate_character(glyph_index_type G);
+
+  void
+  on_create_texture_page(ivec2 texture_size,
+                         std::vector<float> &custom_data);
 
 
   uint32_t m_flags;

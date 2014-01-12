@@ -404,7 +404,7 @@ common_analytic_texture_data(void):
   #endif
 
 
-  
+  m_glyph_glsl.m_texture_page_data_size=2;
 
   m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
     .add_source("font_analytic_linear.vert.wrath-shader.glsl",
@@ -473,6 +473,7 @@ glyph_glsl(enum WRATHTextureFontFreeType_Analytic::texture_mode_type pmode,
 
       m_relative_glyph_glsl[old_sz]->m_sampler_names=m_glyph_glsl.m_sampler_names;
       m_relative_glyph_glsl[old_sz]->m_global_names=m_glyph_glsl.m_global_names;
+      m_relative_glyph_glsl[old_sz]->m_texture_page_data_size=m_glyph_glsl.m_texture_page_data_size;
 
       std::ostringstream ostr;
       ostr << (1<<old_sz) << ".0";
@@ -508,6 +509,8 @@ WRATHTextureFontFreeType_Analytic(WRATHFreeTypeSupport::LockableFace::handle pfa
   m_bytes_per_pixel(4, m_texture_mode==global_pixel_coordinates_32bit?8:4)
 {
   ctor_init();
+  m_page_tracker.connect(boost::bind(&WRATHTextureFontFreeType_Analytic::on_create_texture_page, this,
+                                     _2, _4));
 }
 
 void
@@ -1208,11 +1211,30 @@ texture_binder(int pg)
   return m_page_tracker.texture_binder(pg);
 }
 
-ivec2
+void
 WRATHTextureFontFreeType_Analytic::
-texture_size(int pg)
+on_create_texture_page(ivec2 texture_size,
+                       std::vector<float> &custom_data)
 {
-  return m_page_tracker.main_texture_size(pg);
+  custom_data.resize(2);
+  custom_data[0]=1.0f/static_cast<float>(std::max(1, texture_size.x()) );
+  custom_data[1]=1.0f/static_cast<float>(std::max(1, texture_size.y()) );
+}
+
+int
+WRATHTextureFontFreeType_Analytic::
+texture_page_data_size(void) const
+{
+  return 2; //reciprocal texture size
+}
+
+float
+WRATHTextureFontFreeType_Analytic::
+texture_page_data(int texture_page, int idx) const
+{
+  return (0<=idx and idx<2)?
+    m_page_tracker.custom_data(texture_page)[idx]:
+    0;
 }
 
 int

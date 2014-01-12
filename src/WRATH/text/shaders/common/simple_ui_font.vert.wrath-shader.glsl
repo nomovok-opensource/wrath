@@ -17,11 +17,6 @@
  */
 
 
-/*
-  TODO:
-    1) Support mix font shaders
- */
-
 
 
 
@@ -80,13 +75,6 @@ shader_in mediump vec4 color;
 shader_out mediump vec4 tex_color;
 
 
-/*
-  coming from glyph_data_type function,
-  passed onto pre_compute_glyph()
- */
-uniform highp vec2 reciprocal_texture_size;
-
-
 void
 shader_main(void)
 {
@@ -112,15 +100,13 @@ shader_main(void)
     pre_compute_glyph(glyph_position,
                       glyph_bottom_left_texel,
                       glyph_size,
-                      reciprocal_texture_size,
                       custom_values_str.values);
   }  
   #else
   {
     pre_compute_glyph(glyph_position,
                       glyph_bottom_left_texel,
-                      glyph_size,
-                      reciprocal_texture_size);
+                      glyph_size);
   }
   #endif
   

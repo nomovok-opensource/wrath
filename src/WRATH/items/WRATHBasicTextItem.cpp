@@ -394,7 +394,7 @@ generate_key(std::set<WRATHItemDrawState> &skey,
       pkey
         .primitive_type(GL_TRIANGLES)
         .drawer(m_drawer->drawer_named(tp))
-        .add_uniform(m_drawer->texture_size_named_uniform(tp, m_font, page))
+        .add_uniform(m_drawer->texture_page_data_named_uniform(tp, m_font, page))
         .force_draw_order(m_draw_order.named_draw_order(tp))
         .draw_type(nm);
       

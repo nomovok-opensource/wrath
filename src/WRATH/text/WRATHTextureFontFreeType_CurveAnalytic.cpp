@@ -1434,6 +1434,8 @@ common_data_type(void):
     {
       WRATHImage::ImageFormatArray curve_fmt;
 
+      m_glyph_glsl[i].m_texture_page_data_size=2;
+
       for(int type=0; type<WRATHTextureFont::GlyphGLSL::num_linearity_types; ++type)
         {
           if(i&with_scaling)
@@ -3253,6 +3255,8 @@ WRATHTextureFontFreeType_CurveAnalytic(WRATHFreeTypeSupport::LockableFace::handl
   m_curvature_collapse(curvature_collapse())
 {
   WRATHassert((ttf_face()->face()->face_flags&FT_FACE_FLAG_SCALABLE)!=0);
+  m_page_tracker.connect(boost::bind(&WRATHTextureFontFreeType_CurveAnalytic::on_create_texture_page, this,
+                                     _2, _4));
 }
 
 
@@ -3295,13 +3299,32 @@ glyph_glsl(void)
   return common_data().glyph_glsl(m_flags);
 }
 
-
-ivec2
+void
 WRATHTextureFontFreeType_CurveAnalytic::
-texture_size(int texture_page)
+on_create_texture_page(ivec2 texture_size,
+                       std::vector<float> &custom_data)
 {
-  return m_page_tracker.main_texture_size(texture_page);
+  custom_data.resize(2);
+  custom_data[0]=1.0f/static_cast<float>(std::max(1, texture_size.x()) );
+  custom_data[1]=1.0f/static_cast<float>(std::max(1, texture_size.y()) );
 }
+
+int
+WRATHTextureFontFreeType_CurveAnalytic::
+texture_page_data_size(void) const
+{
+  return 2; //reciprocal texture size
+}
+
+float
+WRATHTextureFontFreeType_CurveAnalytic::
+texture_page_data(int texture_page, int idx) const
+{
+  return (0<=idx and idx<2)?
+    m_page_tracker.custom_data(texture_page)[idx]:
+    0;
+}
+
 
 const_c_array<WRATHTextureChoice::texture_base::handle>
 WRATHTextureFontFreeType_CurveAnalytic::

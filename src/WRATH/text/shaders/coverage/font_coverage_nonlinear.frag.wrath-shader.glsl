@@ -26,10 +26,13 @@ uniform mediump sampler2D wrath_CoverageField;
 shader_in mediump vec2 wrath_CoverageFieldBottomLeft;
 
 mediump float 
-is_covered(in vec2 glyph_position, in vec2 glyph_recirpocal_size)
+is_covered(in vec2 glyph_position)
 {
   mediump float rr;
-  mediump vec2 tt;
+  mediump vec2 tt, glyph_texture_reciprocal_size;
+
+  glyph_texture_reciprocal_size=vec2(wrath_font_page_data(0),
+                                     wrath_font_page_data(1));
 
   tt=(glyph_position + wrath_CoverageFieldBottomLeft)*glyph_recirpocal_size;
   rr=texture2D(wrath_CoverageField, tt).r;
@@ -37,10 +40,13 @@ is_covered(in vec2 glyph_position, in vec2 glyph_recirpocal_size)
 }
 
 mediump float
-compute_coverage(in vec2 glyph_position, in vec2 glyph_recirpocal_size)
+compute_coverage(in vec2 glyph_position)
 {
   mediump float rr;
-  mediump vec2 tt;
+  mediump vec2 tt, glyph_texture_reciprocal_size;
+
+  glyph_texture_reciprocal_size=vec2(wrath_font_page_data(0),
+                                     wrath_font_page_data(1));
 
   tt=(glyph_position + wrath_CoverageFieldBottomLeft)*glyph_recirpocal_size;
   rr=texture2D(wrath_CoverageField, tt).r;

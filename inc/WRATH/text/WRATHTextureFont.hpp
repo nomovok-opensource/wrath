@@ -375,22 +375,6 @@ public:
         const_c_array<WRATHTextureChoice::texture_base::handle>();
     }
 
-    /*!\fn ivec2 texture_size
-      Provided as a conveniance, returns the texture size
-      of the page of the glyph, i.e. is equivalent to:
-      \code
-      font()->texture_size(L, texture_page())
-      \endcode
-      However, if font() is NULL, returns ivec2(0,0).
-     */
-    ivec2
-    texture_size(void) const
-    {
-      return (font()!=NULL)?
-        font()->texture_size(texture_page()):
-        ivec2(0,0);
-    }
-
     /*!\fn bool support_sub_primitives
       Returns true if this glyph support 
       sub-primitive drawing, see also
@@ -822,18 +806,18 @@ public:
       void pre_compute_glyph(in vec2 glyph_position, 
                              in vec2 glyph_bottom_left,
                              in vec2 glyph_size,
-                             in vec2 glyph_texture_reciprocal_size,
                              in float glyph_custom_data[])
       \endcode
       where glyph_position is the position in texels,
       glyph_bottom_left is from \ref glyph_data_type::texel_lower_left(),
-      glyph_size are is from \ref glyph_data_type::texel_size(),
-      glyph_texture_reciprocal_size is the reciprocal of the
-      size of the texture and glyph_custom_data is an array
-      of same size as \ref m_custom_data_use and the values 
-      are those values coming from the glyph_data_type::m_custom_float_data
-      taken from \ref m_custom_data_use. If \ref m_custom_data_use
-      is empty, the last argument is to be omitted.
+      glyph_size is from \ref glyph_data_type::texel_size(),
+      and glyph_custom_data is an array of same size as 
+      \ref m_custom_data_use and the values are given by
+      \code
+      glyph_custom_data[ i ] =  glyph_data_type::m_custom_float_data[ m_custom_data_use[i] ]
+      \endcode
+      If \ref m_custom_data_use is empty, the last argument 
+      is to be omitted.
 
    - In the Fragment shader, implement the functions
      \code
@@ -855,31 +839,28 @@ public:
       \code
       void pre_compute_glyph(in vec2 glyph_bottom_left,
                              in vec2 glyph_size,
-                             in vec2 glyph_texture_reciprocal_size,
                              in float glyph_custom_data[])
-      \endcode
-      where glyph_bottom_left is from \ref glyph_data_type::texel_lower_left(),
-      glyph_size are is from \ref glyph_data_type::texel_size(),
-      glyph_texture_reciprocal_size is the reciprocal of the
-      size of the texture and glyph_custom_data is an array
-      of same size as \ref m_custom_data_use and the values 
-      are those values coming from the glyph_data_type::m_custom_float_data
-      taken from \ref m_custom_data_use. If \ref m_custom_data_use
-      is empty, the last argument is to be omitted.
+      \endcode 
+      where glyph_bottom_left, glyph_size and
+      glyph_custom_data are the same as in the linear case.
 
    - In the Fragment shader, implement the functions
      \code
-     float is_covered(in vec2 glyph_position, in vec2 glyph_reciprocal_size)
-     float compute_coverage(in vec2 glyph_position, in vec2 glyph_reciprocal_size)
+     float is_covered(in vec2 glyph_position)
+     float compute_coverage(in vec2 glyph_position)
      \endcode
-     The function <B>is_covered()</B> returns
-     either 1.0 or 0.0 corresponding to
-     if the fragment is covered or not. The 
-     function <B>compute_coverage()</B> 
-     computes a value in the range [0.0, 1.0] 
-     indicating how much of the fragment is
-     covered. The return value is used to
-     render the glyph with anti-aliasing.
+     where glyph_position is the position of the
+     fragment (in texels). 
+
+   In each case linear and non-linear and for both shader
+   stages (vertex and fragment) the function
+   \code
+   float wrath_font_page_data(int idx)
+   \endcode
+   is defined and returns \ref 
+   WRATHTextureFont::texture_page_data(page, idx)
+   where page is the texture page on which
+   the glyph resides.
    */
   class GlyphGLSL
   {
@@ -917,6 +898,10 @@ public:
      */
     typedef vecN<WRATHGLShader::shader_source, num_linearity_types> source_set;
     
+    GlyphGLSL(void):
+      m_texture_page_data_size(0)
+    {}
+
     virtual
     ~GlyphGLSL() 
     {}
@@ -927,18 +912,6 @@ public:
       order, initial value is an empty array
      */
     std::vector<int> m_custom_data_use;
-
-    /*!\var m_pre_vertex_processor
-      GLSL source coded added _before_ vertex source 
-      code indexed by \ref glyph_position_linearity
-     */
-    source_set m_pre_vertex_processor;
-
-    /*!\var m_pre_fragment_processor
-      GLSL source coded added _before_ fragment source 
-      code indexed by \ref glyph_position_linearity
-     */
-    source_set m_pre_fragment_processor;
 
     /*!\var m_vertex_processor
       GLSL source code that implements the function 
@@ -970,6 +943,12 @@ public:
       the values from \ref m_sampler_names.
      */
     std::vector<std::string> m_global_names;
+
+    /*!\var m_texture_page_data_size
+      Number of values to use from \ref WRATHTextureFont::texture_page_data(),
+      initial value is 0.
+     */
+    int m_texture_page_data_size;
   };
   
   /*!\fn WRATHTextureFont
@@ -1127,16 +1106,6 @@ public:
     return space_width()*4.0f;
   }
 
-  /*!\fn ivec2 texture_size
-    To be implemented a derived class to
-    return the size of the textures, in pixels,
-    used by the font.
-    \param texture_page which texture page.
-   */
-  virtual
-  ivec2
-  texture_size(int texture_page)=0;
-
   /*!\fn const_c_array<WRATHTextureChoice::texture_base::handle> texture_binder
     To be implemented a derived class to return 
     an array of handles to WRATHTextureChoice::texture_base
@@ -1165,33 +1134,43 @@ public:
     To be implemented by a derived class to
     return the GLSL code (and sampler detail
     data) for drawing glyphs of the texture
-    font. The return value is -type- dependent
-    and not object dependent, i.e the return
-    value may only depend on the underlying
-    type of the object but not the object
-    itself.
+    font. The return value is used to construct
+    a shader, those shaders are keyed by
+    -address- of the returned object. Hence,
+    for a common way of drawing a font,
+    the -same- GLyphGLSL object should 
+    be returned.
    */
   virtual
   const GlyphGLSL*
   glyph_glsl(void)=0;
 
-  /*!\fn vec2 texture_size_reciprocal
-    Returns the texture size multiplier
-    to be used by a shader to draw the 
-    glyph.
+  /*!\fn int texture_page_data_size
+    To be implementedby a derived class to
+    return the number of float's of texture
+    page data; the values are retrieved by
+    \ref texture_page_data().
+   */
+  virtual
+  int
+  texture_page_data_size(void) const=0;
+
+  /*!\fn float texture_page_data
+    To be implemented by a dervied class to
+    return texture page data. The values returned
+    -must- not vary over the lifetime of a 
+    WRATHTextureFont derived object, i.e.
+    the values once fetched are to be the
+    same on repeated fetches for a given 
+    (WRATHTextureFont*, texture_page, index)
+    tuple.
     \param texture_page which texture page
+    \param idx index of data to fetch, with
+               0<= idx < texture_page_data_size()
    */  
-  vec2
-  texture_size_reciprocal(int texture_page)
-  {
-    ivec2 r(texture_size(texture_page));
-
-    r.x()=std::max(r.x(), 1);
-    r.y()=std::max(r.y(), 1);
-
-    return vec2( 1.0f/static_cast<float>(r.x()),
-                 1.0f/static_cast<float>(r.y()) );
-  }
+  virtual
+  float
+  texture_page_data(int texture_page, int idx) const=0;
 
   /*!\fn const WRATHTextureFontKey& resource_name
    Returns the resource key of the font,

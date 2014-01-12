@@ -506,23 +506,31 @@ number_texture_pages(void) const
 
 const ivec2&
 WRATHTextureFontUtil::TexturePageTracker::
-main_texture_size(int pg) const
+texture_size(int pg) const
 {
   WRATHAutoLockMutex(m_mutex);
   WRATHassert(pg>=0 and static_cast<unsigned int>(pg)<m_pages.size());
-  return m_pages[pg]->main_texture_size();
+  return m_pages[pg]->texture_size();
 }
 
-const ivec2&
+const std::vector<float>&
 WRATHTextureFontUtil::TexturePageTracker::
-secondary_texture_size(int pg) const
+custom_data(int pg) const
 {
   WRATHAutoLockMutex(m_mutex);
   WRATHassert(pg>=0 and static_cast<unsigned int>(pg)<m_pages.size());
-  return m_pages[pg]->secondary_texture_size();
+  return m_pages[pg]->m_custom_data;
 }
 
 
+std::vector<float>&
+WRATHTextureFontUtil::TexturePageTracker::
+custom_data(int pg) 
+{
+  WRATHAutoLockMutex(m_mutex);
+  WRATHassert(pg>=0 and static_cast<unsigned int>(pg)<m_pages.size());
+  return m_pages[pg]->m_custom_data;
+}
 
 const_c_array<WRATHTextureChoice::texture_base::handle>
 WRATHTextureFontUtil::TexturePageTracker::
@@ -561,25 +569,23 @@ get_page_number(WRATHImage *mainImage,
         }
     }
   return get_page_number_implement(mainImage->atlas_size(), 
-                                   mainImage->atlas_size(),
                                    texes);
 }
 
 
 int
 WRATHTextureFontUtil::TexturePageTracker::
-get_page_number(ivec2 pmain_texture_size, ivec2 psecondary_texture_size,
+get_page_number(ivec2 ptexture_size, 
                 const_c_array<WRATHTextureChoice::texture_base::handle> raw_key)
 {
   binder_array key(raw_key.begin(), raw_key.end());
-  return get_page_number_implement(pmain_texture_size, psecondary_texture_size, key);
+  return get_page_number_implement(ptexture_size, key);
 }
 
 
 int
 WRATHTextureFontUtil::TexturePageTracker::
-get_page_number_implement(ivec2 pmain_texture_size, ivec2 psecondary_texture_size,
-                          binder_array &key)
+get_page_number_implement(ivec2 ptexture_size, binder_array &key)
 {
   int R;
 
@@ -592,9 +598,13 @@ get_page_number_implement(ivec2 pmain_texture_size, ivec2 psecondary_texture_siz
     {
       m_map[key]=m_pages.size();
       R=m_pages.size();
-      m_pages.push_back(WRATHNew page_type(pmain_texture_size, 
-                                           psecondary_texture_size, 
+      m_pages.push_back(WRATHNew page_type(ptexture_size, 
                                            key));
+
+      m_signal(R, 
+               m_pages[R]->texture_size(),
+               m_pages[R]->binders(),
+               m_pages[R]->m_custom_data);
     }
   else
     {
@@ -602,6 +612,7 @@ get_page_number_implement(ivec2 pmain_texture_size, ivec2 psecondary_texture_siz
     }
 
   WRATHUnlockMutex(m_mutex);
+
   return R;
 }
 

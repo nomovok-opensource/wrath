@@ -159,15 +159,18 @@ public:
   WRATHTextureFontFreeType_Analytic(WRATHFreeTypeSupport::LockableFace::handle pface,
                                     const WRATHTextureFontKey &presource_name);
 
- 
-  virtual
-  ivec2
-  texture_size(int texture_page);
-
-  
+   
   virtual
   const_c_array<WRATHTextureChoice::texture_base::handle>
   texture_binder(int texture_page);
+
+  virtual
+  int
+  texture_page_data_size(void) const;
+
+  virtual
+  float
+  texture_page_data(int texture_page, int idx) const;
 
   virtual
   int
@@ -296,13 +299,13 @@ private:
     {
       number_textures_per_page=2
     };
-
-
-  
   
   void
   ctor_init(void);
-  
+
+  void
+  on_create_texture_page(ivec2 texture_size,
+                         std::vector<float> &custom_data);
  
   void
   pack_lines(ivec2 pt, int L, 

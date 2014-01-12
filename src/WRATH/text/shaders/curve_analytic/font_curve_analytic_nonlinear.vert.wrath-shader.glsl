@@ -22,7 +22,6 @@ shader_out mediump float wrath_CurveAnalyticGlyphIndex;
 void pre_compute_glyph(in vec2 glyph_position, 
                        in vec2 glyph_bottom_left,
                        in vec2 glyph_size,
-                       in vec2 glyph_texture_reciprocal_size,
                        in float glyph_custom_data[1])
 {
   wrath_CurveAnalyticBottomLeft=glyph_bottom_left;

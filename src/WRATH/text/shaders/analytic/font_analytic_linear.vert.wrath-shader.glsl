@@ -21,12 +21,14 @@ shader_out mediump vec4 wrath_AnalyticTexCoord_Position;
 
 void pre_compute_glyph(in vec2 glyph_position, 
                        in vec2 glyph_bottom_left,
-                       in vec2 glyph_size,
-                       in vec2 glyph_texture_reciprocal_size)
+                       in vec2 glyph_size)
 {
-  mediump vec2 pp;
+  mediump vec2 pp, glyph_texture_reciprocal_size;
 
   pp=glyph_bottom_left + glyph_position;
+  glyph_texture_reciprocal_size=vec2(wrath_font_page_data(0),
+                                     wrath_font_page_data(1));
+
   wrath_AnalyticTexCoord_Position.zw=glyph_position;
   wrath_AnalyticTexCoord_Position.xy=pp*glyph_texture_reciprocal_size;
 }

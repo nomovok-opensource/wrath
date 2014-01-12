@@ -163,6 +163,7 @@ common_data_type(void):
     }
   m_pixel_sizes.insert(last_size);
 
+  m_glyph_glsl.m_texture_page_data_size=0;
   m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
     .add_source("font_detailed_linear.vert.wrath-shader.glsl", WRATHGLShader::from_resource);
 
@@ -626,12 +627,21 @@ texture_binder(int pg)
   return m_page_tracker.texture_binder(pg);
 }
 
-ivec2
+int
 WRATHTextureFontFreeType_DetailedCoverage::
-texture_size(int)
-{  
-  return ivec2(256, 256);
-} 
+texture_page_data_size(void) const
+{
+  return 0; 
+}
+
+float
+WRATHTextureFontFreeType_DetailedCoverage::
+texture_page_data(int texture_page, int idx) const
+{
+  WRATHunused(texture_page);
+  WRATHunused(idx);
+  return 0.0f;
+}
 
 int
 WRATHTextureFontFreeType_DetailedCoverage::

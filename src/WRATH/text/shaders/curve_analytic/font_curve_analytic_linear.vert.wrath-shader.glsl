@@ -23,10 +23,12 @@ shader_out mediump float wrath_CurveAnalyticGlyphIndex;
 void pre_compute_glyph(in vec2 glyph_position, 
                        in vec2 glyph_bottom_left,
                        in vec2 glyph_size,
-                       in vec2 glyph_texture_reciprocal_size,
                        in float glyph_custom_data[1])
 {
-  mediump vec2 pp;
+  mediump vec2 pp, glyph_texture_reciprocal_size;
+
+  glyph_texture_reciprocal_size=vec2(wrath_font_page_data(0),
+                                     wrath_font_page_data(1));
 
   pp=glyph_bottom_left + glyph_position;
   wrath_CurveAnalyticTexCoord_Position.zw=glyph_position;

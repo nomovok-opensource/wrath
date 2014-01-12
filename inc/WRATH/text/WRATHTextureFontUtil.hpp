@@ -23,6 +23,8 @@
 #define __WRATH_TEXTURE_FONT_UTIL_HPP__
 
 #include "WRATHConfig.hpp"
+#include <boost/signals2.hpp>
+#include <boost/bind.hpp>
 #include <vector>
 #include <map>
 #include <boost/multi_array.hpp>
@@ -64,45 +66,63 @@ namespace WRATHTextureFontUtil
     on behalf of a WRATHTextureFont derived
     class the methods:
     - \ref WRATHTextureFont::texture_binder()
-    - \ref WRATHTextureFont::texture_size()
     - \ref WRATHTextureFont::number_texture_pages()
+    - \ref WRATHTextureFont::texture_page_data_size() via size of \ref custom_data()
+    - \ref WRATHTextureFont::texture_page_data() via elements of \ref custom_data()
    */
   class TexturePageTracker:boost::noncopyable
   {
   public:
 
+    /*!\typedef signal_t
+      Signal type for signal fired whenever a new
+      page is created; signal is fired while
+      the access mutex is locked, passing the
+      argments: texture page, texture_size(),
+      texture_binders() and custom_data()
+    */
+    typedef boost::signals2::signal<void (int, ivec2, 
+                                          const std::vector<WRATHTextureChoice::texture_base::handle>&,
+                                          std::vector<float>&)> signal_t;
+
+    /*!\typedef connect_t
+      Conveniance typedef for the connection type.
+    */
+    typedef boost::signals2::connection connect_t;
+
     ~TexturePageTracker();
 
-    /*!\fn int get_page_number(ivec2, ivec2, const_c_array<WRATHTextureChoice::texture_base::handle>)
-      Returns the page number for a specified (array of texture handlers)-key.
-      If the key does not yet exist in the system, it is added with that the
-      value of pmain_texture_size specifies the \ref main_texture_size() and
-      value of psecondary_texture_size specifies the \ref secondary_texture_size()
-      for the returned page.
-      \param pmain_texture_size the size to use for main texture if the key R does not already exist
-      \param psecondary_texture_size the size to use for secondary texture if the key R does not already exist
-      \param R array of handles to WRATHTextureChoice::texture_base objects
+    /*!\fn connect_t connect
+      Connect to the signal fired whenever a new texture
+      page is created.
+      \param subscriber functor to call
+      \param gp_order Calling order of slots 
+                      can be specified by setting gp_order,
+                      slots connected with a lower gp_order 
+                      are guaranteed to be called before slots 
+                      connected with a higher (for a fixed 
+                      signal_type-signal_time pair). Slots
+                      in the same gp_order have no guarantee
+                      of which is called first.
      */
-    int
-    get_page_number(ivec2 pmain_texture_size, ivec2 psecondary_texture_size,
-                    const_c_array<WRATHTextureChoice::texture_base::handle> R);
-
+    connect_t
+    connect(const signal_t::slot_type &subscriber, int gp_order=0)
+    {
+      return m_signal.connect(gp_order, subscriber);
+    }
 
     /*!\fn int get_page_number(ivec2, const_c_array<WRATHTextureChoice::texture_base::handle>)
       Returns the page number for a specified (array of texture handlers)-key.
       If the key does not yet exist in the system, it is added with that the
-      value of texture_size specifies _both_ the \ref main_texture_size() and
-      the \ref secondary_texture_size() for the returned page.
-      \param texture_size the value to use for main and secondary textures
+      value of texture_size specifies the \ref texture_size() for the 
+      returned page.
+      \param texture_size the value to use for texture size
                           if the key R does not already exist
       \param R array of handles to WRATHTextureChoice::texture_base objects
      */
     int
     get_page_number(ivec2 texture_size,
-                    const_c_array<WRATHTextureChoice::texture_base::handle> R)
-    {
-      return get_page_number(texture_size, texture_size, R);
-    }
+                    const_c_array<WRATHTextureChoice::texture_base::handle> R);
 
     /*!\fn int get_page_number(WRATHImage*, const_c_array<WRATHImage*>)
       Conveniance function, equivalent to
@@ -139,23 +159,30 @@ namespace WRATHTextureFontUtil
     const_c_array<WRATHTextureChoice::texture_base::handle>
     texture_binder(int pg) const;
 
-    /*!\fn const ivec2& main_texture_size
+    /*!\fn const ivec2& texture_size
       Returns the main texture size (essentially the atlas size) for
       a given page number as returned by get_page_number(WRATHImage*) and/or
       get_page_number(ivec2, const_c_array<WRATHTextureChoice::texture_base::handle>).
       \param pg page number from which to fetch the texture size      
      */
     const ivec2&
-    main_texture_size(int pg) const;
+    texture_size(int pg) const;
 
-    /*!\fn const ivec2& secondary_texture_size
-      Returns the secondary texture size (essentially the atlas size) for
-      a given page number as returned by get_page_number(WRATHImage*) and/or
-      get_page_number(ivec2, const_c_array<WRATHTextureChoice::texture_base::handle>).
-      \param pg page number from which to fetch the texture size      
+    /*!\fn const std::vector<float>& custom_data(int) const
+      Returns a const-reference to the custom data
+      associated to a texture page.
+      \param pg page number from which to fetch the custom data
      */
-    const ivec2&
-    secondary_texture_size(int pg) const;
+    const std::vector<float>&
+    custom_data(int pg) const;
+
+    /*!\fn std::vector<vec4>& custom_data(int) 
+      Returns a reference to the custom data
+      associated to a texture page.
+      \param pg page number from which to fetch the custom data
+     */
+    std::vector<float>&
+    custom_data(int pg);
 
     /*!\fn int number_texture_pages
       Returns the number of texture pages.
@@ -167,26 +194,19 @@ namespace WRATHTextureFontUtil
     typedef std::vector<WRATHTextureChoice::texture_base::handle> binder_array;
     typedef std::map<binder_array, int> map_type;
 
-    class page_type:public std::pair< std::pair<ivec2, ivec2> , binder_array>
+    class page_type:public std::pair<ivec2, binder_array>
     {
     public:
-      page_type(const ivec2 &v, ivec2 &w, binder_array &r)
+      page_type(const ivec2 &v, binder_array &r)
       {
-        first.first=v;
-        first.second=w;
+        first=v;
         std::swap(second, r);
       }
 
       const ivec2&
-      main_texture_size(void) const
+      texture_size(void) const
       {
-        return first.first;
-      }
-
-      const ivec2&
-      secondary_texture_size(void) const
-      {
-        return first.second;
+        return first;
       }
 
       const binder_array&
@@ -194,15 +214,17 @@ namespace WRATHTextureFontUtil
       {
         return second;
       }
+
+      std::vector<float> m_custom_data;
     };
 
     int
-    get_page_number_implement(ivec2 pmain_texture_size, ivec2 psecondary_texture_size,
-                              binder_array &raw_key);
+    get_page_number_implement(ivec2 ptexture_size, binder_array &raw_key);
     
     mutable WRATHMutex m_mutex;
     map_type m_map;
     std::vector<page_type*> m_pages;
+    signal_t m_signal;
   };
 
   /*!\class SubQuadProducer

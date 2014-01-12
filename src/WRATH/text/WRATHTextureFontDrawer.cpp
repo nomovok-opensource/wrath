@@ -24,17 +24,15 @@
 
 namespace
 {
-  class FontSizeMagic:public WRATHUniformData::uniform_setter_base
+  class TexturePageDataUniform:public WRATHUniformData::uniform_setter_base
   {
   public:
-    FontSizeMagic(WRATHTextureFont *font, 
-                  int texture_page, const std::string &pname):
-      m_name(pname),
+    TexturePageDataUniform(WRATHTextureFont *font, int texture_page):
       m_ready(false),
-      m_texture_reciprocal_location(-1),
+      m_location(-1),
       m_font(font),
       m_texture_page(texture_page),
-      m_both_there(false)
+      m_size(-1)
     {}
 
     virtual
@@ -46,50 +44,45 @@ namespace
           m_ready=true;
           WRATHGLProgram::attribute_uniform_query_result u;
 
-          u=pr->find_uniform(m_name);
+          //this must match the uniform found in the built in GLSL
+          //found in font_shader_texture_page_data.wrath-shader.glsl
+          u=pr->find_uniform("wrath_font_page_data_uniforms");
           if(u.m_info!=NULL)
             {
-              m_both_there=(u.m_info->m_count>=2);
-              m_texture_reciprocal_location=u.m_info->m_location;
+              m_size=std::min(m_font->texture_page_data_size(), u.m_info->m_count);
+              m_location=u.m_info->m_location;
+              m_values.resize(m_size, 0.0f);
+              for(int i=0; i<m_size; ++i)
+                {
+                  m_values[i]=m_font->texture_page_data(m_texture_page, i);
+                }
             }
 
-          if(m_texture_reciprocal_location==-1)
+          if(m_location==-1)
             {
-              WRATHwarning("\nUnable to find texture size uniform \"" << m_name
-                           << "\" in WRATHGLProgram \"" << pr->resource_name()
+              WRATHwarning("\nUnable to find texture page data uniform "
+                           << "in WRATHGLProgram \"" << pr->resource_name()
                            << "\"\n");
                            
             }
         }
 
-      if(m_texture_reciprocal_location==-1)
+      if(m_location==-1 or m_size<=0)
         {
           return;
         }
 
-      if(!m_both_there)
-        {
-          vec2 recip_sz(m_font->texture_size_reciprocal(m_texture_page));
-          
-          glUniform2fv(m_texture_reciprocal_location, 1, recip_sz.c_ptr());
-        }
-      else
-        {
-          vecN<vec2, 2> recip_szs(m_font->texture_size_reciprocal(m_texture_page),
-                                  m_font->texture_size_reciprocal(m_texture_page));
-          glUniform2fv(m_texture_reciprocal_location, 2, recip_szs[0].c_ptr());
-
-        }
+      glUniform1fv(m_location, m_size, &m_values[0]);
     }
 
 
   private:
-    std::string m_name;
     bool m_ready;
-    GLint m_texture_reciprocal_location;
+    GLint m_location;
     WRATHTextureFont *m_font;
     int m_texture_page;
-    bool m_both_there;
+    int m_size;
+    std::vector<float> m_values;
   };
 
  
@@ -100,8 +93,7 @@ namespace
 //////////////////////////////////////////
 // WRATHTextureFontDrawer::per_type methods
 WRATHTextureFontDrawer::per_type::
-per_type(const std::string &pname):
-  m_name(pname)
+per_type(void)
 {
 }
 
@@ -111,12 +103,14 @@ WRATHTextureFontDrawer::per_type::
 
 WRATHUniformData::uniform_setter_base::handle
 WRATHTextureFontDrawer::per_type::
-texture_size_uniform(WRATHTextureFont *v, int p)
+texture_page_data_uniform(WRATHTextureFont *v, int p)
 {
   
   WRATHassert(v!=NULL);
   
-  //build as needed:
+  //build as needed
+  WRATHAutoLockMutex(m_mutex);
+
   std::map<map_key, map_value>::iterator iter;
   WRATHUniformData::uniform_setter_base::handle pWRATHNewValue;
   
@@ -126,7 +120,7 @@ texture_size_uniform(WRATHTextureFont *v, int p)
       return iter->second;
     }
 
-  pWRATHNewValue=WRATHNew FontSizeMagic(v, p, m_name);
+  pWRATHNewValue=WRATHNew TexturePageDataUniform(v, p);
   m_map[ map_key(v,p) ]=pWRATHNewValue;
 
   return pWRATHNewValue;
@@ -170,18 +164,18 @@ init(WRATHItemDrawer *popaque_drawer,
   WRATHunused(popaque_drawer);
   WRATHunused(ptranslucent_drawer_standalone);
 
-  m_passes[opaque_draw_pass]=WRATHNew per_type("reciprocal_texture_size");
+  m_passes[opaque_draw_pass]=WRATHNew per_type();
 
   if(ptranslucent_drawer!=NULL)
     {
-      m_passes[transluscent_draw_pass]=WRATHNew per_type("reciprocal_texture_size");
+      m_passes[transluscent_draw_pass]=WRATHNew per_type();
     }
   else
     {
       m_passes[transluscent_draw_pass]=NULL;
     }
 
-  m_passes[pure_transluscent]=WRATHNew per_type("reciprocal_texture_size");
+  m_passes[pure_transluscent]=WRATHNew per_type();
 
 }
 

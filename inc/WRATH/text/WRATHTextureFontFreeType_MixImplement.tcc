@@ -60,9 +60,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
             R.begin()+dist_gl.texture_binder().size());
   
   
-  pg=m_page_tracker.get_page_number(dist_gl.texture_size(), 
-                                    cov_gl.texture_size(),
-                                    R);
+  pg=m_page_tracker.get_page_number(ivec2(0,0), R);
   
   WRATHTextureFont::glyph_data_type *return_value(WRATHNew WRATHTextureFont::glyph_data_type());
   WRATHTextureFont::glyph_data_type &glyph(*return_value);

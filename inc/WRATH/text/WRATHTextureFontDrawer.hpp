@@ -44,13 +44,13 @@
   Text that is rendered as transparent only requires
   one pass.
 
-  Shaders for text drawing need to have the uniform
-  "reciprocal_texture_size" either as a float or vec2
-  to hold the _reciprocal_ of the texture size from
-  which glyph data it taken. It should be a float
-  for non-mix shaders and a float[2] for mix shaders,
-  with [0] for magnified font and [1] for the minified
-  font.
+  Shaders for text drawing have the texture page
+  data (as returned by WRATHTextureFont::texture_page_data())
+  fill a uniform array of floats, that uniform setter is 
+  returned by opaque_pass_texture_page_data_uniform(),
+  translucent_pass_texture_page_data_uniform(),
+  translucent_only_texture_page_data_uniform()
+  and texture_page_data_named_uniform().
 
   TODO: in truth we do not need to pass the actual
   drawers, just flags indicating if the named pass
@@ -98,51 +98,51 @@ public:
   virtual
   ~WRATHTextureFontDrawer(); 
 
-  /*!\fn WRATHUniformData::uniform_setter_base::handle opaque_pass_texture_size_uniform
-    Returns the uniform handle for the texture
-    size for the opaque pass for a named
+  /*!\fn WRATHUniformData::uniform_setter_base::handle opaque_pass_texture_page_data_uniform
+    Returns the uniform handle for the texture 
+    page data for the opaque pass for a named
     font and texture page. There is a unique
     uniform for each font-texture page pair
     \param pfont font 
     \param texture_page texture page
    */
   WRATHUniformData::uniform_setter_base::handle
-  opaque_pass_texture_size_uniform(WRATHTextureFont *pfont, int texture_page)
+  opaque_pass_texture_page_data_uniform(WRATHTextureFont *pfont, int texture_page)
   {
-    return m_passes[opaque_draw_pass]->texture_size_uniform(pfont, texture_page);
+    return m_passes[opaque_draw_pass]->texture_page_data_uniform(pfont, texture_page);
   }
 
-  /*!\fn WRATHUniformData::uniform_setter_base::handle translucent_pass_texture_size_uniform
+  /*!\fn WRATHUniformData::uniform_setter_base::handle translucent_pass_texture_page_data_uniform
     Returns the uniform handle for the texture
-    size for the translucent pass for a named
+    page data for the translucent pass for a named
     font and texture page. There is a unique
     uniform for each font-texture page pair
     \param pfont font 
     \param texture_page texture page
    */
   WRATHUniformData::uniform_setter_base::handle
-  translucent_pass_texture_size_uniform(WRATHTextureFont *pfont, int texture_page)
+  translucent_pass_texture_page_data_uniform(WRATHTextureFont *pfont, int texture_page)
   {
     return (m_passes[transluscent_draw_pass]!=NULL)?
-      m_passes[transluscent_draw_pass]->texture_size_uniform(pfont, texture_page):
+      m_passes[transluscent_draw_pass]->texture_page_data_uniform(pfont, texture_page):
       NULL;
   }
 
-  /*!\fn WRATHUniformData::uniform_setter_base::handle translucent_only_texture_size_uniform
+  /*!\fn WRATHUniformData::uniform_setter_base::handle translucent_only_texture_page_data_uniform
     Returns the uniform handle for the texture
-    size for the pure translucent drawer for a named
+    page data for the pure translucent drawer for a named
     font and texture page. There is a unique
     uniform for each font-texture page pair
     \param pfont font 
     \param texture_page texture page
    */
   WRATHUniformData::uniform_setter_base::handle
-  translucent_only_texture_size_uniform(WRATHTextureFont *pfont, int texture_page)
+  translucent_only_texture_page_data_uniform(WRATHTextureFont *pfont, int texture_page)
   {
-    return m_passes[pure_transluscent]->texture_size_uniform(pfont, texture_page);
+    return m_passes[pure_transluscent]->texture_page_data_uniform(pfont, texture_page);
   }
 
-  /*!\fn WRATHUniformData::uniform_setter_base::handle texture_size_named_uniform
+  /*!\fn WRATHUniformData::uniform_setter_base::handle texture_page_data_named_uniform
     Returns the uniform handle for the texture
     size for the named pass for a named
     font and texture page. There is a unique
@@ -152,10 +152,10 @@ public:
     \param texture_page texture page
    */
   WRATHUniformData::uniform_setter_base::handle
-  texture_size_named_uniform(enum drawing_pass_type tp, WRATHTextureFont *pfont, int texture_page)
+  texture_page_data_named_uniform(enum drawing_pass_type tp, WRATHTextureFont *pfont, int texture_page)
   {
     return (m_passes[tp]!=NULL)?
-      m_passes[tp]->texture_size_uniform(pfont, texture_page):
+      m_passes[tp]->texture_page_data_uniform(pfont, texture_page):
       NULL;
   }  
   
@@ -168,27 +168,24 @@ private:
   class per_type:boost::noncopyable
   {
   public:
-    std::string m_name;
-    std::map<map_key, map_value> m_map;
-
     explicit
-    per_type(const std::string &pname);
+    per_type(void);
 
     ~per_type();
 
     WRATHUniformData::uniform_setter_base::handle
-    texture_size_uniform(WRATHTextureFont *pfont, int texture_page);
+    texture_page_data_uniform(WRATHTextureFont *pfont, int texture_page);
+  
+  private:    
+    std::map<map_key, map_value> m_map;
+    WRATHMutex m_mutex;
   };
-
- 
 
   per_type*
   named(enum drawing_pass_type tp) const
   {
     per_type *R;
-
     R=m_passes[tp];
-
     WRATHassert(R!=NULL);
     return R;
   }
