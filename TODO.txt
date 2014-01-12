@@ -249,3 +249,10 @@ per-node basis... I am concerned about a cache-miss fiasco....
     A nice bonus would be to have font shaping support, but that
     opens an entire new can of ugly worms.
      
+19) WRATHText API: implement a stream value, obeyed by WRATHTextItem that allows one to
+                   specifies uniforms. The catch is to make logic so that adding a uniform
+                   without having added characters yet adds the uniform to the current
+                   uniform set.
+
+20) Generic: make so that all GLSL functions, variables and macros coming from WRATH
+             are prefixed with wrath_, wrath_, and WRATH_ respectively.
