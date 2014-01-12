@@ -110,6 +110,13 @@ public:
 
   virtual
   int
+  glyph_custom_float_data_size(void) const
+  {
+    return 0;
+  }
+
+  virtual
+  int
   texture_page_data_size(void) const;
 
   virtual

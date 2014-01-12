@@ -143,8 +143,8 @@ generate_character(WRATHTextureFont::glyph_index_type G)
       data.resize(m_texture_page_data_size);
       /*
         we pack first the texture page data 
-        of the native glyph, then the ratio
-        of the sizes between the glyphs
+        of the native glyph, then texture
+        page data of the minified glyph.
        */
       for(int i=0, endi=m_native_src->texture_page_data_size(); i<endi; ++i)
         {
@@ -157,8 +157,6 @@ generate_character(WRATHTextureFont::glyph_index_type G)
         {
           data[j]=m_minified_src->texture_page_data(cov_gl.texture_page(), i);
         }
-
-      data.back()=m_size_ratio;
     }
   
   return return_value;

@@ -159,6 +159,14 @@ public:
     return m_page_tracker.texture_binder(texture_page);
   }
   
+  
+  virtual
+  int
+  glyph_custom_float_data_size(void) const
+  {
+    return m_glyph_custom_float_data_size;
+  }
+
   virtual
   int
   texture_page_data_size(void) const
@@ -396,9 +404,11 @@ private:
     m_page_tracker.connect(boost::bind(&WRATHTextureFontFreeType_TMix::on_create_texture_page, 
                                        this));
 
-    m_texture_page_data_size=1 
-      + m_native_src->texture_page_data_size()
+    m_texture_page_data_size=m_native_src->texture_page_data_size()
       + m_minified_src->texture_page_data_size();
+
+    m_glyph_custom_float_data_size=m_native_src->glyph_custom_float_data_size() 
+      + m_minified_src->glyph_custom_float_data_size();
   }
 
   WRATHFreeTypeSupport::LockableFace::handle m_ttf_face;
@@ -407,7 +417,7 @@ private:
   T *m_native_src;
   float m_size_ratio;
   const WRATHTextureFont::GlyphGLSL *m_glyph_glsl;
-  int m_texture_page_data_size;
+  int m_texture_page_data_size, m_glyph_custom_float_data_size;
 
   
   WRATHMutex m_mutex;

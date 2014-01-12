@@ -751,6 +751,9 @@ public:
       data can be used by a WRATHTextureFont
       derived object type to hold floating point
       data that is specific to that type.
+      The -size- of the array must be the same 
+      for each glyph in a font, that size
+      is given by \ref WRATHTextureFont::glyph_custom_float_data_size
      */    
     std::vector<float> m_custom_float_data;
 
@@ -1144,6 +1147,15 @@ public:
   virtual
   const GlyphGLSL*
   glyph_glsl(void)=0;
+
+  /*!\fn int glyph_custom_float_data_size
+    The size of the array \ref glyph_data_type::m_custom_float_data,
+    that size must be the -same- for each glyph
+    of a font.
+   */
+  virtual
+  int
+  glyph_custom_float_data_size(void) const=0;
 
   /*!\fn int texture_page_data_size
     To be implementedby a derived class to

@@ -124,6 +124,13 @@ public:
   texture_page_data_size(void) const;
 
   virtual
+  int
+  glyph_custom_float_data_size(void) const
+  {
+    return 1;
+  }
+
+  virtual
   float
   texture_page_data(int texture_page, int idx) const;
 
