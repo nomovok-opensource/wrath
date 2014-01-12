@@ -33,6 +33,7 @@ WRATHTextureFont::glyph_data_type*
 WRATHTextureFontFreeType_TMix<T,S>::
 generate_character(WRATHTextureFont::glyph_index_type G)
 {
+
   WRATHTextureFont::character_code_type C;
   C=this->character_code(G);
   
@@ -60,6 +61,19 @@ generate_character(WRATHTextureFont::glyph_index_type G)
             R.begin()+dist_gl.texture_binder().size());
   
   
+  
+  /*
+    generating the texture page data is hackish;
+    if a page is created, the member variable
+    m_new_page is set to true; the upshot
+    is that we can only generate one glyph 
+    at a time. We lock the mutex just before
+    resetting m_new_page to false and getting
+    the page
+   */
+  WRATHAutoLockMutex(m_mutex);
+  m_new_page=false;
+
   pg=m_page_tracker.get_page_number(ivec2(0,0), R);
   
   WRATHTextureFont::glyph_data_type *return_value(WRATHNew WRATHTextureFont::glyph_data_type());
@@ -90,22 +104,62 @@ generate_character(WRATHTextureFont::glyph_index_type G)
     }
   glyph.sub_primitive_indices()=dist_gl.sub_primitive_indices();
   
-  /*
-    copy custom data values:
-    TODO:
-    - pack the minified font's texel_lower_left into
-      the custom_data so that it can be used to do
-      font minification magicks.
-  */
+  
   glyph.m_custom_float_data
     .resize(dist_gl.m_custom_float_data.size() 
-            + cov_gl.m_custom_float_data.size());
+            + cov_gl.m_custom_float_data.size()
+            + 4);
+
+  /*
+    pack the bottom left and size of the minified glyph
+    into glyph.m_custom_float_data[0--3]
+   */
+  glyph.m_custom_float_data[0]=cov_gl.texel_lower_left().x();
+  glyph.m_custom_float_data[1]=cov_gl.texel_lower_left().y();
+  glyph.m_custom_float_data[2]=cov_gl.texel_size().x();
+  glyph.m_custom_float_data[3]=cov_gl.texel_size().y();
+
+  /*
+    pack the custom data from the native glyph next
+   */
   std::copy(dist_gl.m_custom_float_data.begin(),
             dist_gl.m_custom_float_data.end(),
-            glyph.m_custom_float_data.begin());
+            glyph.m_custom_float_data.begin()+4);
+
+  /*
+    and finally the custom data from the minified glyph 
+   */
   std::copy(cov_gl.m_custom_float_data.begin(),
             cov_gl.m_custom_float_data.end(),
-            glyph.m_custom_float_data.begin()+dist_gl.m_custom_float_data.size());
+            glyph.m_custom_float_data.begin()+4+dist_gl.m_custom_float_data.size());
+
+  
+
+  if(m_new_page)
+    {
+      std::vector<float> &data(m_page_tracker.custom_data(pg));
+      m_new_page=false;
+
+      data.resize(m_texture_page_data_size);
+      /*
+        we pack first the texture page data 
+        of the native glyph, then the ratio
+        of the sizes between the glyphs
+       */
+      for(int i=0, endi=m_native_src->texture_page_data_size(); i<endi; ++i)
+        {
+          data[i]=m_native_src->texture_page_data(dist_gl.texture_page(), i);
+        }
+      for(int i=0, 
+            j=m_native_src->texture_page_data_size(),
+            endi=m_minified_src->texture_page_data_size();
+          i<endi; ++i, ++j)
+        {
+          data[j]=m_minified_src->texture_page_data(cov_gl.texture_page(), i);
+        }
+
+      data.back()=m_size_ratio;
+    }
   
   return return_value;
 }

@@ -110,8 +110,9 @@ public:
     m_native_src=create_native_font();
 
     m_glyph_glsl=WRATHTextureFontFreeType_TMixSupport::glyph_glsl(m_native_src,
-                                                                            m_minified_src,
-                                                                            &datum());
+                                                                  m_minified_src,
+                                                                  &datum());
+    common_init();
   }
 
   
@@ -141,8 +142,9 @@ public:
     
     m_glyph_glsl
       =WRATHTextureFontFreeType_TMixSupport::glyph_glsl(m_native_src,
-                                                             m_minified_src,
-                                                             &datum());
+                                                        m_minified_src,
+                                                        &datum());
+    common_init();
   }
 
   ~WRATHTextureFontFreeType_TMix()
@@ -165,16 +167,17 @@ public:
     // m_native_src->texture_page_data_size()
     // + m_native_src->texture_page_data_size()
     // + 2; //2 extra is for glyph minified bottom_left
-    return m_native_src->texture_page_data_size();
+    //return m_native_src->texture_page_data_size();
+    return m_texture_page_data_size;
   }
 
   virtual
   float
   texture_page_data(int texture_page, int idx) const
   {
-    //TODO:
-    // m_page_tracker.custom_data(texture_page)[idx];
-    return m_native_src->texture_page_data(texture_page, idx);
+    return (0<=idx and idx<m_texture_page_data_size)?
+      m_page_tracker.custom_data(texture_page)[idx]:
+      0.0f;
   }
 
   virtual
@@ -381,12 +384,34 @@ private:
     return static_cast<T*>(r);
   }
 
+  void
+  on_create_texture_page(void)
+  {
+    m_new_page=true;
+  }
+
+  void
+  common_init(void)
+  {
+    m_page_tracker.connect(boost::bind(&WRATHTextureFontFreeType_TMix::on_create_texture_page, 
+                                       this));
+
+    m_texture_page_data_size=1 
+      + m_native_src->texture_page_data_size()
+      + m_minified_src->texture_page_data_size();
+  }
+
   WRATHFreeTypeSupport::LockableFace::handle m_ttf_face;
 
   S *m_minified_src;
   T *m_native_src;
   float m_size_ratio;
   const WRATHTextureFont::GlyphGLSL *m_glyph_glsl;
+  int m_texture_page_data_size;
+
+  
+  WRATHMutex m_mutex;
+  bool m_new_page;
 
   WRATHTextureFontUtil::TexturePageTracker m_page_tracker;
 };
