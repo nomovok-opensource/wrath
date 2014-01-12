@@ -1026,7 +1026,7 @@ operator<<(WRATHTextDataStream::stream_type<T> target,
   target << WRATHText::set_font_shader(&F(obj.m_brush));
   if(obj.m_brush.m_image!=NULL)                                       
     {                                                             
-      WRATHText::additional_texture v(obj.m_brush.m_image->texture_binder(0), true);
+      WRATHText::additional_texture v(obj.m_brush.m_image->texture_binder(0));
       target << WRATHText::set_additional_sampler(0, v); 
       ++grad_unit;                                                
     }                                                             

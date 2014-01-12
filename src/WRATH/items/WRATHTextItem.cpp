@@ -157,6 +157,7 @@ get_empty_text_item(WRATHTextItem::text_item_key k)
           int i(iter->first), S(i+num_font_textures);
           const WRATHText::additional_texture &tex(k.get<2>()[i]);
 
+          item_extra_state.m_common_pass_state.add_uniform(tex->texture_size(iter->second));
           item_extra_state.m_common_pass_state.add_texture(S+GL_TEXTURE0, tex);
         }
 
