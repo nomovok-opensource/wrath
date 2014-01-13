@@ -1514,7 +1514,7 @@ common_data_type(void):
 
       m_glyph_glsl[i].m_custom_data_use.push_back(0);
 
-      m_glyph_glsl[i].m_global_names.push_back("wrath_curve_analytic_font_compute_distance");
+      m_glyph_glsl[i].m_global_names.push_back("wrath_curve_analytic_compute_quasi_distance");
       m_glyph_glsl[i].m_global_names.push_back("wrath_CurveAnalyticTexCoord_Position");
       m_glyph_glsl[i].m_global_names.push_back("wrath_CurveAnalyticBottomLeft");
       m_glyph_glsl[i].m_global_names.push_back("wrath_CurveAnalyticGlyphIndex");
