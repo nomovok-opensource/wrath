@@ -60,18 +60,12 @@ public:
       glyph_stretch_location,
 
       /*!
-        Location of the size of the glyph as according
-        to \ref WRATHTextureFont::glyph_data_type::texel_size().
-        Attribute name in GLSL is "glyph_size".
+        Location of the attribute named "glyph_size_and_bottom_left"
+        which is vec4 comprised of
+        - .xy holds \ref WRATHTextureFont::glyph_data_type::texel_size()
+        - .zw holds \ref WRATHTextureFont::glyph_data_type::texel_lower_left().
        */
-      glyph_size_location,
-
-      /*!
-        Location of the texel (in pixel coordinates) of the glyphas 
-        according to \ref WRATHTextureFont::glyph_data_type::texel_lower_left().
-        Attribute name in GLSL is "glyph_bottom_left_texel".
-      */
-      glyph_bottom_left_texel_location,   
+      glyph_size_and_bottom_left_location,
 
       /*!
         location of normalized coordinate within the glyph,

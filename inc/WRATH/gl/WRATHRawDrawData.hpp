@@ -218,10 +218,13 @@ public:
     {
       /*!
         Number attributes supported,
-        for now, WRATHDrawCallSpec supports 
-        up to 8 attributes
+        tweak as according to one's platform.
       */
-      attribute_count=8
+      #if defined(WRATH_GL_VERSION) || WRATH_GLES_VERSION>=3
+        attribute_count=16
+      #else
+        attribute_count=8
+      #endif
     };
 
   /*!\typedef attribute_array_params

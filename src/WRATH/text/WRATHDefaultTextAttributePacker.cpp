@@ -27,8 +27,7 @@ namespace
 {
   typedef vec4 position_type;
   typedef vec2 glyph_stretch_type;
-  typedef vecN<GLushort,2> glyph_size_type;
-  typedef vecN<GLushort,2> glyph_bottom_left_type;
+  typedef vecN<GLushort,4> glyph_size_and_bottom_left_type;
   typedef vecN<GLshort,2> glyph_normalized_coordinate_type;
   typedef vecN<GLubyte,4> color_type;
   
@@ -37,10 +36,9 @@ namespace
   class character_attribute:
     public WRATHInterleavedAttributes<position_type, //position -- 0
                                       glyph_stretch_type, //stretch -- 1
-                                      glyph_size_type, //glyph_size -- 2
-                                      glyph_bottom_left_type, //glyph bottom left -- 3
-                                      glyph_normalized_coordinate_type, //glyph_normalized -- 4
-                                      color_type //color --5
+                                      glyph_size_and_bottom_left_type, //glyph_size_and_bottom_left -- 2
+                                      glyph_normalized_coordinate_type, //glyph_normalized -- 3
+                                      color_type //color --4
                                       >  
   {
   public:
@@ -57,16 +55,10 @@ namespace
       return get<WRATHDefaultTextAttributePacker::color_location>();
     }
 
-    glyph_bottom_left_type&
-    glyph_bottom_left(void)
+    glyph_size_and_bottom_left_type&
+    glyph_size_and_bottom_left(void)
     {
-      return get<WRATHDefaultTextAttributePacker::glyph_bottom_left_texel_location>();
-    }
-
-    glyph_size_type&
-    glyph_size(void)
-    {
-      return get<WRATHDefaultTextAttributePacker::glyph_size_location>();
+      return get<WRATHDefaultTextAttributePacker::glyph_size_and_bottom_left_location>();
     }
     
     position_type&
@@ -115,12 +107,11 @@ namespace
       {
         "pos",
         "glyph_stretch",
-        "glyph_size",
-        "glyph_bottom_left_texel",
+        "glyph_size_and_bottom_left",
         "glyph_normalized_coordinate", 
         "color",
       };
-    static const_c_array<attribute_label_type> R(attribute_labels, 6);
+    static const_c_array<attribute_label_type> R(attribute_labels, 5);
     return R;
   }
 
@@ -414,8 +405,10 @@ pack_attribute(enum WRATHFormattedTextStream::corner_type ct,
                                    in_glyph.m_scale);
   attr[0].glyph_stretch()=glyph_stretch_type(in_glyph.m_horizontal_stretching,
                                              in_glyph.m_vertical_stretching);
-  attr[0].glyph_size()=glyph_size_type(native_sz.x(), native_sz.y());
-  attr[0].glyph_bottom_left()=glyph_bottom_left_type(native_bl.x(), native_bl.y());  
+  attr[0].glyph_size_and_bottom_left()
+    =glyph_size_and_bottom_left_type(native_sz.x(), native_sz.y(),
+                                     native_bl.x(), native_bl.y());  
+
   attr[0].glyph_normalized_coordinate()=normalized_glyph_coordinate_short;
   
   if(ct==WRATHFormattedTextStream::not_corner)
