@@ -26,7 +26,89 @@
 
 
 #define __WRATH_TEXTURE_FONT_FreeType_MIX_IMPLEMENT_TCC__
+template<typename T, typename S>
+WRATHTextureFontFreeType_TMixSupport::PerMixClass&
+WRATHTextureFontFreeType_TMix<T,S>::
+datum(void)
+{
+  const std::type_info &type(typeid(WRATHTextureFontFreeType_TMix));
+  return WRATHTextureFontFreeType_TMixSupport::datum(type);
+}
 
+template<typename T, typename S>
+S*
+WRATHTextureFontFreeType_TMix<T,S>::
+create_minified_font(void)
+{
+  float fsz;
+  int sz;
+  WRATHTextureFont *r;
+  
+  fsz=static_cast<float>(this->pixel_size())/m_size_ratio;
+  sz=static_cast<int>(fsz);
+  
+  r=S::fetch_font(sz, this->source_font());
+  WRATHassert(dynamic_cast<S*>(r)!=NULL);
+  
+  return static_cast<S*>(r);
+}
+
+
+
+template<typename T, typename S>
+T*
+WRATHTextureFontFreeType_TMix<T,S>::
+create_native_font(void)
+{ 
+  WRATHTextureFont *r;
+  
+  r=T::fetch_font(this->pixel_size(), this->source_font());
+  WRATHassert(dynamic_cast<T*>(r)!=NULL);
+  
+  return static_cast<T*>(r);
+}
+
+
+template<typename T, typename S>
+void
+WRATHTextureFontFreeType_TMix<T,S>::
+on_create_texture_page(void)
+{
+  m_new_page=true;
+}
+
+
+template<typename T, typename S>
+void
+WRATHTextureFontFreeType_TMix<T,S>::
+common_init(void)
+{
+  m_page_tracker.connect(boost::bind(&WRATHTextureFontFreeType_TMix::on_create_texture_page, 
+                                     this));
+
+  m_texture_page_data_size=m_native_src->texture_page_data_size()
+    + m_minified_src->texture_page_data_size();
+  
+  /*
+    save:
+    glyph_bottom_left
+    of minified glyph: takes 2 floats.
+  */
+  m_glyph_custom_native_start=2;
+  
+  m_glyph_custom_minified_start=m_glyph_custom_native_start
+    + m_native_src->glyph_custom_float_data_size();
+  
+  m_glyph_custom_float_data_size=m_glyph_custom_minified_start
+    + m_minified_src->glyph_custom_float_data_size();
+  
+  m_glyph_glsl=WRATHTextureFontFreeType_TMixSupport::glyph_glsl(m_native_src,
+                                                                m_minified_src,
+                                                                &datum(),
+                                                                m_glyph_custom_native_start,
+                                                                m_glyph_custom_native_start,
+                                                                m_glyph_custom_minified_start);
+}
 
 template<typename T, typename S>
 WRATHTextureFont::glyph_data_type*
@@ -107,12 +189,10 @@ generate_character(WRATHTextureFont::glyph_index_type G)
 
   /*
     pack the bottom left the minified glyph
-    into glyph.m_custom_float_data[0--3]
+    into glyph.m_custom_float_data[0--1]
    */
   glyph.m_custom_float_data[0]=minified_glyph.texel_lower_left().x();
   glyph.m_custom_float_data[1]=minified_glyph.texel_lower_left().y();
-  glyph.m_custom_float_data[2]=minified_glyph.texel_size().x();
-  glyph.m_custom_float_data[3]=minified_glyph.texel_size().y();
 
   /*
     pack the custom data from the native glyph next

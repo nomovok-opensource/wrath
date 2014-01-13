@@ -70,16 +70,16 @@ void pre_compute_glyph(in vec2 glyph_position,
         v[i]=custom_data[i+WRATH_MIX_FONT_MINIFIED_CUSTOM_OFFSET];
       }
 
-    wrath_minified_pre_compute_glyph(glyph_position,
+    wrath_minified_pre_compute_glyph(glyph_position*wrath_mix_font_ratio_inverse,
                                      vec2(custom_data[0], custom_data[1]),
-                                     vec2(custom_data[2], custom_data[3]),
+                                     glyph_size*wrath_mix_font_ratio_inverse,
                                      v);
   }
   #else
   {
     wrath_minified_pre_compute_glyph(glyph_position*wrath_mix_font_ratio_inverse,
                                      vec2(custom_data[0], custom_data[1]),
-                                     vec2(custom_data[2], custom_data[3]));
+                                     glyph_size*wrath_mix_font_ratio_inverse);
   }
   #endif
 

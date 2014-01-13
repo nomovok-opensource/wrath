@@ -141,15 +141,12 @@ public:
   ~WRATHTextureFontFreeType_TMix()
   {}
 
-  
-  
   virtual
   const_c_array<WRATHTextureChoice::texture_base::handle>
   texture_binder(int texture_page)
   {
     return m_page_tracker.texture_binder(texture_page);
   }
-  
   
   virtual
   int
@@ -180,7 +177,6 @@ public:
   {
     return m_page_tracker.number_texture_pages();
   }
-
   
   virtual
   const WRATHTextureFont::GlyphGLSL*
@@ -335,85 +331,25 @@ protected:
 
 private:
 
-    
   static
   WRATHTextureFontFreeType_TMixSupport::PerMixClass&
-  datum(void)
-  {
-    const std::type_info &type(typeid(WRATHTextureFontFreeType_TMix));
-    return WRATHTextureFontFreeType_TMixSupport::datum(type);
-  }
+  datum(void);
 
   virtual
   WRATHTextureFont::glyph_data_type*
   generate_character(WRATHTextureFont::glyph_index_type G);
   
-  
   S*
-  create_minified_font(void)
-  {
-    float fsz;
-    int sz;
+  create_minified_font(void);
     
-    fsz=static_cast<float>(this->pixel_size())/m_size_ratio;
-    sz=static_cast<int>(fsz);
-
-    WRATHTextureFont *r;
-
-    r=S::fetch_font(sz, this->source_font());
-    WRATHassert(dynamic_cast<S*>(r)!=NULL);
-
-    return static_cast<S*>(r);
-  }
-
-  
   T*
-  create_native_font(void)
-  { 
-    WRATHTextureFont *r;
-
-    r=T::fetch_font(this->pixel_size(), this->source_font());
-    WRATHassert(dynamic_cast<T*>(r)!=NULL);
-
-    return static_cast<T*>(r);
-  }
+  create_native_font(void);
 
   void
-  on_create_texture_page(void)
-  {
-    m_new_page=true;
-  }
+  on_create_texture_page(void);
 
   void
-  common_init(void)
-  {
-    m_page_tracker.connect(boost::bind(&WRATHTextureFontFreeType_TMix::on_create_texture_page, 
-                                       this));
-
-    m_texture_page_data_size=m_native_src->texture_page_data_size()
-      + m_minified_src->texture_page_data_size();
-
-    /*
-      save:
-       glyph_bottom_left
-       glyph_size 
-      of minified glyph: takes 4 floats.
-     */
-    m_glyph_custom_native_start=4;
-
-    m_glyph_custom_minified_start=m_glyph_custom_native_start
-      + m_native_src->glyph_custom_float_data_size();
-
-    m_glyph_custom_float_data_size=m_glyph_custom_minified_start
-      + m_minified_src->glyph_custom_float_data_size();
-
-    m_glyph_glsl=WRATHTextureFontFreeType_TMixSupport::glyph_glsl(m_native_src,
-                                                                  m_minified_src,
-                                                                  &datum(),
-                                                                  m_glyph_custom_native_start,
-                                                                  m_glyph_custom_native_start,
-                                                                  m_glyph_custom_minified_start);
-  }
+  common_init(void);
 
   WRATHFreeTypeSupport::LockableFace::handle m_ttf_face;
 
@@ -423,7 +359,6 @@ private:
   const WRATHTextureFont::GlyphGLSL *m_glyph_glsl;
   int m_texture_page_data_size, m_glyph_custom_float_data_size;
   int m_glyph_custom_native_start, m_glyph_custom_minified_start;
-
   
   WRATHMutex m_mutex;
   bool m_new_page;
