@@ -328,9 +328,9 @@ fetch(WRATHTextureFont *a, WRATHTextureFont *b,
   rr/=K.datum().minified_font_inflate_factor();
 
   mix_font_shader_ratio << "\nconst float wrath_mix_font_ratio="
-                        << std::showpoint << rr
+                        << std::showpoint << rr << ";"
                         << "\nconst float wrath_mix_font_ratio_square="
-                        << std::showpoint << rr*rr;
+                        << std::showpoint << rr*rr << ";";
 
   R.m_global_names.push_back("wrath_mix_font_ratio");
   R.m_global_names.push_back("wrath_mix_font_ratio_square");
