@@ -305,6 +305,8 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
                 WRATHGLShader::from_resource)
     .absorb(fs_source->m_vertex_processor[v])
     .absorb(cst)
+    .add_source("font_shader_wrath_prepare_glyph_vs.vert.wrath-shader.glsl",
+                WRATHGLShader::from_resource)
     .absorb(vertex_shader_source());
   
   new_specifier->append_fragment_shader_source()

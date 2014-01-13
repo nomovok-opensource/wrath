@@ -48,6 +48,43 @@
   in a \ref WRATHTextDataStream is done
   by the manipulator created with
   \ref WRATHText::font_shader.
+
+  When rendering a glyph so that the
+  fragment position within the glyph is linear
+  (i.e. \ref is true), the user defined
+  vertex shader source code must call
+
+  \code
+  wrath_font_prepare_glyph_vs(in vec2 glyph_position,
+                              in vec2 glyph_bottom_left,
+                              in vec2 glyph_size)
+  \endcode
+
+  and use
+  \code
+  is_covered()
+  \endcode
+  or
+  \code
+  compute_coverage()
+  \endcode
+  in the fragment shader. For the nonlinear case,
+  the vertex function is
+  \code
+  wrath_font_prepare_glyph_vs(in vec2 glyph_bottom_left,
+                              in vec2 glyph_size)
+  \endcode
+
+  and the fragment shader functions are
+  \code
+  is_covered(in vec2 glyph_position)
+  \endcode
+  or
+  \code
+  compute_coverage(in vec2 glyph_position)
+  \endcode
+
+  
  */
 class WRATHFontShaderSpecifier
 {
