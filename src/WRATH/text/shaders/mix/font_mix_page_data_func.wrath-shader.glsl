@@ -19,5 +19,5 @@
 float
 wrath_font_page_data(in int idx)
 {
-  return wrath_font_page_data_original_function(idx - WRATH_MIX_FONT_PAGE_DATA_OFFSET);
+  return wrath_font_page_data_original_function(idx + WRATH_MIX_FONT_PAGE_DATA_OFFSET);
 }

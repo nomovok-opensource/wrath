@@ -93,9 +93,9 @@ namespace
                     WRATHTextureFont *b,
                     WRATHTextureFontFreeType_TMixSupport::PerMixClass *q)
     {
-      get<0>()=a->fragment_source();
+      get<0>()=a->glyph_glsl();
       get<1>()=a->pixel_size();
-      get<2>()=b->fragment_source();
+      get<2>()=b->glyph_glsl();
       get<3>()=b->pixel_size();
       get<4>()=q;
     }
@@ -107,33 +107,35 @@ namespace
     }
 
     const WRATHTextureFont::GlyphGLSL*
-    native_fragment_src(void)
+    native_glyph_glsl(void)
     {
       return get<0>();
     }
 
     const WRATHTextureFont::GlyphGLSL*
-    minified_fragment_src(void)
+    minified_glyph_glsl(void)
     {
       return get<2>();
     }
   };
 
-  class fragment_source_hoard
+  class glyph_glsl_hoard
   {
   public:
     const WRATHTextureFont::GlyphGLSL*
     fetch(WRATHTextureFont *a, WRATHTextureFont *b,
-          WRATHTextureFontFreeType_TMixSupport::PerMixClass*);
+          WRATHTextureFontFreeType_TMixSupport::PerMixClass*,
+          int, int, int);
 
   private:
     void
-    glsl_wrath_font_page_data_original_function(WRATHTextureFont::GlyphGLSL &R);
+    add_glsl_wrath_font_page_data_original_function(WRATHTextureFont::GlyphGLSL &R);
 
     void
     add_block(const std::string &prefix_name,
               const WRATHTextureFont::GlyphGLSL* src,
-              WRATHTextureFont::GlyphGLSL &target);
+              WRATHTextureFont::GlyphGLSL &target,
+              int font_page_data_offset);
 
     void
     add_aliases_to_block(const std::string &prefix_name,
@@ -155,9 +157,9 @@ namespace
 }
 
 ////////////////////////////////////////////
-//fragment_source_hoard methods
+//glyph_glsl_hoard methods
 void
-fragment_source_hoard::
+glyph_glsl_hoard::
 add_aliases_to_block(const std::string &prefix_name,
                      const std::vector<std::string> &src,
                      std::vector<std::string> &out_list,
@@ -179,7 +181,7 @@ add_aliases_to_block(const std::string &prefix_name,
 }
 
 void
-fragment_source_hoard::
+glyph_glsl_hoard::
 remove_aliases(const std::vector<std::string> &src,
                WRATHTextureFont::GlyphGLSL &dest)
 {
@@ -194,8 +196,8 @@ remove_aliases(const std::vector<std::string> &src,
 }
 
 void
-fragment_source_hoard::
-glsl_wrath_font_page_data_original_function(WRATHTextureFont::GlyphGLSL &R)
+glyph_glsl_hoard::
+add_glsl_wrath_font_page_data_original_function(WRATHTextureFont::GlyphGLSL &R)
 {
   for(int i=0;i<WRATHTextureFont::GlyphGLSL::num_linearity_types;++i)
     {
@@ -204,13 +206,13 @@ glsl_wrath_font_page_data_original_function(WRATHTextureFont::GlyphGLSL &R)
         "{ return wrath_font_page_data(idx); }\n";
 
       R.m_fragment_processor[i].add_source(alias, WRATHGLShader::from_string);
-      R.m_fragment_processor[i].add_source(alias, WRATHGLShader::from_string);
+      R.m_vertex_processor[i].add_source(alias, WRATHGLShader::from_string);
     }
 }
 
 
 void
-fragment_source_hoard::
+glyph_glsl_hoard::
 add_block(const std::string &prefix_name,
           const WRATHTextureFont::GlyphGLSL* src,
           WRATHTextureFont::GlyphGLSL &R,
@@ -222,7 +224,7 @@ add_block(const std::string &prefix_name,
         .add_macro("compute_coverage", prefix_name + "compute_coverage")
         .add_macro("is_covered", prefix_name + "is_covered");
       
-      R.m_vertex_process[i]
+      R.m_vertex_processor[i]
         .add_macro("pre_compute_glyph", prefix_name + "pre_compute_glyph");
     }
 
@@ -242,34 +244,39 @@ add_block(const std::string &prefix_name,
   for(int i=0;i<WRATHTextureFont::GlyphGLSL::num_linearity_types;++i)
     {
       R.m_fragment_processor[i]
-        .add_macro("wrath_font_page_data", prefix + "wrath_font_page_data")
+        .add_macro("wrath_font_page_data", prefix_name + "wrath_font_page_data")
         .add_macro("WRATH_MIX_FONT_PAGE_DATA_OFFSET", font_page_data_offset)
         .add_source("font_mix_page_data_func.wrath-shader.glsl", WRATHGLShader::from_resource)
         .remove_macro("WRATH_MIX_FONT_PAGE_DATA_OFFSET")
-        .absorb(src->m_fragment_processor)
+        .absorb(src->m_fragment_processor[i])
         .remove_macro("compute_coverage")
         .remove_macro("is_covered")
         .remove_macro("wrath_font_page_data");
       
       R.m_vertex_processor[i]
-        .add_macro("wrath_font_page_data", prefix + "wrath_font_page_data")
+        .add_macro("wrath_font_page_data", prefix_name + "wrath_font_page_data")
         .add_macro("WRATH_MIX_FONT_PAGE_DATA_OFFSET", font_page_data_offset)
         .add_source("font_mix_page_data_func.wrath-shader.glsl", WRATHGLShader::from_resource)
         .remove_macro("WRATH_MIX_FONT_PAGE_DATA_OFFSET")
-        .absorb(src->m_fragment_processor)
+        .absorb(src->m_vertex_processor[i])
         .remove_macro("pre_compute_glyph")
         .remove_macro("wrath_font_page_data");
     }
 
    remove_aliases(R.m_global_names, R);
    remove_aliases(R.m_sampler_names, R);
+
+   R.m_global_names.push_back(prefix_name + "wrath_font_page_data");
    
 }
 
 const WRATHTextureFont::GlyphGLSL*
-fragment_source_hoard::
+glyph_glsl_hoard::
 fetch(WRATHTextureFont *a, WRATHTextureFont *b,
-      WRATHTextureFontFreeType_TMixSupport::PerMixClass *q)
+      WRATHTextureFontFreeType_TMixSupport::PerMixClass *q,
+      int glyph_custom_mix_data_size,
+      int glyph_custom_native_start,
+      int glyph_custom_minified_start)
 {
   WRATHAutoLockMutex(m_mutex);
 
@@ -288,12 +295,12 @@ fetch(WRATHTextureFont *a, WRATHTextureFont *b,
     make the frament source, and texture values:
 
     
-    #define MIX_FONT_SHADER pixel height of "a" divided by "b" as a float
+    const float wrath_mix_font_ratio pixel height of "a" divided by "b" as a float
 
     #define compute_coverage wrath_native_compute_coverage
     #define is_covered wrath_native_is_covered
     #define wrath_font_page_data wrath_native_wrath_font_page_data
-     -- for each sampler and global symbol of "a" font similar define statement
+     -- for each sampler and global symbol of "a" font, similar define statement
      -- insert custom wrath_native_wrath_font_page_data() function
      -- include "a" source code
 
@@ -302,7 +309,7 @@ fetch(WRATHTextureFont *a, WRATHTextureFont *b,
     #define compute_coverage wrath_minified_compute_coverage
     #define is_covered wrath_minified_is_covered
     #define wrath_font_page_data minified_wrath_font_page_data
-     -- for each sampler and global symbol of "b" font similar define statement
+     -- for each sampler and global symbol of "b" font, similar define statement
      -- insert custom wrath_minified_wrath_font_page_data() function
      -- include "b" source code
 
@@ -314,48 +321,59 @@ fetch(WRATHTextureFont *a, WRATHTextureFont *b,
 
    */
 
-  /*
-    make inclusion of MIX_FONT_SHADER conditional
-    so that if a custom shader wishes to use a different
-    value than the ratio of the sizes it can.....
-   */
-  std::ostringstream mix_font_shader_define;
+  std::ostringstream mix_font_shader_ratio;
   float rr;
 
   rr=static_cast<float>(a->pixel_size()) / static_cast<float>(b->pixel_size());
   rr/=K.datum().minified_font_inflate_factor();
 
-  mix_font_shader_define << std::showpoint << rr;
+  mix_font_shader_ratio << "\nconst float wrath_mix_font_ratio="
+                        << std::showpoint << rr
+                        << "\nconst float wrath_mix_font_ratio_square="
+                        << std::showpoint << rr*rr;
 
-  glsl_wrath_font_page_data_original_function(R);
-  add_block("wrath_native_", K.native_fragment_src(), R);
-  add_block("wrath_minified_", K.minified_fragment_src(), R);
+  R.m_global_names.push_back("wrath_mix_font_ratio");
+  R.m_global_names.push_back("wrath_mix_font_ratio_square");
 
-  /*
-    insert font_mix_base to have it implement the necessary
-    functions.
+  add_glsl_wrath_font_page_data_original_function(R);
+  add_block("wrath_native_", K.native_glyph_glsl(), R, glyph_custom_native_start);
+  add_block("wrath_minified_", K.minified_glyph_glsl(), R, glyph_custom_minified_start);
 
-    Danger: if there is a mix of a mix, then MIX_FONT_SHADER
-    will already be defined, that is.. bad.
-   */
-  R.m_fragment_processor
-    .add_macro("WRATH_MIX_FONT_SHADER", mix_font_shader_define.str())
-    .add_source("font_mix_base.frag.wrath-shader.glsl",
-                WRATHGLShader::from_resource)
-    .remove_macro("WRATH_MIX_FONT_SHADER");
+  
+  
+  R.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
+    .add_source(mix_font_shader_ratio.str(), WRATHGLShader::from_string)
+    .add_source("font_mix_linear.vert.wrath-shader.glsl",
+                WRATHGLShader::from_resource);
+  
+  R.m_fragment_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
+    .add_source(mix_font_shader_ratio.str(), WRATHGLShader::from_string)
+    .add_source("font_mix_linear.frag.wrath-shader.glsl",
+                WRATHGLShader::from_resource);
+  
+  R.m_vertex_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
+    .add_source(mix_font_shader_ratio.str(), WRATHGLShader::from_string)
+    .add_source("font_mix_nonlinear.vert.wrath-shader.glsl",
+                WRATHGLShader::from_resource);
+  
+  R.m_fragment_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
+    .add_source(mix_font_shader_ratio.str(), WRATHGLShader::from_string)
+    .add_source("font_mix_nonlinear.frag.wrath-shader.glsl",
+                WRATHGLShader::from_resource);
 
 
   /*
     texture page size data is just the union
     of the sources.
    */
-  R.m_texture_page_data_size= a->m_texture_page_data_size
-    + b->m_texture_page_data_size;
+  R.m_texture_page_data_size= 
+    K.native_glyph_glsl()->m_texture_page_data_size
+    + K.minified_glyph_glsl()->m_texture_page_data_size;
 
   /*
     custom data of a glyph is:
-     - bottom left (2 floats)
-     - glyph size (2 floats)
+     - custom data used by mix font for
+       making minified font functions work (glyph_custom_mix_data_size)
      - native custom data
      - minified custom data
 
@@ -363,25 +381,31 @@ fetch(WRATHTextureFont *a, WRATHTextureFont *b,
     the data packed into the uniform array is
     just the values indicated by m_custom_data_use
    */
-  R.m_custom_data_use.resize(4 + K.native_fragment_src()->m_custom_data_use
-                             + K.minified_fragment_src()->m_custom_data_use);
+  R.m_custom_data_use.resize(glyph_custom_mix_data_size 
+                             + K.native_glyph_glsl()->m_custom_data_use.size()
+                             + K.minified_glyph_glsl()->m_custom_data_use.size());
 
   /*
-    bottom left and glyph size
+    custom data used by mix font for
+    making minified font functions work
    */
-  R[0]=0;
-  R[1]=1;
-  R[2]=2;
-  R[3]=3;
+  for(int i=0; i<glyph_custom_mix_data_size; ++i)
+    {
+      R.m_custom_data_use[i]=i;
+      R.m_custom_data_use[i]=i;
+    }
 
   /*
     now the values wanted from a->m_custom_data_use(),
-    note that we increase the index by -4- because
+    note that we increase the index by 
+    -glyph_custom_mix_data_size- because
     that is where the custom data it located.
    */
-  for(int i=0, endi=K.native_fragment_src()->m_custom_data_use.size(); i<endi; ++i)
+  for(int i=0, endi=K.native_glyph_glsl()->m_custom_data_use.size(); i<endi; ++i)
     {
-      R[i+4]= K.native_fragment_src()->m_custom_data_use[i] + 4;
+      R.m_custom_data_use[i+glyph_custom_mix_data_size]=
+        K.native_glyph_glsl()->m_custom_data_use[i] 
+        + glyph_custom_mix_data_size;
     }
 
   /*
@@ -390,11 +414,12 @@ fetch(WRATHTextureFont *a, WRATHTextureFont *b,
    */
   int a_glyph_custom_float_data_size(a->glyph_custom_float_data_size());
 
-  for(int i=4+K.native_fragment_src()->m_custom_data_use.size(), j=0;
-      endj=K.minified_fragment_src()->m_custom_data_use.size(); j<endj; ++i, ++j)
+  for(int i=glyph_custom_mix_data_size+K.native_glyph_glsl()->m_custom_data_use.size(), 
+        j=0, endj=K.minified_glyph_glsl()->m_custom_data_use.size(); 
+      j<endj; ++i, ++j)
     {
-      R[i]=K.minified_fragment_src()->m_custom_data_use[j] 
-        + 4 + a_glyph_custom_float_data_size;
+      R.m_custom_data_use[i]=K.minified_glyph_glsl()->m_custom_data_use[j] 
+        + glyph_custom_mix_data_size + a_glyph_custom_float_data_size;
     }
   
 
@@ -416,11 +441,17 @@ datum(const std::type_info &tp)
 
 const WRATHTextureFont::GlyphGLSL*
 WRATHTextureFontFreeType_TMixSupport::
-fragment_source(WRATHTextureFont *native_fnt,
-                WRATHTextureFont *minified_fnt,
-                WRATHTextureFontFreeType_TMixSupport::PerMixClass *q)
+glyph_glsl(WRATHTextureFont *native_fnt,
+           WRATHTextureFont *minified_fnt,
+           WRATHTextureFontFreeType_TMixSupport::PerMixClass *q,
+           int glyph_custom_mix_data_size,
+           int glyph_custom_native_start,
+           int glyph_custom_minified_start)
 {
   WRATHStaticInit();
-  static fragment_source_hoard R;
-  return R.fetch(native_fnt, minified_fnt, q);
+  static glyph_glsl_hoard R;
+  return R.fetch(native_fnt, minified_fnt, q,
+                 glyph_custom_mix_data_size, 
+                 glyph_custom_native_start, 
+                 glyph_custom_minified_start);
 }

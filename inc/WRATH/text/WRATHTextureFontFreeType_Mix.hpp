@@ -108,10 +108,6 @@ public:
   {
     m_minified_src=create_minified_font();
     m_native_src=create_native_font();
-
-    m_glyph_glsl=WRATHTextureFontFreeType_TMixSupport::glyph_glsl(m_native_src,
-                                                                  m_minified_src,
-                                                                  &datum());
     common_init();
   }
 
@@ -139,11 +135,6 @@ public:
                  /static_cast<float>(minified_font->pixel_size()))
   {
     WRATHassert(dist_font->source_font()==minified_font->source_font());
-    
-    m_glyph_glsl
-      =WRATHTextureFontFreeType_TMixSupport::glyph_glsl(m_native_src,
-                                                        m_minified_src,
-                                                        &datum());
     common_init();
   }
 
@@ -407,8 +398,19 @@ private:
     m_texture_page_data_size=m_native_src->texture_page_data_size()
       + m_minified_src->texture_page_data_size();
 
-    m_glyph_custom_float_data_size=m_native_src->glyph_custom_float_data_size() 
+    m_glyph_custom_native_start=2;
+    m_glyph_custom_minified_start=m_glyph_custom_native_start
+      + m_native_src->glyph_custom_float_data_size();
+
+    m_glyph_custom_float_data_size=m_glyph_custom_minified_start
       + m_minified_src->glyph_custom_float_data_size();
+
+    m_glyph_glsl=WRATHTextureFontFreeType_TMixSupport::glyph_glsl(m_native_src,
+                                                                  m_minified_src,
+                                                                  &datum(),
+                                                                  m_glyph_custom_native_start,
+                                                                  m_glyph_custom_native_start,
+                                                                  m_glyph_custom_minified_start);
   }
 
   WRATHFreeTypeSupport::LockableFace::handle m_ttf_face;
@@ -418,6 +420,7 @@ private:
   float m_size_ratio;
   const WRATHTextureFont::GlyphGLSL *m_glyph_glsl;
   int m_texture_page_data_size, m_glyph_custom_float_data_size;
+  int m_glyph_custom_native_start, m_glyph_custom_minified_start;
 
   
   WRATHMutex m_mutex;

@@ -105,33 +105,28 @@ generate_character(WRATHTextureFont::glyph_index_type G)
   glyph.sub_primitive_indices()=dist_gl.sub_primitive_indices();
   
   
-  glyph.m_custom_float_data
-    .resize(dist_gl.m_custom_float_data.size() 
-            + cov_gl.m_custom_float_data.size()
-            + 4);
+  glyph.m_custom_float_data.resize(m_glyph_custom_float_data_size, 0.0f);
 
   /*
-    pack the bottom left and size of the minified glyph
-    into glyph.m_custom_float_data[0--3]
+    pack the bottom left the minified glyph
+    into glyph.m_custom_float_data[0--1]
    */
   glyph.m_custom_float_data[0]=cov_gl.texel_lower_left().x();
   glyph.m_custom_float_data[1]=cov_gl.texel_lower_left().y();
-  glyph.m_custom_float_data[2]=cov_gl.texel_size().x();
-  glyph.m_custom_float_data[3]=cov_gl.texel_size().y();
 
   /*
     pack the custom data from the native glyph next
    */
   std::copy(dist_gl.m_custom_float_data.begin(),
             dist_gl.m_custom_float_data.end(),
-            glyph.m_custom_float_data.begin()+4);
+            glyph.m_custom_float_data.begin()+m_glyph_custom_native_start);
 
   /*
     and finally the custom data from the minified glyph 
    */
   std::copy(cov_gl.m_custom_float_data.begin(),
             cov_gl.m_custom_float_data.end(),
-            glyph.m_custom_float_data.begin()+4+dist_gl.m_custom_float_data.size());
+            glyph.m_custom_float_data.begin()+m_glyph_custom_minified_start);
 
   
 

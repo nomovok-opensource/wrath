@@ -82,6 +82,9 @@ namespace WRATHTextureFontFreeType_TMixSupport
   const WRATHTextureFont::GlyphGLSL*
   glyph_glsl(WRATHTextureFont *native_fnt,
              WRATHTextureFont *minified_fnt,
-             PerMixClass*);
+             PerMixClass*,
+             int glyph_custom_mix_data_size,
+             int glyph_custom_native_start,
+             int glyph_custom_minified_start);
                   
 }
