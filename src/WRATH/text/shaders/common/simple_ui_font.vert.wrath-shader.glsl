@@ -43,7 +43,7 @@ shader_in highp vec2 glyph_stretch;
   .xy: glyph size in texels
   .zw: bottom left corner in texel of glyph on texture page
  */
-shader_in highp vec4 glyph_size_and_bottom_left_texel;
+shader_in highp vec4 glyph_size_and_bottom_left;
 
 
 
@@ -82,12 +82,12 @@ shader_main(void)
   clipped_normalized=
      compute_clipped_normalized_coordinate(glyph_normalized_coordinate,
                                            pos.xy, 
-                                           pos.w*glyph_size_and_bottom_left_texel.xy*glyph_stretch.xy);
+                                           pos.w*glyph_size_and_bottom_left.xy*glyph_stretch.xy);
 
   abs_glyph_normalized_coordinate=abs(clipped_normalized);
 
   //position of vertex inside of glyph
-  glyph_position=abs_glyph_normalized_coordinate*glyph_size_and_bottom_left_texel.xy;
+  glyph_position=abs_glyph_normalized_coordinate*glyph_size_and_bottom_left.xy;
 
   
   #if defined(WRATH_FONT_CUSTOM_DATA)
@@ -96,19 +96,19 @@ shader_main(void)
   
     wrath_font_shader_custom_data_func(custom_values_str);
     pre_compute_glyph(glyph_position,
-                      glyph_size_and_bottom_left_texel.zw,
-                      glyph_size_and_bottom_left_texel.xy,
+                      glyph_size_and_bottom_left.zw,
+                      glyph_size_and_bottom_left.xy,
                       custom_values_str.values);
   }  
   #else
   {
     pre_compute_glyph(glyph_position,
-                      glyph_size_and_bottom_left_texel.zw,
-                      glyph_size_and_bottom_left_texel.xy);
+                      glyph_size_and_bottom_left.zw,
+                      glyph_size_and_bottom_left.xy);
   }
   #endif
   
-  offset=pos.w*clipped_normalized*glyph_size_and_bottom_left_texel.xy*glyph_stretch.xy;
+  offset=pos.w*clipped_normalized*glyph_size_and_bottom_left.xy*glyph_stretch.xy;
   tpos=pos.xy + offset;
   gl_Position=compute_gl_position(vec3(tpos, pos.z));
   tex_color=color;
