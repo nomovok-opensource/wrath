@@ -898,6 +898,10 @@ post_action(std::ostream &str, WRATHGLProgram *program) const
           << "\" has different location than of binder";
     }
 
+  program->m_binded_attributes.insert(m_label);
+
+  
+
   return return_value;
   
 }
@@ -1041,6 +1045,22 @@ assemble(void)
                   ngl_functionPointer(glGetUniformLocation));
 
       post_action_warning=m_pre_link_actions.execute_post_actions(str_action_log, this);
+      /*
+        check that all attributes in the shader
+        are explicitely bounded.
+       */
+      for(std::map<std::string, parameter_info>::const_iterator
+            iter=m_attribute_list.begin(), end=m_attribute_list.end();
+          iter!=end; ++iter)
+        {
+          if(m_binded_attributes.find(iter->first)==m_binded_attributes.end())
+            {
+              post_action_warning=true;
+              str_action_log << "\nAttribute \"" << iter->first 
+                             << "\" present in shader, but location not specified by binder";
+            }
+        }
+
       m_action_log=str_action_log.str();
 
       #if defined(WRATHDEBUG)

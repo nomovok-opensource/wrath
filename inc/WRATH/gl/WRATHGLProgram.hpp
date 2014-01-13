@@ -1545,6 +1545,7 @@ public:
   }
 
 private:
+  friend class WRATHGLBindAttribute;
 
   void
   pre_assemble(const std::string &presource_name, 
@@ -1559,6 +1560,8 @@ private:
   bool m_link_success, m_assembled;
   std::string m_link_log, m_resource_name;
   std::string m_action_log;
+
+  std::set<std::string> m_binded_attributes;
 
   boost::signals2::signal<void () > m_dtor_signal;
 
