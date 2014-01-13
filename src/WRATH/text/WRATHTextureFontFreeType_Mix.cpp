@@ -220,11 +220,16 @@ add_block(const std::string &prefix_name,
 {
   for(int i=0;i<WRATHTextureFont::GlyphGLSL::num_linearity_types;++i)
     {
+      const char *comment_begin=
+        " ************** Begin, Add block --->  "; 
+
       R.m_fragment_processor[i]
+        .add_source(std::string("//") + comment_begin + prefix_name, WRATHGLShader::from_string)
         .add_macro("compute_coverage", prefix_name + "compute_coverage")
         .add_macro("is_covered", prefix_name + "is_covered");
       
       R.m_vertex_processor[i]
+        .add_source(std::string("//") + comment_begin + prefix_name, WRATHGLShader::from_string)
         .add_macro("pre_compute_glyph", prefix_name + "pre_compute_glyph");
     }
 
@@ -263,8 +268,21 @@ add_block(const std::string &prefix_name,
         .remove_macro("wrath_font_page_data");
     }
 
-   remove_aliases(R.m_global_names, R);
-   remove_aliases(R.m_sampler_names, R);
+   remove_aliases(src->m_global_names, R);
+   remove_aliases(src->m_sampler_names, R);
+
+   for(int i=0;i<WRATHTextureFont::GlyphGLSL::num_linearity_types;++i)
+    {
+      const char *comment_end=
+        " ************** End, Add block --->  "; 
+
+      R.m_fragment_processor[i]
+        .add_source(std::string("//") + comment_end + prefix_name, WRATHGLShader::from_string);
+
+      R.m_vertex_processor[i]
+        .add_source(std::string("//") + comment_end + prefix_name, WRATHGLShader::from_string);
+    }
+
 
    R.m_global_names.push_back(prefix_name + "wrath_font_page_data");
    
@@ -322,54 +340,23 @@ fetch(WRATHTextureFont *a, WRATHTextureFont *b,
    */
 
   std::ostringstream mix_font_shader_ratio;
-  float rr;
+  float rr, thresh;
 
   rr=static_cast<float>(a->pixel_size()) / static_cast<float>(b->pixel_size());
-  rr/=K.datum().minified_font_inflate_factor();
+  thresh=rr/K.datum().minified_font_inflate_factor();
 
   mix_font_shader_ratio << "\nconst float wrath_mix_font_ratio="
                         << std::showpoint << rr << ";"
                         << "\nconst float wrath_mix_font_ratio_square="
-                        << std::showpoint << rr*rr << ";";
-
-  R.m_global_names.push_back("wrath_mix_font_ratio");
-  R.m_global_names.push_back("wrath_mix_font_ratio_square");
-
-  add_glsl_wrath_font_page_data_original_function(R);
-  add_block("wrath_native_", K.native_glyph_glsl(), R, glyph_custom_native_start);
-  add_block("wrath_minified_", K.minified_glyph_glsl(), R, glyph_custom_minified_start);
-
+                        << std::showpoint << rr*rr << ";"
+                        << "\nconst float wrath_mix_font_ratio_inverse="
+                        << std::showpoint << 1.0f/rr << ";"
+                        << "\nconst float wrath_mix_font_ratio_square_inverse="
+                        << std::showpoint << 1.0f/(rr*rr)  << ";"
+                        << "\nconst float wrath_mix_font_thresh_squared="
+                        << std::showpoint << thresh*thresh
+                        << ";";
   
-  
-  R.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
-    .add_source(mix_font_shader_ratio.str(), WRATHGLShader::from_string)
-    .add_source("font_mix_linear.vert.wrath-shader.glsl",
-                WRATHGLShader::from_resource);
-  
-  R.m_fragment_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
-    .add_source(mix_font_shader_ratio.str(), WRATHGLShader::from_string)
-    .add_source("font_mix_linear.frag.wrath-shader.glsl",
-                WRATHGLShader::from_resource);
-  
-  R.m_vertex_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
-    .add_source(mix_font_shader_ratio.str(), WRATHGLShader::from_string)
-    .add_source("font_mix_nonlinear.vert.wrath-shader.glsl",
-                WRATHGLShader::from_resource);
-  
-  R.m_fragment_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
-    .add_source(mix_font_shader_ratio.str(), WRATHGLShader::from_string)
-    .add_source("font_mix_nonlinear.frag.wrath-shader.glsl",
-                WRATHGLShader::from_resource);
-
-
-  /*
-    texture page size data is just the union
-    of the sources.
-   */
-  R.m_texture_page_data_size= 
-    K.native_glyph_glsl()->m_texture_page_data_size
-    + K.minified_glyph_glsl()->m_texture_page_data_size;
-
   /*
     custom data of a glyph is:
      - custom data used by mix font for
@@ -405,22 +392,113 @@ fetch(WRATHTextureFont *a, WRATHTextureFont *b,
     {
       R.m_custom_data_use[i+glyph_custom_mix_data_size]=
         K.native_glyph_glsl()->m_custom_data_use[i] 
-        + glyph_custom_mix_data_size;
+        + glyph_custom_native_start;
     }
 
-  /*
-    now get the values from b->m_custom_data_use(),
-    note that the index is increated by 4+a_glyph_custom_float_data_size.
-   */
-  int a_glyph_custom_float_data_size(a->glyph_custom_float_data_size());
-
+  
   for(int i=glyph_custom_mix_data_size+K.native_glyph_glsl()->m_custom_data_use.size(), 
         j=0, endj=K.minified_glyph_glsl()->m_custom_data_use.size(); 
       j<endj; ++i, ++j)
     {
       R.m_custom_data_use[i]=K.minified_glyph_glsl()->m_custom_data_use[j] 
-        + glyph_custom_mix_data_size + a_glyph_custom_float_data_size;
+        + glyph_custom_minified_start;
     }
+
+
+  R.m_global_names.push_back("wrath_mix_font_ratio");
+  R.m_global_names.push_back("wrath_mix_font_ratio_square");
+
+  add_glsl_wrath_font_page_data_original_function(R);
+  add_block("wrath_native_", K.native_glyph_glsl(), R, 0);
+  add_block("wrath_minified_", K.minified_glyph_glsl(), R, a->texture_page_data_size());
+
+  
+  if(!K.native_glyph_glsl()->m_custom_data_use.empty())
+    {
+      for(int i=0; i<WRATHTextureFont::GlyphGLSL::num_linearity_types; ++i)
+        {
+          R.m_vertex_processor[i]
+            .add_macro("WRATH_MIX_FONT_NATIVE_CUSTOM_SIZE", K.native_glyph_glsl()->m_custom_data_use.size())
+            .add_macro("WRATH_MIX_FONT_NATIVE_CUSTOM_OFFSET", glyph_custom_mix_data_size);
+        }
+    }
+
+  if(!K.minified_glyph_glsl()->m_custom_data_use.empty())
+    {
+      for(int i=0; i<WRATHTextureFont::GlyphGLSL::num_linearity_types; ++i)
+        {
+          R.m_vertex_processor[i]
+            .add_macro("WRATH_MIX_FONT_MINIFIED_CUSTOM_SIZE", K.minified_glyph_glsl()->m_custom_data_use.size())
+            .add_macro("WRATH_MIX_FONT_MINIFIED_CUSTOM_OFFSET", 
+                       glyph_custom_mix_data_size
+                       + K.native_glyph_glsl()->m_custom_data_use.size());
+        }
+    }
+
+  
+  R.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
+    .add_source(mix_font_shader_ratio.str(), WRATHGLShader::from_string)
+    .add_macro("WRATH_MIX_FONT_CUSTOM_DATA_SIZE", R.m_custom_data_use.size())
+    .add_source("font_mix_linear.vert.wrath-shader.glsl",
+                WRATHGLShader::from_resource);
+  
+  R.m_fragment_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
+    .add_source(mix_font_shader_ratio.str(), WRATHGLShader::from_string)
+    .add_source("font_mix_linear.frag.wrath-shader.glsl",
+                WRATHGLShader::from_resource);
+  
+  R.m_vertex_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
+    .add_source(mix_font_shader_ratio.str(), WRATHGLShader::from_string)
+    .add_macro("WRATH_MIX_FONT_CUSTOM_DATA_SIZE", R.m_custom_data_use.size())
+    .add_source("font_mix_nonlinear.vert.wrath-shader.glsl",
+                WRATHGLShader::from_resource);
+  
+  R.m_fragment_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
+    .add_source(mix_font_shader_ratio.str(), WRATHGLShader::from_string)
+    .add_source("font_mix_nonlinear.frag.wrath-shader.glsl",
+                WRATHGLShader::from_resource);
+
+
+  if(!K.native_glyph_glsl()->m_custom_data_use.empty())
+    {
+      for(int i=0; i<WRATHTextureFont::GlyphGLSL::num_linearity_types; ++i)
+        {
+          R.m_vertex_processor[i]
+            .remove_macro("WRATH_MIX_FONT_NATIVE_CUSTOM_SIZE")
+            .remove_macro("WRATH_MIX_FONT_MINIFIED_CUSTOM_OFFSET");
+        }
+    }
+
+  if(!K.minified_glyph_glsl()->m_custom_data_use.empty())
+    {
+      for(int i=0; i<WRATHTextureFont::GlyphGLSL::num_linearity_types; ++i)
+        {
+          R.m_vertex_processor[i]
+            .remove_macro("WRATH_MIX_FONT_MINIFIED_CUSTOM_SIZE")
+            .remove_macro("WRATH_MIX_FONT_MINIFIED_CUSTOM_OFFSET");
+        }
+    }
+  
+   R.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
+     .remove_macro("WRATH_MIX_FONT_CUSTOM_DATA_SIZE");
+  
+   R.m_vertex_processor[WRATHTextureFont::GlyphGLSL::nonlinear_glyph_position]
+     .remove_macro("WRATH_MIX_FONT_CUSTOM_DATA_SIZE");
+
+   
+
+
+  /*
+    texture page size data is just the union
+    of the sources.
+   */
+  R.m_texture_page_data_size= 
+    K.native_glyph_glsl()->m_texture_page_data_size
+    + K.minified_glyph_glsl()->m_texture_page_data_size;
+
+  
+
+  
   
 
   return &R;

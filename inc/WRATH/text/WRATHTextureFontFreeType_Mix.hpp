@@ -162,11 +162,6 @@ public:
   int
   texture_page_data_size(void) const
   {
-    //TODO: 
-    // m_native_src->texture_page_data_size()
-    // + m_native_src->texture_page_data_size()
-    // + 2; //2 extra is for glyph minified bottom_left
-    //return m_native_src->texture_page_data_size();
     return m_texture_page_data_size;
   }
 
@@ -398,7 +393,14 @@ private:
     m_texture_page_data_size=m_native_src->texture_page_data_size()
       + m_minified_src->texture_page_data_size();
 
-    m_glyph_custom_native_start=2;
+    /*
+      save:
+       glyph_bottom_left
+       glyph_size 
+      of minified glyph: takes 4 floats.
+     */
+    m_glyph_custom_native_start=4;
+
     m_glyph_custom_minified_start=m_glyph_custom_native_start
       + m_native_src->glyph_custom_float_data_size();
 

@@ -1,6 +1,6 @@
 /*! 
- * \file font_mix_base.frag.wrath-shader.glsl
- * \brief file font_mix_base.frag.wrath-shader.glsl
+ * \file font_mix_linear.frag.wrath-shader.glsl
+ * \brief file font_mix_linear.frag.wrath-shader.glsl
  * 
  * Copyright 2013 by Nomovok Ltd.
  * 
@@ -16,6 +16,7 @@
  * 
  */
 
+shader_in vec2 wrath_mix_font_glyph_position;
 
 
 mediump float 
@@ -26,37 +27,37 @@ is_covered(void)
     mediump vec2 dpx, dpy;
     mediump float sc;
 
-    dpx=dFdx(PrimaryGlyphCoordinate);
-    dpy=dFdy(PrimaryGlyphCoordinate);
+    dpx=dFdx(wrath_mix_font_glyph_position);
+    dpy=dFdy(wrath_mix_font_glyph_position);
     sc=(dot(dpx,dpx) + dot(dpy,dpy))/2.0;
 
     #ifdef WRATH_GPU_CONFIG_FRAGMENT_SHADER_POOR_BRANCHING
     {
       mediump float f1, f2;
 
-      f1=native_is_covered();
-      f2=minified_is_covered();
+      f1=wrath_native_is_covered();
+      f2=wrath_minified_is_covered();
       
-      return (sc<MIX_FONT_SHADER)?
-        f1:f2;
+      return (sc<wrath_mix_font_thresh_squared)?
+        f1: 1.0 - f2;
 
     }
     #else
     {
-      if(sc<MIX_FONT_SHADER*MIX_FONT_SHADER)
+      if(sc<wrath_mix_font_thresh_squared)
         {
-          return native_is_covered();
+          return wrath_native_is_covered();
         }
       else
         {
-          return minified_is_covered();
+          return 1.0 - wrath_minified_is_covered();
         }
     }
     #endif 
   }
   #else
   {
-    return native_is_covered();
+    return wrath_native_is_covered();
   }
   #endif 
 }
@@ -69,37 +70,37 @@ compute_coverage(void)
     mediump vec2 dpx, dpy;
     mediump float sc;
 
-    dpx=dFdx(PrimaryGlyphCoordinate);
-    dpy=dFdy(PrimaryGlyphCoordinate);
-    sc=sqrt( (dot(dpx,dpx) + dot(dpy,dpy))/2.0 );
+    dpx=dFdx(wrath_mix_font_glyph_position);
+    dpy=dFdy(wrath_mix_font_glyph_position);
+    sc=(dot(dpx,dpx) + dot(dpy,dpy))/2.0;
 
     #ifdef WRATH_GPU_CONFIG_FRAGMENT_SHADER_POOR_BRANCHING
     {
       mediump float f1, f2;
 
-      f1=native_compute_coverage();
-      f2=minified_compute_coverage();
+      f1=wrath_native_compute_coverage();
+      f2=wrath_minified_compute_coverage();
       
-      return (sc<MIX_FONT_SHADER)?
+      return (sc<wrath_mix_font_thresh_squared)?
         f1:f2;
 
     }
     #else
     {
-      if(sc<MIX_FONT_SHADER)
+      if(sc<wrath_mix_font_thresh_squared)
         {
-          return native_compute_coverage();
+          return wrath_native_compute_coverage();
         }
       else
         {
-          return minified_compute_coverage();
+          return wrath_minified_compute_coverage();
         }
     }
     #endif
   }
   #else
   {
-    return native_is_covered();
+    return wrath_native_compute_coverage();
   }
   #endif
     

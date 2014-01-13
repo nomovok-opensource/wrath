@@ -37,10 +37,10 @@ generate_character(WRATHTextureFont::glyph_index_type G)
   WRATHTextureFont::character_code_type C;
   C=this->character_code(G);
   
-  const WRATHTextureFont::glyph_data_type &dist_gl(m_native_src->glyph_data(G));
-  const WRATHTextureFont::glyph_data_type &cov_gl(m_minified_src->glyph_data(G));
+  const WRATHTextureFont::glyph_data_type &native_glyph(m_native_src->glyph_data(G));
+  const WRATHTextureFont::glyph_data_type &minified_glyph(m_minified_src->glyph_data(G));
   
-  if(dist_gl.font()==NULL or cov_gl.font()==NULL)
+  if(native_glyph.font()==NULL or minified_glyph.font()==NULL)
     {
       WRATHTextureFont::glyph_data_type *ptr;
       ptr=WRATHNew WRATHTextureFont::glyph_data_type();
@@ -51,14 +51,14 @@ generate_character(WRATHTextureFont::glyph_index_type G)
   int pg;
   std::vector<WRATHTextureChoice::texture_base::handle> R;
   
-  R.resize(dist_gl.texture_binder().size()+cov_gl.texture_binder().size());
+  R.resize(native_glyph.texture_binder().size()+minified_glyph.texture_binder().size());
   
-  std::copy(dist_gl.texture_binder().begin(),
-            dist_gl.texture_binder().end(),
+  std::copy(native_glyph.texture_binder().begin(),
+            native_glyph.texture_binder().end(),
             R.begin());
-  std::copy(cov_gl.texture_binder().begin(),
-            cov_gl.texture_binder().end(),
-            R.begin()+dist_gl.texture_binder().size());
+  std::copy(minified_glyph.texture_binder().begin(),
+            minified_glyph.texture_binder().end(),
+            R.begin()+native_glyph.texture_binder().size());
   
   
   
@@ -84,48 +84,48 @@ generate_character(WRATHTextureFont::glyph_index_type G)
     .texture_page(pg)
     .character_code(C)
     .glyph_index(G)
-    
-    .advance(dist_gl.advance())
-    .bounding_box_size(dist_gl.bounding_box_size())
-    
-    .texel_values(dist_gl.texel_lower_left(),
-                  dist_gl.texel_size())
-    .origin(dist_gl.origin());
+    .advance(native_glyph.advance())
+    .bounding_box_size(native_glyph.bounding_box_size())
+    .texel_values(native_glyph.texel_lower_left(),
+                  native_glyph.texel_size())
+    .origin(native_glyph.origin());
   
-  glyph.sub_primitive_attributes().resize(dist_gl.sub_primitive_attributes().size());
-  for(int i=0, end_i=dist_gl.sub_primitive_attributes().size(); i<end_i; ++i)
+  glyph.sub_primitive_attributes().resize(native_glyph.sub_primitive_attributes().size());
+  for(int i=0, end_i=native_glyph.sub_primitive_attributes().size(); i<end_i; ++i)
     {
       ivec2 rel;
       
-      rel=dist_gl.sub_primitive_attributes()[i].m_texel_coordinates
-        - dist_gl.texel_lower_left();
+      rel=native_glyph.sub_primitive_attributes()[i].m_texel_coordinates
+        - native_glyph.texel_lower_left();
       
       glyph.sub_primitive_attributes()[i].set(glyph, rel);
     }
-  glyph.sub_primitive_indices()=dist_gl.sub_primitive_indices();
+  glyph.sub_primitive_indices()=native_glyph.sub_primitive_indices();
   
   
   glyph.m_custom_float_data.resize(m_glyph_custom_float_data_size, 0.0f);
 
   /*
     pack the bottom left the minified glyph
-    into glyph.m_custom_float_data[0--1]
+    into glyph.m_custom_float_data[0--3]
    */
-  glyph.m_custom_float_data[0]=cov_gl.texel_lower_left().x();
-  glyph.m_custom_float_data[1]=cov_gl.texel_lower_left().y();
+  glyph.m_custom_float_data[0]=minified_glyph.texel_lower_left().x();
+  glyph.m_custom_float_data[1]=minified_glyph.texel_lower_left().y();
+  glyph.m_custom_float_data[2]=minified_glyph.texel_size().x();
+  glyph.m_custom_float_data[3]=minified_glyph.texel_size().y();
 
   /*
     pack the custom data from the native glyph next
    */
-  std::copy(dist_gl.m_custom_float_data.begin(),
-            dist_gl.m_custom_float_data.end(),
+  std::copy(native_glyph.m_custom_float_data.begin(),
+            native_glyph.m_custom_float_data.end(),
             glyph.m_custom_float_data.begin()+m_glyph_custom_native_start);
 
   /*
     and finally the custom data from the minified glyph 
    */
-  std::copy(cov_gl.m_custom_float_data.begin(),
-            cov_gl.m_custom_float_data.end(),
+  std::copy(minified_glyph.m_custom_float_data.begin(),
+            minified_glyph.m_custom_float_data.end(),
             glyph.m_custom_float_data.begin()+m_glyph_custom_minified_start);
 
   
@@ -143,14 +143,14 @@ generate_character(WRATHTextureFont::glyph_index_type G)
        */
       for(int i=0, endi=m_native_src->texture_page_data_size(); i<endi; ++i)
         {
-          data[i]=m_native_src->texture_page_data(dist_gl.texture_page(), i);
+          data[i]=m_native_src->texture_page_data(native_glyph.texture_page(), i);
         }
       for(int i=0, 
             j=m_native_src->texture_page_data_size(),
             endi=m_minified_src->texture_page_data_size();
           i<endi; ++i, ++j)
         {
-          data[j]=m_minified_src->texture_page_data(cov_gl.texture_page(), i);
+          data[j]=m_minified_src->texture_page_data(minified_glyph.texture_page(), i);
         }
     }
   

@@ -6,7 +6,7 @@ d		:= $(dir)
 
 
 
-SHADERS += $(call filelist, font_mix_page_data_func.wrath-shader.glsl)
+SHADERS += $(call filelist, font_mix_page_data_func.wrath-shader.glsl font_mix_linear.frag.wrath-shader.glsl font_mix_linear.vert.wrath-shader.glsl)
 
 # Begin standard footer
 d		:= $(dirstack_$(sp))
