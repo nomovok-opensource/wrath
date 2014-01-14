@@ -93,8 +93,8 @@ add_shader_source_code_specify_interpolation_implementation(enum interpolation_b
     {
       std::ostringstream ostr;
 
-      ostr << "\n#define compute_texture_coordinate compute_texture_coordinate" << suffix 
-           << "\n#define pre_compute_texture_coordinate pre_compute_texture_coordinate" << suffix << "\n";
+      ostr << "\n#define wrath_compute_texture_coordinate wrath_compute_texture_coordinate" << suffix 
+           << "\n#define wrath_pre_compute_texture_coordinate wrath_pre_compute_texture_coordinate" << suffix << "\n";
 
       for(const_c_array<std::string>::iterator iter=varyings.begin(),
             end=varyings.end(); iter!=end; ++iter)
@@ -134,8 +134,8 @@ add_shader_source_code_specify_interpolation_implementation(enum interpolation_b
     {
       std::ostringstream ostr;
 
-      ostr << "\n#undef compute_texture_coordinate"
-           << "#undef pre_compute_texture_coordinate\n";
+      ostr << "\n#undef wrath_compute_texture_coordinate"
+           << "#undef wrath_pre_compute_texture_coordinate\n";
 
 
       for(const_c_array<std::string>::iterator iter=varyings.begin(),

@@ -36,8 +36,8 @@
     or can fetch from fragment shader,
     so pre_compute does nothing.
    */
-  void pre_compute_texture_coordinate(void) {}
-  void pre_compute_texture_coordinate(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 p) {}
+  void wrath_pre_compute_texture_coordinate(void) {}
+  void wrath_pre_compute_texture_coordinate(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 p) {}
 
 #else
 
@@ -48,7 +48,7 @@
    */
   shader_out WRATH_IMAGE_REPEAT_MODE_PREC vec4 WRATH_IMAGE_VALUE_NORMALIZED_varying0;
   shader_out WRATH_IMAGE_REPEAT_MODE_PREC float WRATH_IMAGE_VALUE_NORMALIZED_varying1;
-  void pre_compute_texture_coordinate(void)
+  void wrath_pre_compute_texture_coordinate(void)
   {
     WRATH_IMAGE_VALUE_NORMALIZED_varying0=vec4(fetch_node_value(WRATH_TEXTURE_subrect_x),
                                                fetch_node_value(WRATH_TEXTURE_subrect_y),
@@ -57,9 +57,9 @@
     WRATH_IMAGE_VALUE_NORMALIZED_varying1=fetch_node_value(WRATH_IMAGE_repeat_mode);
   }
 
-  void pre_compute_texture_coordinate(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 p)
+  void wrath_pre_compute_texture_coordinate(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 p)
   {
-    pre_compute_texture_coordinate();
+    wrath_pre_compute_texture_coordinate();
   }
 
 #endif

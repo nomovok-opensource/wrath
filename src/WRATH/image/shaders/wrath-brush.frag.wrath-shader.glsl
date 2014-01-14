@@ -163,12 +163,12 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
     {
       /*
       image_color=texture2DGrad(wrath_brush_imageTexture, 
-                                compute_texture_coordinate(wrath_brush_image_tex_coord.xy),
+                                wrath_compute_texture_coordinate(wrath_brush_image_tex_coord.xy),
                                 dFdx(wrath_brush_image_tex_coord.xy),
                                 dFdy(wrath_brush_image_tex_coord.xy));
       */
       image_color=texture2D(wrath_brush_imageTexture, 
-                            compute_texture_coordinate(wrath_brush_image_tex_coord));
+                            wrath_compute_texture_coordinate(wrath_brush_image_tex_coord));
     }
     #endif
 

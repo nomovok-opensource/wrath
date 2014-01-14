@@ -39,7 +39,7 @@
 #define vec2_between(x, minv, maxv) between(x, vec2(minv, minv), vec2(maxv, maxv))
 
 WRATH_IMAGE_REPEAT_MODE_PREC vec2
-compute_texture_coordinate(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 p)
+wrath_compute_texture_coordinate(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 p)
 {
   WRATH_IMAGE_REPEAT_MODE_PREC vec2 start;
   WRATH_IMAGE_REPEAT_MODE_PREC vec2 size;

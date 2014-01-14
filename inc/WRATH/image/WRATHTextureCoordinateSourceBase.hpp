@@ -50,14 +50,14 @@ namespace WRATHTextureCoordinateSourceBasePrivate
     interpolation_behaviour_t
 
   - The calculation is implemented in GLSL by
-    implementing 2 functions: pre_compute_texture_coordinate()
-    and compute_texture_coordinate(). 
+    implementing 2 functions: wrath_pre_compute_texture_coordinate()
+    and wrath_compute_texture_coordinate(). 
 
   A class derived from WRATHTextureCoordinateSourceBase must
   abide by the following conventions:
   - If the interpolation behavior is linear, implement the function 
     \code
-    vec2 compute_texture_coordinate(in vec2 p)
+    vec2 wrath_compute_texture_coordinate(in vec2 p)
     \endcode
     in the vertex shader. The coordinate p
     is the coordinate in item coordinates
@@ -67,12 +67,12 @@ namespace WRATHTextureCoordinateSourceBasePrivate
   - If the interpolation behavior is partially 
     non-linear, implement the function
     \code   
-    void pre_compute_texture_coordinate(in vec2 p)
+    void wrath_pre_compute_texture_coordinate(in vec2 p)
     \endcode
     in the vertex shader.\n\n 
     Also implement the function
     \code
-    vec2 compute_texture_coordinate(in vec2 p)
+    vec2 wrath_compute_texture_coordinate(in vec2 p)
     \endcode
     in the fragment shader. The coordinate p
     is the coordinate in item coordinates
@@ -82,12 +82,12 @@ namespace WRATHTextureCoordinateSourceBasePrivate
   - If the interpolation behavior is fully-nonlinear,
     implement the function
     \code   
-    void pre_compute_texture_coordinate(void)
+    void wrath_pre_compute_texture_coordinate(void)
     \endcode
     in the vertex shader.\n\n 
     Also implement the function
     \code
-    vec2 compute_texture_coordinate(in vec2 p)
+    vec2 wrath_compute_texture_coordinate(in vec2 p)
     \endcode
     in the fragment shader. The coordinate p
     is the coordinate in item coordinates
@@ -142,8 +142,8 @@ public:
     \param prec precision qaulifier to use
     \param suffix suffix to which to append to all function, macros, etc
                   added to the GLSL code, including the functions
-                  <B>compute_texture_coordinate()</B> and 
-                  <B>pre_compute_texture_coordinate()</B>.
+                  <B>wrath_compute_texture_coordinate()</B> and 
+                  <B>wrath_pre_compute_texture_coordinate()</B>.
                   A non-empty suffix indicates that the functions
                   are being chained from another function, in this
                   case none of the macros LINEAR_TEXTURE_COORDINATE, 
@@ -190,8 +190,8 @@ protected:
     \param prec precision qaulifier to use
     \param suffix suffix to which to append to all symbols of GLSL shaders
                   that are at global scope, including the functions
-                  <B>compute_texture_coordinate()</B> and 
-                  <B>pre_compute_texture_coordinate()</B>.
+                  <B>wrath_compute_texture_coordinate()</B> and 
+                  <B>wrath_pre_compute_texture_coordinate()</B>.
    */
   virtual
   void

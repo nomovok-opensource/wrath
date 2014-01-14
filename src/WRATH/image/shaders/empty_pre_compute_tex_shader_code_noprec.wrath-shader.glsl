@@ -18,7 +18,7 @@
 
 
 
-void pre_compute_texture_coordinate(in vec2 p) {}
-void pre_compute_texture_coordinate(void) {}
+void wrath_pre_compute_texture_coordinate(in vec2 p) {}
+void wrath_pre_compute_texture_coordinate(void) {}
 
 

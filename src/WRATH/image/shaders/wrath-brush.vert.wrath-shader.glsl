@@ -95,7 +95,7 @@ void wrath_shader_brush_prepare(in vec2 highp p)
   
   #ifdef LINEAR_TEXTURE_COORDINATE
   {
-    wrath_brush_image_tex_coord=compute_texture_coordinate(wrath_brush_frag_pos.xy/wrath_brush_imageTextureSize);
+    wrath_brush_image_tex_coord=wrath_compute_texture_coordinate(wrath_brush_frag_pos.xy/wrath_brush_imageTextureSize);
   }
   #elif defined(NON_LINEAR_TEXTURE_COORDINATE)
   {
@@ -107,11 +107,11 @@ void wrath_shader_brush_prepare(in vec2 highp p)
 
     #ifdef FULLY_NON_LINEAR_TEXTURE_COORDINATE
     {
-      pre_compute_texture_coordinate();
+      wrath_pre_compute_texture_coordinate();
     }
     #else
     {
-      pre_compute_texture_coordinate(image_tex_coord);
+      wrath_pre_compute_texture_coordinate(image_tex_coord);
     }
     #endif
   }
