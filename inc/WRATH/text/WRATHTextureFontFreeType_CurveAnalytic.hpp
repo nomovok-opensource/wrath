@@ -221,7 +221,7 @@ public:
     Returns true if the next created 
     WRATHTextureFontFreeType_CurveAnalytic 
     will generate "scaling" data, default
-    value is false.     
+    value is true.     
    */
   static
   bool
@@ -231,7 +231,7 @@ public:
     Sets if the next created 
     WRATHTextureFontFreeType_CurveAnalytic 
     will generate "scaling" data, default
-    value is false.
+    value is true.
     \param v value to use
    */
   static

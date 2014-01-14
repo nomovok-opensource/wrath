@@ -1408,7 +1408,7 @@ common_data_type::
 common_data_type(void):
   m_force_power2_texture(false),
   m_texture_creation_size(1024),
-  m_include_scaling_data(false),
+  m_include_scaling_data(true),
   m_two_channel_texture_work_around(false),
   m_store_separate_curves(false),
   m_curvature_collapse(0.05f)
