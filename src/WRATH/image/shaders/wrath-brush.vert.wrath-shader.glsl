@@ -22,7 +22,7 @@
   
   Some notes:
    if WRATH_NONLINEAR_BRUSH_PRESENT is defined, then 
-   both WRATH_LINEAR_GRADIENT and LINEAR_TEXTURE_COORDINATE
+   both WRATH_LINEAR_GRADIENT and WRATH_LINEAR_TEXTURE_COORDINATE
    should NOT be defined.
  */
 #ifdef WRATH_NONLINEAR_BRUSH_PRESENT
@@ -30,8 +30,8 @@
   #error "WRATH_LINEAR_GRADIENT defined with WRATH_NONLINEAR_BRUSH_PRESENT defined"
   #endif
 
-  #ifdef LINEAR_TEXTURE_COORDINATE
-  #error "LINEAR_TEXTURE_COORDINATE defined with WRATH_NONLINEAR_BRUSH_PRESENT defined"
+  #ifdef WRATH_LINEAR_TEXTURE_COORDINATE
+  #error "WRATH_LINEAR_TEXTURE_COORDINATE defined with WRATH_NONLINEAR_BRUSH_PRESENT defined"
   #endif
 #endif
 
@@ -61,14 +61,14 @@
 
 #endif
 
-#if defined(LINEAR_TEXTURE_COORDINATE) || defined(NON_LINEAR_TEXTURE_COORDINATE)
+#if defined(WRATH_LINEAR_TEXTURE_COORDINATE) || defined(WRATH_NON_LINEAR_TEXTURE_COORDINATE)
   #ifndef WRATH_NONLINEAR_BRUSH_PRESENT
     shader_out mediump vec2 wrath_brush_image_tex_coord;
   #endif
 uniform mediump vec2 wrath_brush_imageTextureSize; //let it be available to vertex shader too
 #endif
 
-#if defined(NON_LINEAR_TEXTURE_COORDINATE) && !defined(WRATH_NON_LINEAR_GRADIENT) && !defined(WRATH_NONLINEAR_BRUSH_PRESENT)
+#if defined(WRATH_NON_LINEAR_TEXTURE_COORDINATE) && !defined(WRATH_NON_LINEAR_GRADIENT) && !defined(WRATH_NONLINEAR_BRUSH_PRESENT)
   shader_out mediump vec2 wrath_brush_frag_pos;
   #define FRAG_POS_DEFINED
 #endif
@@ -93,11 +93,11 @@ void wrath_shader_brush_prepare(in vec2 highp p)
   }
   #endif
   
-  #ifdef LINEAR_TEXTURE_COORDINATE
+  #ifdef WRATH_LINEAR_TEXTURE_COORDINATE
   {
     wrath_brush_image_tex_coord=wrath_compute_texture_coordinate(wrath_brush_frag_pos.xy/wrath_brush_imageTextureSize);
   }
-  #elif defined(NON_LINEAR_TEXTURE_COORDINATE)
+  #elif defined(WRATH_NON_LINEAR_TEXTURE_COORDINATE)
   {
     #ifndef WRATH_NONLINEAR_BRUSH_PRESENT
     {
@@ -105,7 +105,7 @@ void wrath_shader_brush_prepare(in vec2 highp p)
     }
     #endif
 
-    #ifdef FULLY_NON_LINEAR_TEXTURE_COORDINATE
+    #ifdef WRATH_FULLY_NON_LINEAR_TEXTURE_COORDINATE
     {
       wrath_pre_compute_texture_coordinate();
     }

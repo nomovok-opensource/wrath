@@ -23,7 +23,7 @@
   
   Some notes:
    if WRATH_NONLINEAR_BRUSH_PRESENT is defined, then 
-   both WRATH_LINEAR_GRADIENT and LINEAR_TEXTURE_COORDINATE
+   both WRATH_LINEAR_GRADIENT and WRATH_LINEAR_TEXTURE_COORDINATE
    are NOT defined.
  */
 #ifdef WRATH_NONLINEAR_BRUSH_PRESENT
@@ -37,8 +37,8 @@
     #endif
   #endif   
 
-  #ifdef LINEAR_TEXTURE_COORDINATE
-  #error "LINEAR_TEXTURE_COORDINATE defined with WRATH_NONLINEAR_BRUSH_PRESENT defined"
+  #ifdef WRATH_LINEAR_TEXTURE_COORDINATE
+  #error "WRATH_LINEAR_TEXTURE_COORDINATE defined with WRATH_NONLINEAR_BRUSH_PRESENT defined"
   #endif
 #endif
 
@@ -71,7 +71,7 @@
 
 
 
-#if defined(LINEAR_TEXTURE_COORDINATE) || defined(NON_LINEAR_TEXTURE_COORDINATE)
+#if defined(WRATH_LINEAR_TEXTURE_COORDINATE) || defined(WRATH_NON_LINEAR_TEXTURE_COORDINATE)
   uniform mediump sampler2D wrath_brush_imageTexture;
   uniform mediump vec2 wrath_brush_imageTextureSize;
   #ifndef WRATH_NONLINEAR_BRUSH_PRESENT
@@ -97,7 +97,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
 
   valid=1.0;
 
-  #if defined(WRATH_NONLINEAR_BRUSH_PRESENT) && defined(NON_LINEAR_TEXTURE_COORDINATE)
+  #if defined(WRATH_NONLINEAR_BRUSH_PRESENT) && defined(WRATH_NON_LINEAR_TEXTURE_COORDINATE)
 
   mediump vec2 wrath_brush_image_tex_coord;
   wrath_brush_image_tex_coord=wrath_brush_frag_pos.xy/wrath_brush_imageTextureSize;
@@ -126,7 +126,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
   }
   #endif
 
-  #if defined(LINEAR_TEXTURE_COORDINATE) || defined(NON_LINEAR_TEXTURE_COORDINATE)
+  #if defined(WRATH_LINEAR_TEXTURE_COORDINATE) || defined(WRATH_NON_LINEAR_TEXTURE_COORDINATE)
   {
     mediump vec4 image_color;
 
@@ -149,7 +149,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
         (and GL_OES_standard_derivatives) 
         for those functions (in EXT form).
      */
-    #if defined(LINEAR_TEXTURE_COORDINATE)
+    #if defined(WRATH_LINEAR_TEXTURE_COORDINATE)
     {
       /*
       image_color=texture2DGrad(wrath_brush_imageTexture, wrath_brush_image_tex_coord,

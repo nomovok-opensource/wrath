@@ -116,23 +116,23 @@ add_shader_source_code_specify_interpolation(enum interpolation_behaviour_t ibt,
       switch(ibt)
         {
         case linear_computation:
-          vs.add_macro("LINEAR_TEXTURE_COORDINATE");
-          fs.add_macro("LINEAR_TEXTURE_COORDINATE");
+          vs.add_macro("WRATH_LINEAR_TEXTURE_COORDINATE");
+          fs.add_macro("WRATH_LINEAR_TEXTURE_COORDINATE");
           break;
           
         case nonlinear_computation:
-          vs.add_macro("NON_LINEAR_TEXTURE_COORDINATE");
-          fs.add_macro("NON_LINEAR_TEXTURE_COORDINATE");
+          vs.add_macro("WRATH_NON_LINEAR_TEXTURE_COORDINATE");
+          fs.add_macro("WRATH_NON_LINEAR_TEXTURE_COORDINATE");
           break;
           
         default://fall through
         case fully_nonlinear_computation:
           vs
-            .add_macro("NON_LINEAR_TEXTURE_COORDINATE")
-            .add_macro("FULLY_NON_LINEAR_TEXTURE_COORDINATE");
+            .add_macro("WRATH_NON_LINEAR_TEXTURE_COORDINATE")
+            .add_macro("WRATH_FULLY_NON_LINEAR_TEXTURE_COORDINATE");
           fs
-            .add_macro("NON_LINEAR_TEXTURE_COORDINATE")
-            .add_macro("FULLY_NON_LINEAR_TEXTURE_COORDINATE");
+            .add_macro("WRATH_NON_LINEAR_TEXTURE_COORDINATE")
+            .add_macro("WRATH_FULLY_NON_LINEAR_TEXTURE_COORDINATE");
           break;
         }
     }

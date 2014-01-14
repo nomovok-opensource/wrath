@@ -96,14 +96,14 @@ namespace WRATHTextureCoordinateSourceBasePrivate
 
   The class \ref WRATHShaderBrushSourceHoard, in implementing the 
   GLSL code for brush functions, obeys the added macros 
-  LINEAR_TEXTURE_COORDINATE, NON_LINEAR_TEXTURE_COORDINATE
-  and FULLY_NON_LINEAR_TEXTURE_COORDINATE by adding \#ifdef's checking 
+  WRATH_LINEAR_TEXTURE_COORDINATE, WRATH_NON_LINEAR_TEXTURE_COORDINATE
+  and WRATH_FULLY_NON_LINEAR_TEXTURE_COORDINATE by adding \#ifdef's checking 
   for those macros when calling the functions. These macros are added
   by \ref add_shader_source_code_specify_interpolation() as necessary as follows:
-  - WRATHBaseSource::linear_computation: LINEAR_TEXTURE_COORDINATE in vertex and fragment shader
-  - WRATHBaseSource::nonlinear_computation NON_LINEAR_TEXTURE_COORDINATE in vertex and fragment shader
-  - WRATHBaseSource::fully_nonlinear_computation NON_LINEAR_TEXTURE_COORDINATE and 
-    FULLY_NON_LINEAR_TEXTURE_COORDINATE in vertex and fragment shader
+  - WRATHBaseSource::linear_computation: WRATH_LINEAR_TEXTURE_COORDINATE in vertex and fragment shader
+  - WRATHBaseSource::nonlinear_computation WRATH_NON_LINEAR_TEXTURE_COORDINATE in vertex and fragment shader
+  - WRATHBaseSource::fully_nonlinear_computation WRATH_NON_LINEAR_TEXTURE_COORDINATE and 
+    WRATH_FULLY_NON_LINEAR_TEXTURE_COORDINATE in vertex and fragment shader
  */
 class WRATHTextureCoordinateSourceBase:public WRATHBaseSource
 {
@@ -146,8 +146,8 @@ public:
                   <B>wrath_pre_compute_texture_coordinate()</B>.
                   A non-empty suffix indicates that the functions
                   are being chained from another function, in this
-                  case none of the macros LINEAR_TEXTURE_COORDINATE, 
-                  NON_LINEAR_TEXTURE_COORDINATE and FULLY_NON_LINEAR_TEXTURE_COORDINATE
+                  case none of the macros WRATH_LINEAR_TEXTURE_COORDINATE, 
+                  WRATH_NON_LINEAR_TEXTURE_COORDINATE and WRATH_FULLY_NON_LINEAR_TEXTURE_COORDINATE
                   will be added
    */
   void
