@@ -34,7 +34,7 @@ is_covered(in vec2 glyph_position)
   glyph_texture_reciprocal_size=vec2(wrath_font_page_data(0),
                                      wrath_font_page_data(1));
 
-  tt=(glyph_position + wrath_CoverageFieldBottomLeft)*glyph_recirpocal_size;
+  tt=(glyph_position + wrath_CoverageFieldBottomLeft)*glyph_texture_reciprocal_size;
   rr=texture2D(wrath_CoverageField, tt).r;
   return step(0.5, rr);
 }
@@ -48,7 +48,7 @@ compute_coverage(in vec2 glyph_position)
   glyph_texture_reciprocal_size=vec2(wrath_font_page_data(0),
                                      wrath_font_page_data(1));
 
-  tt=(glyph_position + wrath_CoverageFieldBottomLeft)*glyph_recirpocal_size;
+  tt=(glyph_position + wrath_CoverageFieldBottomLeft)*glyph_texture_reciprocal_size;
   rr=texture2D(wrath_CoverageField, tt).r;
   return rr;
 
