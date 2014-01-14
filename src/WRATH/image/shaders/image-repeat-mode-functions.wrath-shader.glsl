@@ -23,25 +23,25 @@
   to determine the precision.
 */
 WRATH_IMAGE_REPEAT_MODE_PREC float
-compute_simple(in WRATH_IMAGE_REPEAT_MODE_PREC float in_value)
+wrath_compute_simple(in WRATH_IMAGE_REPEAT_MODE_PREC float in_value)
 {
   return in_value;
 }
 
 WRATH_IMAGE_REPEAT_MODE_PREC float
-compute_repeat(in WRATH_IMAGE_REPEAT_MODE_PREC float in_value)
+wrath_compute_repeat(in WRATH_IMAGE_REPEAT_MODE_PREC float in_value)
 {
   return fract(in_value);
 }
 
 WRATH_IMAGE_REPEAT_MODE_PREC float
-compute_clamp(in WRATH_IMAGE_REPEAT_MODE_PREC float in_value)
+wrath_compute_clamp(in WRATH_IMAGE_REPEAT_MODE_PREC float in_value)
 {
   return clamp(in_value, 0.0, 1.0);
 }
 
 WRATH_IMAGE_REPEAT_MODE_PREC float
-compute_mirror_repeat(in WRATH_IMAGE_REPEAT_MODE_PREC float in_value)
+wrath_compute_mirror_repeat(in WRATH_IMAGE_REPEAT_MODE_PREC float in_value)
 {
   WRATH_IMAGE_REPEAT_MODE_PREC float v;
 
@@ -53,25 +53,25 @@ compute_mirror_repeat(in WRATH_IMAGE_REPEAT_MODE_PREC float in_value)
 // vec2 variations
 
 WRATH_IMAGE_REPEAT_MODE_PREC vec2
-compute_simple(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 in_value)
+wrath_compute_simple(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 in_value)
 {
   return in_value;
 }
 
 WRATH_IMAGE_REPEAT_MODE_PREC vec2
-compute_repeat(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 in_value)
+wrath_compute_repeat(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 in_value)
 {
   return fract(in_value);
 }
 
 WRATH_IMAGE_REPEAT_MODE_PREC vec2
-compute_clamp(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 in_value)
+wrath_compute_clamp(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 in_value)
 {
   return clamp(in_value, 0.0, 1.0);
 }
 
 WRATH_IMAGE_REPEAT_MODE_PREC vec2
-compute_mirror_repeat(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 in_value)
+wrath_compute_mirror_repeat(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 in_value)
 {
   WRATH_IMAGE_REPEAT_MODE_PREC vec2 v;
 

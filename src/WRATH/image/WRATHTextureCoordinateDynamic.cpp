@@ -91,10 +91,10 @@ global_scoped_symbols(enum precision_t, enum interpolation_behaviour_t) const
 {
   static vecN<std::string, 6> values("WRATH_IMAGE_VALUE_NORMALIZED_varying0",
                                      "WRATH_IMAGE_VALUE_NORMALIZED_varying1",                                     
-                                     "compute_simple",
-                                     "compute_repeat",
-                                     "compute_clamp",
-                                     "compute_mirror_repeat");
+                                     "wrath_compute_simple",
+                                     "wrath_compute_repeat",
+                                     "wrath_compute_clamp",
+                                     "wrath_compute_mirror_repeat");
   return values;
 }
 

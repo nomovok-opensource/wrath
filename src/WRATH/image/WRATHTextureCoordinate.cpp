@@ -156,16 +156,16 @@ repeat_function(int mode)
       WRATHwarning("unreconized mode " << mode);
 
     case WRATHTextureCoordinate::simple:
-      return "compute_simple";
+      return "wrath_compute_simple";
 
     case WRATHTextureCoordinate::clamp:
-      return "compute_clamp";
+      return "wrath_compute_clamp";
 
     case WRATHTextureCoordinate::repeat:
-      return "compute_repeat";
+      return "wrath_compute_repeat";
 
     case WRATHTextureCoordinate::mirror_repeat:
-      return "compute_mirror_repeat";
+      return "wrath_compute_mirror_repeat";
     }
 }
 
@@ -174,10 +174,10 @@ LocalImageSource::
 global_scoped_symbols(enum precision_t, enum interpolation_behaviour_t) const
 {
   static vecN<std::string, 5> values("WRATH_IMAGE_VALUE_NORMALIZED_varying",
-                                     "compute_simple",
-                                     "compute_repeat",
-                                     "compute_clamp",
-                                     "compute_mirror_repeat");
+                                     "wrath_compute_simple",
+                                     "wrath_compute_repeat",
+                                     "wrath_compute_clamp",
+                                     "wrath_compute_mirror_repeat");
   return values;
 }
 

@@ -68,9 +68,9 @@ wrath_compute_texture_coordinate(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 p)
   mode_xy=vec2(0.1*floor(mode), fract(mode));
   
   repeat_applied=
-    + step(mode_xy, vec2(0.5, 0.5))*compute_clamp(q)
-    + vec2_between(mode_xy, 0.5, 0.7)*compute_repeat(q)
-    + vec2_between(mode_xy, 0.7, 1.0)*compute_mirror_repeat(q);
+    + step(mode_xy, vec2(0.5, 0.5))*wrath_compute_clamp(q)
+    + vec2_between(mode_xy, 0.5, 0.7)*wrath_compute_repeat(q)
+    + vec2_between(mode_xy, 0.7, 1.0)*wrath_compute_mirror_repeat(q);
   
   #ifdef WRATH_BRUSH_FLIP_IMAGE_Y
   {
