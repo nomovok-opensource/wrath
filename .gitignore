@@ -57,6 +57,8 @@ qt-rect3
 qt-rect3-debug
 qt-wavy-clip2
 qt-wavy-clip2-debug
+qt-wavy-text
+qt-wavy-text-debug
 
 
 sdl-cells
@@ -97,6 +99,9 @@ sdl-rect3
 sdl-rect3-debug
 sdl-wavy-clip2
 sdl-wavy-clip2-debug
+sdl-wavy-text
+sdl-wavy-text-debug
+
 
 
 

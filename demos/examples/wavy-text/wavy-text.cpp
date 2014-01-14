@@ -1,6 +1,6 @@
 /*! 
- * \file rect2.cpp
- * \brief file rect2.cpp
+ * \file wavy-text.cpp
+ * \brief file wavy-text.cpp
  * 
  * Copyright 2013 by Nomovok Ltd.
  * 
@@ -25,30 +25,55 @@
 #include "WRATHUtil.hpp"
 #include "WRATHWidget.hpp"
 #include "WRATHTime.hpp"
+#include "WRATHFontFetch.hpp"
 #include "WRATHLayerItemNodeTranslate.hpp"
 #include "WRATHLayerItemWidgets.hpp"
+
+#include "WRATHTextureFontFreeType_Coverage.hpp"
+#include "WRATHTextureFontFreeType_DetailedCoverage.hpp"
+#include "WRATHTextureFontFreeType_Distance.hpp"
+#include "WRATHTextureFontFreeType_Analytic.hpp"
+#include "WRATHTextureFontFreeType_CurveAnalytic.hpp"
+#include "WRATHTextureFontFreeType_Mix.hpp"
 
 #include "wrath_demo.hpp"
 #include "wrath_demo_image_support.hpp"
 
 #include "wobbly_node.hpp"
 
+typedef WRATHTextureFontFreeType_CurveAnalytic FontType;
 
 /*!\details
-  In this example we will create a custom shader
-  compatible with \ref WRATHDefaultRectAttributePacker.
-  The shader will be equipped to do non-linear brush
-  remapping to make the image and gradient wobble.
+  In this example we will create a custom 
+  vertex and fragment shader for presenting
+  glyphs. The key class for the interface
+  is \ref WRATHFontShaderSpecifier
 */
 
 class cmd_line_type:public DemoKernelMaker
 {
 public:
-  command_line_argument_value<std::string> m_image;
+  command_line_argument_value<std::string> m_text;
+  command_line_argument_value<bool> m_text_from_file;
+  command_line_argument_value<int> m_r, m_g, m_b, m_a;
+  command_line_argument_value<bool> m_bold, m_italic;
+  command_line_argument_value<std::string> m_style;  
+  command_line_argument_value<int> m_pixel_size;
 
   cmd_line_type(void):
-    m_image("images/eye.jpg", "image", "Image to use for demo", *this)
+    m_text("Hello Wavy World", "text", "Text to use for demo", *this),
+    m_text_from_file(false, "text_from_file", 
+                     "If true, text command line paramater indicates text file to display", *this),
+    m_r(255, "color_r", "Red component in range [0,255] of text color", *this),
+    m_g(255, "color_g", "Green component in range [0,255] of text color", *this),
+    m_b(255, "color_b", "Blue component in range [0,255] of text color", *this),
+    m_a(255, "color_a", "Alpha component in range [0,255] of text color", *this),
+    m_bold(false, "bold", "Bold text", *this),
+    m_italic(false, "italic", "Italic text", *this),
+    m_style("DejaVuSans", "style", "Style of font", *this),
+    m_pixel_size(32, "pixel_size", "Pixel size at which to display the text", *this)
   {}
+    
 
   virtual
   DemoKernel* 
@@ -65,11 +90,11 @@ public:
   }
 };
 
-class RectExample:public DemoKernel
+class WavyTextExample:public DemoKernel
 {
 public:
-  RectExample(cmd_line_type *cmd_line);
-  ~RectExample();
+  WavyTextExample(cmd_line_type *cmd_line);
+  ~WavyTextExample();
   
   void resize(int width, int height);
   virtual void handle_event(FURYEvent::handle ev);
@@ -77,95 +102,15 @@ public:
 
 private:
   typedef WobblyNode<WRATHLayerItemNodeTranslate> Node;
-
   typedef WRATHLayerItemWidget<Node>::FamilySet FamilySet; 
-  typedef FamilySet::ColorFamily ColorFamily;
-  typedef FamilySet::LinearGradientFamily ColorLinearGradientFamily;
-  typedef FamilySet::RadialGradientFamily ColorRadialGradientFamily;
-  typedef FamilySet::RepeatXRepeatYImageFamily ImageFamily;
-  typedef FamilySet::RadialGradientRepeatXRepeatYImageFamily RadialGradientImageFamily;
-
-  //conveniance template function to make widgets
-  template<typename T>
-  T*
-  make_widget(WRATHGradient *grad, WRATHImage *image)
-  {
-    T *return_value;
-    
-    //define the WRATHBrush to apply to the returned widget
-    WRATHBrush brush(grad, image);
-    brush.flip_image_y(true); 
-    
-    //set the shaders for the brush from the node type
-    T::Node::set_shader_brush(brush);
-
-    //use the WRATHShaderBrushSourceHoard, m_shader_hoard,
-    //to fetch/get the shader for the brush. 
-    //we also specify that the brush mapping is non-linear
-    //so that we can specify the brush coordinates in the
-    //fragment shader.
-    const WRATHShaderSpecifier *sp;
-    sp=&m_shader_hoard.fetch(brush, 
-                             WRATHBaseSource::mediump_precision,
-                             WRATHShaderBrushSourceHoard::nonlinear_brush_mapping);
-
-    //now pass that as the drawer for the rectwidget,
-    //use the shader of sp and augment the GL state
-    //with the brush
-    WRATHRectItemTypes::Drawer drawer;
-
-    drawer=WRATHRectItemTypes::Drawer(sp,
-                                      WRATHDefaultRectAttributePacker::fetch(),
-                                      WRATHDrawType::opaque_pass());
-    m_shader_hoard.add_state(brush, drawer.m_draw_passes[0].m_draw_state);
-    
-    //create the widget
-    return_value=WRATHNew T(m_layer, drawer);
-    
-    //set the values of the node from the brush.
-    return_value->set_from_brush(brush);
-    
-    if(image!=NULL)
-      {
-        return_value->m_size=vec2(image->size());
-
-      }
-    else
-      {
-        return_value->m_size=vec2(100.0f, 100.0f);
-      }
-    //set the size of the rect widget
-    return_value->set_parameters(WRATHDefaultRectAttributePacker::rect_properties(return_value->m_size));
-    
-    return_value->z_order(m_widget_count);
-    return_value->position(vec2(m_widget_count*10, m_widget_count*10));
-    ++m_widget_count;
-    
-    return return_value;
-  }
-    
+  typedef FamilySet::PlainFamily PlainFamily;
+  typedef PlainFamily::TextWidget TextWidget;
   
-  WRATHGradient*
-  make_gradient(void);
-
-  WRATHImage*
-  make_image(const std::string&);
-
   void
   move_node(Node *pnode, float delta_t);
 
-  WRATHShaderBrushSourceHoard m_shader_hoard;
-
-  WRATHGradient *m_gradient;
-  WRATHImage *m_image;
-  int m_widget_count;
-
-  ColorFamily::RectWidget *m_colored_widget;
-  ColorLinearGradientFamily::RectWidget *m_lin_gr_widget;
-  ColorRadialGradientFamily::RectWidget *m_rad_gr_widget;
-  ImageFamily::RectWidget *m_image_widget;
-  RadialGradientImageFamily::RectWidget *m_image_rad_gr_widget;
-
+  WRATHFontShaderSpecifier *m_present_text;
+  TextWidget *m_text_widget;
 
   WRATHTripleBufferEnabler::handle m_tr;
   WRATHLayer *m_layer;
@@ -175,74 +120,10 @@ private:
 
 
 
-WRATHGradient*
-RectExample::
-make_gradient(void)
-{
-  WRATHGradient *R;
-  R=WRATHNew WRATHGradient("my gradient");
-  R->set_color(0.00f, WRATHGradient::color(1.0f, 0.0f, 0.0f, 1.0f));
-  R->set_color(0.25f, WRATHGradient::color(0.0f, 1.0f, 0.0f, 1.0f));
-  R->set_color(0.50f, WRATHGradient::color(0.0f, 0.0f, 1.0f, 1.0f));
-  R->set_color(0.75f, WRATHGradient::color(1.0f, 1.0f, 1.0f, 1.0f));
-  return R;
-}
 
-WRATHImage*
-RectExample::
-make_image(const std::string &pname)
-{
-  WRATHImage *R;
-  WRATHImage::ImageFormat fmt;
-
-  fmt
-    .internal_format(GL_RGBA)
-    .pixel_data_format(GL_RGBA)
-    .pixel_type(GL_UNSIGNED_BYTE)
-    .magnification_filter(GL_LINEAR)
-    .minification_filter(GL_LINEAR)
-    .automatic_mipmap_generation(false);
-    
-
-  R=WRATHDemo::fetch_image(pname, fmt);
-  if(R==NULL)
-    {
-      R=WRATHNew WRATHImage(std::string("failed to load\"") + pname + "\"",
-                            ivec2(2,2), 
-                            fmt);
-      
-      int num_pixels(R->size().x()*R->size().y());
-      int num_bytes(num_pixels*R->image_format(0).m_pixel_format.bytes_per_pixel());
-      std::vector<uint8_t> pixels(num_bytes);
-      c_array<uint8_t> raw_pixels(pixels);
-      c_array<vecN<uint8_t,4> > pixels_vs;
-      pixels_vs=raw_pixels.reinterpret_pointer<vecN<uint8_t,4> >();
-      
-      pixels_vs[0]=vecN<uint8_t,4>(0, 0, 0, 255);
-      pixels_vs[1]=vecN<uint8_t,4>(255, 255, 255, 255);
-      pixels_vs[2]=vecN<uint8_t,4>(255, 255, 255, 255);
-      pixels_vs[3]=vecN<uint8_t,4>(0, 0, 0, 255);
-      
-
-      R->respecify_sub_image(0, //layer,
-                             0, //LOD
-                             R->image_format(0).m_pixel_format, //pixel format
-                             pixels, //pixel data
-                             ivec2(0,0), //bottom left corner
-                             R->size());
-    }
-  
-  return R;
-}
-
-RectExample::
-RectExample(cmd_line_type *cmd_line):
+WavyTextExample::
+WavyTextExample(cmd_line_type *cmd_line):
   DemoKernel(cmd_line),
-  m_shader_hoard(WRATHGLShader::shader_source()
-                 .add_source("wobbly.vert.glsl", WRATHGLShader::from_resource),
-                 WRATHGLShader::shader_source()
-                 .add_source("wobbly.frag.glsl", WRATHGLShader::from_resource)),
-  m_widget_count(0),
   m_first_frame(true)
 {
   /*
@@ -277,30 +158,66 @@ RectExample(cmd_line_type *cmd_line):
 
   m_layer->simulation_matrix(WRATHLayer::projection_matrix, float4x4(proj_params));
 
-  m_image=make_image(cmd_line->m_image.m_value);
-  m_gradient=make_gradient();
+  /*
+    create our WRATHFontShaderSpecifier
+   */
+  m_present_text=WRATHNew WRATHFontShaderSpecifier("my custom font presenter",
+                                                   WRATHGLShader::shader_source()
+                                                   .add_source("wobbly.vert.glsl", WRATHGLShader::from_resource),
+                                                   WRATHGLShader::shader_source()
+                                                   .add_source("wobbly.frag.glsl", WRATHGLShader::from_resource));
+  /*
+    the presentation shader of wobbly.vert/frag.glsl
+    uses non-linear for position of fragment within
+    a glyph.
+   */
+  m_present_text->linear_glyph_position(false);
 
-  m_colored_widget=make_widget<ColorFamily::RectWidget>(NULL, NULL);
-  m_colored_widget->m_velocity=vec2(300.0f, 100.0f);
 
-  m_lin_gr_widget=make_widget<ColorLinearGradientFamily::RectWidget>(m_gradient, NULL);
-  m_lin_gr_widget->m_velocity=vec2(120.0f, -155.0f);
+  m_text_widget=WRATHNew TextWidget(m_layer, WRATHTextItemTypes::text_opaque);
 
-  m_rad_gr_widget=make_widget<ColorRadialGradientFamily::RectWidget>(m_gradient, NULL);
-  m_rad_gr_widget->m_velocity=vec2(-34.0f, 133.0f);
+  WRATHTextDataStream stream;
+  stream.stream() << WRATHText::set_pixel_size(cmd_line->m_pixel_size.m_value)
+                  << WRATHText::set_color(cmd_line->m_r.m_value, 
+                                          cmd_line->m_g.m_value, 
+                                          cmd_line->m_b.m_value, 
+                                          cmd_line->m_a.m_value)
+                  << WRATHText::set_font(WRATHFontDatabase::FontProperties()
+                                         .bold(cmd_line->m_bold.m_value)
+                                         .italic(cmd_line->m_italic.m_value)
+                                         .style_name(cmd_line->m_style.m_value),
+                                         type_tag<FontType>())
+                  << WRATHText::set_font_shader(m_present_text);
 
-  m_image_rad_gr_widget=make_widget<RadialGradientImageFamily::RectWidget>(m_gradient, m_image);  
-  m_image_rad_gr_widget->m_velocity=vec2(130.0f, -220.0f);
+  if(!cmd_line->m_text_from_file.m_value)
+    {
+      stream.stream() << "\n" << cmd_line->m_text.m_value << "\n";
+    }
+  else
+    {
+      std::ifstream file(cmd_line->m_text.m_value.c_str());
+      if(!file)
+        {
+          stream.stream() << "\nUnable to open file \""
+                          << cmd_line->m_text.m_value
+                          << "\" for reading";
+        }
+      else
+        {
+          stream.stream() << file.rdbuf();
+        }
+    }
 
-  m_image_widget=make_widget<ImageFamily::RectWidget>(NULL, m_image);
-  m_image_widget->m_velocity=vec2(80.0f, 60.0f);
+  m_text_widget->add_text(stream);
+  m_text_widget->position(vec2(0.0f, 0.0f));
 
+   
                     
-  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glClearColor(0.0, 0.0, 0.0, 0.0);
 }
 
-RectExample::
-~RectExample()
+WavyTextExample::
+~WavyTextExample()
 {
   if(m_layer!=NULL)
     {
@@ -321,7 +238,7 @@ RectExample::
 }
 
 void
-RectExample::
+WavyTextExample::
 resize(int width, int height)
 {
   float_orthogonal_projection_params proj_params(0, width, height, 0);
@@ -330,7 +247,7 @@ resize(int width, int height)
 }
 
 void
-RectExample::
+WavyTextExample::
 move_node(Node *pnode, float delta_t)
 {
   vec2 oldp, newp;
@@ -359,16 +276,13 @@ move_node(Node *pnode, float delta_t)
   modulas=m_total_time.elapsed()%period_in_ms;
   cycle=static_cast<float>(modulas)/static_cast<float>(period_in_ms);
 
-  pnode->m_wobble_phase=cycle*M_PI*2.0f;
-
-  float mm(pnode->m_size.y()*0.23f);
-  pnode->m_wobble_magnitude= mm + 35.0f;
-
-  pnode->m_wobble_freq= pnode->m_size.x();
+  pnode->m_wobble_magnitude=0.1f;
+  pnode->m_wobble_phase=cycle*M_PI*2.0f;  
+  pnode->m_wobble_freq=2.0;
 }
 
 void 
-RectExample::
+WavyTextExample::
 paint(void)
 {
   /*
@@ -381,35 +295,8 @@ paint(void)
   secs=m_first_frame?
     0.0f:secs;
 
-  //move them around
-  move_node(m_colored_widget, secs);
-  move_node(m_lin_gr_widget, secs);
-  move_node(m_rad_gr_widget, secs);
-  move_node(m_image_widget, secs);
-  move_node(m_image_rad_gr_widget, secs);
-
-  //make the colors and gradient move around
-  int32_t e;
-  float s, c;
-  vec2 r;
-  e=m_total_time.elapsed()%4000; //4 second cycle
-
-  sincosf( static_cast<float>(e)*2.0f*M_PI/4000.0f, &s, &c);
-  m_colored_widget->color( WRATHGradient::color(0.5f + 0.5f*s,
-                                                0.5f + 0.5f*c,
-                                                (c+s+2.0f)/4.0f,
-                                                1.0f));
-  m_lin_gr_widget->set_gradient( vec2(100.0f*c, 100.0f*s),
-                                 vec2(0.0f, c*c));
-
-  r=m_rad_gr_widget->m_size/2.0f;
-  m_rad_gr_widget->set_gradient(r - vec2(s,c)*r, 0.0f,
-                                r - vec2(s,c)*r, (c+2.0f)*std::max(r.x(), r.y()));
-
-  r=m_image_rad_gr_widget->m_size/2.0f;
-  m_image_rad_gr_widget->set_gradient(r + vec2(s,c)*r, 0.0f,
-                                      r + vec2(s,c)*r, (s+2.0f)*std::max(r.x(), r.y()));
-
+  
+  move_node(m_text_widget, secs);
 
   m_tr->signal_complete_simulation_frame();
   m_tr->signal_begin_presentation_frame();
@@ -420,7 +307,7 @@ paint(void)
 }
 
 void 
-RectExample::
+WavyTextExample::
 handle_event(FURYEvent::handle ev)
 {
   if(ev->type()==FURYEvent::Resize)
@@ -436,7 +323,7 @@ DemoKernel*
 cmd_line_type::
 make_demo(void)
 {
-  return WRATHNew RectExample(this);
+  return WRATHNew WavyTextExample(this);
 }
   
 

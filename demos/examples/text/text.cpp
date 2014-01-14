@@ -27,11 +27,6 @@
 #include "WRATHmalloc.hpp"
 #include "WRATHUtil.hpp"
 #include <stdlib.h>
-#include "WRATHShapeItem.hpp"
-#include "WRATHShapeSimpleTessellator.hpp"
-#include "WRATHDefaultFillShapeAttributePacker.hpp"
-#include "WRATHDefaultStrokeAttributePacker.hpp"
-#include "WRATHLayerItemWidgetsTranslate.hpp"
 #include "WRATHTextureFontFreeType_Mix.hpp"
 #include "WRATHFontFetch.hpp"
 #include <dirent.h>
@@ -160,8 +155,8 @@ TextExample(cmd_line_type *cmd_line):
                   << WRATHText::set_color(0, 0, 0)
                   << "Hello in pixel size 24\n"
                   << "can print other objects: " << silly_type()
-                  << "\ninfact, just overload"
-                  << "std::ostream &operator<<(std::osream&, const ObjectType&) "
+                  << "\ninfact, just overload:"
+                  << "\nstd::ostream &operator<<(std::osream&, const ObjectType&)"
                   << "\nand it will work, like integers" << some_integer
                   << "\nIO manipulators work too: " 
                   << "\nInt:" << std::setw(5) << 123 << "i"

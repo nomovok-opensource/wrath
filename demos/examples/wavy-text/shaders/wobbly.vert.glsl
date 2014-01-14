@@ -93,7 +93,7 @@ void
 shader_main(void)
 {
   highp vec2 frag_pos;
-  highp vec2 clipped_normalized, offset;
+  highp vec2 clipped_normalized, abs_clipped_normalized, offset;
 
 
   /*
@@ -121,26 +121,56 @@ shader_main(void)
     is provided to allow for the vertex shader to provide
     clipping a quad against a quad;
 
-    note that we inflate glyph_normalized_coordinate, this
-    is so that we have additional room on the quad
-    to distort the glyph, we inflate from [0,1] to
-    [-0.5, 1.5]
+    The value of the normalzed y-coordinate, as noted in the
+    description is signed, it is -1 on the top of the
+    glyph when the y-coordinate is considered to 
+    increased downward the screen, our wobling though
+    is only in the x-direction, and that normalized coordinate
+    is 0 on the left and 1 on the right always.
    */
   vec2 inflated_normalized, sz;
+  float rr;
 
-  inflated_normalized=2.0*glyph_normalized_coordinate - vec2(0.5, 0.5);
+  inflated_normalized=glyph_normalized_coordinate;
   sz=glyph_size_and_bottom_left.xy*glyph_stretch.xy*pos.w;
-  clipped_normalized=compute_clipped_normalized_coordinate(glyph_normalized_coordinate,
-                                                           pos.xy - 0.5*sz, 
-                                                           sz);
+
+
+  /*
+    we need to inflce the quad on the left and right
+    by the amplitude of the wave (this is because the
+    amplitude is realtive to the glyph size), the
+    mapping is [0,1] --> [-rr, 1+rr]
+   */
+  rr=fetch_node_value(wobbly_magnitude);
+  inflated_normalized.x=(1.0+2.0*rr)*inflated_normalized.x - rr;
+ 
+  /*
+    now that we have adjusted the normalized coordinate,
+    we can get the normalized coordinate after clipping
+   */
+  clipped_normalized=compute_clipped_normalized_coordinate(inflated_normalized,
+                                                           pos.xy, 
+                                                           sz);  
+  
+  /*
+    recall that the y-coordinate can be -1 if the y-axis
+    increases on the screen downwards, we need to make it
+    positive to correctly get the correct position 
+    within the glyph.
+  */
+  abs_clipped_normalized=vec2(clipped_normalized.x, abs(clipped_normalized.y));
+
   /*
     forward the glyph size and linear position to
     the fragment shader
    */
-  glyph_linear_position_and_size.xy=clipped_normalized*glyph_size_and_bottom_left.xy;
+  glyph_linear_position_and_size.xy=abs_clipped_normalized * glyph_size_and_bottom_left.xy;
   glyph_linear_position_and_size.zw=glyph_size_and_bottom_left.xy;
 
-  gl_Position=compute_gl_position(vec3(pos.xy + glyph_linear_position_and_size.xy, 
-                                       pos.z));
+  wrath_font_prepare_glyph_vs(glyph_size_and_bottom_left.zw,
+                              glyph_size_and_bottom_left.xy);
+
+  offset=sz*clipped_normalized;
+  gl_Position=compute_gl_position(vec3(pos.xy + offset, pos.z));
   tex_color=color;
 }

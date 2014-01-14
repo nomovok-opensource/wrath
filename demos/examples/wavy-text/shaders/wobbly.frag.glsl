@@ -28,7 +28,8 @@ void
 shader_main(void)
 {
   mediump float coverage;
-  mediump vec2 wobbly, clamp_wobbly, in_glyph;
+  mediump vec2 wobbly;
+  mediump float in_glyph;
   mediump float amplitude, speed, phase;
 
   /*
@@ -56,17 +57,20 @@ shader_main(void)
   #endif
 
   wobbly=glyph_linear_position_and_size.xy;
-  wobbly.x += amplitude*sin( wobbly.y*speed + phase);
-  
-  clamp_wobbly=clamp(wobbly, vec2(0.0, 0.0), glyph_linear_position_and_size.zw);
-  in_glyph=step(vec2(0.0, 0.0), wobbly.xy) * step(wobbly.xy, glyph_linear_position_and_size.zw);
-  
+  wobbly.x += amplitude*glyph_linear_position_and_size.z
+    * sin( wobbly.y*speed/glyph_linear_position_and_size.w + phase);
+
+  /*
+    make sure the wobbly is still within the glyph
+   */
+  in_glyph=step(0.0, wobbly.x) * step(wobbly.x, glyph_linear_position_and_size.z);
+  wobbly.x=clamp(wobbly.x, 0.0, glyph_linear_position_and_size.z);
 
   /*
     get the coverage, then also multiply it by
     if the fragment wobbled is within the glyph
    */
-  coverage=compute_coverage(wobbly.xy)*in_glyph.x*in_glyph.y;
+  coverage=compute_coverage(wobbly.xy)*in_glyph;
   
   //multiply coverage by tex_color.a to get actual alpha
   coverage*=tex_color.a;
@@ -78,13 +82,13 @@ shader_main(void)
   #if defined(WRATH_IS_OPAQUE_PASS)
   {
     //if texel is too translucent, then the opaque pass discarded the texel
-    if(d<float(WRATH_TRANSLUCENT_THRESHOLD))
+    if(coverage<float(WRATH_TRANSLUCENT_THRESHOLD))
       discard;
   }
   #elif defined(WRATH_IS_TRANSLUCENT_PASS)
   {
-    if(d>=float(WRATH_TRANSLUCENT_THRESHOLD))
-      d=0.0;
+    if(coverage>=float(WRATH_TRANSLUCENT_THRESHOLD))
+      coverage=0.0;
   }
   #endif
 
