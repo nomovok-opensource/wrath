@@ -53,8 +53,8 @@
 /*
   Choose how the font is realized,
  */
-typedef WRATHTextureFontFreeType_Distance FontType;
-//typedef WRATHMixFontTypes<WRATHTextureFontFreeType_CurveAnalytic>::mix FontType;
+//typedef WRATHTextureFontFreeType_Distance FontType;
+typedef WRATHTextureFontFreeType_CurveAnalytic FontType;
 //typedef WRATHMixFontTypes<WRATHTextureFontFreeType_Analytic>::mix FontType;
 
 class cmd_line_type:public DemoKernelMaker
@@ -64,8 +64,9 @@ public:
   command_line_argument_value<bool> m_text_from_file;
   command_line_argument_value<int> m_r, m_g, m_b, m_a;
   command_line_argument_value<bool> m_bold, m_italic;
-  command_line_argument_value<std::string> m_style;  
+  command_line_argument_value<std::string> m_family;  
   command_line_argument_value<int> m_pixel_size, m_wrath_font_size;
+  command_line_argument_value<bool> m_show_font_file_name;
 
   cmd_line_type(void):
     m_text("Hello Wavy World\n\tscroll by panning"
@@ -79,9 +80,11 @@ public:
     m_a(255, "color_a", "Alpha component in range [0,255] of text color", *this),
     m_bold(false, "bold", "Bold text", *this),
     m_italic(false, "italic", "Italic text", *this),
-    m_style("DejaVuSans", "style", "Style of font", *this),
+    m_family("DejaVuSans", "family", "Family of font", *this),
     m_pixel_size(32, "pixel_size", "Pixel size at which to display the text", *this),
-    m_wrath_font_size(48, "wrath_font_size", "Pixel size to realize the font at", *this)
+    m_wrath_font_size(48, "wrath_font_size", "Pixel size to realize the font at", *this),
+    m_show_font_file_name(false, "show_font_file_name", 
+                          "If true also display filename of font", *this)
   {}
     
 
@@ -235,16 +238,31 @@ WavyTextExample(cmd_line_type *cmd_line):
 
   WRATHTextDataStream stream;
   stream.stream() << WRATHText::set_pixel_size(cmd_line->m_pixel_size.m_value)
-                  << WRATHText::set_color(cmd_line->m_r.m_value, 
-                                          cmd_line->m_g.m_value, 
-                                          cmd_line->m_b.m_value, 
-                                          cmd_line->m_a.m_value)
                   << WRATHText::set_font(WRATHFontDatabase::FontProperties()
                                          .bold(cmd_line->m_bold.m_value)
                                          .italic(cmd_line->m_italic.m_value)
-                                         .style_name(cmd_line->m_style.m_value),
+                                         .family_name(cmd_line->m_family.m_value),
                                          type_tag<FontType>())
                   << WRATHText::set_font_shader(m_present_text);
+
+  if(cmd_line->m_show_font_file_name.m_value)
+    {
+      WRATHTextureFont *fnt;
+      stream.stream() << "\nFont File:\""
+                      << WRATHText::set_color(255-cmd_line->m_r.m_value, 
+                                              cmd_line->m_g.m_value, 
+                                              255-cmd_line->m_b.m_value, 
+                                              cmd_line->m_a.m_value)
+                      << WRATHText::get_font(fnt);
+  
+      stream.stream() << fnt->source_font()->name()
+                      << "\"\n";
+    }
+
+  stream.stream() << WRATHText::set_color(cmd_line->m_r.m_value, 
+                                          cmd_line->m_g.m_value, 
+                                          cmd_line->m_b.m_value, 
+                                          cmd_line->m_a.m_value);
 
   if(!cmd_line->m_text_from_file.m_value)
     {
