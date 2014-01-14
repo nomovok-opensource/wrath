@@ -92,8 +92,8 @@ add_shader_source_code_specify_interpolation_implementation(enum interpolation_b
     {
       std::ostringstream ostr;
 
-      ostr << "\n#define compute_gradient compute_gradient" << suffix 
-           << "\n#define pre_compute_gradient pre_compute_gradient" << suffix << "\n";
+      ostr << "\n#define wrath_compute_gradient wrath_compute_gradient" << suffix 
+           << "\n#define wrath_pre_compute_gradient wrath_pre_compute_gradient" << suffix << "\n";
 
       for(const_c_array<std::string>::iterator iter=varyings.begin(),
             end=varyings.end(); iter!=end; ++iter)
@@ -134,8 +134,8 @@ add_shader_source_code_specify_interpolation_implementation(enum interpolation_b
     {
       std::ostringstream ostr;
 
-      ostr << "\n#undef compute_gradient"
-           << "\n#undef pre_compute_gradient\n";
+      ostr << "\n#undef wrath_compute_gradient"
+           << "\n#undef wrath_pre_compute_gradient\n";
 
 
       for(const_c_array<std::string>::iterator iter=varyings.begin(),

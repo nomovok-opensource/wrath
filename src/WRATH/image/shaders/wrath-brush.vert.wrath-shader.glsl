@@ -121,12 +121,12 @@ void wrath_shader_brush_prepare(in vec2 highp p)
   {
     #ifndef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
     {
-      wrath_brush_tex_coord.x=compute_gradient(wrath_brush_frag_pos);
+      wrath_brush_tex_coord.x=wrath_compute_gradient(wrath_brush_frag_pos);
       wrath_brush_tex_coord.y=fetch_node_value(WRATH_GRADIENT_y_coordinate);
     }
     #else
     {
-      wrath_brush_tex_coord=compute_gradient(wrath_brush_frag_pos);
+      wrath_brush_tex_coord=wrath_compute_gradient(wrath_brush_frag_pos);
     }
     #endif
   }
@@ -140,11 +140,11 @@ void wrath_shader_brush_prepare(in vec2 highp p)
 
     #ifdef WRATH_FULLY_NON_LINEAR_GRADIENT
     {
-      pre_compute_gradient();
+      wrath_pre_compute_gradient();
     }
     #else
     {
-      pre_compute_gradient(wrath_brush_frag_pos.xy);
+      wrath_pre_compute_gradient(wrath_brush_frag_pos.xy);
     }
     #endif 
   }

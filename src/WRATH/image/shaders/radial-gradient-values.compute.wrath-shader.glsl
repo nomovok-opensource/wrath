@@ -115,7 +115,7 @@
   #define r0_r0 WRATH_RADIAL_GRADIENT_varying1.w
     
 
-  WRATH_RADIAL_GRADIENT_PREC vec2 compute_gradient(in WRATH_RADIAL_GRADIENT_PREC vec2 p)
+  WRATH_RADIAL_GRADIENT_PREC vec2 wrath_compute_gradient(in WRATH_RADIAL_GRADIENT_PREC vec2 p)
   {
     WRATH_RADIAL_GRADIENT_PREC float C, BB_minus_C, sqrt_BB_minus_C, t;
     WRATH_RADIAL_GRADIENT_PREC vec2 t01, good01;
@@ -169,7 +169,7 @@
     #define A_delta_p WRATH_RADIAL_GRADIENT_varying1.zw
   #endif
 
-  WRATH_RADIAL_GRADIENT_PREC vec2 compute_gradient(in WRATH_RADIAL_GRADIENT_PREC vec2 p)
+  WRATH_RADIAL_GRADIENT_PREC vec2 wrath_compute_gradient(in WRATH_RADIAL_GRADIENT_PREC vec2 p)
   {
     #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
       WRATH_RADIAL_GRADIENT_PREC float A=fetch_node_value(WRATH_RADIAL_GRADIENT_A);

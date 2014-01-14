@@ -46,7 +46,7 @@
   \endcode
   then the gradient interpolate is computed 
   by feeding in the value q to it's
-  compute_gradient() where q is computed as 
+  wrath_compute_gradient() where q is computed as 
   follows:
   \code
   \n\n nf=  ( p - w )/s 

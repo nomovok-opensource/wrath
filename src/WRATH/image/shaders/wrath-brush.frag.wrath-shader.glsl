@@ -200,7 +200,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
   {
     mediump vec2 vv;
 
-    vv=compute_gradient(wrath_brush_frag_pos.xy);
+    vv=wrath_compute_gradient(wrath_brush_frag_pos.xy);
 
     grad_tex.x=vv.x;
     valid*=vv.y;

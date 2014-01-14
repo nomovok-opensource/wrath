@@ -38,10 +38,10 @@
  */
 
 #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
-  void pre_compute_gradient(void) {} 
+  void wrath_pre_compute_gradient(void) {} 
 #else
   shader_out WRATH_LINEAR_GRADIENT_PREC vec4 WRATH_LINEAR_GRADIENT_varying;
-  void pre_compute_gradient(void)
+  void wrath_pre_compute_gradient(void)
   {
     
     WRATH_LINEAR_GRADIENT_varying=vec4(fetch_node_value(WRATH_LINEAR_GRADIENT_p0_x),
@@ -50,9 +50,9 @@
                                        fetch_node_value(WRATH_LINEAR_GRADIENT_delta_y));   
   }
 
-  void pre_compute_gradient(in WRATH_LINEAR_GRADIENT_PREC vec2 p)
+  void wrath_pre_compute_gradient(in WRATH_LINEAR_GRADIENT_PREC vec2 p)
   {
-    pre_compute_gradient();
+    wrath_pre_compute_gradient();
   }
 #endif
 

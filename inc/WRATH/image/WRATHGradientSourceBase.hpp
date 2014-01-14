@@ -51,13 +51,13 @@ namespace WRATHGradientSourceBasePrivate
     interpolation_behaviour_t
 
   - A gradient interpolate is implemented in GLSL by
-    implementing 2 functions: <B>pre_compute_gradient()</B>
-    and <B>compute_gradient()</B>. 
+    implementing 2 functions: <B>wrath_pre_compute_gradient()</B>
+    and <B>wrath_compute_gradient()</B>. 
 
   The interpolation behavior can be linear, partially-nonlinear
   and fully non-linear. The caller requests the nature
   of the interpolation behavior. An implementation can
-  promote the interpolation behavior, where the lowest
+  promote the interpolation behavior, where the ordering is
   linear < partially-nonlinear < fully nonlinear,
   for example if partially-nonlinear is requested,
   then the implementation may choose to implement as 
@@ -68,7 +68,7 @@ namespace WRATHGradientSourceBasePrivate
   - When the interpolation behavior is linear,
     implement the function 
     \code
-    float compute_gradient(in vec2 p)
+    float wrath_compute_gradient(in vec2 p)
     \endcode
     in the vertex shader. The coordinate p
     is in item local coordinates.
@@ -77,12 +77,12 @@ namespace WRATHGradientSourceBasePrivate
   - When the interpolation behavior is partially
     non-linear, implement the function
     \code   
-    void pre_compute_gradient(in vec2 p)
+    void wrath_pre_compute_gradient(in vec2 p)
     \endcode
     in the vertex shader.\n\n 
     Also implement the function
     \code
-    vec2 compute_gradient(in vec2 p)
+    vec2 wrath_compute_gradient(in vec2 p)
     \endcode
     in the fragment shader. The coordinate p
     is in item local coordinates.
@@ -98,12 +98,12 @@ namespace WRATHGradientSourceBasePrivate
   - When the interpolation behavior is fully
     non-linear, implement the function
     \code   
-    void pre_compute_gradient(void)
+    void wrath_pre_compute_gradient(void)
     \endcode
     in the vertex shader.\n\n 
     Also implement the function
     \code
-    vec2 compute_gradient(in vec2 p)
+    vec2 wrath_compute_gradient(in vec2 p)
     \endcode
     in the fragment shader. The coordinate p
     is in item local coordinates.
@@ -120,10 +120,10 @@ namespace WRATHGradientSourceBasePrivate
   The class \ref WRATHShaderBrushSourceHoard, in implementing the 
   GLSL code for brush functions, obey the added macros WRATH_LINEAR_GRADIENT, 
   WRATH_NON_LINEAR_GRADIENT and WRATH_FULLY_NON_LINEAR_GRADIENT by adding \#ifdef's checking 
-  for those macros when calling the functions compute_gradient() 
-  and pre_compute_gradient(). These macros are added
+  for those macros when calling the functions wrath_compute_gradient() 
+  and wrath_pre_compute_gradient(). These macros are added
   by \ref add_shader_source_code_specify_interpolation() when the
-  passed parameter suffic is empty as follows:
+  passed parameter suffix is empty as follows:
   - WRATHBaseSource::linear_computation: WRATH_LINEAR_GRADIENT in vertex and fragment shader
   - WRATHBaseSource::nonlinear_computation WRATH_NON_LINEAR_GRADIENT in vertex and fragment shader
   - WRATHBaseSource::fully_nonlinear_computation WRATH_NON_LINEAR_GRADIENT and WRATH_FULLY_NON_LINEAR_GRADIENT in vertex and fragment shader
@@ -178,7 +178,7 @@ public:
     \param prec precision qaulifier to use
     \param suffix suffix to which to append to all function, macros, etc
                   added to the GLSL code, including the functions
-                  <B>compute_gradient()</B> and <B>pre_compute_gradient()</B>. 
+                  <B>wrath_compute_gradient()</B> and <B>wrath_pre_compute_gradient()</B>. 
                   A non-empty suffix indicates that the functions
                   are being chained from another function, in this
                   case none of the macros WRATH_LINEAR_GRADIENT, WRATH_NON_LINEAR_GRADIENT
@@ -222,7 +222,7 @@ protected:
     \param prec precision qaulifier to use
     \param suffix suffix to which to append to all symbols of GLSL shaders
                   that are at global scope, including the functions
-                  <B>compute_gradient()</B> and <B>pre_compute_gradient()</B>
+                  <B>wrath_compute_gradient()</B> and <B>wrath_pre_compute_gradient()</B>
    */
   virtual
   void

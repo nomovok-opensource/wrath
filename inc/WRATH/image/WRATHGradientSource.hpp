@@ -61,7 +61,7 @@ public:
     To be implemented by a dervied class
     to return the GLSL source code
     for the the function:
-    - prec return_type compute_gradient(in prec vec2 p)
+    - prec return_type wrath_compute_gradient(in prec vec2 p)
    
     where prec is one of mediump, highp or 
     an empty string as indicated by \ref
@@ -81,9 +81,9 @@ public:
     To be optionally implemented by a 
     dervied classe to return the GLSL 
     source code for the the function:
-    - void pre_compute_gradient(in prec vec2 p) when the 
+    - void wrath_pre_compute_gradient(in prec vec2 p) when the 
       interpolation behavior is \ref nonlinear_computation
-    - void pre_compute_gradient(void) when the 
+    - void wrath_pre_compute_gradient(void) when the 
       interpolation behavior is \ref fully_nonlinear_computation
 
     where prec is one of mediump, highp or 

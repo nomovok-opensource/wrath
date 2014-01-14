@@ -128,8 +128,8 @@ add_shader_source_code_specify_interpolation_implementation(enum interpolation_b
 
   suffix_for_src=suffix + "_underlying_gradient";
   varying_label="WRATH_GRADIENT_varying_window" + suffix;
-  underlying_pre_compute="pre_compute_gradient"+suffix_for_src;
-  underlying_compute="compute_gradient"+suffix_for_src;
+  underlying_pre_compute="wrath_pre_compute_gradient"+suffix_for_src;
+  underlying_compute="wrath_compute_gradient"+suffix_for_src;
   
     
   /*
@@ -154,7 +154,7 @@ add_shader_source_code_specify_interpolation_implementation(enum interpolation_b
   vs
     .add_macro("WRATH_REPEAT_GRADIENT_PREC", WRATHBaseSource::prec_string(prec))
     .add_macro("WRATH_REPEAT_GRADIENT_UNDERLYING_GRADIENT_pre_compute", underlying_pre_compute)
-    .add_macro("WRATH_REPEAT_GRADIENT_pre_compute", "pre_compute_gradient"+suffix)
+    .add_macro("WRATH_REPEAT_GRADIENT_pre_compute", "wrath_pre_compute_gradient"+suffix)
     .add_macro("WRATH_REPEAT_VARYING_LABEL", varying_label)
     .add_source("repeat-gradient.pre-compute.wrath-shader.glsl",
                 WRATHGLShader::from_resource)
@@ -170,7 +170,7 @@ add_shader_source_code_specify_interpolation_implementation(enum interpolation_b
   fs
     .add_macro("WRATH_REPEAT_GRADIENT_PREC", WRATHBaseSource::prec_string(prec))
     .add_macro("WRATH_REPEAT_GRADIENT_UNDERLYING_GRADIENT_compute", underlying_compute)
-    .add_macro("WRATH_REPEAT_GRADIENT_compute", "compute_gradient"+suffix)
+    .add_macro("WRATH_REPEAT_GRADIENT_compute", "wrath_compute_gradient"+suffix)
     .add_macro("WRATH_REPEAT_VARYING_LABEL", varying_label)
     .add_source("repeat-gradient.wrath-shader.glsl",
                 WRATHGLShader::from_resource)

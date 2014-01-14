@@ -89,18 +89,18 @@
 /*
   expected macros:
     WRATH_RADIAL_GRADIENT_PREC precision of computation
-    WRATH_RADIAL_GRADIENT_PARTIAL_LINEAR if defined do some computation in pre_compute_gradient
+    WRATH_RADIAL_GRADIENT_PARTIAL_LINEAR if defined do some computation in wrath_pre_compute_gradient
  */
 
 
 #ifdef WRATH_RADIAL_GRADIENT_PARTIAL_LINEAR
   
   #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
-    void pre_compute_gradient(in WRATH_RADIAL_GRADIENT_PREC vec2 p) {}
+    void wrath_pre_compute_gradient(in WRATH_RADIAL_GRADIENT_PREC vec2 p) {}
   #else
     shader_out WRATH_RADIAL_GRADIENT_PREC float WRATH_RADIAL_GRADIENT_varying0;
     shader_out WRATH_RADIAL_GRADIENT_PREC vec4 WRATH_RADIAL_GRADIENT_varying1;  
-    void pre_compute_gradient(in WRATH_RADIAL_GRADIENT_PREC vec2 p)
+    void wrath_pre_compute_gradient(in WRATH_RADIAL_GRADIENT_PREC vec2 p)
     {
       WRATH_RADIAL_GRADIENT_PREC vec2 pminusp0;
       WRATH_RADIAL_GRADIENT_PREC float B;
@@ -125,13 +125,13 @@
 
   #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
 
-    void pre_compute_gradient(void) {}
+    void wrath_pre_compute_gradient(void) {}
 
   #else
     shader_out WRATH_RADIAL_GRADIENT_PREC vec3 WRATH_RADIAL_GRADIENT_varying0;
     shader_out WRATH_RADIAL_GRADIENT_PREC vec4 WRATH_RADIAL_GRADIENT_varying1;
 
-    void pre_compute_gradient(void) 
+    void wrath_pre_compute_gradient(void) 
     {
 
       WRATH_RADIAL_GRADIENT_varying0=vec3(fetch_node_value(WRATH_RADIAL_GRADIENT_A),
