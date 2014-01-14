@@ -21,12 +21,6 @@
 #include "WRATHConfig.hpp"
 #include "WRATHShaderBrushSourceHoard.hpp"
 
-/*
-  TODO:
-    1) make all macro's prefix with WRATH_BRUSH_...
-    2) add #undefs for all added macros that are not described
-       in the doxytag of WRATHShaderBrushSourceHoard
- */
 
 namespace
 {
@@ -104,19 +98,19 @@ namespace
 
     
 
-    add_flag(brush.anti_alias(), "AA_HINT", dest);
-    add_flag(brush.image_alpha_test(), "IMAGE_ALPHA_TEST", dest);
-    add_flag(brush.gradient_alpha_test(), "GRADIENT_ALPHA_TEST", dest);
-    add_flag(brush.color_alpha_test(), "CONST_COLOR_ALPHA_TEST", dest);
-    add_flag(brush.final_color_alpha_test(), "FINAL_ALPHA_TEST", dest);
-    add_flag(brush.premultiply_alpha(), "PREMULTIPLY_ALPHA", dest);
+    add_flag(brush.anti_alias(), "WRATH_BRUSH_AA_HINT", dest);
+    add_flag(brush.image_alpha_test(), "WRATH_BRUSH_IMAGE_ALPHA_TEST", dest);
+    add_flag(brush.gradient_alpha_test(), "WRATH_BRUSH_GRADIENT_ALPHA_TEST", dest);
+    add_flag(brush.color_alpha_test(), "WRATH_BRUSH_CONST_COLOR_ALPHA_TEST", dest);
+    add_flag(brush.final_color_alpha_test(), "WRATH_BRUSH_FINAL_ALPHA_TEST", dest);
+    add_flag(brush.premultiply_alpha(), "WRATH_BRUSH_PREMULTIPLY_ALPHA", dest);
     add_flag(brush.gradient_interpolate_enforce_positive(), 
-             "GRADIENT_INTERPOLATE_RANGE_ENFORCE_POSITIVE", dest);
+             "WRATH_BRUSH_GRADIENT_INTERPOLATE_RANGE_ENFORCE_POSITIVE", dest);
     add_flag(brush.gradient_interpolate_enforce_greater_than_one(), 
-             "GRADIENT_INTERPOLATE_RANGE_ENFORCE_LESS_THAN_ONE", dest);
+             "WRATH_BRUSH_GRADIENT_INTERPOLATE_RANGE_ENFORCE_LESS_THAN_ONE", dest);
     add_flag(brush.gradient_interpolate_enforce_by_blend(), 
-             "GRADIENT_INTERPOLATE_ENFORCE_BLEND", dest);
-    add_flag(brush.flip_image_y(), "FLIP_IMAGE_Y", dest);
+             "WRATH_BRUSH_GRADIENT_INTERPOLATE_ENFORCE_BLEND", dest);
+    add_flag(brush.flip_image_y(), "WRATH_BRUSH_FLIP_IMAGE_Y", dest);
     
     if(brush.m_gradient_source!=NULL)
       {
@@ -134,7 +128,7 @@ namespace
       }
     else if(brush_mapping==WRATHShaderBrushSourceHoard::nonlinear_brush_mapping)
       {
-        dest.add_macro("NONWRATH_LINEAR_BRUSH_PRESENT");
+        dest.add_macro("WRATH_NONLINEAR_BRUSH_PRESENT");
       }
     
     if(brush.m_texture_coordinate_source!=NULL)

@@ -88,13 +88,13 @@ shader_main(void)
     WRATHShaderBrushSourceHoard defines the macros:
     - WRATH_LINEAR_BRUSH_PRESENT if the brush is present and mapping is linear
       (thus position of brush is determined by vertex shader)
-    - NONWRATH_LINEAR_BRUSH_PRESENT if the brush is present and mapping is
+    - WRATH_NONLINEAR_BRUSH_PRESENT if the brush is present and mapping is
       to be non-linear in that the position is set in the
       fragment shader.
 
     In both cases, the function wrath_shader_brush_color() is 
     provided to get the color of the brush; 
-    for NONWRATH_LINEAR_BRUSH_PRESENT the brush position is passed,
+    for WRATH_NONLINEAR_BRUSH_PRESENT the brush position is passed,
     for WRATH_LINEAR_BRUSH_PRESENT no values is passed (because
     the brush position was determined at the vertex shader)
    */
@@ -103,7 +103,7 @@ shader_main(void)
   {
     color=wrath_shader_brush_color();
   }
-  #elif defined(NONWRATH_LINEAR_BRUSH_PRESENT)
+  #elif defined(WRATH_NONLINEAR_BRUSH_PRESENT)
   {
     color=wrath_shader_brush_color(vec2(circle_coords.z, circle_coords.w + wobble) );
   }
@@ -117,7 +117,7 @@ shader_main(void)
 
   
   
-  #ifdef PREMULTIPLY_ALPHA
+  #ifdef WRATH_BRUSH_PREMULTIPLY_ALPHA
   {
     gl_FragColor=vec4(color.xyz, 1.0)*color.w;
   }

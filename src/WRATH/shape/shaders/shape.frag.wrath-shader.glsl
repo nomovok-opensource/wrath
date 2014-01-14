@@ -18,7 +18,7 @@
 
 
 
-#ifdef AA_HINT
+#ifdef WRATH_BRUSH_AA_HINT
 shader_in mediump float aa_hint;
 #endif
 
@@ -38,10 +38,10 @@ shader_main(void)
    color=vec4(1.0, 0.0, 0.0, 1.0);
   #endif
 
-  #if defined(AA_HINT) && defined(WRATH_DERIVATIVES_SUPPORTED)
+  #if defined(WRATH_BRUSH_AA_HINT) && defined(WRATH_DERIVATIVES_SUPPORTED)
   {
     mediump float alpha, abs_aa, dd;
-    #if defined(AA_HINT_BOUNDARY_AT_ZERO)
+    #if defined(WRATH_BRUSH_AA_HINT_BOUNDARY_AT_ZERO)
     {
       /*
         in this mode, 
@@ -80,7 +80,7 @@ shader_main(void)
   }
   #endif
 
-  #ifdef PREMULTIPLY_ALPHA
+  #ifdef WRATH_BRUSH_PREMULTIPLY_ALPHA
   {
     gl_FragColor=vec4(color.xyz, 1.0)*color.w;
   }

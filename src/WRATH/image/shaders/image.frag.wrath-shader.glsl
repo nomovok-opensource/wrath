@@ -45,7 +45,7 @@ shader_main(void)
   }
   #endif
 
-  #ifdef PREMULTIPLY_ALPHA
+  #ifdef WRATH_BRUSH_PREMULTIPLY_ALPHA
   {
     gl_FragColor=vec4(color.xyz, 1.0)*color.w;
   }

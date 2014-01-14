@@ -21,17 +21,17 @@
   "control flow" via #if macros.
   
   Some notes:
-   if NONWRATH_LINEAR_BRUSH_PRESENT is defined, then 
+   if WRATH_NONLINEAR_BRUSH_PRESENT is defined, then 
    both WRATH_LINEAR_GRADIENT and LINEAR_TEXTURE_COORDINATE
    should NOT be defined.
  */
-#ifdef NONWRATH_LINEAR_BRUSH_PRESENT
+#ifdef WRATH_NONLINEAR_BRUSH_PRESENT
   #ifdef WRATH_LINEAR_GRADIENT
-  #error "WRATH_LINEAR_GRADIENT defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
+  #error "WRATH_LINEAR_GRADIENT defined with WRATH_NONLINEAR_BRUSH_PRESENT defined"
   #endif
 
   #ifdef LINEAR_TEXTURE_COORDINATE
-  #error "LINEAR_TEXTURE_COORDINATE defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
+  #error "LINEAR_TEXTURE_COORDINATE defined with WRATH_NONLINEAR_BRUSH_PRESENT defined"
   #endif
 #endif
 
@@ -45,7 +45,7 @@
 
 #ifdef WRATH_NON_LINEAR_GRADIENT
 
-  #ifndef NONWRATH_LINEAR_BRUSH_PRESENT
+  #ifndef WRATH_NONLINEAR_BRUSH_PRESENT
     #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
        shader_out mediump vec2 wrath_brush_frag_pos;
     #else
@@ -62,13 +62,13 @@
 #endif
 
 #if defined(LINEAR_TEXTURE_COORDINATE) || defined(NON_LINEAR_TEXTURE_COORDINATE)
-  #ifndef NONWRATH_LINEAR_BRUSH_PRESENT
+  #ifndef WRATH_NONLINEAR_BRUSH_PRESENT
     shader_out mediump vec2 wrath_brush_image_tex_coord;
   #endif
 uniform mediump vec2 wrath_brush_imageTextureSize; //let it be available to vertex shader too
 #endif
 
-#if defined(NON_LINEAR_TEXTURE_COORDINATE) && !defined(WRATH_NON_LINEAR_GRADIENT) && !defined(NONWRATH_LINEAR_BRUSH_PRESENT)
+#if defined(NON_LINEAR_TEXTURE_COORDINATE) && !defined(WRATH_NON_LINEAR_GRADIENT) && !defined(WRATH_NONLINEAR_BRUSH_PRESENT)
   shader_out mediump vec2 wrath_brush_frag_pos;
   #define FRAG_POS_DEFINED
 #endif
@@ -77,17 +77,17 @@ uniform mediump vec2 wrath_brush_imageTextureSize; //let it be available to vert
 shader_out CONST_COLOR_PREC vec4 wrath_brush_const_color;
 #endif
 
-#ifdef NONWRATH_LINEAR_BRUSH_PRESENT
+#ifdef WRATH_NONLINEAR_BRUSH_PRESENT
 void wrath_shader_brush_prepare(void)
 #else
 void wrath_shader_brush_prepare(in vec2 highp p)
 #endif
 {
-  #if !defined(FRAG_POS_DEFINED) && !defined(NONWRATH_LINEAR_BRUSH_PRESENT)
+  #if !defined(FRAG_POS_DEFINED) && !defined(WRATH_NONLINEAR_BRUSH_PRESENT)
     highp vec2 wrath_brush_frag_pos;
   #endif
 
-  #ifndef NONWRATH_LINEAR_BRUSH_PRESENT
+  #ifndef WRATH_NONLINEAR_BRUSH_PRESENT
   {
     wrath_brush_frag_pos.xy=p;
   }
@@ -99,7 +99,7 @@ void wrath_shader_brush_prepare(in vec2 highp p)
   }
   #elif defined(NON_LINEAR_TEXTURE_COORDINATE)
   {
-    #ifndef NONWRATH_LINEAR_BRUSH_PRESENT
+    #ifndef WRATH_NONLINEAR_BRUSH_PRESENT
     {
       wrath_brush_image_tex_coord=wrath_brush_frag_pos/wrath_brush_imageTextureSize;
     }

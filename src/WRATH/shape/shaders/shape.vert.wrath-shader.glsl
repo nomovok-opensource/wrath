@@ -28,7 +28,7 @@
 // .xy: location in UI co-ordinates (2D)
 shader_in mediump vec2 pos;
 
-#ifdef AA_HINT
+#ifdef WRATH_BRUSH_AA_HINT
 shader_in mediump float in_aa_hint;
 shader_out mediump float aa_hint;
 #endif
@@ -36,7 +36,7 @@ shader_out mediump float aa_hint;
 void
 shader_main(void)
 {
-  #ifdef AA_HINT
+  #ifdef WRATH_BRUSH_AA_HINT
   {
     aa_hint=in_aa_hint;
   }

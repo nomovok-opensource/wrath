@@ -62,7 +62,7 @@ compute_texture_coordinate(in WRATH_IMAGE_REPEAT_MODE_PREC vec2 p)
   return_value.x=WRATH_IMAGE_REPEAT_MODE_X(q.x);
   return_value.y=WRATH_IMAGE_REPEAT_MODE_Y(q.y);
   
-  #ifdef FLIP_IMAGE_Y
+  #ifdef WRATH_BRUSH_FLIP_IMAGE_Y
   {
     return_value.y = 1.0 - return_value.y;
   }

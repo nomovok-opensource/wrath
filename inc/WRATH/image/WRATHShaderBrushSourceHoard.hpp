@@ -212,30 +212,30 @@ public:
     \ref brush_mapping_t for those functions.
    
     The bits that are up in the WRATHShaderBrush add macros
-    - AA_HINT is added if WRATHShaderBrush::anti_alias() is true
-    - IMAGE_ALPHA_TEST is added if WRATHShaderBrush::image_alpha_test() is true
-    - GRADIENT_ALPHA_TEST is added if WRATHShaderBrush::gradient_alpha_test() is true
-    - CONST_COLOR_ALPHA_TEST is added if WRATHShaderBrush::color_alpha_test() is true
-    - FINAL_ALPHA_TEST is added if WRATHShaderBrush::final_color_alpha_test() is true
-    - GRADIENT_INTERPOLATE_RANGE_ENFORCE_POSITIVE is added if WRATHShaderBrush::gradient_interpolate_enforce_positive() is true
-    - GRADIENT_INTERPOLATE_RANGE_ENFORCE_LESS_THAN_ONE is added if WRATHShaderBrush::gradient_interpolate_enforce_greater_than_one() is true
-    - GRADIENT_INTERPOLATE_ENFORCE_BLEND is added if WRATHShaderBrush::gradient_interpolate_enforce_by_blend() is true
-    - FLIP_IMAGE_Y is added if WRATHShaderBrush::flip_image_y() is true
-    - PREMULTIPLY_ALPHA is added if WRATHShaderBrush::premultiply_alpha() is true
+    - WRATH_BRUSH_AA_HINT is added if WRATHShaderBrush::anti_alias() is true
+    - WRATH_BRUSH_IMAGE_ALPHA_TEST is added if WRATHShaderBrush::image_alpha_test() is true
+    - WRATH_BRUSH_GRADIENT_ALPHA_TEST is added if WRATHShaderBrush::gradient_alpha_test() is true
+    - WRATH_BRUSH_CONST_COLOR_ALPHA_TEST is added if WRATHShaderBrush::color_alpha_test() is true
+    - WRATH_BRUSH_FINAL_ALPHA_TEST is added if WRATHShaderBrush::final_color_alpha_test() is true
+    - WRATH_BRUSH_GRADIENT_INTERPOLATE_RANGE_ENFORCE_POSITIVE is added if WRATHShaderBrush::gradient_interpolate_enforce_positive() is true
+    - WRATH_BRUSH_GRADIENT_INTERPOLATE_RANGE_ENFORCE_LESS_THAN_ONE is added if WRATHShaderBrush::gradient_interpolate_enforce_greater_than_one() is true
+    - WRATH_BRUSH_GRADIENT_INTERPOLATE_ENFORCE_BLEND is added if WRATHShaderBrush::gradient_interpolate_enforce_by_blend() is true
+    - WRATH_BRUSH_FLIP_IMAGE_Y is added if WRATHShaderBrush::flip_image_y() is true
+    - WRATH_BRUSH_PREMULTIPLY_ALPHA is added if WRATHShaderBrush::premultiply_alpha() is true
 
     The shader brush color computation is affected as follows:
-    - if GRADIENT_INTERPOLATE_RANGE_ENFORCE_POSITIVE, then the gradient interpolate
+    - if WRATH_BRUSH_GRADIENT_INTERPOLATE_RANGE_ENFORCE_POSITIVE, then the gradient interpolate
       is not in range whenever it is negative
-    - if GRADIENT_INTERPOLATE_RANGE_ENFORCE_LESS_THAN_ONE, then the gradient interpolate
+    - if WRATH_BRUSH_GRADIENT_INTERPOLATE_RANGE_ENFORCE_LESS_THAN_ONE, then the gradient interpolate
       is not in range whenever it is greater than one
-    - if GRADIENT_INTERPOLATE_ENFORCE_BLEND, then the alpha value is 0 if the gradient
+    - if WRATH_BRUSH_GRADIENT_INTERPOLATE_ENFORCE_BLEND, then the alpha value is 0 if the gradient
       interpolate is not in range
-    - if GRADIENT_INTERPOLATE_ENFORCE_BLEND is false and if the gradient interpolate
+    - if WRATH_BRUSH_GRADIENT_INTERPOLATE_ENFORCE_BLEND is false and if the gradient interpolate
       is not within range, then the brush would discard is issued
-    - if IMAGE_ALPHA_TEST, then the brush would discard is issued for when image alpha is less than 0.5
-    - if GRADIENT_ALPHA_TEST, then the brush would discard is issued for when gradient alpha is less than 0.5
-    - if CONST_COLOR_ALPHA_TEST, then the brush would discard is issued if the const color alpha is less than 0.5
-    - if FINAL_ALPHA_TEST, then the brush would discrad is issued if the final brush color is less than 0.5
+    - if WRATH_BRUSH_IMAGE_ALPHA_TEST, then the brush would discard is issued for when image alpha is less than 0.5
+    - if WRATH_BRUSH_GRADIENT_ALPHA_TEST, then the brush would discard is issued for when gradient alpha is less than 0.5
+    - if WRATH_BRUSH_CONST_COLOR_ALPHA_TEST, then the brush would discard is issued if the const color alpha is less than 0.5
+    - if WRATH_BRUSH_FINAL_ALPHA_TEST, then the brush would discrad is issued if the final brush color is less than 0.5
     - if the brush may issue a discard then WRATH_BRUSH_ISSUES_DISCARD is defined
 
     The color computation function <B>vec4 wrath_shader_brush_color(out float)</B>
@@ -246,13 +246,13 @@ public:
     (for non-linear) do issue a discard.
 
     The brush color function NEVER pre-multiplies the alpha color, even when
-    PREMULTIPLY_ALPHA is true. The purpose of PREMULTIPLY_ALPHA is for a shader
+    WRATH_BRUSH_PREMULTIPLY_ALPHA is true. The purpose of WRATH_BRUSH_PREMULTIPLY_ALPHA is for a shader
     that uses the brush to pre-multiply the color itself.
 
     If an image is present the macro WRATH_BRUSH_IMAGE_PRESENT is added.
     If a gradient is present the macro WRATH_BRUSH_GRADIENT_PRESENT is added.
     Adds the macro WRATH_LINEAR_BRUSH_PRESENT if brush_mapping is linear_brush_mapping,
-    adds the macro NONWRATH_LINEAR_BRUSH_PRESENT if brush_mapping is nonlinear_brush_mapping
+    adds the macro WRATH_NONLINEAR_BRUSH_PRESENT if brush_mapping is nonlinear_brush_mapping
 
     Adds the macro WRATH_BRUSH_IMAGE_PRESENT if an image is in the brush 
     (see \ref WRATHShaderBrush::m_texture_coordinate_source).

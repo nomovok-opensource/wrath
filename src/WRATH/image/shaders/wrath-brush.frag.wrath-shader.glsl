@@ -22,23 +22,23 @@
   "control flow" via #if macros.
   
   Some notes:
-   if NONWRATH_LINEAR_BRUSH_PRESENT is defined, then 
+   if WRATH_NONLINEAR_BRUSH_PRESENT is defined, then 
    both WRATH_LINEAR_GRADIENT and LINEAR_TEXTURE_COORDINATE
    are NOT defined.
  */
-#ifdef NONWRATH_LINEAR_BRUSH_PRESENT
+#ifdef WRATH_NONLINEAR_BRUSH_PRESENT
   #ifdef WRATH_LINEAR_GRADIENT
-  #error "WRATH_LINEAR_GRADIENT defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
+  #error "WRATH_LINEAR_GRADIENT defined with WRATH_NONLINEAR_BRUSH_PRESENT defined"
   #endif
 
   #ifdef WRATH_NON_LINEAR_GRADIENT
     #ifndef WRATH_FULLY_NON_LINEAR_GRADIENT
-      #error "WRATH_NON_LINEAR_GRADIENT defined but WRATH_FULLY_NON_LINEAR_GRADIENT not defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
+      #error "WRATH_NON_LINEAR_GRADIENT defined but WRATH_FULLY_NON_LINEAR_GRADIENT not defined with WRATH_NONLINEAR_BRUSH_PRESENT defined"
     #endif
   #endif   
 
   #ifdef LINEAR_TEXTURE_COORDINATE
-  #error "LINEAR_TEXTURE_COORDINATE defined with NONWRATH_LINEAR_BRUSH_PRESENT defined"
+  #error "LINEAR_TEXTURE_COORDINATE defined with WRATH_NONLINEAR_BRUSH_PRESENT defined"
   #endif
 #endif
 
@@ -53,7 +53,7 @@
 
 #ifdef WRATH_NON_LINEAR_GRADIENT
   uniform mediump sampler2D wrath_brush_gradientTexture;
-  #ifndef NONWRATH_LINEAR_BRUSH_PRESENT
+  #ifndef WRATH_NONLINEAR_BRUSH_PRESENT
     #ifdef WRATH_GL_FRAGMENT_SHADER_ITEM_VALUE_FETCH_OK
        shader_in mediump vec2 wrath_brush_frag_pos;
     #else
@@ -74,7 +74,7 @@
 #if defined(LINEAR_TEXTURE_COORDINATE) || defined(NON_LINEAR_TEXTURE_COORDINATE)
   uniform mediump sampler2D wrath_brush_imageTexture;
   uniform mediump vec2 wrath_brush_imageTextureSize;
-  #ifndef NONWRATH_LINEAR_BRUSH_PRESENT
+  #ifndef WRATH_NONLINEAR_BRUSH_PRESENT
     shader_in mediump vec2 wrath_brush_image_tex_coord;
   #endif
 #endif
@@ -84,7 +84,7 @@
 #endif
 
 
-#ifdef NONWRATH_LINEAR_BRUSH_PRESENT
+#ifdef WRATH_NONLINEAR_BRUSH_PRESENT
 mediump vec4 wrath_shader_brush_color(in mediump vec2 wrath_brush_frag_pos, out mediump float valid)
 #else
 mediump vec4 wrath_shader_brush_color(out mediump float valid)
@@ -97,7 +97,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
 
   valid=1.0;
 
-  #if defined(NONWRATH_LINEAR_BRUSH_PRESENT) && defined(NON_LINEAR_TEXTURE_COORDINATE)
+  #if defined(WRATH_NONLINEAR_BRUSH_PRESENT) && defined(NON_LINEAR_TEXTURE_COORDINATE)
 
   mediump vec2 wrath_brush_image_tex_coord;
   wrath_brush_image_tex_coord=wrath_brush_frag_pos.xy/wrath_brush_imageTextureSize;
@@ -107,7 +107,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
   #if defined(CONST_COLOR_FS)
   {  
     color=const_color_value();
-    #if defined(CONST_COLOR_ALPHA_TEST)
+    #if defined(WRATH_BRUSH_CONST_COLOR_ALPHA_TEST)
     {
       if(color.w<0.5)
         valid=0.0;
@@ -117,7 +117,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
   #elif defined(CONST_COLOR_VS)
   {
     color=wrath_brush_const_color;
-    #if defined(CONST_COLOR_ALPHA_TEST)
+    #if defined(WRATH_BRUSH_CONST_COLOR_ALPHA_TEST)
     {
       if(color.w<0.5)
         valid=0.0;
@@ -172,7 +172,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
     }
     #endif
 
-    #ifdef IMAGE_ALPHA_TEST
+    #ifdef WRATH_BRUSH_IMAGE_ALPHA_TEST
     {
       if(image_color.w<0.5)
         valid=0.0;
@@ -221,16 +221,16 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
 
   #ifdef HAVE_GRADIENT
   {
-    #ifdef GRADIENT_INTERPOLATE_ENFORCE_BLEND
+    #ifdef WRATH_BRUSH_GRADIENT_INTERPOLATE_ENFORCE_BLEND
     {
-      #ifdef GRADIENT_INTERPOLATE_RANGE_ENFORCE_POSITIVE
+      #ifdef WRATH_BRUSH_GRADIENT_INTERPOLATE_RANGE_ENFORCE_POSITIVE
       {
         if(grad_tex.x<0.0)
           color=vec4(0.0, 0.0, 0.0, 0.0);
       }
       #endif
 
-      #ifdef GRADIENT_INTERPOLATE_RANGE_ENFORCE_LESS_THAN_ONE
+      #ifdef WRATH_BRUSH_GRADIENT_INTERPOLATE_RANGE_ENFORCE_LESS_THAN_ONE
       {
         if(grad_tex.x>1.0)
           color=vec4(0.0, 0.0, 0.0, 0.0);
@@ -239,14 +239,14 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
     }
     #else
     {
-      #ifdef GRADIENT_INTERPOLATE_RANGE_ENFORCE_POSITIVE
+      #ifdef WRATH_BRUSH_GRADIENT_INTERPOLATE_RANGE_ENFORCE_POSITIVE
       {
         if(grad_tex.x<0.0)
           valid=0.0;
       }
       #endif
 
-      #ifdef GRADIENT_INTERPOLATE_RANGE_ENFORCE_LESS_THAN_ONE
+      #ifdef WRATH_BRUSH_GRADIENT_INTERPOLATE_RANGE_ENFORCE_LESS_THAN_ONE
       {
         if(grad_tex.x>1.0)
           valid=0.0;
@@ -257,7 +257,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
 
     grad_color=texture2D(wrath_brush_gradientTexture, grad_tex);
   
-    #ifdef GRADIENT_ALPHA_TEST
+    #ifdef WRATH_BRUSH_GRADIENT_ALPHA_TEST
     {
       if(grad_color.w<0.5)
         valid=0.0;
@@ -268,7 +268,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
   }
   #endif
 
-  #if defined(FINAL_ALPHA_TEST)
+  #if defined(WRATH_BRUSH_FINAL_ALPHA_TEST)
   {
     if(color.w<0.5)
       valid=0.0;
@@ -278,7 +278,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
   return color;
 }
 
-#ifdef NONWRATH_LINEAR_BRUSH_PRESENT
+#ifdef WRATH_NONLINEAR_BRUSH_PRESENT
 
   mediump vec4 wrath_shader_brush_color(in mediump vec2 wrath_brush_frag_pos)
   {
