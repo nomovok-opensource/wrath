@@ -170,7 +170,7 @@ TextExample(cmd_line_type *cmd_line):
                   << "\nChanged the color to (222, 0, 200)"
                   << WRATHText::set_font(WRATHFontDatabase::FontProperties()
                                          .bold(true)
-                                         .style_name("DejaVuSans"))
+                                         .family_name("DejaVuSans"))
                   << "\nChanged the font to DejaVu Sans bold font\n"
                   << "\nC" << WRATHText::set_color(10, 155, 255)
                   << "h" << WRATHText::set_color(155, 0, 255)
@@ -181,7 +181,7 @@ TextExample(cmd_line_type *cmd_line):
                   << " the color at any time without affecting formatting"
                   << WRATHText::set_font(WRATHFontDatabase::FontProperties()
                                          .bold(true)
-                                         .style_name("DejaVuSans"),
+                                         .family_name("DejaVuSans"),
                                          type_tag<WRATHTextureFontFreeType_Analytic>())
                   << "\nSame font but a different realization";
 
