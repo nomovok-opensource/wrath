@@ -41,7 +41,7 @@
 
 #include "wobbly_node.hpp"
 
-typedef WRATHMixFontTypes<WRATHTextureFontFreeType_CurveAnalytic>::mix FontType;
+
 
 /*!\details
   In this example we will create a custom 
@@ -49,6 +49,13 @@ typedef WRATHMixFontTypes<WRATHTextureFontFreeType_CurveAnalytic>::mix FontType;
   glyphs. The key class for the interface
   is \ref WRATHFontShaderSpecifier
 */
+
+/*
+  Choose how the font is realized,
+ */
+typedef WRATHTextureFontFreeType_Distance FontType;
+//typedef WRATHMixFontTypes<WRATHTextureFontFreeType_CurveAnalytic>::mix FontType;
+//typedef WRATHMixFontTypes<WRATHTextureFontFreeType_Analytic>::mix FontType;
 
 class cmd_line_type:public DemoKernelMaker
 {
@@ -58,10 +65,12 @@ public:
   command_line_argument_value<int> m_r, m_g, m_b, m_a;
   command_line_argument_value<bool> m_bold, m_italic;
   command_line_argument_value<std::string> m_style;  
-  command_line_argument_value<int> m_pixel_size;
+  command_line_argument_value<int> m_pixel_size, m_wrath_font_size;
 
   cmd_line_type(void):
-    m_text("Hello Wavy World", "text", "Text to use for demo", *this),
+    m_text("Hello Wavy World\n\tscroll by panning"
+           "\n\tzoom by holding then panning",
+           "text", "Text to use for demo", *this),
     m_text_from_file(false, "text_from_file", 
                      "If true, text command line paramater indicates text file to display", *this),
     m_r(255, "color_r", "Red component in range [0,255] of text color", *this),
@@ -71,7 +80,8 @@ public:
     m_bold(false, "bold", "Bold text", *this),
     m_italic(false, "italic", "Italic text", *this),
     m_style("DejaVuSans", "style", "Style of font", *this),
-    m_pixel_size(32, "pixel_size", "Pixel size at which to display the text", *this)
+    m_pixel_size(32, "pixel_size", "Pixel size at which to display the text", *this),
+    m_wrath_font_size(48, "wrath_font_size", "Pixel size to realize the font at", *this)
   {}
     
 
@@ -220,6 +230,8 @@ WavyTextExample(cmd_line_type *cmd_line):
 
 
   m_text_widget=WRATHNew TextWidget(m_node_widget, WRATHTextItemTypes::text_opaque);
+
+  WRATHFontFetch::default_font_pixel_size(cmd_line->m_wrath_font_size.m_value);
 
   WRATHTextDataStream stream;
   stream.stream() << WRATHText::set_pixel_size(cmd_line->m_pixel_size.m_value)
