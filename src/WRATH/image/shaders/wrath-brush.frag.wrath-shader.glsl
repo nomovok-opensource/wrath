@@ -79,7 +79,7 @@
   #endif
 #endif
 
-#ifdef CONST_COLOR_VS
+#ifdef WRATH_CONST_COLOR_VS
   shader_in mediump vec4 wrath_brush_const_color;
 #endif
 
@@ -104,9 +104,9 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
 
   #endif
 
-  #if defined(CONST_COLOR_FS)
+  #if defined(WRATH_CONST_COLOR_FS)
   {  
-    color=const_color_value();
+    color=wrath_const_color_value();
     #if defined(WRATH_BRUSH_CONST_COLOR_ALPHA_TEST)
     {
       if(color.w<0.5)
@@ -114,7 +114,7 @@ mediump vec4 wrath_shader_brush_color(out mediump float valid)
     }  
     #endif
   }
-  #elif defined(CONST_COLOR_VS)
+  #elif defined(WRATH_CONST_COLOR_VS)
   {
     color=wrath_brush_const_color;
     #if defined(WRATH_BRUSH_CONST_COLOR_ALPHA_TEST)

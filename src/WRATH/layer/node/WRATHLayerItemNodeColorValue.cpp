@@ -29,7 +29,7 @@ namespace
     std::ostringstream ostr;
 
     ostr << "\n\n" << prec << " vec4\n"
-         << "const_color_value(void)"
+         << "wrath_const_color_value(void)"
          << "\n{\n" 
          << "\n\treturn vec4(fetch_node_value(WRATH_LAYER_ITEM_NODE_CONST_COLOR_RED),"
          << "\n\t                               WRATH_LAYER_ITEM_NODE_CONST_COLOR_GREEN,"

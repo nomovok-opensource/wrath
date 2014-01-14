@@ -38,15 +38,15 @@
 
   WRATHColorValueSource implements add_shader_source_code()
   as follows:
-  - if the bit \ref WRATHColorValueSource::fragment_shader_fetchable from \ref shader_useablity_flags()
-    is up, then the macro CONST_COLOR_FS is added to both the vertex
-    and fragment shader and the fragment shader abosrbs the GLSL code
-    from \ref shader_code()
-  - if the bit \ref WRATHColorValueSource::vertex_shader_fetchable from \ref shader_useablity_flags()
-    is up, then the macro CONST_COLOR_VS is added to both the vertex
-    and vertex shader and the fragment shader abosrbs the GLSL code
-    from \ref shader_code()
-  - the macro CONST_COLOR_PREC is added which is defined as the precision
+  - if the bit \ref WRATHColorValueSource::fragment_shader_fetchable 
+    from \ref shader_useablity_flags() is up, then the macro 
+    WRATH_CONST_COLOR_FS is added to the fragment shader and the 
+    fragment shader abosrbs the GLSL code from \ref shader_code()
+  - if the bit \ref WRATHColorValueSource::vertex_shader_fetchable 
+    from \ref shader_useablity_flags() is up, then the macro 
+    WRATH_CONST_COLOR_VS is added to the vertex shader and the 
+    vertex shader abosrbs the GLSL code from \ref shader_code()
+  - the macro WRATH_CONST_COLOR_PREC is added which is defined as the precision
     type
 
   A fixed WRATHColorValueSource is to
@@ -100,7 +100,7 @@ public:
     To be implemented by a derived class
     to return the GLSL source code
     for the the function:
-    - prec vec4 const_color_value(void);
+    - prec vec4 wrath_const_color_value(void);
 
     where prec is the correct precision qualifier
     coming from the parameter v.

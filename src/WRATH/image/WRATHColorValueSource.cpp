@@ -28,9 +28,9 @@ add_shader_source_code_implement(std::map<GLenum, WRATHGLShader::shader_source> 
                                  enum precision_t prec, const std::string &suffix) const
 {
   uint32_t flags(shader_useablity_flags());
-  std::string CONST_COLOR_PREC("CONST_COLOR_PREC");
-  std::string CONST_COLOR_VS("CONST_COLOR_VS");
-  std::string CONST_COLOR_FS("CONST_COLOR_FS");
+  std::string WRATH_CONST_COLOR_PREC("WRATH_CONST_COLOR_PREC");
+  std::string WRATH_CONST_COLOR_VS("WRATH_CONST_COLOR_VS");
+  std::string WRATH_CONST_COLOR_FS("WRATH_CONST_COLOR_FS");
 
   WRATHGLShader::shader_source &vs(src[GL_VERTEX_SHADER]);
   WRATHGLShader::shader_source &fs(src[GL_FRAGMENT_SHADER]);
@@ -45,11 +45,11 @@ add_shader_source_code_implement(std::map<GLenum, WRATHGLShader::shader_source> 
     {
       std::ostringstream ostr;
 
-      ostr << "\n#define const_color_value const_color_value" << suffix << "\n\n";
+      ostr << "\n#define wrath_const_color_value wrath_const_color_value" << suffix << "\n\n";
 
-      CONST_COLOR_PREC=CONST_COLOR_PREC+suffix;
-      CONST_COLOR_VS=CONST_COLOR_VS+suffix;
-      CONST_COLOR_FS=CONST_COLOR_FS+suffix;
+      WRATH_CONST_COLOR_PREC=WRATH_CONST_COLOR_PREC+suffix;
+      WRATH_CONST_COLOR_VS=WRATH_CONST_COLOR_VS+suffix;
+      WRATH_CONST_COLOR_FS=WRATH_CONST_COLOR_FS+suffix;
 
       vs
         .add_source(ostr.str(), WRATHGLShader::from_string);
@@ -60,36 +60,36 @@ add_shader_source_code_implement(std::map<GLenum, WRATHGLShader::shader_source> 
 
 
   vs
-    .add_macro(CONST_COLOR_PREC, prec_labels[prec]);
+    .add_macro(WRATH_CONST_COLOR_PREC, prec_labels[prec]);
 
   fs
-    .add_macro(CONST_COLOR_PREC, prec_labels[prec]);
+    .add_macro(WRATH_CONST_COLOR_PREC, prec_labels[prec]);
 
   if(flags&fragment_shader_fetchable)
     {
       vs
-        .add_macro(CONST_COLOR_FS);
+        .add_macro(WRATH_CONST_COLOR_FS);
 
       fs
-        .add_macro(CONST_COLOR_FS)
+        .add_macro(WRATH_CONST_COLOR_FS)
         .absorb(shader_code(prec));
     }
 
   if(flags&vertex_shader_fetchable)
     {
       vs
-        .add_macro(CONST_COLOR_VS)
+        .add_macro(WRATH_CONST_COLOR_VS)
         .absorb(shader_code(prec));
 
       fs
-        .add_macro(CONST_COLOR_VS);
+        .add_macro(WRATH_CONST_COLOR_VS);
     }
 
   if(!suffix.empty())
     {
       std::ostringstream ostr;
 
-      ostr << "\n#undef const_color_value\n";
+      ostr << "\n#undef wrath_const_color_value\n";
 
       vs
         .add_source(ostr.str(), WRATHGLShader::from_string);

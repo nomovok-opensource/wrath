@@ -73,8 +73,8 @@ uniform mediump vec2 wrath_brush_imageTextureSize; //let it be available to vert
   #define FRAG_POS_DEFINED
 #endif
 
-#if defined(CONST_COLOR_VS) && !defined(CONST_COLOR_FS)
-shader_out CONST_COLOR_PREC vec4 wrath_brush_const_color;
+#if defined(WRATH_CONST_COLOR_VS) && !defined(WRATH_CONST_COLOR_FS)
+shader_out WRATH_CONST_COLOR_PREC vec4 wrath_brush_const_color;
 #endif
 
 #ifdef WRATH_NONLINEAR_BRUSH_PRESENT
@@ -150,9 +150,9 @@ void wrath_shader_brush_prepare(in vec2 highp p)
   }
   #endif
 
-  #if defined(CONST_COLOR_VS) && !defined(CONST_COLOR_FS)
+  #if defined(WRATH_CONST_COLOR_VS) && !defined(WRATH_CONST_COLOR_FS)
   {
-    wrath_brush_const_color=const_color_value();
+    wrath_brush_const_color=wrath_const_color_value();
   }
   #endif  
 }
