@@ -225,8 +225,8 @@ wrath_curve_analytic_compute_quasi_distance(in vec2 GlyphCoordinate,
 
     #ifdef WRATH_CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND
     {
-      Ma_Pa.xy=float_texture2D_2channel(M_P_Texture, dependent_tex);
-      Ma_Pa.zw=float_texture2D_2channel(M_P_Texture_2nd, dependent_tex);
+      Ma_Pa.xy=float_texture2D_2channel(wrath_CurveAnalyticM_P_Texture, dependent_tex);
+      Ma_Pa.zw=float_texture2D_2channel(wrath_CurveAnalyticM_P_Texture_2nd, dependent_tex);
     }
     #else
     {
@@ -234,7 +234,7 @@ wrath_curve_analytic_compute_quasi_distance(in vec2 GlyphCoordinate,
     }
     #endif
 
-    Qa=float_texture2D_2channel(QTexture, dependent_tex);
+    Qa=float_texture2D_2channel(wrath_CurveAnalyticQTexture, dependent_tex);
     #ifdef WRATH_CURVE_ANALYTIC_STORE_SCALING
     {
       QaScale=float_texture2D(wrath_CurveAnalyticScaleTexture, dependent_tex).r;
@@ -245,8 +245,8 @@ wrath_curve_analytic_compute_quasi_distance(in vec2 GlyphCoordinate,
     dependent_tex2.x=(255.0*dependent_tex2.x + 0.5)/256.0;
     #ifdef WRATH_CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND
     {
-      Mb_Pb.xy=float_texture2D_2channel(M_P_Texture, dependent_tex2);
-      Mb_Pb.zw=float_texture2D_2channel(M_P_Texture_2nd, dependent_tex2);
+      Mb_Pb.xy=float_texture2D_2channel(wrath_CurveAnalyticM_P_Texture, dependent_tex2);
+      Mb_Pb.zw=float_texture2D_2channel(wrath_CurveAnalyticM_P_Texture_2nd, dependent_tex2);
     }
     #else
     {
@@ -255,7 +255,7 @@ wrath_curve_analytic_compute_quasi_distance(in vec2 GlyphCoordinate,
     #endif
     
     
-    Qb=float_texture2D_2channel(QTexture, dependent_tex2);
+    Qb=float_texture2D_2channel(wrath_CurveAnalyticQTexture, dependent_tex2);
     #ifdef WRATH_CURVE_ANALYTIC_STORE_SCALING
     {
       QbScale=float_texture2D(wrath_CurveAnalyticScaleTexture, dependent_tex2).r;
@@ -319,15 +319,15 @@ wrath_curve_analytic_compute_quasi_distance(in vec2 GlyphCoordinate,
   {
     #ifdef WRATH_CURVE_ANALYTIC_TWO_CHANNEL_WORK_AROUND
     {
-      Qa_Qb.xy=float_texture2D_2channel(QTexture, dependent_tex);
-      Qa_Qb.zw=float_texture2D_2channel(QTexture_2nd, dependent_tex);
-      A0_B0_A1_B1.xy=float_texture2D_2channel(ABTexture, dependent_tex);
-      A0_B0_A1_B1.zw=float_texture2D_2channel(ABTexture_2nd, dependent_tex);
-      p2=float_texture2D_2channel(P2Texture, dependent_tex);
+      Qa_Qb.xy=float_texture2D_2channel(wrath_CurveAnalyticQTexture, dependent_tex);
+      Qa_Qb.zw=float_texture2D_2channel(wrath_CurveAnalyticQTexture_2nd, dependent_tex);
+      A0_B0_A1_B1.xy=float_texture2D_2channel(wrath_CurveAnalyticABTexture, dependent_tex);
+      A0_B0_A1_B1.zw=float_texture2D_2channel(wrath_CurveAnalyticABTexture_2nd, dependent_tex);
+      p2=float_texture2D_2channel(wrath_CurveAnalyticP2Texture, dependent_tex);
       
       #ifdef WRATH_CURVE_ANALYTIC_STORE_SCALING
       {
-        QaScale_QbScale=float_texture2D_2channel(P2Texture_2nd, dependent_tex);
+        QaScale_QbScale=float_texture2D_2channel(wrath_CurveAnalyticP2Texture_2nd, dependent_tex);
       }
       #endif
     }
@@ -343,7 +343,7 @@ wrath_curve_analytic_compute_quasi_distance(in vec2 GlyphCoordinate,
       }
       #else
       {
-        p2=float_texture2D_2channel(P2Texture, dependent_tex);
+        p2=float_texture2D_2channel(wrath_CurveAnalyticP2Texture, dependent_tex);
       }
       #endif
     }

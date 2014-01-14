@@ -32,7 +32,7 @@ compute_coverage(in vec2 GlyphCoordinate)
   glyph_texture_reciprocal_size=vec2(wrath_font_page_data(0),
                                      wrath_font_page_data(1));
 
-  GlyphTextureCoordinate=(GlyphCoordinate + wrath_CurveAnalyticBottomLeft)*glyph_recirpocal_size;
+  GlyphTextureCoordinate=(GlyphCoordinate + wrath_CurveAnalyticBottomLeft)*glyph_texture_reciprocal_size;
   d=wrath_curve_analytic_compute_quasi_distance(GlyphCoordinate,
                                                 GlyphTextureCoordinate, 
                                                 wrath_CurveAnalyticGlyphIndex);
@@ -65,7 +65,7 @@ is_covered(in vec2 GlyphCoordinate)
   glyph_texture_reciprocal_size=vec2(wrath_font_page_data(0),
                                      wrath_font_page_data(1));
 
-  GlyphTextureCoordinate=(GlyphCoordinate + wrath_CurveAnalyticBottomLeft)*glyph_recirpocal_size;
+  GlyphTextureCoordinate=(GlyphCoordinate + wrath_CurveAnalyticBottomLeft)*glyph_texture_reciprocal_size;
   d=wrath_curve_analytic_compute_quasi_distance(GlyphCoordinate,
                                                 GlyphTextureCoordinate, 
                                                 wrath_CurveAnalyticGlyphIndex);
