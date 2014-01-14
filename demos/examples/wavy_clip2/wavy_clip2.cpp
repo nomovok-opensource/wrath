@@ -186,7 +186,7 @@ public:
     m_position(pos),
     m_velocity((float)rand()/RAND_MAX*180.0f - 70.0f, 
                (float)rand()/RAND_MAX*180.0f - 70.0f),
-    m_wobble_freq(100.0f),
+    m_wobble_freq(0.01f),
     m_wobble_magnitude(1.0f),
     m_wobble_phase(0.0f)
   {
@@ -558,7 +558,7 @@ animate_ring(int i,
 
   out_phase=cycle*M_PI*2.0f;
   out_amplitude= radius/2.0f;
-  out_freq=outer_radius*2.0f;
+  out_freq=0.5f/outer_radius;
 
    
   bound_and_v(position.x(), 

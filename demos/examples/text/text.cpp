@@ -18,20 +18,22 @@
 
 
 #include "WRATHConfig.hpp"
-#include "WRATHNew.hpp"
 #include <fstream>
 #include <iomanip>
 #include <limits>
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+
 #include "vecN.hpp"
 #include "WRATHNew.hpp"
 #include "WRATHmalloc.hpp"
 #include "WRATHUtil.hpp"
-#include <stdlib.h>
 #include "WRATHTextureFontFreeType_Mix.hpp"
 #include "WRATHFontFetch.hpp"
-#include <dirent.h>
+#include "WRATHLayerItemWidgetsTranslate.hpp"
+
 #include "ngl_backend.hpp"
-#include <stdio.h>
 #include "wrath_demo.hpp"
 
 /*!

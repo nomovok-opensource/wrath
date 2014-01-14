@@ -46,14 +46,14 @@ public:
   explicit
   WobblyNode(S *p):
     BaseNode(p),
-    m_wobble_freq(100.0f),
+    m_wobble_freq(0.01f),
     m_wobble_magnitude(1.0f),
     m_wobble_phase(0.0f)
   {}
   
   WobblyNode(const WRATHTripleBufferEnabler::handle &tr):
     BaseNode(tr),
-    m_wobble_freq(100.0f),
+    m_wobble_freq(0.01f),
     m_wobble_magnitude(1.0f),
     m_wobble_phase(0.0f)
   {}
@@ -78,7 +78,7 @@ public:
     //note that we place a different value to send to GL,
     //this is because the node stores a frequency but we
     //want a coeff.
-    out_values[BaseNode::number_per_node_values + 0] = 2.0f*M_PI / m_wobble_freq;
+    out_values[BaseNode::number_per_node_values + 0] = 2.0f*M_PI * m_wobble_freq;
     out_values[BaseNode::number_per_node_values + 1] = m_wobble_magnitude;
     out_values[BaseNode::number_per_node_values + 2] = m_wobble_phase;
   }

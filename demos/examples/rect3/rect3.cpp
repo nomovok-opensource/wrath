@@ -379,7 +379,7 @@ move_node(int phase_offset, Node *pnode, float delta_t)
 
 
 
-  pnode->m_wobble_freq=pnode->m_outer_radius;
+  pnode->m_wobble_freq=1.0f/pnode->m_outer_radius;
 }
 
 void 

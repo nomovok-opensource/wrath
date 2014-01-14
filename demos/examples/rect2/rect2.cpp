@@ -364,7 +364,7 @@ move_node(Node *pnode, float delta_t)
   float mm(pnode->m_size.y()*0.23f);
   pnode->m_wobble_magnitude= mm + 35.0f;
 
-  pnode->m_wobble_freq= pnode->m_size.x();
+  pnode->m_wobble_freq= 1.0f/static_cast<float>(pnode->m_size.x());
 }
 
 void 
