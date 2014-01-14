@@ -156,3 +156,7 @@ void wrath_shader_brush_prepare(in vec2 highp p)
   }
   #endif  
 }
+
+#ifdef FRAG_POS_DEFINED
+#undef FRAG_POS_DEFINED
+#endif
