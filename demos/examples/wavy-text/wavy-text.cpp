@@ -41,7 +41,7 @@
 
 #include "wobbly_node.hpp"
 
-typedef WRATHTextureFontFreeType_CurveAnalytic FontType;
+typedef WRATHMixFontTypes<WRATHTextureFontFreeType_CurveAnalytic>::mix FontType;
 
 /*!\details
   In this example we will create a custom 
@@ -101,21 +101,61 @@ public:
   virtual void paint(void);
 
 private:
+  typedef WRATHLayerItemNodeTranslate BaseNode;
   typedef WobblyNode<WRATHLayerItemNodeTranslate> Node;
   typedef WRATHLayerItemWidget<Node>::FamilySet FamilySet; 
   typedef FamilySet::PlainFamily PlainFamily;
+  typedef PlainFamily::NodeWidget NodeWidget;
   typedef PlainFamily::TextWidget TextWidget;
+
+  
+  void
+  handle_touch_begin(vec2 pt);
+
+  void
+  handle_touch_begin(ivec2 pt)
+  {
+    handle_touch_begin(vec2(pt.x(), pt.y()));
+  }
+
+  void
+  handle_touch_end(vec2 pt);
+
+  void
+  handle_touch_end(ivec2 pt)
+  {
+    handle_touch_end(vec2(pt.x(), pt.y()));
+  }
+
+  void
+  handle_touch_move(vec2 pt, vec2 delta); 
+
+  void
+  handle_touch_move(ivec2 pt, ivec2 delta)
+  {
+    handle_touch_move(vec2(pt.x(), pt.y()),
+                      vec2(delta.x(), delta.y()));
+  }
   
   void
   move_node(Node *pnode, float delta_t);
 
   WRATHFontShaderSpecifier *m_present_text;
   TextWidget *m_text_widget;
+  NodeWidget *m_node_widget;
 
   WRATHTripleBufferEnabler::handle m_tr;
   WRATHLayer *m_layer;
   WRATHTime m_time, m_total_time;
   bool m_first_frame;
+
+  vec2 m_zoom_pivot;
+  WRATHTime m_zoom_time;
+  bool m_is_zooming, m_button_down;
+  WRATHScaleTranslate m_zoom_start_transformation;
+
+  int32_t m_zoom_gesture_begin_time;
+  float m_zoom_dividier;
 };
 
 
@@ -124,7 +164,11 @@ private:
 WavyTextExample::
 WavyTextExample(cmd_line_type *cmd_line):
   DemoKernel(cmd_line),
-  m_first_frame(true)
+  m_first_frame(true),
+  m_is_zooming(false),
+  m_button_down(false),
+  m_zoom_gesture_begin_time(500),
+  m_zoom_dividier(40.0f)
 {
   /*
     Create the WRATHTripleBufferEnabler object
@@ -137,6 +181,7 @@ WavyTextExample(cmd_line_type *cmd_line):
     draw our shape
    */
   m_layer=WRATHNew WRATHLayer(m_tr);
+  m_node_widget=WRATHNew NodeWidget(m_layer);
 
   /*
     these are the transforms that will be
@@ -174,7 +219,7 @@ WavyTextExample(cmd_line_type *cmd_line):
   m_present_text->linear_glyph_position(false);
 
 
-  m_text_widget=WRATHNew TextWidget(m_layer, WRATHTextItemTypes::text_opaque);
+  m_text_widget=WRATHNew TextWidget(m_node_widget, WRATHTextItemTypes::text_opaque);
 
   WRATHTextDataStream stream;
   stream.stream() << WRATHText::set_pixel_size(cmd_line->m_pixel_size.m_value)
@@ -310,14 +355,141 @@ void
 WavyTextExample::
 handle_event(FURYEvent::handle ev)
 {
-  if(ev->type()==FURYEvent::Resize)
+  switch(ev->type())
     {
-      FURYResizeEvent::handle rev(ev.static_cast_handle<FURYResizeEvent>());
-      resize(rev->new_size().x(), rev->new_size().y());
+    case FURYEvent::Resize:
+      {
+        FURYResizeEvent::handle rev(ev.static_cast_handle<FURYResizeEvent>());
+        resize(rev->new_size().x(), rev->new_size().y());
+        ev->accept();
+      }
+      break;
+
+    case FURYEvent::TouchDown:
+      {
+        FURYTouchEvent::handle tev(ev.static_cast_handle<FURYTouchEvent>());
+
+        handle_touch_begin(tev->position());
+        tev->accept();          
+      }
+      break;
+
+    case FURYEvent::TouchUp:
+      {
+        FURYTouchEvent::handle tev(ev.static_cast_handle<FURYTouchEvent>());
+        handle_touch_end(tev->position());
+      }
+      break;
+
+    case FURYEvent::TouchMotion:
+      {
+        FURYTouchEvent::handle tev(ev.static_cast_handle<FURYTouchEvent>());
+        handle_touch_move(tev->position(), tev->delta()); 
+        tev->accept();
+      }
+      break;
+      
+    case FURYEvent::MouseMotion:
+      if(m_button_down)
+        {
+          FURYMouseMotionEvent::handle mev(ev.static_cast_handle<FURYMouseMotionEvent>());
+          handle_touch_move(mev->pt(), mev->delta());
+        }
+      break;
+
+    case FURYEvent::MouseButtonUp:
+        {
+          FURYMouseButtonEvent::handle me(ev.static_cast_handle<FURYMouseButtonEvent>());
+          m_button_down=false;
+          handle_touch_end(me->pt());
+          ev->accept();
+        }
+      break;
+
+    case FURYEvent::MouseButtonDown:
+        {
+          FURYMouseButtonEvent::handle me(ev.static_cast_handle<FURYMouseButtonEvent>());
+          m_button_down=true;
+          handle_touch_begin(me->pt());
+          ev->accept();
+        }
+      break;
+    
+
+    default:
+      break;
     }
+
+}
+
+void
+WavyTextExample::
+handle_touch_begin(vec2 pt)
+{
+  m_zoom_pivot=pt;                  
+  m_zoom_start_transformation=m_node_widget->transformation();
+  m_zoom_time.restart();
+}
+
+void
+WavyTextExample::
+handle_touch_end(vec2)
+{
+  m_is_zooming=false;
 }
 
 
+void
+WavyTextExample::
+handle_touch_move(vec2 pt, vec2 delta)
+{
+  if(m_zoom_time.elapsed()>m_zoom_gesture_begin_time)
+    {
+      m_is_zooming=true;
+    }  
+  
+  if(!m_is_zooming)
+    {
+      float zdx(pt.x()-m_zoom_pivot.x());
+      float zdy(pt.y()-m_zoom_pivot.y());
+      
+      m_node_widget->translation( m_node_widget->translation() + delta);
+      
+      //if zooming did not start yet and the touch event
+      //is too far from the zoom pivot point, then zooming
+      //is not going to happen, rather than have yet another flag,
+      //we just restart the timer an dupdate the zoom pivot
+      //position. This way, if a user does not release their
+      //finger from the device but holds it steady, they can shift
+      //into a zoom gesture.
+      if(std::abs(zdx)>m_zoom_dividier or std::abs(zdy)>m_zoom_dividier)
+        {
+          m_zoom_time.restart();
+          m_zoom_pivot=pt;
+          m_zoom_start_transformation=m_node_widget->transformation();
+        }
+    }
+  else
+    {
+      float zoom_factor(pt.y()-m_zoom_pivot.y());
+      vec2 p0(m_zoom_pivot);
+      WRATHScaleTranslate R, P(m_zoom_start_transformation);
+      
+      zoom_factor/=m_zoom_dividier;
+      if(zoom_factor<0.0f)
+        {
+          zoom_factor=-1.0f/std::min(-1.0f, zoom_factor);
+        }
+      else
+        {
+          zoom_factor=std::max(1.0f, zoom_factor);
+        }
+      
+      R.scale(zoom_factor);
+      R.translation( (1.0f-zoom_factor)*p0);
+      m_node_widget->transformation(R*P);
+    }
+}
 
 DemoKernel* 
 cmd_line_type::
