@@ -387,6 +387,16 @@ handle_event(FURYEvent::handle ev)
 {
   switch(ev->type())
     {
+    case FURYEvent::KeyUp:
+      {
+        FURYKeyEvent::handle qe(ev.static_cast_handle<FURYKeyEvent>());
+        if(FURYKey_Escape==qe->key().m_value)
+          {
+            end_demo();
+          }
+      }
+      break;
+
     case FURYEvent::Resize:
       {
         FURYResizeEvent::handle rev(ev.static_cast_handle<FURYResizeEvent>());
