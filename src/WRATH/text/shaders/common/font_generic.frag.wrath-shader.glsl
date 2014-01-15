@@ -42,7 +42,7 @@ shader_main(void)
   #else
   {
     mediump float d;
-    d=is_covered();
+    d=wrath_glyph_is_covered();
 
     #if defined(WRATH_IS_OPAQUE_PASS) 
       if(d<0.5)

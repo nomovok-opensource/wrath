@@ -806,10 +806,10 @@ public:
     is linear, a GlyphGLSL implements:
     - In the vertex shader, implement
       \code
-      void pre_compute_glyph(in vec2 glyph_position, 
-                             in vec2 glyph_bottom_left,
-                             in vec2 glyph_size,
-                             in float glyph_custom_data[])
+      void wrath_pre_compute_glyph(in vec2 glyph_position, 
+                                   in vec2 glyph_bottom_left,
+                                   in vec2 glyph_size,
+                                   in float glyph_custom_data[])
       \endcode
       where glyph_position is the position in texels,
       glyph_bottom_left is from \ref glyph_data_type::texel_lower_left(),
@@ -824,13 +824,13 @@ public:
 
    - In the Fragment shader, implement the functions
      \code
-     float is_covered(void)
-     float compute_coverage(void)
+     float wrath_glyph_is_covered(void)
+     float wrath_glyph_compute_coverage(void)
      \endcode
-     The function <B>is_covered()</B> returns
+     The function <B>wrath_glyph_is_covered()</B> returns
      either 1.0 or 0.0 corresponding to
      if the fragment is covered or not. The 
-     function <B>compute_coverage()</B> 
+     function <B>wrath_glyph_compute_coverage()</B> 
      computes a value in the range [0.0, 1.0] 
      indicating how much of the fragment is
      covered. The return value is used to
@@ -840,17 +840,17 @@ public:
     is non-linear, a GlyphGLSL implements:
     - In the vertex shader, implement
       \code
-      void pre_compute_glyph(in vec2 glyph_bottom_left,
-                             in vec2 glyph_size,
-                             in float glyph_custom_data[])
+      void wrath_pre_compute_glyph(in vec2 glyph_bottom_left,
+                                   in vec2 glyph_size,
+                                   in float glyph_custom_data[])
       \endcode 
       where glyph_bottom_left, glyph_size and
       glyph_custom_data are the same as in the linear case.
 
    - In the Fragment shader, implement the functions
      \code
-     float is_covered(in vec2 glyph_position)
-     float compute_coverage(in vec2 glyph_position)
+     float wrath_glyph_is_covered(in vec2 glyph_position)
+     float wrath_glyph_compute_coverage(in vec2 glyph_position)
      \endcode
      where glyph_position is the position of the
      fragment (in texels). 
@@ -918,14 +918,14 @@ public:
 
     /*!\var m_vertex_processor
       GLSL source code that implements the function 
-      <B>pre_compute_glyph</B> indexed by \ref 
+      <B>wrath_pre_compute_glyph</B> indexed by \ref 
       glyph_position_linearity
      */
     source_set m_vertex_processor;
 
     /*!\var m_fragment_processor
       GLSL source code that implements the functions 
-      <B>is_covered</B> and <B>compute_coverage</B>.
+      <B>wrath_glyph_is_covered</B> and <B>wrath_glyph_compute_coverage</B>.
       indexed by \ref glyph_position_linearity
      */
     source_set m_fragment_processor;

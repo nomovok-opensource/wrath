@@ -51,17 +51,17 @@
   The fragment source code returned by
   \ref glyph_glsl() defines the additional 
   functions and symbols:
-  - native_compute_coverage() is compute_coverage() function taken from the
+  - native_wrath_glyph_compute_coverage() is wrath_glyph_compute_coverage() function taken from the
     fragment source code of the native sized font (T) [fragment shader only]
-  - native_is_covered() is is_covered() function taken from the
+  - native_wrath_glyph_is_covered() is wrath_glyph_is_covered() function taken from the
     fragment source code of the native sized font (T) [fragment shader only]
-  - minified_compute_coverage() is compute_coverage() function taken from the
+  - minified_wrath_glyph_compute_coverage() is wrath_glyph_compute_coverage() function taken from the
     fragment source code of the minified font (S) [fragment shader only]
-  - minified_is_covered() is is_covered() function taken from the
+  - minified_wrath_glyph_is_covered() is wrath_glyph_is_covered() function taken from the
     fragment source code of the minified font (S) [fragment shader only]
   - MIX_FONT_SHADER is the ratio of the pixel sizes of the
     native font (T) to the minified font (S). The value is used to determine
-    in is_covered() and compute_coverage() to decide which of the fonts to
+    in wrath_glyph_is_covered() and wrath_glyph_compute_coverage() to decide which of the fonts to
     use. A WRATHFontShaderSpecifier can define this symbol in their
     pre-vertex-shader (\ref WRATHFontShaderSpecifier::append_pre_vertex_shader_source()) 
     and pre-fragment-shader (\ref WRATHFontShaderSpecifier::append_pre_fragment_shader_source()) 

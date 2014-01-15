@@ -181,8 +181,8 @@ common_data_type(void):
   m_glyph_glsl.m_sampler_names.push_back("wrath_DetailedCoverageTexture");
   m_glyph_glsl.m_sampler_names.push_back("wrath_DetailedIndexTexture");
 
-  m_glyph_glsl.m_global_names.push_back("wrath_detailed_compute_coverage");
-  m_glyph_glsl.m_global_names.push_back("wrath_detailed_is_covered");
+  m_glyph_glsl.m_global_names.push_back("wrath_detailed_wrath_glyph_compute_coverage");
+  m_glyph_glsl.m_global_names.push_back("wrath_detailed_wrath_glyph_is_covered");
   m_glyph_glsl.m_global_names.push_back("wrath_DetailedNormalizedCoord_Position");
   m_glyph_glsl.m_global_names.push_back("wrath_DetailedGlyphIndex");
   m_glyph_glsl.m_global_names.push_back("wrath_DetailedGlyphRecipSize_GlyphIndex");

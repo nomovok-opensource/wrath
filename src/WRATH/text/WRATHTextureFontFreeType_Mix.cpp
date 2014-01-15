@@ -225,12 +225,12 @@ add_block(const std::string &prefix_name,
 
       R.m_fragment_processor[i]
         .add_source(std::string("//") + comment_begin + prefix_name, WRATHGLShader::from_string)
-        .add_macro("compute_coverage", prefix_name + "compute_coverage")
-        .add_macro("is_covered", prefix_name + "is_covered");
+        .add_macro("wrath_glyph_compute_coverage", prefix_name + "wrath_glyph_compute_coverage")
+        .add_macro("wrath_glyph_is_covered", prefix_name + "wrath_glyph_is_covered");
       
       R.m_vertex_processor[i]
         .add_source(std::string("//") + comment_begin + prefix_name, WRATHGLShader::from_string)
-        .add_macro("pre_compute_glyph", prefix_name + "pre_compute_glyph");
+        .add_macro("wrath_pre_compute_glyph", prefix_name + "wrath_pre_compute_glyph");
     }
 
    add_aliases_to_block(prefix_name, 
@@ -254,8 +254,8 @@ add_block(const std::string &prefix_name,
         .add_source("font_mix_page_data_func.wrath-shader.glsl", WRATHGLShader::from_resource)
         .remove_macro("WRATH_MIX_FONT_PAGE_DATA_OFFSET")
         .absorb(src->m_fragment_processor[i])
-        .remove_macro("compute_coverage")
-        .remove_macro("is_covered")
+        .remove_macro("wrath_glyph_compute_coverage")
+        .remove_macro("wrath_glyph_is_covered")
         .remove_macro("wrath_font_page_data");
       
       R.m_vertex_processor[i]
@@ -264,7 +264,7 @@ add_block(const std::string &prefix_name,
         .add_source("font_mix_page_data_func.wrath-shader.glsl", WRATHGLShader::from_resource)
         .remove_macro("WRATH_MIX_FONT_PAGE_DATA_OFFSET")
         .absorb(src->m_vertex_processor[i])
-        .remove_macro("pre_compute_glyph")
+        .remove_macro("wrath_pre_compute_glyph")
         .remove_macro("wrath_font_page_data");
     }
 
@@ -315,24 +315,24 @@ fetch(WRATHTextureFont *a, WRATHTextureFont *b,
     
     const float wrath_mix_font_ratio pixel height of "a" divided by "b" as a float
 
-    #define compute_coverage wrath_native_compute_coverage
-    #define is_covered wrath_native_is_covered
+    #define wrath_glyph_compute_coverage wrath_native_wrath_glyph_compute_coverage
+    #define wrath_glyph_is_covered wrath_native_wrath_glyph_is_covered
     #define wrath_font_page_data wrath_native_wrath_font_page_data
      -- for each sampler and global symbol of "a" font, similar define statement
      -- insert custom wrath_native_wrath_font_page_data() function
      -- include "a" source code
 
-    #undef compute_coverage
-    #undef is_covered
-    #define compute_coverage wrath_minified_compute_coverage
-    #define is_covered wrath_minified_is_covered
+    #undef wrath_glyph_compute_coverage
+    #undef wrath_glyph_is_covered
+    #define wrath_glyph_compute_coverage wrath_minified_wrath_glyph_compute_coverage
+    #define wrath_glyph_is_covered wrath_minified_wrath_glyph_is_covered
     #define wrath_font_page_data minified_wrath_font_page_data
      -- for each sampler and global symbol of "b" font, similar define statement
      -- insert custom wrath_minified_wrath_font_page_data() function
      -- include "b" source code
 
-    #undef compute_coverage
-    #undef is_covered
+    #undef wrath_glyph_compute_coverage
+    #undef wrath_glyph_is_covered
 
     
     

@@ -17,7 +17,7 @@
  */
 
 shader_out mediump vec2 wrath_AnalyticBottomLeft;
-void pre_compute_glyph(in vec2 glyph_bottom_left,
+void wrath_pre_compute_glyph(in vec2 glyph_bottom_left,
                        in vec2 glyph_size)
 {
   wrath_AnalyticBottomLeft=glyph_bottom_left;

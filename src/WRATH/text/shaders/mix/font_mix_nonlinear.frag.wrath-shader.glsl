@@ -18,7 +18,7 @@
 
 
 mediump float 
-is_covered(in vec2 wrath_mix_font_glyph_position)
+wrath_glyph_is_covered(in vec2 wrath_mix_font_glyph_position)
 {
   #if defined(WRATH_DERIVATIVES_SUPPORTED)
   {
@@ -33,8 +33,8 @@ is_covered(in vec2 wrath_mix_font_glyph_position)
     {
       mediump float f1, f2;
 
-      f1=wrath_native_is_covered(wrath_mix_font_glyph_position);
-      f2=wrath_minified_is_covered(wrath_mix_font_glyph_position);
+      f1=wrath_native_wrath_glyph_is_covered(wrath_mix_font_glyph_position);
+      f2=wrath_minified_wrath_glyph_is_covered(wrath_mix_font_glyph_position);
       
       return (sc<wrath_mix_font_thresh_squared)?
         f1: f2;
@@ -44,24 +44,24 @@ is_covered(in vec2 wrath_mix_font_glyph_position)
     {
       if(sc<wrath_mix_font_thresh_squared)
         {
-          return wrath_native_is_covered(wrath_mix_font_glyph_position);
+          return wrath_native_wrath_glyph_is_covered(wrath_mix_font_glyph_position);
         }
       else
         {
-          return wrath_minified_is_covered(wrath_mix_font_glyph_position);
+          return wrath_minified_wrath_glyph_is_covered(wrath_mix_font_glyph_position);
         }
     }
     #endif 
   }
   #else
   {
-    return wrath_native_is_covered(wrath_mix_font_glyph_position);
+    return wrath_native_wrath_glyph_is_covered(wrath_mix_font_glyph_position);
   }
   #endif 
 }
 
 mediump float
-compute_coverage(in vec2 wrath_mix_font_glyph_position)
+wrath_glyph_compute_coverage(in vec2 wrath_mix_font_glyph_position)
 {
   #if defined(WRATH_DERIVATIVES_SUPPORTED)
   {
@@ -76,8 +76,8 @@ compute_coverage(in vec2 wrath_mix_font_glyph_position)
     {
       mediump float f1, f2;
 
-      f1=wrath_native_compute_coverage(wrath_mix_font_glyph_position);
-      f2=wrath_minified_compute_coverage(wrath_mix_font_glyph_position);
+      f1=wrath_native_wrath_glyph_compute_coverage(wrath_mix_font_glyph_position);
+      f2=wrath_minified_wrath_glyph_compute_coverage(wrath_mix_font_glyph_position);
       
       return (sc<wrath_mix_font_thresh_squared)?
         f1:f2;
@@ -87,18 +87,18 @@ compute_coverage(in vec2 wrath_mix_font_glyph_position)
     {
       if(sc<wrath_mix_font_thresh_squared)
         {
-          return wrath_native_compute_coverage(wrath_mix_font_glyph_position);
+          return wrath_native_wrath_glyph_compute_coverage(wrath_mix_font_glyph_position);
         }
       else
         {
-          return wrath_minified_compute_coverage(wrath_mix_font_glyph_position);
+          return wrath_minified_wrath_glyph_compute_coverage(wrath_mix_font_glyph_position);
         }
     }
     #endif
   }
   #else
   {
-    return wrath_native_compute_coverage(wrath_mix_font_glyph_position);
+    return wrath_native_wrath_glyph_compute_coverage(wrath_mix_font_glyph_position);
   }
   #endif
     

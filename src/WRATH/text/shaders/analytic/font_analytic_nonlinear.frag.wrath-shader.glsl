@@ -21,7 +21,7 @@ shader_in mediump vec2 wrath_AnalyticBottomLeft;
 
 
 mediump float
-compute_coverage(in vec2 glyph_position)
+wrath_glyph_compute_coverage(in vec2 glyph_position)
 {
   mediump float d;
   mediump vec2 GlyphTextureCoordinate, glyph_texture_reciprocal_size;
@@ -51,7 +51,7 @@ compute_coverage(in vec2 glyph_position)
 }
 
 mediump float 
-is_covered(in vec2 glyph_position)
+wrath_glyph_is_covered(in vec2 glyph_position)
 {
   mediump float d;
   mediump vec2 GlyphTextureCoordinate, glyph_texture_reciprocal_size;

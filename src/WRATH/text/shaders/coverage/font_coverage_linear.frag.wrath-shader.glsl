@@ -26,7 +26,7 @@ shader_in mediump vec2 wrath_CoverageFieldPosition;
 uniform mediump sampler2D wrath_CoverageField;
 
 mediump float 
-is_covered(void)
+wrath_glyph_is_covered(void)
 {
   mediump float rr;
 
@@ -35,7 +35,7 @@ is_covered(void)
 }
 
 mediump float
-compute_coverage(void)
+wrath_glyph_compute_coverage(void)
 {
   mediump float rr;
 

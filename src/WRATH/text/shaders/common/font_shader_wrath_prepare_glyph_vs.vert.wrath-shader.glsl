@@ -31,7 +31,7 @@ wrath_font_prepare_glyph_vs(
     wrath_font_custom_data_t custom_values_str;
   
     wrath_font_shader_custom_data_func(custom_values_str);
-    pre_compute_glyph(
+    wrath_pre_compute_glyph(
                       #ifdef WRATH_TEXTURE_FONT_LINEAR
                       glyph_position,
                       #endif
@@ -41,7 +41,7 @@ wrath_font_prepare_glyph_vs(
   }  
   #else
   {
-    pre_compute_glyph(
+    wrath_pre_compute_glyph(
                       #ifdef WRATH_TEXTURE_FONT_LINEAR
                       glyph_position,
                       #endif

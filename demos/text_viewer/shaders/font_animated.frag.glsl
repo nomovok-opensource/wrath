@@ -28,9 +28,9 @@ shader_main(void)
 
 
 #ifdef NO_AA
-  d=is_covered()*tex_color.a*(1.0-animation_fx_interpol);
+  d=wrath_glyph_is_covered()*tex_color.a*(1.0-animation_fx_interpol);
 #else
-  d=compute_coverage()*tex_color.a*(1.0-animation_fx_interpol);
+  d=wrath_glyph_compute_coverage()*tex_color.a*(1.0-animation_fx_interpol);
 #endif
 
 #if defined(WRATH_IS_OPAQUE_PASS)

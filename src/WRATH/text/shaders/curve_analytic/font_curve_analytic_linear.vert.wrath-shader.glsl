@@ -20,7 +20,7 @@
 shader_out mediump vec4 wrath_CurveAnalyticTexCoord_Position;
 shader_out mediump float wrath_CurveAnalyticGlyphIndex;
 
-void pre_compute_glyph(in vec2 glyph_position, 
+void wrath_pre_compute_glyph(in vec2 glyph_position, 
                        in vec2 glyph_bottom_left,
                        in vec2 glyph_size,
                        in float glyph_custom_data[1])

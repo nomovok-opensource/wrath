@@ -20,7 +20,7 @@ shader_in vec2 wrath_mix_font_glyph_position;
 
 
 mediump float 
-is_covered(void)
+wrath_glyph_is_covered(void)
 {
   #if defined(WRATH_DERIVATIVES_SUPPORTED)
   {
@@ -35,8 +35,8 @@ is_covered(void)
     {
       mediump float f1, f2;
 
-      f1=wrath_native_is_covered();
-      f2=wrath_minified_is_covered();
+      f1=wrath_native_wrath_glyph_is_covered();
+      f2=wrath_minified_wrath_glyph_is_covered();
       
       return (sc<wrath_mix_font_thresh_squared)?
         f1:f2;
@@ -46,24 +46,24 @@ is_covered(void)
     {
       if(sc<wrath_mix_font_thresh_squared)
         {
-          return wrath_native_is_covered();
+          return wrath_native_wrath_glyph_is_covered();
         }
       else
         {
-          return wrath_minified_is_covered();
+          return wrath_minified_wrath_glyph_is_covered();
         }
     }
     #endif 
   }
   #else
   {
-    return wrath_native_is_covered();
+    return wrath_native_wrath_glyph_is_covered();
   }
   #endif 
 }
 
 mediump float
-compute_coverage(void)
+wrath_glyph_compute_coverage(void)
 {
   #if defined(WRATH_DERIVATIVES_SUPPORTED)
   {
@@ -78,8 +78,8 @@ compute_coverage(void)
     {
       mediump float f1, f2;
 
-      f1=wrath_native_compute_coverage();
-      f2=wrath_minified_compute_coverage();
+      f1=wrath_native_wrath_glyph_compute_coverage();
+      f2=wrath_minified_wrath_glyph_compute_coverage();
       
       return (sc<wrath_mix_font_thresh_squared)?
         f1:f2;
@@ -89,18 +89,18 @@ compute_coverage(void)
     {
       if(sc<wrath_mix_font_thresh_squared)
         {
-          return wrath_native_compute_coverage();
+          return wrath_native_wrath_glyph_compute_coverage();
         }
       else
         {
-          return wrath_minified_compute_coverage();
+          return wrath_minified_wrath_glyph_compute_coverage();
         }
     }
     #endif
   }
   #else
   {
-    return wrath_native_compute_coverage();
+    return wrath_native_wrath_glyph_compute_coverage();
   }
   #endif
     

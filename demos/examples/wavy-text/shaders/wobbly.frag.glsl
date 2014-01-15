@@ -70,7 +70,7 @@ shader_main(void)
     get the coverage, then also multiply it by
     if the fragment wobbled is within the glyph
    */
-  coverage=compute_coverage(wobbly.xy)*in_glyph;
+  coverage=wrath_glyph_compute_coverage(wobbly.xy)*in_glyph;
   
   //multiply coverage by tex_color.a to get actual alpha
   coverage*=tex_color.a;

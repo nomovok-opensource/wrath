@@ -22,17 +22,17 @@ shader_in mediump vec4 wrath_DetailedNormalizedCoord_Position;
 shader_in mediump float wrath_DetailedGlyphIndex;
 
 mediump float 
-is_covered(void)
+wrath_glyph_is_covered(void)
 {
-  return wrath_detailed_is_covered(wrath_DetailedNormalizedCoord_Position.zw,
+  return wrath_detailed_wrath_glyph_is_covered(wrath_DetailedNormalizedCoord_Position.zw,
                                    wrath_DetailedNormalizedCoord_Position.xy,
                                    wrath_DetailedGlyphIndex);
 }
 
 mediump float
-compute_coverage(void)
+wrath_glyph_compute_coverage(void)
 {
-  return wrath_detailed_compute_coverage(wrath_DetailedNormalizedCoord_Position.zw,
+  return wrath_detailed_wrath_glyph_compute_coverage(wrath_DetailedNormalizedCoord_Position.zw,
                                          wrath_DetailedNormalizedCoord_Position.xy,
                                          wrath_DetailedGlyphIndex);
 }

@@ -26,7 +26,7 @@ shader_in mediump vec4 wrath_AnalyticTexCoord_Position;
 
 
 mediump float
-compute_coverage(void)
+wrath_glyph_compute_coverage(void)
 {
   mediump float d;
 
@@ -52,7 +52,7 @@ compute_coverage(void)
 }
 
 mediump float 
-is_covered(void)
+wrath_glyph_is_covered(void)
 {
   mediump float d;
 

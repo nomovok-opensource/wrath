@@ -17,7 +17,7 @@
  */
 
 shader_out mediump vec3 wrath_DetailedGlyphRecipSize_GlyphIndex;
-void pre_compute_glyph(in vec2 glyph_bottom_left,
+void wrath_pre_compute_glyph(in vec2 glyph_bottom_left,
                        in vec2 glyph_size,
                        in float custom_data[1])
 {

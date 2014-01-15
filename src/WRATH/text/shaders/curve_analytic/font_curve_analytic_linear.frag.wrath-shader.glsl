@@ -27,7 +27,7 @@ shader_in mediump float wrath_CurveAnalyticGlyphIndex;
 
 
 mediump float
-compute_coverage(void)
+wrath_glyph_compute_coverage(void)
 {
   mediump float d;
 
@@ -55,7 +55,7 @@ compute_coverage(void)
 }
 
 mediump float 
-is_covered(void)
+wrath_glyph_is_covered(void)
 {
   mediump float d;
 

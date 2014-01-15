@@ -62,11 +62,11 @@
 
   and use
   \code
-  is_covered()
+  wrath_glyph_is_covered()
   \endcode
   or
   \code
-  compute_coverage()
+  wrath_glyph_compute_coverage()
   \endcode
   in the fragment shader. For the nonlinear case,
   the vertex function is
@@ -77,11 +77,11 @@
 
   and the fragment shader functions are
   \code
-  is_covered(in vec2 glyph_position)
+  wrath_glyph_is_covered(in vec2 glyph_position)
   \endcode
   or
   \code
-  compute_coverage(in vec2 glyph_position)
+  wrath_glyph_compute_coverage(in vec2 glyph_position)
   \endcode
 
   
@@ -124,10 +124,10 @@ public:
 
     The fragment shader of a WRATHFontShaderSpecifier needs to obey the following 
     conventions:
-    - It must use either (or both) the functions is_covered() and/or
-      compute_coverage() to determine how to draw a fragment. The function
-      is_covered() returns 0.0 if the fragment has coverage less that 50%
-      from the glyph and 1.0 otherwise. The function compute_coverage() returns
+    - It must use either (or both) the functions wrath_glyph_is_covered() and/or
+      wrath_glyph_compute_coverage() to determine how to draw a fragment. The function
+      wrath_glyph_is_covered() returns 0.0 if the fragment has coverage less that 50%
+      from the glyph and 1.0 otherwise. The function wrath_glyph_compute_coverage() returns
       a value in the range [0.0, 1.0] indicating the coverage of the glyph
       on the fragment.
     - The macros WRATH_IS_OPAQUE_PASS, WRATH_IS_TRANSLUCENT_PASS, WRATH_IS_PURE_TRANSLUCENT_PASS are
@@ -707,7 +707,7 @@ public:
                                                            int) const
     Fetch, and if necessary first create, a WRATHTextureFontDrawer
     object using the named WRATHTextureFont::GlyphGLSL object
-    to implement is_covered() and compute_coverage(). The WRATHTextureFontDrawer
+    to implement wrath_glyph_is_covered() and wrath_glyph_compute_coverage(). The WRATHTextureFontDrawer
     are stored in the creating WRATHFontShaderSpecifier object.
     Hence, one should save one's created WRATHFontShaderSpecifier.
     Recall that  A WRATHTextureFontDrawer

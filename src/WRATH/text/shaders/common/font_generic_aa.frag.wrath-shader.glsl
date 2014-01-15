@@ -38,7 +38,7 @@ shader_main(void)
     for the rendering situation of lay down depth first,
     there is no transparent pass, thus the shader reduces
     to:
-    - non-color pass: check coverage with is_covered() test
+    - non-color pass: check coverage with wrath_glyph_is_covered() test
     - color pass: just set gl_FragColor to final_color
    */
   #if defined(WRATH_COVER_DRAW)
@@ -48,7 +48,7 @@ shader_main(void)
   #elif defined(WRATH_NON_COLOR_DRAW) 
   {
     mediump float d;
-    d=is_covered();
+    d=wrath_glyph_is_covered();
     if(d<0.5)
       discard;
     gl_FragColor=final_color;    
@@ -56,7 +56,7 @@ shader_main(void)
   #else
   {
     mediump float d;
-    d=compute_coverage();
+    d=wrath_glyph_compute_coverage();
 
     /*
       make d one of:
