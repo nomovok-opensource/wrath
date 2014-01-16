@@ -15,7 +15,7 @@
  * \author Kevin Rogovin <kevin.rogovin@nomovok.com>
  * 
  */
-
+#define WRATH_FONT_IMPLEMENT_SIGNED_DISTANCE
 
 
 uniform mediump sampler2D wrath_AnalyticNormalTexture;

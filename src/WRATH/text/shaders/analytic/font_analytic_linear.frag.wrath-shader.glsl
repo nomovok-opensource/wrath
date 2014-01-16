@@ -24,14 +24,18 @@ shader_in mediump vec4 wrath_AnalyticTexCoord_Position;
 #define GlyphTextureCoordinate wrath_AnalyticTexCoord_Position.xy
 #define GlyphCoordinate wrath_AnalyticTexCoord_Position.zw
 
+mediump float
+wrath_glyph_signed_distance(void)
+{
+  return wrath_analytic_font_compute_distance(GlyphTextureCoordinate, GlyphCoordinate);
+}
 
 mediump float
 wrath_glyph_compute_coverage(void)
 {
   mediump float d;
 
-  d=wrath_analytic_font_compute_distance(GlyphTextureCoordinate, GlyphCoordinate);
-  
+  d=wrath_glyph_signed_distance();  
   #if defined(WRATH_DERIVATIVES_SUPPORTED)
   {
     mediump vec2 dx, dy;
@@ -56,7 +60,7 @@ wrath_glyph_is_covered(void)
 {
   mediump float d;
 
-  d=wrath_analytic_font_compute_distance(GlyphTextureCoordinate, GlyphCoordinate);
+  d=wrath_glyph_signed_distance();
   return step(0.0, d);
 }
 
