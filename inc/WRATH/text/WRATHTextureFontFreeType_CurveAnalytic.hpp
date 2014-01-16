@@ -216,53 +216,7 @@ public:
   static
   GLint
   effective_texture_creation_size(void);
-
-  /*!\fn bool include_scaling_data(void)
-    Returns true if the next created 
-    WRATHTextureFontFreeType_CurveAnalytic 
-    will generate "scaling" data, default
-    value is true.     
-   */
-  static
-  bool
-  include_scaling_data(void);
-
-  /*!\fn include_scaling_data(bool)
-    Sets if the next created 
-    WRATHTextureFontFreeType_CurveAnalytic 
-    will generate "scaling" data, default
-    value is true.
-    \param v value to use
-   */
-  static
-  void
-  include_scaling_data(bool v);
-
-  /*!\fn bool two_channel_texture_work_around(void)
-    Returns true if the next created 
-    WRATHTextureFontFreeType_CurveAnalytic 
-    will use 2-channel textures (necessary
-    as a work around for several buggy
-    GLES2 implementations, such as that
-    on the N9)
-   */
-  static
-  bool
-  two_channel_texture_work_around(void);
-  
-  /*!\fn void two_channel_texture_work_around(bool)
-    Sets if the next created 
-    WRATHTextureFontFreeType_CurveAnalytic 
-    will use 2-channel textures (necessary
-    as a work around for several buggy
-    GLES2 implementations, such as that
-    on the N9). Default value is false
-    \param v value to use
-   */
-  static
-  void
-  two_channel_texture_work_around(bool v);
-
+   
   /*!\fn bool store_separate_curves(void)
     Returns true if the next created 
     WRATHTextureFontFreeType_CurveAnalytic

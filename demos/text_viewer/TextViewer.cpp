@@ -201,8 +201,6 @@ public:
   command_line_argument_value<std::string> m_tex_varying_fs_prec, m_tex_recip_prec; 
   command_line_argument_value<int> m_text_renderer;
   command_line_argument_value<int> m_text_renderer_line_analytic_format;
-  command_line_argument_value<bool> m_text_renderer_curve_analytic_have_scaling;
-  command_line_argument_value<bool> m_text_renderer_curve_analytic_2channel;
   command_line_argument_value<bool> m_text_renderer_curve_analytic_separate_curve_storage;
   command_line_argument_value<int> m_text_renderer_sub_choice;
   command_line_argument_value<int> m_text_renderer_coverage_min_filter;
@@ -323,16 +321,6 @@ public:
                                          "1=use (RGBA8, LA_16F), "
                                          "2=use (RGBA8, LA_32F), ", 
                                          *this),
-
-    m_text_renderer_curve_analytic_have_scaling(true, "curve_analytic_include_scale_data",
-                                                "Only has affect if text_renderer is 4 "
-                                                "if on curve analytic texture includes scaling data",
-                                                *this),
-
-    m_text_renderer_curve_analytic_2channel(false, "curve_analytic_2channel",
-                                            "Only has affect if text_renderer is 4 "
-                                            "if on curve analytic does not use 4 channel float textures", 
-                                            *this),
                                      
     m_text_renderer_curve_analytic_separate_curve_storage(false, "curve_analytic_separate",
                                                           "Only has affect if text_renderer is 4 "
@@ -996,8 +984,7 @@ TextViewer(cmd_line_type &cmd_line):
   WRATHTextureFontFreeType_Analytic::mipmap_level(analytic_mip_value);
   
   
-  WRATHTextureFontFreeType_CurveAnalytic::include_scaling_data(cmd_line.m_text_renderer_curve_analytic_have_scaling.m_value);
-  WRATHTextureFontFreeType_CurveAnalytic::two_channel_texture_work_around(cmd_line.m_text_renderer_curve_analytic_2channel.m_value);
+  
   WRATHTextureFontFreeType_CurveAnalytic::store_separate_curves(cmd_line.m_text_renderer_curve_analytic_separate_curve_storage.m_value);
 
   switch(cmd_line.m_text_renderer_line_analytic_format.m_value)
@@ -1133,10 +1120,8 @@ TextViewer(cmd_line_type &cmd_line):
       m_print_consumption_extra=WRATHTextureFontFreeType_CurveAnalytic::texture_consumption_curve;
       m_consumption_bpp=1;
       m_consumption_extra_bpp=3*sizeof(vecN<uint16_t,4>) + sizeof(vecN<uint16_t,2>) + 2;
-      if(cmd_line.m_text_renderer_curve_analytic_have_scaling.m_value)
-        {
-          m_consumption_extra_bpp+=sizeof(vecN<uint16_t,2>);
-        }
+      m_consumption_extra_bpp+=sizeof(vecN<uint16_t,2>);
+        
 
       switch(cmd_line.m_text_renderer_sub_choice.m_value)
         {
