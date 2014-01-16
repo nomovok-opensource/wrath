@@ -18,6 +18,18 @@
 
 shader_in vec2 wrath_mix_font_glyph_position;
 
+#ifdef wrath_native_implents_signed_distance
+#undef wrath_native_implents_signed_distance
+
+#define WRATH_FONT_IMPLEMENT_SIGNED_DISTANCE
+mediump float
+wrath_glyph_signed_distance(void)
+{
+  return wrath_native_wrath_glyph_signed_distance();
+}
+
+#endif
+
 
 mediump float 
 wrath_glyph_is_covered(void)
