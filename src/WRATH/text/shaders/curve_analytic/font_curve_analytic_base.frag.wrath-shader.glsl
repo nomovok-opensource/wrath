@@ -18,7 +18,7 @@
 
  
 
-
+#define WRATH_FONT_IMPLEMENT_SIGNED_DISTANCE
 
 /*
   Basic idea is as follows:

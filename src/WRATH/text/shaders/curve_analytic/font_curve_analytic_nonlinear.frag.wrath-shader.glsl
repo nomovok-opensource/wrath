@@ -22,9 +22,8 @@
 shader_in mediump vec2 wrath_CurveAnalyticBottomLeft;
 shader_in mediump float wrath_CurveAnalyticGlyphIndex;
 
-
 mediump float
-wrath_glyph_compute_coverage(in vec2 GlyphCoordinate)
+wrath_glyph_signed_distance(in vec2 GlyphCoordinate)
 {
   mediump float d;
   mediump vec2 GlyphTextureCoordinate, glyph_texture_reciprocal_size;
@@ -36,6 +35,15 @@ wrath_glyph_compute_coverage(in vec2 GlyphCoordinate)
   d=wrath_curve_analytic_compute_quasi_distance(GlyphCoordinate,
                                                 GlyphTextureCoordinate, 
                                                 wrath_CurveAnalyticGlyphIndex);
+  return d;
+}
+
+
+mediump float
+wrath_glyph_compute_coverage(in vec2 GlyphCoordinate)
+{
+  mediump float d;
+  d=wrath_glyph_signed_distance(GlyphCoordinate);
   
   #if defined(WRATH_DERIVATIVES_SUPPORTED)
   {
@@ -59,17 +67,6 @@ wrath_glyph_compute_coverage(in vec2 GlyphCoordinate)
 mediump float 
 wrath_glyph_is_covered(in vec2 GlyphCoordinate)
 {
-  mediump float d;
-  mediump vec2 GlyphTextureCoordinate, glyph_texture_reciprocal_size;
-
-  glyph_texture_reciprocal_size=vec2(wrath_font_page_data(0),
-                                     wrath_font_page_data(1));
-
-  GlyphTextureCoordinate=(GlyphCoordinate + wrath_CurveAnalyticBottomLeft)*glyph_texture_reciprocal_size;
-  d=wrath_curve_analytic_compute_quasi_distance(GlyphCoordinate,
-                                                GlyphTextureCoordinate, 
-                                                wrath_CurveAnalyticGlyphIndex);
-  
-  return step(0.0, d);
+  return step(0.0, 
+              wrath_glyph_signed_distance(GlyphCoordinate));
 }
-
