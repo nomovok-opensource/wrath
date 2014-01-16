@@ -73,7 +73,19 @@ wrath_glyph_compute_coverage(in vec2 glyph_position)
 }
 
 
+mediump float
+wrath_glyph_signed_distance(in vec2 glyph_position)
+{
+  mediump float rr;
+  mediump vec2 tt, glyph_texture_reciprocal_size;
 
+  glyph_texture_reciprocal_size=vec2(wrath_font_page_data(0),
+                                     wrath_font_page_data(1));
+
+  tt=(glyph_position + wrath_DistanceFieldBottomLeft)*glyph_texture_reciprocal_size;
+  rr=texture2D(wrath_DistanceField, tt).r;
+  return wrath_font_distance_compute_signed_distance(rr);
+}
 
 
 

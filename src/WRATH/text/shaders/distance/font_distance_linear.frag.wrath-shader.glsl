@@ -62,6 +62,14 @@ wrath_glyph_compute_coverage(void)
 
 }
 
+mediump float
+wrath_glyph_signed_distance(void)
+{
+  mediump float rr;
+
+  rr=texture2D(wrath_DistanceField, wrath_DistanceFieldTexCoord).r;
+  return wrath_font_distance_compute_signed_distance(rr);
+}
 
 
 
