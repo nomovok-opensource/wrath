@@ -117,30 +117,15 @@ namespace
   {  
     GLubyte v;
 
-    v=static_cast<GLubyte>(127.0f*dist);
-    //
-    //note that 127 is "-0" and 128 is "+0".
-    return (outside)?127-v:128+v;
-
-    /*
-    dist=std::max(std::min(dist, 1.0f), 0.0f);
-
     if(outside)
-      dist*=-1.0f;
-    
-    dist+=1.0f;
-    dist/=2.0f;
-    WRATHassert(dist>=0.0f);
+      {
+        dist = -dist;
+      }
 
-    dist*=255.0f;
-    int rv;
-
-    rv=std::min(255, static_cast<int>(dist));
-    rv=std::max(0, rv);
-    return static_cast<GLubyte>(rv);
-    */
+    dist=(dist + 1.0f)*0.5f;
+    v=static_cast<GLubyte>(255.0f*dist);
+    return v;
   }
-
   
 }
 
@@ -195,16 +180,20 @@ WRATHTextureFontFreeType_Distance::
 on_create_texture_page(ivec2 texture_size,
                        std::vector<float> &custom_data)
 {
-  custom_data.resize(2);
+  custom_data.resize(3);
   custom_data[0]=1.0f/static_cast<float>(std::max(1, texture_size.x()) );
   custom_data[1]=1.0f/static_cast<float>(std::max(1, texture_size.y()) );
+
+  //to covert from [0,1] to [-m, m] we just need m
+  //m in texels is m_max_distance/64.0f
+  custom_data[2]=m_max_distance/64.0f;
 }
 
 int
 WRATHTextureFontFreeType_Distance::
 texture_page_data_size(void) const
 {
-  return 2; //reciprocal texture size
+  return 3; 
 }
 
 float

@@ -226,7 +226,8 @@ add_block(const std::string &prefix_name,
       R.m_fragment_processor[i]
         .add_source(std::string("//") + comment_begin + prefix_name, WRATHGLShader::from_string)
         .add_macro("wrath_glyph_compute_coverage", prefix_name + "wrath_glyph_compute_coverage")
-        .add_macro("wrath_glyph_is_covered", prefix_name + "wrath_glyph_is_covered");
+        .add_macro("wrath_glyph_is_covered", prefix_name + "wrath_glyph_is_covered")
+        .add_macro("wrath_glyph_signed_distance", prefix_name + "wrath_glyph_signed_distance");
       
       R.m_vertex_processor[i]
         .add_source(std::string("//") + comment_begin + prefix_name, WRATHGLShader::from_string)
@@ -244,20 +245,30 @@ add_block(const std::string &prefix_name,
                         R);
 
    
+   std::ostringstream define_implements_signed_macro;
 
+   define_implements_signed_macro << "\n#ifdef WRATH_FONT_IMPLEMENT_SIGNED_DISTANCE"
+                                  << "\n#undef WRATH_FONT_IMPLEMENT_SIGNED_DISTANCE"
+                                  << "\n#define " << prefix_name << "implents_signed_distance\n"
+                                  << "#endif\n"
+                                  << "//************** End, Add block --->  "
+                                  << prefix_name
+                                  << "\n";
 
-  for(int i=0;i<WRATHTextureFont::GlyphGLSL::num_linearity_types;++i)
-    {
-      R.m_fragment_processor[i]
-        .add_macro("wrath_font_page_data", prefix_name + "wrath_font_page_data")
-        .add_macro("WRATH_MIX_FONT_PAGE_DATA_OFFSET", font_page_data_offset)
-        .add_source("font_mix_page_data_func.wrath-shader.glsl", WRATHGLShader::from_resource)
-        .remove_macro("WRATH_MIX_FONT_PAGE_DATA_OFFSET")
-        .absorb(src->m_fragment_processor[i])
-        .remove_macro("wrath_glyph_compute_coverage")
-        .remove_macro("wrath_glyph_is_covered")
-        .remove_macro("wrath_font_page_data");
-      
+   for(int i=0;i<WRATHTextureFont::GlyphGLSL::num_linearity_types;++i)
+     {
+       R.m_fragment_processor[i]
+         .add_macro("wrath_font_page_data", prefix_name + "wrath_font_page_data")
+         .add_macro("WRATH_MIX_FONT_PAGE_DATA_OFFSET", font_page_data_offset)
+         .add_source("font_mix_page_data_func.wrath-shader.glsl", WRATHGLShader::from_resource)
+         .remove_macro("WRATH_MIX_FONT_PAGE_DATA_OFFSET")
+         .absorb(src->m_fragment_processor[i])
+         .remove_macro("wrath_glyph_compute_coverage")
+         .remove_macro("wrath_glyph_is_covered")
+         .remove_macro("wrath_glyph_signed_distance")
+         .remove_macro("wrath_font_page_data")
+         .add_source(define_implements_signed_macro.str(), WRATHGLShader::from_string);
+       
       R.m_vertex_processor[i]
         .add_macro("wrath_font_page_data", prefix_name + "wrath_font_page_data")
         .add_macro("WRATH_MIX_FONT_PAGE_DATA_OFFSET", font_page_data_offset)
@@ -265,27 +276,19 @@ add_block(const std::string &prefix_name,
         .remove_macro("WRATH_MIX_FONT_PAGE_DATA_OFFSET")
         .absorb(src->m_vertex_processor[i])
         .remove_macro("wrath_pre_compute_glyph")
-        .remove_macro("wrath_font_page_data");
-    }
-
+        .remove_macro("wrath_font_page_data")
+        .add_source(define_implements_signed_macro.str(), WRATHGLShader::from_string);
+     }
+   
    remove_aliases(src->m_global_names, R);
    remove_aliases(src->m_sampler_names, R);
 
-   for(int i=0;i<WRATHTextureFont::GlyphGLSL::num_linearity_types;++i)
-    {
-      const char *comment_end=
-        " ************** End, Add block --->  "; 
-
-      R.m_fragment_processor[i]
-        .add_source(std::string("//") + comment_end + prefix_name, WRATHGLShader::from_string);
-
-      R.m_vertex_processor[i]
-        .add_source(std::string("//") + comment_end + prefix_name, WRATHGLShader::from_string);
-    }
-
 
    R.m_global_names.push_back(prefix_name + "wrath_font_page_data");
-   
+   R.m_global_names.push_back(prefix_name + "wrath_glyph_signed_distance");
+   R.m_global_names.push_back(prefix_name + "wrath_glyph_compute_coverage");
+   R.m_global_names.push_back(prefix_name + "wrath_glyph_is_covered");
+   R.m_global_names.push_back(prefix_name + "wrath_pre_compute_glyph");
 }
 
 const WRATHTextureFont::GlyphGLSL*

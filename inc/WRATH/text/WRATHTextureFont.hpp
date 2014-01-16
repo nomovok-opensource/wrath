@@ -835,7 +835,25 @@ public:
      indicating how much of the fragment is
      covered. The return value is used to
      render the glyph with anti-aliasing.
-   
+     In addition, it is <i>optional</i> to
+     implement the functions
+     \code
+     float wrath_glyph_signed_distance()
+     \endcode
+     which is to return an approximation
+     of the signed distance from the fragment 
+     to the boundary of the glyph. The units
+     are in glph texel units (i.e. same units
+     as glyph_position). The signed
+     distance has same absolute value as the
+     distance, is positive within the glyph
+     and negative outside the glyph.
+     If a font implements <B>wrath_glyph_signed_distance</B>
+     it must define the macro 
+     WRATH_FONT_IMPLEMENT_SIGNED_DISTANCE
+     as well in -both- the vertex and fragment
+     shaders
+     
     For the case where the position of the glyph
     is non-linear, a GlyphGLSL implements:
     - In the vertex shader, implement
@@ -854,6 +872,24 @@ public:
      \endcode
      where glyph_position is the position of the
      fragment (in texels). 
+     In addition, it is <i>optional</i> to
+     implement the functions
+     \code
+     float wrath_glyph_signed_distance(in vec2 glyph_position)
+     \endcode
+     which is to return an approximation
+     of the signed distance from the fragment 
+     to the boundary of the glyph. The units
+     are in glph texel units (i.e. same units
+     as glyph_position). The signed
+     distance has same absolute value as the
+     distance, is positive within the glyph
+     and negative outside the glyph.
+     If a font implements <B>wrath_glyph_signed_distance</B>
+     it must define the macro 
+     WRATH_FONT_IMPLEMENT_SIGNED_DISTANCE
+     as well in -both- the vertex and fragment
+     shaders
 
    In each case linear and non-linear and for both shader
    stages (vertex and fragment) the function
