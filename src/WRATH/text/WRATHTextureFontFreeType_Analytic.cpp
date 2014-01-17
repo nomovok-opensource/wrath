@@ -155,6 +155,7 @@ namespace
   template<unsigned int P>
   void
   find_neighbors_for_empty_texels_worker(ivec2 glyph_size,
+                                         ivec2 bytes_per_pixel,
                                          boost::multi_array<bool, 2> &texel_is_unfilled,
                                          const vecN<c_array<uint8_t>, P> &analytic_pixel_data,
                                          int dim)
@@ -195,7 +196,8 @@ namespace
                       {
                         for(int i=0; i<4; ++i)
                           {
-                            analytic_pixel_data[p][L*4+i]=analytic_pixel_data[p][prevL*4+i];
+                            analytic_pixel_data[p][ L*bytes_per_pixel[p] + i ]=
+                              analytic_pixel_data[p][ prevL*bytes_per_pixel[p] + i ];
                           }
                       }
                   }
@@ -227,7 +229,8 @@ namespace
               {
                 for(int i=0; i<4; ++i)
                   {
-                    analytic_pixel_data[p][L*4+i]=analytic_pixel_data[p][firstL*4+i];
+                    analytic_pixel_data[p][ L*bytes_per_pixel[p] + i ]
+                      =analytic_pixel_data[p][ firstL*bytes_per_pixel[p] + i];
                   }
               }
           }
@@ -239,6 +242,7 @@ namespace
   template<unsigned int P>
   void
   find_neighbors_for_empty_texels(ivec2 glyph_size,
+                                  ivec2 bytes_per_pixel,
                                   boost::multi_array<bool, 2> &texel_is_unfilled,
                                   const vecN<c_array<uint8_t>, P> &analytic_pixel_data)
   {
@@ -247,12 +251,12 @@ namespace
         return;
       }
     
-    find_neighbors_for_empty_texels_worker(glyph_size,
+    find_neighbors_for_empty_texels_worker(glyph_size, bytes_per_pixel,
                                            texel_is_unfilled,
                                            analytic_pixel_data,
                                            0);
     
-    find_neighbors_for_empty_texels_worker(glyph_size,
+    find_neighbors_for_empty_texels_worker(glyph_size, bytes_per_pixel,
                                            texel_is_unfilled,
                                            analytic_pixel_data,
                                            1);
@@ -785,7 +789,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
           
         } //of for(x=...)
     } //of for(y=...)
-  find_neighbors_for_empty_texels(glyph_size,
+  find_neighbors_for_empty_texels(glyph_size, m_bytes_per_pixel,
                                   texel_is_unfilled,
                                   analytic_pixel_data[0]);
 
