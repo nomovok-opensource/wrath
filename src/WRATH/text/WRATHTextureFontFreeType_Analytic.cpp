@@ -151,6 +151,107 @@ namespace
     #endif
   }
   
+ 
+  template<unsigned int P>
+  void
+  find_neighbors_for_empty_texels_worker(ivec2 glyph_size,
+                                         boost::multi_array<bool, 2> &texel_is_unfilled,
+                                         const vecN<c_array<uint8_t>, P> &analytic_pixel_data,
+                                         int dim)
+  {
+    WRATHassert(dim==0 or dim==1);
+
+    int other_dim(1-dim);
+
+    for(int y=0; y<glyph_size[other_dim]; ++y)
+      {
+        int last_filled_texel, first_filled_texel_on_line;
+        int prevL, firstL;
+
+        last_filled_texel=-1;
+        first_filled_texel_on_line=-1;
+
+        for(int x=0; x<glyph_size[dim]; ++x)
+          {
+            ivec2 pt;
+
+            pt[dim]=x;
+            pt[other_dim]=y;
+
+            if(texel_is_unfilled[pt.x()][pt.y()])
+              {
+                if(last_filled_texel>=0 and x+1!=glyph_size[dim])
+                  {
+                    int L;
+
+                    L=pt.x() + pt.y()*glyph_size.x();
+                    texel_is_unfilled[pt.x()][pt.y()]=false;
+                    for(unsigned int p=0;p<P;++p)
+                      {
+                        for(int i=0; i<4; ++i)
+                          {
+                            analytic_pixel_data[p][L*4+i]=analytic_pixel_data[p][prevL*4+i];
+                          }
+                      }
+                  }
+              }
+            else
+              {
+                last_filled_texel=x;
+                prevL= pt.x() + pt.y()*glyph_size.x();
+                if(first_filled_texel_on_line<0)
+                  {
+                    first_filled_texel_on_line=x;
+                    firstL=prevL;
+                  }
+              }
+          }
+        
+        for(int x=1; x<first_filled_texel_on_line; ++x)
+          {
+            int L;
+            ivec2 pt;
+
+            pt[dim]=x;
+            pt[other_dim]=y;
+
+            WRATHassert(texel_is_unfilled[pt.x()][pt.y()]);
+            L=pt.x() + pt.y()*glyph_size.x();
+            texel_is_unfilled[pt.x()][pt.y()]=false;
+            for(unsigned int p=0;p<P;++p)
+              {
+                for(int i=0; i<4; ++i)
+                  {
+                    analytic_pixel_data[p][L*4+i]=analytic_pixel_data[p][firstL*4+i];
+                  }
+              }
+          }
+      }
+  }
+
+
+
+  template<unsigned int P>
+  void
+  find_neighbors_for_empty_texels(ivec2 glyph_size,
+                                  boost::multi_array<bool, 2> &texel_is_unfilled,
+                                  const vecN<c_array<uint8_t>, P> &analytic_pixel_data)
+  {
+    if(glyph_size.x()<=0 or glyph_size.y()<=0)
+      {
+        return;
+      }
+    
+    find_neighbors_for_empty_texels_worker(glyph_size,
+                                           texel_is_unfilled,
+                                           analytic_pixel_data,
+                                           0);
+    
+    find_neighbors_for_empty_texels_worker(glyph_size,
+                                           texel_is_unfilled,
+                                           analytic_pixel_data,
+                                           1);
+  }
   
        
   class common_analytic_texture_data:boost::noncopyable
@@ -158,7 +259,6 @@ namespace
   public:
     common_analytic_texture_data(void);
     ~common_analytic_texture_data();
-
 
     const WRATHTextureFont::GlyphGLSL*
     glyph_glsl(void);
@@ -502,7 +602,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
   WRATHLockMutex(ttf_face()->mutex());
   
  
-  FT_Load_Glyph(ttf_face()->face(), G.value(), FT_LOAD_DEFAULT);
+  FT_Load_Glyph(ttf_face()->face(), G.value(), FT_LOAD_NO_HINTING);
   FT_Render_Glyph(ttf_face()->face()->glyph, FT_RENDER_MODE_NORMAL);
 
   bitmap_sz=ivec2(ttf_face()->face()->glyph->bitmap.width,
@@ -511,10 +611,6 @@ generate_character(WRATHTextureFont::glyph_index_type G)
   if(bitmap_sz.x()>0 and bitmap_sz.y()>0)
     {
       int padding(2<<m_mipmap_level);
-
-      //is a slack of 2 pixels really needed?
-      //test on N900 seem to indicate so,
-      //but in truth no slack should be needed.
       glyph_size=bitmap_sz+ivec2(padding, padding);
     }
   else
@@ -557,8 +653,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
    */
   unsigned int num_levels_total;
 
-  num_levels_total=compute_num_levels_needed(glyph_size,
-                                             m_mipmap_level);
+  num_levels_total=compute_num_levels_needed(glyph_size, m_mipmap_level);
 
   std::vector< vecN<std::vector<uint8_t>, number_textures_per_page> > packed_analytic_pixel_data(num_levels_total);
   std::vector< vecN<c_array<uint8_t>, number_textures_per_page> > analytic_pixel_data(num_levels_total);
@@ -582,6 +677,9 @@ generate_character(WRATHTextureFont::glyph_index_type G)
 
   boost::multi_array<int, 2> covered;
   boost::multi_array<bool, 2> no_intersection_texel_is_full_table(boost::extents[glyph_size.x()][glyph_size.y()]);
+  boost::multi_array<bool, 2> texel_is_unfilled(boost::extents[glyph_size.x()][glyph_size.y()]);
+  
+                                               
 
   if(m_mipmap_level>0 and glyph_size.x()>0 and glyph_size.y()>0)
     {
@@ -600,6 +698,10 @@ generate_character(WRATHTextureFont::glyph_index_type G)
      same memory as packed_analytic_pixel_data,
      only that it views the memory as an
      array of vecN<uint8_t,4>.
+
+     TODO: make padding to be done on both
+     sides of glyph rather than just
+     all on the right/down.
    */
   for(int y=0;y<glyph_size.y();++y)
     {
@@ -618,8 +720,8 @@ generate_character(WRATHTextureFont::glyph_index_type G)
        */
       bool no_intersection_texel_is_full;
 
-      no_intersection_texel_is_full=false;
 
+      no_intersection_texel_is_full=false;
       for(int x=0;x<glyph_size.x();++x)
         {
           unsigned int curve_count, curves_used(0);
@@ -669,19 +771,22 @@ generate_character(WRATHTextureFont::glyph_index_type G)
           int L;
           L=x + y*glyph_size.x();
 
-          if(curves_used>0)
-            {
-              if(sub_primitive_maker!=NULL)
-                {
-                  sub_primitive_maker->mark_texel(x,y);
-                }
-            }
+          texel_is_unfilled[x][y]=(curves_used==0);
           pack_lines(ivec2(x,y), L, ncts, curves_used, far_away_offset,
                      analytic_pixel_data[0], no_intersection_texel_is_full);
+           
+
+          if(curves_used>0 and sub_primitive_maker!=NULL)
+            {
+              sub_primitive_maker->mark_texel(x,y);
+            }
 
           
         } //of for(x=...)
     } //of for(y=...)
+  find_neighbors_for_empty_texels(glyph_size,
+                                  texel_is_unfilled,
+                                  analytic_pixel_data[0]);
 
   if(m_mipmap_level>0 and glyph_size.x()>0 and glyph_size.y()>0)
     {

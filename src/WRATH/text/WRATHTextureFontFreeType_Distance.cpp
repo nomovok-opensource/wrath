@@ -289,7 +289,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
   //Load the name glyph, this puts the glyph data
   //into ttf_face()->face()->glyph
   FT_Set_Transform(ttf_face()->face(), NULL, NULL);
-  FT_Load_Glyph(ttf_face()->face(), G.value(), FT_LOAD_DEFAULT);
+  FT_Load_Glyph(ttf_face()->face(), G.value(), FT_LOAD_NO_HINTING);
 
   //tell Freetype2 to render the glyph to a bitmap,
   //this bitmap is located at ttf_face()->face()->glyph->bitmap
