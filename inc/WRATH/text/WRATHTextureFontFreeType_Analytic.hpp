@@ -49,22 +49,10 @@
   exhibit. In particular, corners are always sharp.
   Additionally, the texture data is NOT filtered.
 
-  There are three different modes for such
-  fonts:
-  - 2 RGBA8 textures. One texture is used to store
-    line normals, the second holds offsets for
-    the line and a "hack" to produce relative
-    pixel coordinates.
-  - 1 RGBA8 and 1 LA_16F (2 channel 16bit float)
-    The RGBA8 texture stores the line normals,
-    the second holds the offsets in glyph coordinates,
-    eliminating a potentially numerically instable
-    hack.
-  - 1 RGBA8 and 1 LA_32F (2 channel 32bit float)
-    The RGBA8 texture stores the line normals,
-    the second holds the offsets in glyph coordinates,
-    eliminating a potentially numerically instable
-    hack.
+  The textures stored are 1 RGBA8 and 
+  1 LA_16F (2 channel 16bit float)
+  The RGBA8 texture stores the line normals,
+  the second holds the offsets in glyph coordinates
 
   None of these methods use filtered texture lookups,
   thus the first two require 8 bytes to be looked up
@@ -102,39 +90,6 @@ public:
         is scalable.
        */
       font_scalability_value=font_is_scalable
-    };
-
-  /*!\enum texture_mode_type
-  
-    Enumeration to describe which texture
-    mode is in use.
-   */
-  enum texture_mode_type
-    {
-      /*!
-        Use pixel local coordinate "hack",
-        i.e. 2 RGBA8 textures
-       */
-      local_pixel_coordinates=0,
-
-      /*!
-        Do not use the pixel local 
-        coordinate "hack", instead use
-        a 16-bit floating point value,
-        thus one RGBA8 and one 2-channel 
-        16bit floating point texture
-       */
-      global_pixel_coordinates_16bit=1,
-
-      /*!
-        Do not use the pixel local 
-        coordinate "hack",  instead use
-        a 32-bit floating point value,
-        thus one RGBA8 and one 2-channel 
-        32bit floating point
-        texture
-       */
-      global_pixel_coordinates_32bit=2,
     };
   
   virtual
@@ -187,18 +142,6 @@ public:
   const GlyphGLSL*
   glyph_glsl(void);
 
-  
-  /*!\fn enum texture_mode_type texture_mode
-    Returns the texture mode (see \ref texture_mode_type
-    and creation_texture_mode()) used to create
-    this WRATHTextureFontFreeType_Analytic.
-   */
-  enum texture_mode_type
-  texture_mode(void)
-  {
-    return m_texture_mode;
-  }  
-
   /*!\fn GLint texture_creation_size(void)
     Gets the maximum size  of the textures
     used by WRATHTextureFontFreeType_Analytic, this value
@@ -221,25 +164,6 @@ public:
   static
   void
   texture_creation_size(GLint v);
-
-  /*!\fn void creation_texture_mode(enum texture_mode_type)
-    Sets the texture type (see \ref texture_mode_type)
-    for the next WRATHTextureFontFreeType_Analytic
-    created. The default value is local_pixel_coordinates.
-    \param v value to use
-   */
-  static
-  void
-  creation_texture_mode(enum texture_mode_type v);
-
-  /*!\fn enum texture_mode_type creation_texture_mode(void)
-    Gets the texture type (see \ref texture_mode_type)
-    for the next WRATHTextureFontFreeType_Analytic
-    created. The default value is local_pixel_coordinates.
-   */
-  static
-  enum texture_mode_type
-  creation_texture_mode(void);
 
   /*!\fn void generate_sub_quads(bool)
     Sets if the next created WRATHTextureFontFreeType_Analytic
@@ -340,7 +264,6 @@ private:
   bool m_is_ttf;
   float m_pow2_mipmap_level;
 
-  enum texture_mode_type m_texture_mode;
   vecN<int, number_textures_per_page> m_bytes_per_pixel;
   WRATHImage::ImageFormatArray m_format;
 

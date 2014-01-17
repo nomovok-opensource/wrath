@@ -44,15 +44,9 @@ wrath_analytic_font_compute_distance(in vec2 GlyphTextureCoordinate,
   mediump vec4 tex_v, X_Y;  
   mediump vec2 p, Cv, dL_dM;
   mediump float d;
-
-#ifdef WRATH_FONT_ANALYTIC_PIXEL_RELATIVE_COORDINATES
-  mediump vec2 offsetL_M;
-  mediump vec4 tex_o;
-#else
   mediump vec2 tex_o;
-  #define offsetL_M tex_o
-#endif
 
+#define offsetL_M tex_o
 #define X X_Y.xy
 #define Y X_Y.zw
 #define Lv X_Y.xz
@@ -63,31 +57,16 @@ wrath_analytic_font_compute_distance(in vec2 GlyphTextureCoordinate,
 #define dM dL_dM.y
 
   tex_v=texture2D(wrath_AnalyticNormalTexture, GlyphTextureCoordinate);
-
-  #ifdef WRATH_FONT_ANALYTIC_PIXEL_RELATIVE_COORDINATES
-    tex_o=texture2D(wrath_AnalyticPositionTexture, GlyphTextureCoordinate);
-  #elif defined(WRATH_FONT_USE_LA_LOOKUP)
+  #if defined(WRATH_FONT_USE_LA_LOOKUP)
     tex_o=texture2D(wrath_AnalyticPositionTexture, GlyphTextureCoordinate).ra;
   #else
     tex_o=texture2D(wrath_AnalyticPositionTexture, GlyphTextureCoordinate).rg;
   #endif
 
 
-#ifdef WRATH_FONT_ANALYTIC_PIXEL_RELATIVE_COORDINATES
-  p=GlyphCoordinate - 255.0*tex_o.zw;
-  p=clamp(p, 0.0, WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE);
-#else
   p=GlyphCoordinate;
-#endif
-
   X_Y=(2.0)*(255.0/254.0)*tex_v.xzyw - vec4(1.0, 1.0, 1.0, 1.0);
-  
   Cv= Lv.xy*Mv.yx;
-
-#ifdef WRATH_FONT_ANALYTIC_PIXEL_RELATIVE_COORDINATES
-  offsetL_M=(4.0*WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE)*(255.0/254.0)*tex_o.xy 
-    - vec2(2.0*WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE, 2.0*WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE);
-#endif
 
   dL_dM=p.x*X + p.y*Y - offsetL_M;
   d=(Cv.y<Cv.x)?
@@ -96,10 +75,8 @@ wrath_analytic_font_compute_distance(in vec2 GlyphTextureCoordinate,
 
   return d;
 
-#ifndef WRATH_FONT_ANALYTIC_PIXEL_RELATIVE_COORDINATES
-  #undef offsetL_M 
-#endif
 
+#undef offsetL_M 
 #undef X 
 #undef Y 
 #undef Lv 

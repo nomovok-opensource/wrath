@@ -43,87 +43,6 @@ using namespace WRATHFreeTypeSupport;
 
 namespace
 {
-  class CubicsToQuadraticsEmitter:
-    public WRATHFreeTypeSupport::ContourEmitterBase
-  {
-  public:
-    CubicsToQuadraticsEmitter(const FT_Outline &outline, int pscale_factor):
-      m_worker(outline, pscale_factor)
-    {
-      
-    }
-
-    virtual
-    void
-    produce_contours(geometry_data data)
-    {
-      consumer_state S(data, this);
-      m_worker.produce_contours(data);
-    }
-
-  private:
-
-    class consumer_state
-    {
-    public:
-      consumer_state(geometry_data d, 
-                     CubicsToQuadraticsEmitter *master):
-        m_data(d),
-        m_master(master)
-      {
-        signal_emit_curve::slot_type C(boost::bind(&CubicsToQuadraticsEmitter::consumer_state::consume_curve,
-                                                   this, _1));
-        signal_end_contour::slot_type O(boost::bind(&CubicsToQuadraticsEmitter::consumer_state::consume_contour,
-                                                    this));
-        
-        m_consume_curves=m_master->m_worker.connect_emit_curve(C);
-        m_consume_contours=m_master->m_worker.connect_emit_end_contour(O);
-      }
-
-      ~consumer_state()
-      {
-        m_consume_curves.disconnect();
-        m_consume_contours.disconnect();
-      }
-      
-    private:
-      void
-      consume_contour(void)
-      {
-        m_master->emit_end_contour();
-      }
-      
-      void
-      consume_curve(WRATHFreeTypeSupport::BezierCurve *curve)
-      {
-        if(curve->degree()==3) 
-          {
-            vecN<WRATHFreeTypeSupport::BezierCurve*, 4> quads_4;
-            
-            curve->approximate_cubic(m_data, quads_4);
-            for(int i=0; i<4; ++i)
-              {
-                m_master->emit_curve(quads_4[i]);
-              }
-            
-            WRATHDelete(curve);
-          }
-        else
-          {
-            m_master->emit_curve(curve);
-          }
-      }
-      
-      geometry_data m_data;
-      CubicsToQuadraticsEmitter *m_master;
-      boost::signals2::connection m_consume_curves;
-      boost::signals2::connection m_consume_contours;    
-    };
-
-    WRATHFreeTypeSupport::ContourEmitterFromFT_Outline m_worker;
-  };
-  
-
   unsigned int
   compute_num_levels_needed(const ivec2 &glyph_size,
                             int mipmap_levels)
@@ -152,9 +71,6 @@ namespace
     for(unsigned int i=0;i<N;++i)
       {
         int int_value;
-
-        //NOTE that we pack to [0,254] this is so that
-        //the value 0 is represented!
         int_value= static_cast<int>( 254.0f*0.5f*(v[i] + 1.0f) );
         int_value=std::max(0, int_value);
         int_value=std::min(254, int_value);
@@ -186,9 +102,8 @@ namespace
   }
 
   GLenum
-  teximage_internal_format(enum WRATHTextureFontFreeType_Analytic::texture_mode_type fmt)
+  teximage_internal_format(void)
   {
-    WRATHassert(fmt<3);
     /*
       GLES2 just plane sucks. The internal format
       of a texture is NOT determined by the 3rd
@@ -197,80 +112,41 @@ namespace
     */
     #if defined(WRATH_GLES_VERSION) && WRATH_GLES_VERSION==2
     {
-      const GLenum values[3]=
-        {
-          /*[local_pixel_coordinates]=*/ GL_RGBA,
-          /*[global_pixel_coordinates_16bit]=*/ GL_LUMINANCE_ALPHA,
-          /*[global_pixel_coordinates_32bit]=*/ GL_LUMINANCE_ALPHA
-        };
-      return values[fmt];
+      return GL_LUMINANCE_ALPHA;
     }
     #else
     {
-      const GLenum values[3]=
-        {
-          /*[local_pixel_coordinates]=*/ GL_RGBA8,
-          /*[global_pixel_coordinates_16bit]=*/ GL_RG16F,
-          /*[global_pixel_coordinates_32bit]=*/ GL_RG32F
-        };
-      return values[fmt];
+      return GL_RG16F;
     }
     #endif
     
   }
   
   GLenum
-  teximage_external_format(enum WRATHTextureFontFreeType_Analytic::texture_mode_type fmt)
+  teximage_external_format(void)
   {
-    WRATHassert(fmt<3);
-
     #if defined(WRATH_GLES_VERSION) && WRATH_GLES_VERSION==2
     {
-      const GLenum values[3]=
-        {
-          /*[local_pixel_coordinates]=*/ GL_RGBA,
-          /*[global_pixel_coordinates_16bit]=*/ GL_LUMINANCE_ALPHA,
-          /*[global_pixel_coordinates_32bit]=*/ GL_LUMINANCE_ALPHA
-        };
-      return values[fmt];
+      return GL_LUMINANCE_ALPHA;
     }
     #else
     {
-      const GLenum values[3]=
-        {
-          /*[local_pixel_coordinates]=*/ GL_RGBA,
-          /*[global_pixel_coordinates_16bit]=*/ GL_RG,
-          /*[global_pixel_coordinates_32bit]=*/ GL_RG
-        };
-      return values[fmt];
+      return GL_RG;
     }
     #endif
   }
   
   
   GLenum
-  teximage_pixel_type(enum WRATHTextureFontFreeType_Analytic::texture_mode_type fmt)
+  teximage_pixel_type(void)
   {
-    WRATHassert(fmt<3);
     #if defined(WRATH_GLES_VERSION) && WRATH_GLES_VERSION==2
     {
-      const GLenum values[3]=
-        {
-          /*[local_pixel_coordinates]=*/ GL_UNSIGNED_BYTE,
-          /*[global_pixel_coordinates_16bit]=*/ GL_HALF_FLOAT_OES,
-          /*[global_pixel_coordinates_32bit]=*/ GL_FLOAT
-        };
-      return values[fmt];
+      return GL_HALF_FLOAT_OES;
     }
     #else
     {
-      const GLenum values[3]=
-        {
-          /*[local_pixel_coordinates]=*/ GL_UNSIGNED_BYTE,
-          /*[global_pixel_coordinates_16bit]=*/ GL_HALF_FLOAT_ARB,
-          GL_FLOAT
-        };
-      return values[fmt];
+      return GL_HALF_FLOAT_ARB;
     }
     #endif
   }
@@ -285,19 +161,15 @@ namespace
 
 
     const WRATHTextureFont::GlyphGLSL*
-    glyph_glsl(enum WRATHTextureFontFreeType_Analytic::texture_mode_type,
-                    unsigned int);
+    glyph_glsl(void);
 
     WRATHMutex m_mutex;
     WRATHImage::TextureAllocatorHandle m_allocator;
-    enum WRATHTextureFontFreeType_Analytic::texture_mode_type m_creation_mode;
     bool m_generate_sub_quads;
     GLint m_texture_creation_size;
     unsigned int m_mipmap_level;
 
   private:
-    
-    std::vector<WRATHTextureFont::GlyphGLSL*> m_relative_glyph_glsl;
     WRATHTextureFont::GlyphGLSL m_glyph_glsl;
   };
 
@@ -331,7 +203,6 @@ namespace
 // common_analytic_texture_data methods
 common_analytic_texture_data::
 common_analytic_texture_data(void):
-  m_creation_mode(WRATHTextureFontFreeType_Analytic::local_pixel_coordinates),
   m_generate_sub_quads(false),
   m_texture_creation_size(1024),
   m_mipmap_level(0)
@@ -340,57 +211,57 @@ common_analytic_texture_data(void):
                                                    GL_CLAMP_TO_EDGE,
                                                    GL_CLAMP_TO_EDGE);
   /*
-    specify the clear values for the 3 types of formats
-    analytic fonts use.
+    specify the clear values for the format types
+    that analytic fonts use.
   */
   WRATHImage::ImageFormatArray fmt;
-  vecN< std::vector<uint8_t>, 4> values;
+  vecN< std::vector<uint8_t>, 2> values;
   vecN<uint8_t, 4> v;
   vec2 offsets(10000.0f, 10000.0f);
   
+
+  /*
+    speicfy the format:
+   */
+  fmt
+    .format(0, WRATHImage::ImageFormat()
+            .pixel_data_format(GL_RGBA)
+            .pixel_type(GL_UNSIGNED_BYTE)
+            .internal_format(GL_RGBA)
+            .magnification_filter(GL_NEAREST)
+            .minification_filter(GL_NEAREST)
+            .automatic_mipmap_generation(false))
+    .format(1, WRATHImage::ImageFormat()
+            .pixel_data_format(teximage_external_format())
+            .pixel_type(teximage_pixel_type())
+            .internal_format(teximage_internal_format())
+            .magnification_filter(GL_NEAREST)
+            .minification_filter(GL_NEAREST)
+            .automatic_mipmap_generation(false));
+
+
+  /*
+    set the "clear" value for the channel used
+    to store the normal vectors so that it stores
+    the normals being (0,0)
+   */
   values[0].resize(4);
   v=pack_from_minus_one_plus_one( vec4(0.0f, 0.0f, 0.0f, 0.0f));
   std::copy(v.begin(), v.end(), values[0].begin());
-  
-  values[1].resize(4);
-  values[1][0]=255;
-  values[1][1]=255;
-  values[1][2]=0;
-  values[1][3]=0;
-  
-  values[2].resize(4);
-  WRATHUtil::convert_to_halfp_from_float(values[2], offsets);
-  
-  values[3].resize(8);
-  memcpy(&values[3][0], &offsets[0], 8);
-  
-  fmt.format(0, WRATHImage::ImageFormat()
-             .pixel_data_format(GL_RGBA)
-             .pixel_type(GL_UNSIGNED_BYTE)
-             .internal_format(GL_RGBA)
-             .magnification_filter(GL_NEAREST)
-             .minification_filter(GL_NEAREST)
-             .automatic_mipmap_generation(false));
-  
-  for(int i=0;i<3; ++i)
-    {
-      enum WRATHTextureFontFreeType_Analytic::texture_mode_type tp;
-      tp=static_cast<enum WRATHTextureFontFreeType_Analytic::texture_mode_type>(i);
-      
-      fmt.format(1, WRATHImage::ImageFormat()
-                 .pixel_data_format(teximage_external_format(tp))
-                 .pixel_type(teximage_pixel_type(tp))
-                 .internal_format(teximage_internal_format(tp))
-                 .magnification_filter(GL_NEAREST)
-                 .minification_filter(GL_NEAREST)
-                 .automatic_mipmap_generation(false));
-      
-      
-      m_allocator.set_clear_bits(fmt, 
-                                 vecN<std::vector<uint8_t>, 2>(values[0], 
-                                                               values[1+i]));
-    }
 
+  /*
+    set the clear value for the offset channel
+    to be a value very far away.
+   */
+  values[1].resize(4);
+  WRATHUtil::convert_to_halfp_from_float(values[1], offsets);
+
+  /*
+    with those values now encoded, set the "clear"
+    value as held in values[]
+   */
+  m_allocator.set_clear_bits(fmt, values);
+  
   /*
     only GLES2 requires the LA lookup.
    */
@@ -442,58 +313,13 @@ common_analytic_texture_data(void):
 common_analytic_texture_data::
 ~common_analytic_texture_data()
 {
-  for(int i=0, endi=m_relative_glyph_glsl.size(); i<endi; ++i)
-    {
-      WRATHDelete(m_relative_glyph_glsl[i]);
-    }
 }
 
 const WRATHTextureFont::GlyphGLSL*
 common_analytic_texture_data::
-glyph_glsl(enum WRATHTextureFontFreeType_Analytic::texture_mode_type pmode,
-           unsigned int pmipmap_levels)
+glyph_glsl(void)
 {
-  WRATHAutoLockMutex(m_mutex);
-  if(pmode!=WRATHTextureFontFreeType_Analytic::local_pixel_coordinates)
-    {
-      return &m_glyph_glsl;
-    }
-
-  if(pmipmap_levels<m_relative_glyph_glsl.size())
-    {
-      return m_relative_glyph_glsl[pmipmap_levels];
-    }
-
-  unsigned int old_sz(m_relative_glyph_glsl.size());
-
-  m_relative_glyph_glsl.resize(pmipmap_levels+1);
-  for(;old_sz<=pmipmap_levels; ++old_sz)
-    {
-      m_relative_glyph_glsl[old_sz]=WRATHNew WRATHTextureFont::GlyphGLSL();
-
-      m_relative_glyph_glsl[old_sz]->m_sampler_names=m_glyph_glsl.m_sampler_names;
-      m_relative_glyph_glsl[old_sz]->m_global_names=m_glyph_glsl.m_global_names;
-      m_relative_glyph_glsl[old_sz]->m_texture_page_data_size=m_glyph_glsl.m_texture_page_data_size;
-
-      std::ostringstream ostr;
-      ostr << (1<<old_sz) << ".0";
-
-      for(unsigned int i=0; i<WRATHTextureFont::GlyphGLSL::num_linearity_types; ++i)
-        {
-          m_relative_glyph_glsl[old_sz]->m_fragment_processor[i]
-            .add_macro("WRATH_FONT_ANALYTIC_PIXEL_RELATIVE_COORDINATES")
-            .add_macro("WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE", ostr.str())
-            .absorb(m_glyph_glsl.m_fragment_processor[i])
-            .remove_macro("WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE")
-            .remove_macro("WRATH_FONT_ANALYTIC_PIXEL_RELATIVE_COORDINATES");
-          
-          m_relative_glyph_glsl[old_sz]->m_vertex_processor[i]
-            .absorb(m_glyph_glsl.m_vertex_processor[i]);
-        }
-    }
-
-  return m_relative_glyph_glsl[pmipmap_levels];
-
+  return  &m_glyph_glsl;
 }
 
   
@@ -505,8 +331,7 @@ WRATHTextureFontFreeType_Analytic(WRATHFreeTypeSupport::LockableFace::handle pfa
   WRATHTextureFontFreeTypeT<WRATHTextureFontFreeType_Analytic>(pface, presource_name),
   m_generate_sub_quads(generate_sub_quads()),
   m_mipmap_level(mipmap_level()),
-  m_texture_mode(creation_texture_mode()),
-  m_bytes_per_pixel(4, m_texture_mode==global_pixel_coordinates_32bit?8:4)
+  m_bytes_per_pixel(4, 4)
 {
   ctor_init();
   m_page_tracker.connect(boost::bind(&WRATHTextureFontFreeType_Analytic::on_create_texture_page, this,
@@ -543,9 +368,9 @@ ctor_init(void)
             .automatic_mipmap_generation(false))
     .format(1, 
             WRATHImage::ImageFormat()
-            .pixel_data_format(teximage_external_format(m_texture_mode))
-            .pixel_type(teximage_pixel_type(m_texture_mode))
-            .internal_format(teximage_internal_format(m_texture_mode))
+            .pixel_data_format(teximage_external_format())
+            .pixel_type(teximage_pixel_type())
+            .internal_format(teximage_internal_format())
             .magnification_filter(GL_NEAREST)
             .minification_filter(GL_NEAREST)
             .automatic_mipmap_generation(false));
@@ -708,16 +533,6 @@ generate_character(WRATHTextureFont::glyph_index_type G)
   
   std::vector<WRATHFreeTypeSupport::point_type> pts;
   geometry_data dbg(NULL, pts);
-
-
-  /*
-  int scale_factor(4);
-  CubicsToQuadraticsEmitter emitter(ttf_face()->face()->glyph->outline, scale_factor);
-
-  OutlineData outline_data(&emitter, scale_factor,
-                           bitmap_sz, bitmap_offset, dbg);
-  */
-  
   OutlineData outline_data(ttf_face()->face()->glyph->outline, 
                            bitmap_sz, bitmap_offset, dbg);
   
@@ -733,11 +548,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
   
   if(m_generate_sub_quads)
     {
-      /*
-        allow sub-tesselation of upto 25 rects.
-      */
       int quad_size( std::max(bitmap_sz.x(),bitmap_sz.y())/8);
-      
       sub_primitive_maker=WRATHNew WRATHTextureFontUtil::SubQuadProducer(bitmap_sz, quad_size);
     }
 
@@ -1138,66 +949,37 @@ pack_lines(ivec2 pt, int L,
       analytic_data[0][ m_bytes_per_pixel[0]*L+i ]=packed_normals[i];
     }
 
-  switch(m_texture_mode)
-    {
-    default:
-    case local_pixel_coordinates:
+  
+  {
+    vec2 fpt(pt.x(), pt.y());
+    /*
+      we need to increment offsets[]
+      normally we would just increment
+      offset[i] by dot(n_vector[i], fpt),
+      but we need to keep in mind that
+      we store the normal in 8 bits,
+      so we will get the normal back
+      from the 8-bit encoding and
+      do the computation from that value.
+    */
+    for(int i=0;i<2;++i)
       {
-        vecN<uint8_t,2> ioffset;
-        ioffset=pack_from_minus_one_plus_one(offset/(2.0f*static_cast<float>(1<<m_mipmap_level)));
-
-        analytic_data[1][4*L+0]=ioffset[0];
-        analytic_data[1][4*L+1]=ioffset[1];
-        analytic_data[1][4*L+2]=pt.x();
-        analytic_data[1][4*L+3]=pt.y();
+        vec2 n( packed_normals[2*i], packed_normals[2*i+1]);
+        
+        n/=(254.0f*0.5f);
+        n+=vec2(-1.0f, -1.0f);
+        offset[i]+=dot(n, fpt);
       }
-      break;
-
-    case global_pixel_coordinates_16bit:
-    case global_pixel_coordinates_32bit:
+    
+    WRATHassert(m_bytes_per_pixel[1]==4);
+    vecN<uint8_t, 4> as_fp16;
+    
+    WRATHUtil::convert_to_halfp_from_float(as_fp16, offset);
+    for(int i=0; i<4; ++i)
       {
-        vec2 fpt(pt.x(), pt.y());
-        /*
-          we need to increment offsets[]
-          normally we would just increment
-          offset[i] by dot(n_vector[i], fpt),
-          but we need to keep in mind that
-          we store the normal in 8 bits,
-          so we will get the normal back
-          from the 8-bit encoding and
-          do the computation from that value.
-         */
-        for(int i=0;i<2;++i)
-          {
-            vec2 n( packed_normals[2*i], packed_normals[2*i+1]);
-
-            n/=(254.0f*0.5f);
-            n+=vec2(-1.0f, -1.0f);
-            offset[i]+=dot(n, fpt);
-          }
-
-        if(m_texture_mode==global_pixel_coordinates_16bit)
-          {
-            WRATHassert(m_bytes_per_pixel[1]==4);
-            vecN<uint8_t, 4> as_fp16;
-
-            WRATHUtil::convert_to_halfp_from_float(as_fp16, offset);
-            for(int i=0; i<4; ++i)
-              {
-                analytic_data[1][4*L+i]=as_fp16[i];
-              }
-          }
-        else
-          {
-            WRATHassert(m_bytes_per_pixel[1]==8);
-            memcpy(analytic_data[1].c_ptr()+8*L, offset.c_ptr(), 8);
-          }
-      }
-      break;
-
-      
-
-    }
+        analytic_data[1][4*L+i]=as_fp16[i];
+      }      
+  }
   
 }
 
@@ -1248,7 +1030,7 @@ const WRATHTextureFont::GlyphGLSL*
 WRATHTextureFontFreeType_Analytic::
 glyph_glsl(void)
 {
-  return common_data().glyph_glsl(m_texture_mode, m_mipmap_level);
+  return common_data().glyph_glsl();
 }
 
 GLint
@@ -1268,21 +1050,6 @@ texture_creation_size(GLint v)
   common_data().m_allocator.texture_atlas_dimension(v);
 }
 
-void
-WRATHTextureFontFreeType_Analytic::
-creation_texture_mode(enum WRATHTextureFontFreeType_Analytic::texture_mode_type v)
-{
-  WRATHAutoLockMutex(common_data().m_mutex);
-  common_data().m_creation_mode=v;
-}
-
-enum WRATHTextureFontFreeType_Analytic::texture_mode_type
-WRATHTextureFontFreeType_Analytic::
-creation_texture_mode(void)
-{
-  WRATHAutoLockMutex(common_data().m_mutex);
-  return common_data().m_creation_mode;
-}
 
 bool
 WRATHTextureFontFreeType_Analytic::

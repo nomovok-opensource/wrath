@@ -200,7 +200,6 @@ public:
   command_line_argument_value<std::string> m_tex_attr_prec, m_tex_varying_vs_prec;
   command_line_argument_value<std::string> m_tex_varying_fs_prec, m_tex_recip_prec; 
   command_line_argument_value<int> m_text_renderer;
-  command_line_argument_value<int> m_text_renderer_line_analytic_format;
   command_line_argument_value<bool> m_text_renderer_curve_analytic_separate_curve_storage;
   command_line_argument_value<int> m_text_renderer_sub_choice;
   command_line_argument_value<int> m_text_renderer_coverage_min_filter;
@@ -313,14 +312,6 @@ public:
                     "1=multi-res coverage, 2=distance, 3=analytic, 4=curve_analytic",
                     *this),
 
-    m_text_renderer_line_analytic_format(1, "line_analytic_format",
-                                         "Only has affect if text_renderer is 3 "
-                                         "Select texture format for analytic "
-                                         "text renderer(only has affect for values "
-                                         "0=use (RGBA8, RGBA8), "
-                                         "1=use (RGBA8, LA_16F), "
-                                         "2=use (RGBA8, LA_32F), ", 
-                                         *this),
                                      
     m_text_renderer_curve_analytic_separate_curve_storage(false, "curve_analytic_separate",
                                                           "Only has affect if text_renderer is 4 "
@@ -982,29 +973,8 @@ TextViewer(cmd_line_type &cmd_line):
   WRATHFontShaderSpecifier *text_shader_specifier;
 
   WRATHTextureFontFreeType_Analytic::mipmap_level(analytic_mip_value);
-  
-  
-  
   WRATHTextureFontFreeType_CurveAnalytic::store_separate_curves(cmd_line.m_text_renderer_curve_analytic_separate_curve_storage.m_value);
 
-  switch(cmd_line.m_text_renderer_line_analytic_format.m_value)
-    {
-    default:
-    case 0:
-      {        
-        WRATHTextureFontFreeType_Analytic::creation_texture_mode(WRATHTextureFontFreeType_Analytic::local_pixel_coordinates);
-      }
-      break;
-
-    case 1:
-      WRATHTextureFontFreeType_Analytic::creation_texture_mode(WRATHTextureFontFreeType_Analytic::global_pixel_coordinates_16bit);
-      break;
-
-    case 2: 
-        WRATHTextureFontFreeType_Analytic::creation_texture_mode(WRATHTextureFontFreeType_Analytic::global_pixel_coordinates_32bit);
-      break;
-    }
-  
   
   std::string font_fragment_shader;
   enum WRATHGLShader::shader_source_type fragment_shader_type;
