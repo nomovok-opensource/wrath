@@ -180,6 +180,11 @@ namespace
 
             if(texel_is_unfilled[pt.x()][pt.y()])
               {
+                /*
+                  note that we do not fill on the right/downmost 
+                  texel, this is becuase that texel is -padding-
+                  and needs to be cleared always.
+                 */
                 if(last_filled_texel>=0 and x+1!=glyph_size[dim])
                   {
                     int L;
@@ -207,7 +212,7 @@ namespace
               }
           }
         
-        for(int x=1; x<first_filled_texel_on_line; ++x)
+        for(int x=0; x<first_filled_texel_on_line; ++x)
           {
             int L;
             ivec2 pt;
@@ -610,7 +615,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
 
   if(bitmap_sz.x()>0 and bitmap_sz.y()>0)
     {
-      int padding(2<<m_mipmap_level);
+      int padding(1<<m_mipmap_level);
       glyph_size=bitmap_sz+ivec2(padding, padding);
     }
   else
@@ -698,10 +703,6 @@ generate_character(WRATHTextureFont::glyph_index_type G)
      same memory as packed_analytic_pixel_data,
      only that it views the memory as an
      array of vecN<uint8_t,4>.
-
-     TODO: make padding to be done on both
-     sides of glyph rather than just
-     all on the right/down.
    */
   for(int y=0;y<glyph_size.y();++y)
     {
