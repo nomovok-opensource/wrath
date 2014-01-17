@@ -39,7 +39,7 @@
 
 using namespace WRATHFreeTypeSupport;
 
-
+#define TEXTURE_PAGE_DATA_SIZE 3
 
 namespace
 {
@@ -183,7 +183,7 @@ WRATHTextureFontFreeType_Distance::
 on_create_texture_page(ivec2 texture_size,
                        std::vector<float> &custom_data)
 {
-  custom_data.resize(3);
+  custom_data.resize(TEXTURE_PAGE_DATA_SIZE);
   custom_data[0]=1.0f/static_cast<float>(std::max(1, texture_size.x()) );
   custom_data[1]=1.0f/static_cast<float>(std::max(1, texture_size.y()) );
 
@@ -196,14 +196,14 @@ int
 WRATHTextureFontFreeType_Distance::
 texture_page_data_size(void) const
 {
-  return 3; 
+  return TEXTURE_PAGE_DATA_SIZE; 
 }
 
 float
 WRATHTextureFontFreeType_Distance::
 texture_page_data(int texture_page, int idx) const
 {
-  return (0<=idx and idx<2)?
+  return (0<=idx and idx<TEXTURE_PAGE_DATA_SIZE)?
     m_page_tracker.custom_data(texture_page)[idx]:
     0;
 }
