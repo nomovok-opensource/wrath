@@ -36,7 +36,113 @@
 #include FT_FREETYPE_H
 #include FT_STROKER_H
 
+/*
+  Overview of algorithm to compute -global- signed distance 
+  function.
 
+  1) compute intersections of all curves against texel
+     boundaries
+  2) for each texel, use OutlineData::compute_localized_affectors() to
+     approximate each curve going through any of the texel's
+     boundaries as a line segment
+  3) Only support up to 2 curves. Also, if there are 2 curves
+     the must NOT be parallel
+  4) Let L0, L1 be the line segments, compute n0, n1 and q
+     so that L0 = { p | <p-q, m0> = 0 } and L1= { p | <p-q, m1>=0 }
+  5) Let S be -1 or +1 so that
+       S=-1 p in glyph <-----> max(<p-q,m0>, <p-q,m1> ) > 0
+       S=+1 p in glyph <-----> min(<p-q,m0>, <p-q,m1> ) > 0
+  6) Set m0, m1 as follows:
+       n0=S*m0
+       n1=S*m1
+     and note that:
+        S=+1 ---> min(<p-q,m0>, <p-q,m1> ) = S*min(<p-q,n0>, <p-q,n1> )
+        S=-1 ---> max(<p-q,m0>, <p-q,m1> ) = S*min(<p-q,n0>, <p-q,n1> )
+     thus for points p in the texel, 
+        p in glyph <-----> S*min(<p-q,n0>, <p-q,n1> ) > 0
+  7) Encode S as sign(n0.x*n1.y - n1.x*n0.y), i.e. swap(n0,n1) as needed
+     to encode S implicitly with ordering of n0, n1
+  8) for case where only one curve goes through, let 
+     n1=J(n0) and q = p0 + M*n1, where p0 a point
+     that the line segment intersects the boundary of
+     the texel and J(x,y)=(-y,x).
+
+     Then <p-q, n0> = <p-p0, n0> and
+     <p-q, n1> = <p-p0 - M*n1, n1> = <p-p0, n1> - M*||n1||^2
+
+     Let M=large negative number so that
+     min( <p-q, n0>, <p-q, n1> ) = min( <p-q, n0>,  <p-p0, n1> - M*||n1||^2 )
+                                 = <p-q, n0>
+     
+     for example M=-6 will work since 
+     | <p-p0, n0> | <= |p-p0| * |n0| <= 2
+     and thus, <p-p0, n1> - M*||n1||^2 >= -2 + 6 > 4 > 2
+
+     and then follow (6) and (7) with S=1
+     Note that <p-q, n1> is always positive.
+
+  9) for case where 0 curves go through the texel, find
+     the nearest texel on the same horizontal or verical
+     line that has atleast one curve going through it.
+     Additionally, find the nearest texel with an end point 
+     of a bezeir curve. If the closer texel is of the first choice,
+     copy it's values. If the closer texel is of an end point
+     of a curve let q=that point. Let n0=(a,0) and n1=(0,b)
+     where abs(a)=abs(b)=1 and for p inside the texel,
+
+     <p-q, n0> < 0
+     <p-q, n1> < 0
+
+     If the texel is within the glyph, let S=-1
+     otherwise, let S=1. Swap n0, n1 as necessary
+     to encode S in their cross product.
+
+
+  9) our final shader is then quite simple:
+
+      v0=dot(p-q, n0);
+      v1=dot(p-q, n1);
+      C=n0.x*n1.y - n1.x*n0.y;
+      d = sign(C) * min(v0, v1);
+     
+      gives a simple pseudo-distance that 
+      cooperates with anti-aliasing.
+
+      The signed L1 distance can be given by:
+      
+      v0=dot(p-q, n0);
+      v1=dot(p-q, n1);
+      C=n0.x*n1.y - n1.x*n0.y;
+      d = sign(C) * min(v0, v1);
+
+      dist=(v0<0 && v1<0)?
+        |p.x-q.y| + |p.y-q.y|:
+        min(|v0|, |v1|);
+
+      sign_distance=sign(d)*dist;
+
+      The reason for the (v0<0 && v1<0)
+      is that is when the point p is in
+      the anti-corner of the line segment;
+      that anti-corner is where using
+      the min() of the two values gives
+      a pseudo-distance.
+
+      That anti-corner case only occurs
+      when a texel has two distinct curves
+      through it. 
+
+      For when there are no curves through it, 
+      v0<0 and v1<0 for entire texel and 
+      thus the L1 distance to the nearest
+      curve end point is used.
+
+      For when there is one curve, then
+      v1 is always positive and has
+      greater magnitude than v0 so
+      the return value always is
+      from v0.
+ */
 
 
 using namespace WRATHFreeTypeSupport;
@@ -97,8 +203,39 @@ namespace
   {
     vec2 v;
     v=vec2( p1.y()-p0.y(), p0.x()-p1.x());
+    //note that we normalize n so that the computed dot
+    //using it produces the L1 metric to the line 
     n= v/std::max( std::abs(v.x()), std::abs(v.y()));
     o=dot(p0,n);
+  }
+
+  void
+  compute_offset_point(vecN<vec2, 2> &normals,
+                       vecN<float, 2> &offsets,
+                       int curve_count, 
+                       const vec2 &texel_pt)
+  {
+    if(curve_count==0)
+      {
+      }
+    else if(curve_count==1)
+      {
+        vec2 q;
+        q=normals[0].normal_vector() * offsets[0];
+
+        offsets[0]=q.x();
+        offsets[1]=q.y();
+      }
+    else 
+      {
+        /*
+          find q so that for i=0, 1
+          < p, n[i] > - offset[i] = < p-q, n[i] >
+
+          thus, <q, n[i] > = offset[i]
+        */
+        
+      }
   }
 
   GLenum
@@ -1080,11 +1217,25 @@ pack_lines(ivec2 pt, int L,
         n+=vec2(-1.0f, -1.0f);
         offset[i]+=dot(n, fpt);
       }
+
+    /*
+      now, offset[] is for using the equation
+       f(p) = <p, n> - offset,
+
+       but we want to find a common point q so
+       that we will use
+
+       f(p) = <p - q, n>
+
+       i.e. a q so that for i=0,1 
+       <q, n[i] > = offset[i] 
+     */
+    compute_offset_point(n, offset, curve_count, fpt); 
     
     WRATHassert(m_bytes_per_pixel[1]==4);
     vecN<uint8_t, 4> as_fp16;
     
-    WRATHUtil::convert_to_halfp_from_float(as_fp16, offset);
+    WRATHUtil::convert_to_halfp_from_float(as_fp16, offsets);
     for(int i=0; i<4; ++i)
       {
         analytic_data[1][4*L+i]=as_fp16[i];
