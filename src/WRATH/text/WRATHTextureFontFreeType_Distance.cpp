@@ -71,7 +71,7 @@ namespace
                                                        GL_REPEAT,
                                                        GL_REPEAT);
       
-      m_glyph_glsl.m_texture_page_data_size=2;
+      m_glyph_glsl.m_texture_page_data_size=TEXTURE_PAGE_DATA_SIZE;
 
       m_glyph_glsl.m_vertex_processor[WRATHTextureFont::GlyphGLSL::linear_glyph_position]
         .add_source("font_distance_linear.vert.wrath-shader.glsl", WRATHGLShader::from_resource);
