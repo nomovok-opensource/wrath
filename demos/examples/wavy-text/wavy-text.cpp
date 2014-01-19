@@ -53,8 +53,8 @@
 /*
   Choose how the font is realized,
  */
-//typedef WRATHTextureFontFreeType_Distance FontType;
-typedef WRATHTextureFontFreeType_CurveAnalytic FontType;
+typedef WRATHTextureFontFreeType_Distance FontType;
+//typedef WRATHTextureFontFreeType_CurveAnalytic FontType;
 //typedef WRATHMixFontTypes<WRATHTextureFontFreeType_Analytic>::mix FontType;
 
 class cmd_line_type:public DemoKernelMaker
@@ -63,7 +63,7 @@ public:
   command_line_argument_value<std::string> m_text;
   command_line_argument_value<bool> m_text_from_file;
   command_line_argument_value<int> m_r, m_g, m_b, m_a;
-  command_line_argument_value<bool> m_bold, m_italic;
+  command_line_argument_value<bool> m_bold, m_italic, m_draw_outline;
   command_line_argument_value<std::string> m_family;  
   command_line_argument_value<int> m_pixel_size, m_wrath_font_size;
   command_line_argument_value<bool> m_show_font_file_name;
@@ -78,8 +78,9 @@ public:
     m_g(255, "color_g", "Green component in range [0,255] of text color", *this),
     m_b(255, "color_b", "Blue component in range [0,255] of text color", *this),
     m_a(255, "color_a", "Alpha component in range [0,255] of text color", *this),
-    m_bold(false, "bold", "Bold text", *this),
-    m_italic(false, "italic", "Italic text", *this),
+    m_bold(false, "bold", "if true, use bold font", *this),
+    m_italic(false, "italic", "uf true, use italic font", *this),
+    m_draw_outline(false, "draw_outline", "If true, draw a colored outline pattern for text", *this),
     m_family("DejaVuSans", "family", "Family of font", *this),
     m_pixel_size(32, "pixel_size", "Pixel size at which to display the text", *this),
     m_wrath_font_size(48, "wrath_font_size", "Pixel size to realize the font at", *this),
@@ -219,11 +220,25 @@ WavyTextExample(cmd_line_type *cmd_line):
   /*
     create our WRATHFontShaderSpecifier
    */
-  m_present_text=WRATHNew WRATHFontShaderSpecifier("my custom font presenter",
-                                                   WRATHGLShader::shader_source()
-                                                   .add_source("wobbly.vert.glsl", WRATHGLShader::from_resource),
-                                                   WRATHGLShader::shader_source()
-                                                   .add_source("wobbly.frag.glsl", WRATHGLShader::from_resource));
+  m_present_text=WRATHNew WRATHFontShaderSpecifier("my custom font presenter");
+
+  /*
+    append vertex shader code
+   */
+  m_present_text->append_vertex_shader_source()
+    .add_source("wobbly.vert.glsl", WRATHGLShader::from_resource);
+
+  /*
+    append fragment sahder code
+  */
+  if(cmd_line->m_draw_outline.m_value)
+    {
+      m_present_text->append_fragment_shader_source()
+        .add_macro("DRAW_OUTLINE");
+    }
+  m_present_text->append_fragment_shader_source()
+    .add_source("wobbly.frag.glsl", WRATHGLShader::from_resource);
+
   /*
     the presentation shader of wobbly.vert/frag.glsl
     uses non-linear for position of fragment within

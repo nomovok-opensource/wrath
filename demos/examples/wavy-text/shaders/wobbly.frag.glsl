@@ -27,10 +27,12 @@ shader_in mediump vec4 tex_color;
 void
 shader_main(void)
 {
-  mediump float coverage;
   mediump vec2 wobbly;
   mediump float in_glyph;
   mediump float amplitude, speed, phase;
+  mediump vec4 final_color;
+
+  final_color=tex_color;
 
   /*
     Not all node packers allow for fetching per-node
@@ -66,14 +68,26 @@ shader_main(void)
   in_glyph=step(0.0, wobbly.x) * step(wobbly.x, glyph_linear_position_and_size.z);
   wobbly.x=clamp(wobbly.x, 0.0, glyph_linear_position_and_size.z);
 
-  /*
-    get the coverage, then also multiply it by
-    if the fragment wobbled is within the glyph
-   */
-  coverage=wrath_glyph_compute_coverage(wobbly.xy)*in_glyph;
-  
-  //multiply coverage by tex_color.a to get actual alpha
-  coverage*=tex_color.a;
+  #if defined(WRATH_FONT_IMPLEMENT_SIGNED_DISTANCE) && defined(DRAW_OUTLINE)
+  {
+    mediump float sd;
+    sd=wrath_glyph_signed_distance(wobbly);
+    final_color.r *= step(0.5, sd);
+    final_color.g *= step(sd, 0.5);
+    final_color.b *= step(-0.4, sd) * step(0.0, sd);
+    final_color.a *= step(-0.6, sd);
+  }
+  #else
+  {
+    mediump float coverage;
+    /*
+      get the coverage, then also multiply it by
+      if the fragment wobbled is within the glyph
+    */
+    coverage=wrath_glyph_compute_coverage(wobbly.xy)*in_glyph;
+    final_color.a*=coverage;
+  }
+  #endif
 
   /*
     font shaders are two pass drawers, see WRATHTwoPassDrawer
@@ -82,16 +96,16 @@ shader_main(void)
   #if defined(WRATH_IS_OPAQUE_PASS)
   {
     //if texel is too translucent, then the opaque pass discarded the texel
-    if(coverage<float(WRATH_TRANSLUCENT_THRESHOLD))
+    if(final_color.a<float(WRATH_TRANSLUCENT_THRESHOLD))
       discard;
   }
   #elif defined(WRATH_IS_TRANSLUCENT_PASS)
   {
-    if(coverage>=float(WRATH_TRANSLUCENT_THRESHOLD))
-      coverage=0.0;
+    if(final_color.a>=float(WRATH_TRANSLUCENT_THRESHOLD))
+      final_color.a=0.0;
   }
   #endif
 
-  gl_FragColor=vec4(tex_color.xyz*coverage, coverage);
+  gl_FragColor=vec4(final_color.xyz*final_color.a, final_color.a);
   
 }
