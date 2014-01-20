@@ -512,7 +512,7 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
       }
       #else
       {
-        output_glsl_source_code << "\n#define wrath_FragColor gl_FragColor \n"
+        output_glsl_source_code << "\n#define wrath_FragColor gl_FragColor \n";
       }
       #endif
     }
