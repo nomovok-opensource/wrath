@@ -42,6 +42,18 @@ namespace
     return S.substr(0, last_at);
   }
 
+  std::string
+  strip_leading_white_spaces(const std::string &S)
+  {
+    std::string::const_iterator iter, end;
+    for(iter=S.begin(), end=S.end(); iter!=end and isspace(*iter); ++iter)
+      {
+      }
+    return (iter!=end and *iter=='#')?
+      std::string(iter, end):
+      S;
+  }
+
   std::pair<bool, std::string>
   includes_file(const std::string &S, const std::string &path)
   {
@@ -130,7 +142,8 @@ namespace
           }
         else
           {
-            output_stream << S 
+
+            output_stream << strip_leading_white_spaces(S) 
                           << std::setw(80-S.length()) << "  //LOCATION(" 
                           << std::setw(3) << line_number
                           << ", " << label 
@@ -186,7 +199,7 @@ namespace
           }
         else
           {
-            output_stream << S 
+            output_stream << strip_leading_white_spaces(S) 
                           << std::setw(80-S.length()) << "  //LOCATION(" 
                           << std::setw(3) << line_number
                           << ", " << label 
