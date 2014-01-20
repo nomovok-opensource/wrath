@@ -146,7 +146,7 @@ namespace
     }
     #else
     {
-      return GL_HALF_FLOAT_ARB;
+      return GL_HALF_FLOAT;
     }
     #endif
   }

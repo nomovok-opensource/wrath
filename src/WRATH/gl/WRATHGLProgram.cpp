@@ -54,6 +54,20 @@ namespace
       S;
   }
 
+  void
+  emit_source_line(std::ostream &output_stream,
+                   const std::string &source, 
+                   int line_number, const std::string &label)
+  {
+    std::string S;
+    S=strip_leading_white_spaces(source);
+    output_stream << S 
+                  << std::setw(80-S.length()) << "  //LOCATION(" 
+                  << std::setw(3) << line_number
+                  << ", " << label 
+                  << ")\n";
+  }
+
   std::pair<bool, std::string>
   includes_file(const std::string &S, const std::string &path)
   {
@@ -142,12 +156,7 @@ namespace
           }
         else
           {
-
-            output_stream << strip_leading_white_spaces(S) 
-                          << std::setw(80-S.length()) << "  //LOCATION(" 
-                          << std::setw(3) << line_number
-                          << ", " << label 
-                          << ")\n";
+            emit_source_line(output_stream, S, line_number, label);
           }
 
         ++line_number;
@@ -199,11 +208,7 @@ namespace
           }
         else
           {
-            output_stream << strip_leading_white_spaces(S) 
-                          << std::setw(80-S.length()) << "  //LOCATION(" 
-                          << std::setw(3) << line_number
-                          << ", " << label 
-                          << ")\n";
+            emit_source_line(output_stream, S, line_number, label);
           }
         
         ++line_number;
@@ -648,10 +653,17 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
 
   for(std::list< source_code_type>::const_iterator 
         iter=m_values.begin(), end=m_values.end(); iter!=end; ++iter)
-    {
-      
+    {      
       add_source_entry(*iter, output_glsl_source_code);               
     }
+
+  /*
+    some GLSL pre-processors do not like to end on a
+    comment or other certain tokens, to make them
+    less grouchy, we emit a few extra \n's
+   */
+  output_glsl_source_code << "\n\n\n"
+                          << "#define WRATH_GL_SOURCE_END\n\n";
 }
 
 WRATHGLShader::shader_source&

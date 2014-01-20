@@ -1,8 +1,13 @@
 ngl_gles2detailed_output.txt
 ngl_gles2function_list_output.txt
+ngl_gles3detailed_output.txt
+ngl_gles3function_list_output.txt
 ngl_gldetailed_output.txt
 ngl_glfunction_list_output.txt
 ngl_gl.cpp
 ngl_gl.hpp
 ngl_gles2.cpp
 ngl_gles2.hpp
+ngl_gles3.cpp
+ngl_gles3.hpp
+

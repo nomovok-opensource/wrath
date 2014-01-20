@@ -907,7 +907,7 @@ TextViewer(cmd_line_type &cmd_line):
   m_load_font_in_thread(cmd_line.m_load_font_in_thread.m_value),
   m_need_to_update_culling(true)
 {
-  
+
   WRATHImage::texture_atlas_dimension(cmd_line.m_atlas_size.m_value);
   FilePacket::Loader fetcher;
 

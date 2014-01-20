@@ -259,7 +259,7 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
       const char *struct_def=
         "\nstruct wrath_font_custom_data_t"
         "\n{"
-        "\n\tfloat highp values[WRATH_FONT_CUSTOM_DATA];"
+        "\n\thighp float values[WRATH_FONT_CUSTOM_DATA];"
         "\n};\n";
 
       cst

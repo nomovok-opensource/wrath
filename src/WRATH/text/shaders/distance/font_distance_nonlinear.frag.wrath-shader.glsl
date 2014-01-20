@@ -26,7 +26,7 @@ uniform mediump sampler2D wrath_DistanceField;
 shader_in mediump vec2 wrath_DistanceFieldBottomLeft;
 
 mediump float 
-wrath_glyph_is_covered(in vec2 glyph_position)
+wrath_glyph_is_covered(in mediump vec2 glyph_position)
 {
   mediump float rr;
   mediump vec2 tt, glyph_texture_reciprocal_size;
@@ -40,7 +40,7 @@ wrath_glyph_is_covered(in vec2 glyph_position)
 }
 
 mediump float
-wrath_glyph_compute_coverage(in vec2 glyph_position)
+wrath_glyph_compute_coverage(in mediump vec2 glyph_position)
 {
   mediump float rr;
   mediump vec2 tt, glyph_texture_reciprocal_size;
@@ -74,7 +74,7 @@ wrath_glyph_compute_coverage(in vec2 glyph_position)
 
 
 mediump float
-wrath_glyph_signed_distance(in vec2 glyph_position)
+wrath_glyph_signed_distance(in mediump vec2 glyph_position)
 {
   mediump float rr;
   mediump vec2 tt, glyph_texture_reciprocal_size;
