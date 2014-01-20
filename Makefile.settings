@@ -14,6 +14,14 @@ USE_BOOST_LOCALE ?=0
 # 1= use atomic ops for reference coutned objects
 USE_ATOMIC_OPS_REF_COUNTING ?=1
 
+# GL header file location
+GL_INCLUDEPATH=/usr/include
+
+# additional flags for location of GL .so's
+# only needed for GLES2/3 and only if the .so
+# are not in the library path already
+# GLES_LIB_PATH= -L/some/place
+
 # GL_VERSION
 #  2 = GLES2 or OpenGL 2.x
 #  3 = GLES3 or OpenGL 3.x Core
@@ -87,12 +95,10 @@ else
   DEFINE_FLAGS += -DWRATH_GLES_VERSION=$(GL_VERSION)
   ifeq ($(GL_VERSION),2)
     NGL = ngl_gles2
-    WRATHLIB_LDFLAGS += -lGLESv2
   else
     NGL = ngl_gles3
-    WRATHLIB_LDFLAGS += -lGLESv3
   endif
-  WRATHLIB_LDFLAGS += -lEGL
+  WRATHLIB_LDFLAGS += $(GLES_LIB_PATH_FLAGS) -lGLESv2 -lEGL
 endif
 
 # Dependency generation will use $(CPPFLAGS)
