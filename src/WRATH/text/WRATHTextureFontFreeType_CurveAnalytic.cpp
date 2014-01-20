@@ -129,6 +129,7 @@
   #define HALF_FLOAT_PIXEL_TYPE GL_HALF_FLOAT_OES
   #define PIXEL_TYPE_2CHANNEL GL_LUMINANCE_ALPHA
   #define PIXEL_TYPE_1CHANNEL GL_LUMINANCE
+  #define UNSIGNED_BYTE_INTERNAL_FORMAT_1CHANNEL GL_LUMINANCE
 #else
   #define HALF_FLOAT_INTERNAL_FORMAT_4CHANNEL GL_RGBA16F
   #define HALF_FLOAT_INTERNAL_FORMAT_2CHANNEL GL_RG16F
@@ -136,6 +137,7 @@
   #define HALF_FLOAT_PIXEL_TYPE GL_HALF_FLOAT
   #define PIXEL_TYPE_2CHANNEL GL_RG
   #define PIXEL_TYPE_1CHANNEL GL_RED
+  #define UNSIGNED_BYTE_INTERNAL_FORMAT_1CHANNEL GL_R8
 #endif
 
 
@@ -1370,7 +1372,7 @@ common_data_type(void):
   
   m_index_fmt
     .format(0, WRATHImage::ImageFormat()
-            .internal_format(PIXEL_TYPE_1CHANNEL)
+            .internal_format(UNSIGNED_BYTE_INTERNAL_FORMAT_1CHANNEL)
             .pixel_data_format(PIXEL_TYPE_1CHANNEL)
             .pixel_type(GL_UNSIGNED_BYTE)
             .magnification_filter(GL_NEAREST)
@@ -1519,7 +1521,7 @@ build_sampler_names_and_format(int I,
       append_custom(current_layer, "wrath_CurveAnalyticNextCurveTexture",
                     sampler_names, curve_fmt,
                     WRATHImage::ImageFormat()
-                    .internal_format(PIXEL_TYPE_1CHANNEL)
+                    .internal_format(UNSIGNED_BYTE_INTERNAL_FORMAT_1CHANNEL)
                     .pixel_type(GL_UNSIGNED_BYTE)
                     .pixel_data_format(PIXEL_TYPE_1CHANNEL)
                     .magnification_filter(GL_NEAREST)

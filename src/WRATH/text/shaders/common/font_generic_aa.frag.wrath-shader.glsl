@@ -39,11 +39,11 @@ shader_main(void)
     there is no transparent pass, thus the shader reduces
     to:
     - non-color pass: check coverage with wrath_glyph_is_covered() test
-    - color pass: just set gl_FragColor to final_color
+    - color pass: just set wrath_FragColor to final_color
    */
   #if defined(WRATH_COVER_DRAW)
   {
-    gl_FragColor=final_color;
+    wrath_FragColor=final_color;
   }
   #elif defined(WRATH_NON_COLOR_DRAW) 
   {
@@ -51,7 +51,7 @@ shader_main(void)
     d=wrath_glyph_is_covered();
     if(d<0.5)
       discard;
-    gl_FragColor=final_color;    
+    wrath_FragColor=final_color;    
   }
   #else
   {
@@ -85,7 +85,7 @@ shader_main(void)
     }
     #endif
 
-    gl_FragColor=vec4(final_color.xyz*d, d);
+    wrath_FragColor=vec4(final_color.xyz*d, d);
   }
   #endif
 }

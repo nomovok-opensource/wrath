@@ -66,6 +66,7 @@ namespace
                   << std::setw(3) << line_number
                   << ", " << label 
                   << ")\n";
+
   }
 
   std::pair<bool, std::string>
@@ -497,13 +498,27 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
 
     }
 
+  if(shader_type==GL_FRAGMENT_SHADER)
+    {
+      #if WRATH_GL_GLES_VERSION>=3
+      {
+        /*
+          THIS is a hack: core versions of GL3+ and GLES3
+          do not defined gl_FragColor, the right thing to
+          do is to add an interface *thing* to specify
+          out's on a fragment shader.
+         */
+        output_glsl_source_code << "\nout mediump vec4 wrath_FragColor;\n";
+      }
+      #else
+      {
+        output_glsl_source_code << "\n#define wrath_FragColor gl_FragColor \n"
+      }
+      #endif
+    }
+
   if(!WRATHGPUConfig::use_in_out_in_shaders())
     {
-      /*
-        add macros defining in and out correctly for 
-        GLES2, the symbol __gl2_h_ is defined in GLES2/gl2.h 
-        as it's header guard.
-      */
       if(shader_type==GL_VERTEX_SHADER)
         {
           output_glsl_source_code << "\n#define shader_in attribute";
@@ -545,7 +560,8 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
         }
       else
         {
-          output_glsl_source_code << "\n#if defined(GL_OES_standard_derivatives)"
+          output_glsl_source_code << "\n#extension GL_OES_standard_derivatives: enable" 
+                                  << "\n#if defined(GL_OES_standard_derivatives)"
                                   << "\n#define WRATH_DERIVATIVES_SUPPORTED"
                                   << "\n#endif\n";
         }

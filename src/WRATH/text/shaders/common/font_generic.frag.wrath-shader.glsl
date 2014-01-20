@@ -37,7 +37,7 @@ shader_main(void)
     //a previous pass guarantees that the
     //fragment is covered by the glyph, thus
     //we can skip the test and just draw the color
-    gl_FragColor=final_color;
+    wrath_FragColor=final_color;
   }
   #else
   {
@@ -47,12 +47,12 @@ shader_main(void)
     #if defined(WRATH_IS_OPAQUE_PASS) 
       if(d<0.5)
         discard;
-      gl_FragColor=final_color;
+      wrath_FragColor=final_color;
     #else
       if(d<0.5)
-        gl_FragColor=vec4(0.0, 0.0, 0.0, 0.0);
+        wrath_FragColor=vec4(0.0, 0.0, 0.0, 0.0);
       else
-        gl_FragColor=final_color;
+        wrath_FragColor=final_color;
     #endif
   }
   #endif

@@ -106,6 +106,6 @@ shader_main(void)
   }
   #endif
 
-  gl_FragColor=vec4(final_color.xyz*final_color.a, final_color.a);
+  wrath_FragColor=vec4(final_color.xyz*final_color.a, final_color.a);
   
 }

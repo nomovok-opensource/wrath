@@ -62,11 +62,11 @@ shader_main(void)
         alpha=0.0;
     #endif
 
-    gl_FragColor=vec4(color.xyz*alpha, alpha);
+    wrath_FragColor=vec4(color.xyz*alpha, alpha);
   }
   #else
 
-    gl_FragColor=vec4(color.xyz, 1.0)*color.w;
+    wrath_FragColor=vec4(color.xyz, 1.0)*color.w;
   
   #endif
 }

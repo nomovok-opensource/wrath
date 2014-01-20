@@ -47,11 +47,11 @@ shader_main(void)
 
   #ifdef WRATH_BRUSH_PREMULTIPLY_ALPHA
   {
-    gl_FragColor=vec4(color.xyz, 1.0)*color.w;
+    wrath_FragColor=vec4(color.xyz, 1.0)*color.w;
   }
   #else
   {
-    gl_FragColor=color;
+    wrath_FragColor=color;
   }
   #endif
   

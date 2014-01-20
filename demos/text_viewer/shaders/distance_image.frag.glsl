@@ -33,5 +33,5 @@ shader_main(void)
   vv=0.05*min(1.0, reciprocal_scale_factor);
 
   alpha=tex_color.a*smoothstep(0.50-vv, 0.50+vv, c);
-  gl_FragColor=vec4(tex_color.rgb, alpha*(1.0-2.0*animation_fx_interpol));
+  wrath_FragColor=vec4(tex_color.rgb, alpha*(1.0-2.0*animation_fx_interpol));
 }

@@ -23,5 +23,5 @@ uniform mediump float animation_fx_interpol;
 void
 shader_main(void)
 {
-  gl_FragColor=vec4(tex_color.rgb, tex_color.a*(1.0-2.0*animation_fx_interpol));
+  wrath_FragColor=vec4(tex_color.rgb, tex_color.a*(1.0-2.0*animation_fx_interpol));
 }
