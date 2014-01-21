@@ -24,12 +24,15 @@
 
 #ifdef WRATH_GL_VERSION
   #include <ngl_gl.hpp>
+  #define WRATH_GL_GLES_VERSION WRATH_GL_VERSION
 #elif defined(WRATH_GLES_VERSION)
  #if WRATH_GLES_VERSION==3
   #include <ngl_gles3.hpp>
  #elif WRATH_GLES_VERSION==2
   #include <ngl_gles2.hpp>
  #endif
+
+ #define WRATH_GL_GLES_VERSION WRATH_GLES_VERSION
 #else
  #error Neither WRATH_GL_VERSION nor WRATH_GLES_VERSION defined
 #endif

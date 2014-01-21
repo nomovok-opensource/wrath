@@ -21,7 +21,7 @@
 void
 main(void)
 {
-  gl_FragColor.rgba=vec4(1.0, 1.0, 1.0, 1.0);
+  wrath_FragColor.rgba=vec4(1.0, 1.0, 1.0, 1.0);
 }
 
                

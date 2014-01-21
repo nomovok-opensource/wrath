@@ -28,5 +28,5 @@ shader_main(void)
   mediump vec4 c;
 
   c=texture2D(utex, tex_coord).rgba;
-  gl_FragColor=tex_color.rgba*vec4(c.rgb, c.a*(1.0-2.0*animation_fx_interpol));
+  wrath_FragColor=tex_color.rgba*vec4(c.rgb, c.a*(1.0-2.0*animation_fx_interpol));
 }

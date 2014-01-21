@@ -42,6 +42,33 @@ namespace
     return S.substr(0, last_at);
   }
 
+  std::string
+  strip_leading_white_spaces(const std::string &S)
+  {
+    std::string::const_iterator iter, end;
+    for(iter=S.begin(), end=S.end(); iter!=end and isspace(*iter); ++iter)
+      {
+      }
+    return (iter!=end and *iter=='#')?
+      std::string(iter, end):
+      S;
+  }
+
+  void
+  emit_source_line(std::ostream &output_stream,
+                   const std::string &source, 
+                   int line_number, const std::string &label)
+  {
+    std::string S;
+    S=strip_leading_white_spaces(source);
+    output_stream << S 
+                  << std::setw(80-S.length()) << "  //LOCATION(" 
+                  << std::setw(3) << line_number
+                  << ", " << label 
+                  << ")\n";
+
+  }
+
   std::pair<bool, std::string>
   includes_file(const std::string &S, const std::string &path)
   {
@@ -130,11 +157,7 @@ namespace
           }
         else
           {
-            output_stream << S 
-                          << std::setw(80-S.length()) << "  //LOCATION(" 
-                          << std::setw(3) << line_number
-                          << ", " << label 
-                          << ")\n";
+            emit_source_line(output_stream, S, line_number, label);
           }
 
         ++line_number;
@@ -186,11 +209,7 @@ namespace
           }
         else
           {
-            output_stream << S 
-                          << std::setw(80-S.length()) << "  //LOCATION(" 
-                          << std::setw(3) << line_number
-                          << ", " << label 
-                          << ")\n";
+            emit_source_line(output_stream, S, line_number, label);
           }
         
         ++line_number;
@@ -429,6 +448,12 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
       output_glsl_source_code <<"\n#version " << m_version << "\n";
     }
 
+  for(std::map<std::string, enum shader_extension_enable_type>::const_iterator 
+        iter=m_extensions.begin(), end=m_extensions.end(); iter!=end; ++iter)
+    {
+      output_glsl_source_code << "\n#extension " << iter->first << ": " << iter->second;
+    }
+
   /*
     GL core profile does not define texture2D, rather
     all texture lookup function names are overloaded
@@ -479,13 +504,21 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
 
     }
 
+  if(shader_type==GL_FRAGMENT_SHADER and m_wrath_FragColor)
+    {
+      #if WRATH_GL_GLES_VERSION>=3
+      {
+        output_glsl_source_code << "\nout mediump vec4 wrath_FragColor;\n";
+      }
+      #else
+      {
+        output_glsl_source_code << "\n#define wrath_FragColor gl_FragColor \n";
+      }
+      #endif
+    }
+
   if(!WRATHGPUConfig::use_in_out_in_shaders())
     {
-      /*
-        add macros defining in and out correctly for 
-        GLES2, the symbol __gl2_h_ is defined in GLES2/gl2.h 
-        as it's header guard.
-      */
       if(shader_type==GL_VERTEX_SHADER)
         {
           output_glsl_source_code << "\n#define shader_in attribute";
@@ -513,12 +546,6 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
   
 
 
-  for(std::map<std::string, enum shader_extension_enable_type>::const_iterator 
-        iter=m_extensions.begin(), end=m_extensions.end(); iter!=end; ++iter)
-    {
-      output_glsl_source_code << "\n#extension " << iter->first << ": " << iter->second;
-    }
-
   if(shader_type==GL_FRAGMENT_SHADER)
     {
       if(WRATHGPUConfig::unextended_shader_support_derivatives())
@@ -527,7 +554,8 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
         }
       else
         {
-          output_glsl_source_code << "\n#if defined(GL_OES_standard_derivatives)"
+          output_glsl_source_code << "\n#extension GL_OES_standard_derivatives: enable" 
+                                  << "\n#if defined(GL_OES_standard_derivatives)"
                                   << "\n#define WRATH_DERIVATIVES_SUPPORTED"
                                   << "\n#endif\n";
         }
@@ -635,10 +663,17 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
 
   for(std::list< source_code_type>::const_iterator 
         iter=m_values.begin(), end=m_values.end(); iter!=end; ++iter)
-    {
-      
+    {      
       add_source_entry(*iter, output_glsl_source_code);               
     }
+
+  /*
+    some GLSL pre-processors do not like to end on a
+    comment or other certain tokens, to make them
+    less grouchy, we emit a few extra \n's
+   */
+  output_glsl_source_code << "\n\n\n"
+                          << "#define WRATH_GL_SOURCE_END\n\n";
 }
 
 WRATHGLShader::shader_source&

@@ -23,5 +23,5 @@ void
 main(void)
 {
   //hot pink for the fragment
-  gl_FragColor=vec4(0.75, 0.75, 0.3, 1.0);
+  wrath_FragColor=vec4(0.75, 0.75, 0.3, 1.0);
 }

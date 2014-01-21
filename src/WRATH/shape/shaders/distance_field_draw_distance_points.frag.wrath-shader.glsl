@@ -48,6 +48,6 @@ main(void)
   #endif
 
   v=0.5 + distance_sign*hd;
-  gl_FragColor=vec4(v, v, v, v);
+  wrath_FragColor=vec4(v, v, v, v);
 }
                

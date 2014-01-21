@@ -132,9 +132,9 @@
 
 
 mediump float
-wrath_curve_analytic_compute_quasi_distance(in vec2 GlyphCoordinate,
-                                            in vec2 GlyphTextureCoordinate,
-                                            in float GlyphIndex)
+wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
+                                            in mediump vec2 GlyphTextureCoordinate,
+                                            in mediump float GlyphIndex)
 {
   mediump vec2 pp;
   mediump vec4 pa_pb;

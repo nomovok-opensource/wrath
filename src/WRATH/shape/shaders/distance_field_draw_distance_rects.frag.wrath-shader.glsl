@@ -22,5 +22,5 @@ shader_in mediump float z;
 void
 main(void)
 {
-  gl_FragColor.rgba=vec4(z, z, z, z);
+  wrath_FragColor.rgba=vec4(z, z, z, z);
 }

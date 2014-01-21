@@ -67,6 +67,34 @@
  * @{
  */
 
+/*!\def WRATH_GL_VERSION
+  Defined only if WRATH is built for
+  desktop OpenGL. Value is defined as
+  the major GL version for which WRATH
+  was built.
+*/
+#define WRATH_GL_VERSION
+
+/*!\def WRATH_GLES_VERSION
+  Defined only if WRATH is built for
+  OpenGL ES. Value is defined as
+  the major GLES version for which WRATH
+  was built.
+*/
+#define WRATH_GLES_VERSION
+
+/*!\def WRATH_GL_GLES_VERSION
+  Defined as major version number
+  of the GL API for which WRATH was
+  built. I.e., if WRATH is built
+  for desktop OpenGL, is same as
+  \ref WRATH_GL_VERSION, if WRATH
+  is built for GLES is same as
+  WRATH_GLES_VERSION
+*/
+#define WRATH_GL_GLES_VERSION
+
+
 /*!\fn void WRATHglUniform1v(int, GLsizei, const T*)
   Overload conveniance, equivalent to
   \code

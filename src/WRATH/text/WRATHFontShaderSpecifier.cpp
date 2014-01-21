@@ -259,7 +259,7 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
       const char *struct_def=
         "\nstruct wrath_font_custom_data_t"
         "\n{"
-        "\n\tfloat highp values[WRATH_FONT_CUSTOM_DATA];"
+        "\n\thighp float values[WRATH_FONT_CUSTOM_DATA];"
         "\n};\n";
 
       cst
@@ -316,15 +316,7 @@ fetch_texture_font_drawer(const WRATHTextureFont::GlyphGLSL *fs_source,
                 WRATHGLShader::from_resource)
     .absorb(fs_source->m_fragment_processor[v])
     .absorb(fragment_shader_source());
-  
-  #if defined(WRATH_GLES_VERSION)
-  {
-    new_specifier->append_pre_fragment_shader_source()
-      .specify_extension("GL_OES_standard_derivatives",
-                         WRATHGLShader::enable_extension);
-  }
-  #endif
-  
+    
   m_actual_creators[fs_source]=new_specifier;
 
   

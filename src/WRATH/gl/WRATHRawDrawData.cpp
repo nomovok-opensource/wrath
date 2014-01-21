@@ -113,7 +113,7 @@ namespace
         indices[i]=indx_source->offset_pointer(draw_ranges[i].m_location);
       }
 
-    #ifdef WRATH_GL_VERSION
+    #if defined(WRATH_GL_VERSION)
     {
       glMultiDrawElements(primitive_type, counts.c_ptr(), 
                           index_type, indices.c_ptr(), 

@@ -36,11 +36,11 @@ shader_main(void)
   // determined by the vertex shader.
   #ifdef WRATH_LINEAR_BRUSH_PRESENT
   {
-    gl_FragColor=wrath_shader_brush_color();
+    wrath_FragColor=wrath_shader_brush_color();
   }
   #else
   {
-    gl_FragColor=vec4(0.5, 0.0, 1.0, 1.0);
+    wrath_FragColor=vec4(0.5, 0.0, 1.0, 1.0);
   }
   #endif
 }

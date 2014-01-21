@@ -140,7 +140,7 @@ public:
       and WRATH_IS_TRANSLUCENT_PASS are defined, the macro WRATH_TRANSLUCENT_THRESHOLD should
       be used in the opaque pass (i.e. WRATH_IS_OPAQUE_PASS is defined) to discard those 
       fragments whose coverage is less than WRATH_TRANSLUCENT_THRESHOLD and for the 
-      translucent pass (i.e. WRATH_IS_TRANSLUCENT_PASS is defined) set gl_FragColor.a=0.0 (alpha) 
+      translucent pass (i.e. WRATH_IS_TRANSLUCENT_PASS is defined) set wrath_FragColor.a=0.0 (alpha) 
       for when the coverage matches or exceeds WRATH_TRANSLUCENT_THRESHOLD.
 
     A default font vertex shader is provided by the static method \ref
