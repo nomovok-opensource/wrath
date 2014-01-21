@@ -448,6 +448,12 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
       output_glsl_source_code <<"\n#version " << m_version << "\n";
     }
 
+  for(std::map<std::string, enum shader_extension_enable_type>::const_iterator 
+        iter=m_extensions.begin(), end=m_extensions.end(); iter!=end; ++iter)
+    {
+      output_glsl_source_code << "\n#extension " << iter->first << ": " << iter->second;
+    }
+
   /*
     GL core profile does not define texture2D, rather
     all texture lookup function names are overloaded
@@ -498,16 +504,10 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
 
     }
 
-  if(shader_type==GL_FRAGMENT_SHADER)
+  if(shader_type==GL_FRAGMENT_SHADER and m_wrath_FragColor)
     {
       #if WRATH_GL_GLES_VERSION>=3
       {
-        /*
-          THIS is a hack: core versions of GL3+ and GLES3
-          do not defined gl_FragColor, the right thing to
-          do is to add an interface *thing* to specify
-          out's on a fragment shader.
-         */
         output_glsl_source_code << "\nout mediump vec4 wrath_FragColor;\n";
       }
       #else
@@ -545,12 +545,6 @@ build_source_code(std::ostream &output_glsl_source_code, GLenum shader_type) con
 
   
 
-
-  for(std::map<std::string, enum shader_extension_enable_type>::const_iterator 
-        iter=m_extensions.begin(), end=m_extensions.end(); iter!=end; ++iter)
-    {
-      output_glsl_source_code << "\n#extension " << iter->first << ": " << iter->second;
-    }
 
   if(shader_type==GL_FRAGMENT_SHADER)
     {

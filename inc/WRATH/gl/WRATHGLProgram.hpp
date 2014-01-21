@@ -237,6 +237,7 @@ public:
     typedef std::pair<std::string, enum shader_source_type> source_code_type;
     
     shader_source(void):
+      m_wrath_FragColor(true),
       m_force_highp(false),
       m_version(WRATHGPUConfig::default_shader_version())
     {}
@@ -252,6 +253,23 @@ public:
       extension with values of \ref shader_extension_enable_type.
      */
     std::map<std::string, enum shader_extension_enable_type> m_extensions;
+
+    /*!\var m_wrath_FragColor
+      If the shader source is for a Fragment shader,
+      then if the value is true, then assempled source
+      code will insert the symbol <b>wrath_FragColor</b>
+      as follows:
+      - if \ref WRATH_GL_GLES_VERSION is 2, then 
+        <b>wrath_FragColor</b> is realized as a macro to
+        <b>gl_FragColor</b>
+      - if \ref WRATH_GL_GLES_VERSION is 3 or higher,
+        then <b>wrath_FragColor</b> is declared
+        as a <b>out mediump vec4</b>.
+      The purpose of the macro is to allow for an
+      application to more easily use GL3 core profile
+      GLSL and GLES3 GLSL. Default value is true.
+     */
+    bool m_wrath_FragColor;
 
     /*!\var m_force_highp
       Only has affect for GLES2 shaders.
@@ -277,6 +295,17 @@ public:
     force_highp(bool v)
     {
       m_force_highp=v;
+      return *this;
+    }
+
+    /*!\fn wrath_FragColor
+      Sets m_wrath_FragColor.
+      \param v value to which to set m_wrath_FragColor 
+     */
+    shader_source&
+    wrath_FragColor(bool v)
+    {
+      m_wrath_FragColor=v;
       return *this;
     }
 
@@ -514,6 +543,8 @@ public:
         is false and if the shader stage is GL_FRAGMENT_SHADER, then will insert
         additional macro code so that highp is defined as mediump if GL_FRAGMENT_PRECISION_HIGH
         is not supported
+      - defines for a fragment shader the symbol "wrath_FragColor" if \ref 
+        m_wrath_FragColor is true, see \ref m_wrath_FragColor to what it is defined
       - The following macros are defined if the corresponding function returns true:
       -- WRATHGPUConfig::dependent_texture_lookup_requires_LOD() WRATH_GPU_CONFIG_DEPENDENT_TEXTURE_LOOKUP_REQUIRES_LOD
       -- WRATHGPUConfig::fragment_shader_poor_branching() WRATH_GPU_CONFIG_FRAGMENT_SHADER_POOR_BRANCHING
