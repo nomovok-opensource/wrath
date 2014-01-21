@@ -65,7 +65,7 @@
   8) for case where only one curve goes through, let 
      n1=J(n0) and q = p0 + M*n1, where p0 a point
      that the line segment intersects the boundary of
-     the texel and J(x,y)=(-y,x).
+     the texel and J(x,y)=(y,-x).
 
      Then <p-q, n0> = <p-p0, n0> and
      <p-q, n1> = <p-p0 - M*n1, n1> = <p-p0, n1> - M*||n1||^2
@@ -74,9 +74,6 @@
      min( <p-q, n0>, <p-q, n1> ) = min( <p-q, n0>,  <p-p0, n1> - M*||n1||^2 )
                                  = <p-q, n0>
      
-     for example M=-6 will work since 
-     | <p-p0, n0> | <= |p-p0| * |n0| <= 2
-     and thus, <p-p0, n1> - M*||n1||^2 >= -2 + 6 > 4 > 2
 
      and then follow (6) and (7) with S=1
      Note that <p-q, n1> is always positive.
@@ -196,45 +193,73 @@ namespace
     return return_value;
   }
 
+  vec2
+  apply_J(const vec2 &v)
+  {
+    return vec2(v.y(), -v.x());
+  }
+
   void
   calculate_line_segment_data(const vec2 &p0,
                               const vec2 &p1,
-                              vec2 &n, float &o)
+                              vec2 &n, 
+                              float &o,
+                              vec2 &v)
   {
-    vec2 v;
-    v=vec2( p1.y()-p0.y(), p0.x()-p1.x());
+    WRATHassert(&v!=&n);
+
+    v=p1-p0;
     //note that we normalize n so that the computed dot
     //using it produces the L1 metric to the line 
-    n= v/std::max( std::abs(v.x()), std::abs(v.y()));
+    v/=std::max( std::abs(v.x()), std::abs(v.y()));
+    n=apply_J(v);
     o=dot(p0,n);
   }
 
   void
-  compute_offset_point(vecN<vec2, 2> &normals,
-                       vecN<float, 2> &offsets,
-                       int curve_count, 
-                       const vec2 &texel_pt)
+  generate_packing_data(vecN<vec2, 2> &n,
+                        vecN<float, 2> &offsets,
+                        const vec2 &p0,
+                        int curve_count)
   {
     if(curve_count==0)
       {
+        /*
+          do nothing, later pass will 
+          fill empty texel correctly.
+        */
       }
     else if(curve_count==1)
       {
-        vec2 q;
-        q=normals[0].normal_vector() * offsets[0];
+        /*
+          replace normals[1] with J(normals[0])
+          and set offsets[] to q where
 
-        offsets[0]=q.x();
-        offsets[1]=q.y();
+          q = p0 + M*J(n[0])
+
+          then:
+           a) <p-q, n0>       = < p-p0, n0>
+           b) <p-q, J(n[0]) > = < p-p0, J(n[0]) > - M||n0||^2
+         choose L so that quantity in b) is always smaller
+         than the quantiy a).
+         
+         note that:
+
+          < p-p0, n0> - < p-q, J(n[0]) > =  < p-p0, n0> - < p-p0, J(n[0]) > - M||n0||^2
+                                         <  ||n0|| ( ||p-p0|| - M||n0|| ) 
+
+          so pick M = 2L where L=diameters of glyph, then above 
+          gives that min( <p-q, n0>, <p-q,n1> ) = <p-q, n0>
+
+         */
       }
     else 
       {
         /*
-          find q so that for i=0, 1
-          < p, n[i] > - offset[i] = < p-q, n[i] >
-
-          thus, <q, n[i] > = offset[i]
-        */
-        
+          replace offsets[] with point q so that
+           <q, n0> = - offsets[0],  
+           <q, n1> = - offsets[1],  
+         */
       }
   }
 
@@ -383,6 +408,8 @@ namespace
                                   boost::multi_array<bool, 2> &texel_is_unfilled,
                                   const vecN<c_array<uint8_t>, P> &analytic_pixel_data)
   {
+    return;
+
     if(glyph_size.x()<=0 or glyph_size.y()<=0)
       {
         return;
@@ -856,9 +883,15 @@ generate_character(WRATHTextureFont::glyph_index_type G)
         (or vertical) line used intersects
         the outline transversally, i.e.
         not tangentially to a curve and not
-        through a vertex. This only happens
-        when the glyph consists of quadratics
-        only though.
+        through a vertex.
+
+        Instead, we rely on an incremental 
+        to determine if an empty texel should
+        be filled or not: the boolean is 
+        is updated in pack_lines whenever
+        atleast one curve intersect the texel
+        as the value if the center of the texel
+        is considered inside the glyph.
        */
       bool no_intersection_texel_is_full;
 
@@ -915,7 +948,8 @@ generate_character(WRATHTextureFont::glyph_index_type G)
 
           texel_is_unfilled[x][y]=(curves_used==0);
           pack_lines(ivec2(x,y), L, ncts, curves_used, far_away_offset,
-                     analytic_pixel_data[0], no_intersection_texel_is_full);
+                     analytic_pixel_data[0], no_intersection_texel_is_full,
+                     &outline_data);
            
 
           if(curves_used>0 and sub_primitive_maker!=NULL)
@@ -983,7 +1017,8 @@ generate_character(WRATHTextureFont::glyph_index_type G)
                   L=xlod + ylod*end_xlod;
                   pack_lines(ivec2(x, y), 
                              L, ncts, curves_used, far_away_offset,
-                             analytic_pixel_data[LOD], no_intersection_texel_is_full);
+                             analytic_pixel_data[LOD], no_intersection_texel_is_full,
+                             &outline_data);
                 }
             }
         }
@@ -1019,7 +1054,8 @@ generate_character(WRATHTextureFont::glyph_index_type G)
                   L=xlod + ylod*end_xlod;
                   pack_lines(ivec2(x, y), 
                              L, ncts, 0, far_away_offset,
-                             analytic_pixel_data[LOD], no_intersection_texel_is_full);
+                             analytic_pixel_data[LOD], no_intersection_texel_is_full,
+                             &outline_data);
                 }
             }
         }
@@ -1076,27 +1112,27 @@ pack_lines(ivec2 pt, int L,
            const std::vector<WRATHFreeTypeSupport::OutlineData::curve_segment> &curves,
            int curve_count, float far_away_offset,
            vecN<c_array<uint8_t>, number_textures_per_page> analytic_data,
-           bool &no_intersection_texel_is_full)
+           bool &no_intersection_texel_is_full,
+           const WRATHFreeTypeSupport::OutlineData *outline_data)
 {
-  vecN<vec2,2> n_vector;
+  vecN<vec2,2> n_vector, v_vector;
+  vec2 p0(0.0f, 0.0f);
   vecN<float,2> offset;
   bool use_and(false);
-  bool bad_dot(false);
   
   far_away_offset*=m_pow2_mipmap_level;
 
   if(curve_count==0)
     {
-      n_vector[0]=vec2(0.0f, 0.0f);
+      n_vector[0]=v_vector[0]=vec2(0.0f, 0.0f);
       offset[0]=far_away_offset;
     }
-
 
   for(int i=0, end_i=std::min(2, curve_count); i<end_i; ++i)
     { 
       calculate_line_segment_data(curves[i].m_control_points.front().m_texel_normalized_coordinate,
                                   curves[i].m_control_points.back().m_texel_normalized_coordinate,
-                                  n_vector[i], offset[i]);
+                                  n_vector[i], offset[i], v_vector[i]);
     }
   
   /*
@@ -1106,37 +1142,43 @@ pack_lines(ivec2 pt, int L,
   for(int i=curve_count; i<2; ++i)
     {
       n_vector[i]=n_vector[0];
+      v_vector[i]=v_vector[0];
       offset[i]=offset[0];
+    }
+
+  if(curve_count>0)
+    {
+      p0=curves[0].m_control_points.front().m_texel_normalized_coordinate
+        + vec2(pt.x(), pt.y());
+    }
+  else
+    {
+      p0=vec2(0.0f, 0.0f);
     }
         
   if(curve_count>=2)
     {
-      vec2 p0, p1, p, p0a, p0b, p1a, p1b;
-      float dot0, dot1;
-      
-      p0a=curves[0].m_control_points.front().m_texel_normalized_coordinate;
-      p0b=curves[0].m_control_points.back().m_texel_normalized_coordinate;
-      p0=0.5f*(p0a+p0b);
-        
-      p1a=curves[1].m_control_points.front().m_texel_normalized_coordinate;
-      p1b=curves[1].m_control_points.back().m_texel_normalized_coordinate;
-      p1=0.5f*(p1a+p1b);
-      
-      p=0.5f*(p0+p1);
-      dot0=dot( n_vector[0], p-p0);
-      dot1=dot( n_vector[1], p-p1);
-      
-      bad_dot=( (dot0>0.0f) xor (dot1>0.0f) );
-      WRATHunused(bad_dot);
+      float dd;
+      dd = dot(v_vector[1], n_vector[0]);
 
-      //if p is on the "inside" of both sides
-      //then the logical operation is AND
-      //also, it should be that either p
-      //is on inside of both sides or neither!
-      if(dot0>0.0f or dot1>0.0f)
+      /*
+        the dot computation above assumes that
+        curve0 comes before curve1, if it did
+        not, then it needs to be negated.
+        TODO: we need to handle the case where
+              there are curve(s) between the
+              two curves we take, and correctly
+              take the orientation from there
+              OR modify FreeTypeSupport so that
+              the curves are ordered in the same
+              order in which they appear in the contour.
+        
+       */
+      if(outline_data->prev_neighbor(curves[0].m_curve)==curves[1].m_curve)
         {
-          use_and=true;
+          dd = -dd;
         }
+      use_and = (dd>0.0f);
     }
   
   /*
@@ -1169,7 +1211,6 @@ pack_lines(ivec2 pt, int L,
   //  [0].zw = normal[1].zw
   //  [1].x = offset[0]
   //  [1].y = offset[1]
-  //  [1].zw=texel coordinate
   
   //we are going to implicitly store which logical operation
   //in the ordering of the lines as folows:
@@ -1196,6 +1237,12 @@ pack_lines(ivec2 pt, int L,
       analytic_data[0][ m_bytes_per_pixel[0]*L+i ]=packed_normals[i];
     }
 
+  if(curve_count>=2 
+     and packed_normals[0]==packed_normals[2]
+     and packed_normals[1]==packed_normals[3])
+    {
+      --curve_count;
+    }
   
   {
     vec2 fpt(pt.x(), pt.y());
@@ -1230,12 +1277,12 @@ pack_lines(ivec2 pt, int L,
        i.e. a q so that for i=0,1 
        <q, n[i] > = offset[i] 
      */
-    compute_offset_point(n, offset, curve_count, fpt); 
+    generate_packing_data(n_vector, offset, p0, curve_count); 
     
     WRATHassert(m_bytes_per_pixel[1]==4);
     vecN<uint8_t, 4> as_fp16;
     
-    WRATHUtil::convert_to_halfp_from_float(as_fp16, offsets);
+    WRATHUtil::convert_to_halfp_from_float(as_fp16, offset);
     for(int i=0; i<4; ++i)
       {
         analytic_data[1][4*L+i]=as_fp16[i];

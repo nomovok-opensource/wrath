@@ -243,7 +243,8 @@ private:
              const std::vector<WRATHFreeTypeSupport::OutlineData::curve_segment> &curves,
              int curve_count, float far_away_offset,
              vecN<c_array<uint8_t>, number_textures_per_page> analytic_data,
-             bool &);
+             bool &,
+             const WRATHFreeTypeSupport::OutlineData *);
 
   WRATHImage*
   allocate_glyph(std::vector< vecN<std::vector<uint8_t>, number_textures_per_page> > &analytic_pixel_data,
