@@ -967,7 +967,7 @@ TextViewer(cmd_line_type &cmd_line):
   NodePacker::max_node_count()=cmd_line.m_max_transformations.m_value;
 
 
-  int analytic_mip_value(std::max(1,cmd_line.m_text_renderer_analytic_mipmap_level.m_value));
+  int analytic_mip_value(std::max(0,cmd_line.m_text_renderer_analytic_mipmap_level.m_value));
   float mix_size_divider(cmd_line.m_mix_font_div_ratio.m_value);
   float mix_inflate(cmd_line.m_mix_font_minified_inflate_factor.m_value);
   WRATHFontShaderSpecifier *text_shader_specifier;
