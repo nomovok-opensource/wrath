@@ -2378,10 +2378,15 @@ namespace WRATHFreeTypeSupport
     class curve_segment
     {
     public:
-      /*!\var m_control_points
-        Control points of the curve.
+      /*!\var m_points
+        Points along the curve within the texel.
+        The number of points is equal to
+        the degree of the curve plus one.
+        The points are ordered in domain
+        of the curve and are evenly spaced
+        in domain as well.
        */
-      std::vector<per_point_data> m_control_points;
+      std::vector<per_point_data> m_points;
 
       /*!\var m_enter
         When (and if) the curve enters

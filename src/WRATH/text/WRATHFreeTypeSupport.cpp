@@ -2433,10 +2433,6 @@ namespace WRATHFreeTypeSupport
               }
             else
               {
-                WRATHassert(curve->pt1().x()>=texel_bottom_left.x()
-                            and curve->pt1().y()>=texel_bottom_left.y()
-                            and curve->pt1().x()<=texel_top_right.x()
-                            and curve->pt1().y()<=texel_top_right.y());
                 max_t=1.0f;
                 max_t_boundary=no_boundary;
               }
@@ -2444,9 +2440,24 @@ namespace WRATHFreeTypeSupport
       
 
         //within the loop we only set the times, later we will set the coordinates.
-        out_curves[return_value].m_control_points.clear();
-        out_curves[return_value].m_control_points.push_back(min_t);
-        out_curves[return_value].m_control_points.push_back(max_t);
+        out_curves[return_value].m_points.clear();
+        out_curves[return_value].m_points.push_back(min_t);
+
+                
+        
+        //insert additional points on the curve too
+        //when the curve is NOT a line:
+        for(int K=1;K<curve->degree();++K)
+          {
+            float t;
+            vec2 pt, ptN;
+
+            t=min_t + (max_t-min_t)*static_cast<float>(K)/static_cast<float>(curve->degree());
+            out_curves[return_value].m_points.push_back(t);
+          }
+
+        out_curves[return_value].m_points.push_back(max_t);
+
         out_curves[return_value].m_enter=min_t_boundary;
         out_curves[return_value].m_exit=max_t_boundary;
         out_curves[return_value].m_curve=curve;
@@ -2456,8 +2467,8 @@ namespace WRATHFreeTypeSupport
     for(int c=0;c<return_value;++c)
       {
         for(std::vector<per_point_data>::iterator 
-              iter=out_curves[c].m_control_points.begin(),
-              end=out_curves[c].m_control_points.end();
+              iter=out_curves[c].m_points.begin(),
+              end=out_curves[c].m_points.end();
             iter!=end; ++iter)
           {
             per_point_data &ctrl_pt(*iter);
@@ -2472,6 +2483,7 @@ namespace WRATHFreeTypeSupport
             ctrl_pt.m_bitmap_coordinate=bitmap_from_point(raw_p);
           }
       }
+
    
     return return_value;
   }

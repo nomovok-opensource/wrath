@@ -76,7 +76,7 @@
      
 
      and then follow (6) and (7) with S=1
-     Note that <p-q, n1> is always positive.
+     Note that <p-q, n1> is always large positive.
 
   9) for case where 0 curves go through the texel, find
      the nearest texel on the same horizontal or verical
@@ -97,22 +97,31 @@
 
   9) our final shader is then quite simple:
 
-      v0=dot(p-q, n0);
-      v1=dot(p-q, n1);
+      pp=p-q;
+      d0=dot(pp, n0);
+      d1=dot(pp, n1);
       C=n0.x*n1.y - n1.x*n0.y;
-      d = sign(C) * min(v0, v1);
+      d = sign(C) * min(d0, d1);
      
       gives a simple pseudo-distance that 
       cooperates with anti-aliasing.
 
       The signed L1 distance can be given by:
       
-      v0=dot(p-q, n0);
-      v1=dot(p-q, n1);
-      C=n0.x*n1.y - n1.x*n0.y;
-      d = sign(C) * min(v0, v1);
+      pp=p-q;
+      d0=dot(pp, n0);
+      d1=dot(pp, n1);
 
-      dist=(v0<0 && v1<0)?
+      v0=vec2(-n0.y, n0.x); 
+      v1=vec2(-n1.y, n1.x); 
+
+      r0=sign(v0)*sign(pp);
+      r1=sign(v1)*sign(pp);
+
+      C=n0.x*n1.y - n1.x*n0.y;
+      d = sign(C) * min(d0, d1);
+
+      dist=(d0<0 && d1<0)?
         |p.x-q.y| + |p.y-q.y|:
         min(|v0|, |v1|);
 
@@ -934,8 +943,8 @@ generate_character(WRATHTextureFont::glyph_index_type G)
                 {
                   if(reverse_component[ncts[i].m_curve->contourID()])
                     {
-                      std::reverse(ncts[i].m_control_points.begin(),
-                                   ncts[i].m_control_points.end());
+                      std::reverse(ncts[i].m_points.begin(),
+                                   ncts[i].m_points.end());
                     }
 
                   //TODO: if a curve is too degnerate substitute far_away_line.
@@ -1006,8 +1015,8 @@ generate_character(WRATHTextureFont::glyph_index_type G)
                     {
                       if(reverse_component[ncts[i].m_curve->contourID()])
                         {
-                          std::reverse(ncts[i].m_control_points.begin(),
-                                       ncts[i].m_control_points.end());
+                          std::reverse(ncts[i].m_points.begin(),
+                                       ncts[i].m_points.end());
                         }
                       //TODO: if a curve is too degnerate substitute far_away_line.
                       ++curves_used;
@@ -1130,8 +1139,8 @@ pack_lines(ivec2 pt, int L,
 
   for(int i=0, end_i=std::min(2, curve_count); i<end_i; ++i)
     { 
-      calculate_line_segment_data(curves[i].m_control_points.front().m_texel_normalized_coordinate,
-                                  curves[i].m_control_points.back().m_texel_normalized_coordinate,
+      calculate_line_segment_data(curves[i].m_points.front().m_texel_normalized_coordinate,
+                                  curves[i].m_points.back().m_texel_normalized_coordinate,
                                   n_vector[i], offset[i], v_vector[i]);
     }
   
@@ -1148,7 +1157,7 @@ pack_lines(ivec2 pt, int L,
 
   if(curve_count>0)
     {
-      p0=curves[0].m_control_points.front().m_texel_normalized_coordinate
+      p0=curves[0].m_points.front().m_texel_normalized_coordinate
         + vec2(pt.x(), pt.y());
     }
   else
