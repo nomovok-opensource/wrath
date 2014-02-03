@@ -41,13 +41,9 @@ namespace
       {
         m_handle[1]=dlopen("libGL.so", RTLD_LAZY);
       }
-      #elif WRATH_GLES_VERSION==2 
+      #else
       {
         m_handle[1]=dlopen("libGLESv2.so", RTLD_LAZY);
-      }
-      #elif WRATH_GLES_VERSION==3
-      {
-        m_handle[1]=dlopen("libGLESv3.so", RTLD_LAZY);
       }
       #endif      
     }

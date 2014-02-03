@@ -61,11 +61,11 @@ namespace
   {
     std::string S;
     S=strip_leading_white_spaces(source);
-    output_stream << S 
-                  << std::setw(80-S.length()) << "  //LOCATION(" 
-                  << std::setw(3) << line_number
-                  << ", " << label 
-                  << ")\n";
+    output_stream << S << "\n";
+    //                  << std::setw(80-S.length()) << "  //LOCATION(" 
+      //            << std::setw(3) << line_number
+    //          << ", " << label 
+    //            << ")\n";
 
   }
 
