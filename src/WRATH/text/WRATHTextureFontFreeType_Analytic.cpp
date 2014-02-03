@@ -42,112 +42,94 @@
 
   1) compute intersections of all curves against texel
      boundaries
+
   2) for each texel, use OutlineData::compute_localized_affectors() to
      approximate each curve going through any of the texel's
      boundaries as a line segment
-  3) Only support up to 2 curves. Also, if there are 2 curves
-     the must NOT be parallel
+
+  3) Only support up to 2 curves.
+
   4) Let L0, L1 be the line segments, compute n0, n1 and q
-     so that L0 = { p | <p-q, m0> = 0 } and L1= { p | <p-q, m1>=0 }
-  5) Let S be -1 or +1 so that
-       S=-1 p in glyph <-----> max(<p-q,m0>, <p-q,m1> ) > 0
-       S=+1 p in glyph <-----> min(<p-q,m0>, <p-q,m1> ) > 0
-  6) Set m0, m1 as follows:
-       n0=S*m0
-       n1=S*m1
-     and note that:
-        S=+1 ---> min(<p-q,m0>, <p-q,m1> ) = S*min(<p-q,n0>, <p-q,n1> )
-        S=-1 ---> max(<p-q,m0>, <p-q,m1> ) = S*min(<p-q,n0>, <p-q,n1> )
-     thus for points p in the texel, 
-        p in glyph <-----> S*min(<p-q,n0>, <p-q,n1> ) > 0
-  7) Encode S as sign(n0.x*n1.y - n1.x*n0.y), i.e. swap(n0,n1) as needed
-     to encode S implicitly with ordering of n0, n1
-  8) for case where only one curve goes through, let 
-     n1=J(n0) and q = p0 + M*n1, where p0 a point
-     that the line segment intersects the boundary of
-     the texel and J(x,y)=(y,-x).
+     so that L0 = { p | <p-q, n0> = 0 } and L1= { p | <p-q, n1>=0 }
+     and so that 
+      <p-q, n0> >= 0 ---> test from L0 indicates in the glyph
+      <p-q, n1> >= 0 ---> test from L0 indicates in the glyph
+     Also make sure that n0 and n1 are ordered so that
+     the curves from which they come have that the curve
+     from which L0 comes is the previous neighbot to the
+     curve from which L1 comes.
 
-     Then <p-q, n0> = <p-p0, n0> and
-     <p-q, n1> = <p-p0 - M*n1, n1> = <p-p0, n1> - M*||n1||^2
+  5) for the case where only one curve goes through the texel
+     set n1=n0, i.e duplicate the normal vector.
 
-     Let M=large negative number so that
-     min( <p-q, n0>, <p-q, n1> ) = min( <p-q, n0>,  <p-p0, n1> - M*||n1||^2 )
-                                 = <p-q, n0>
-     
-
-     and then follow (6) and (7) with S=1
-     Note that <p-q, n1> is always large positive.
-
-  9) for case where 0 curves go through the texel, find
+  6) for case where 0 curves go through the texel, find
      the nearest texel on the same horizontal or verical
      line that has atleast one curve going through it.
      Additionally, find the nearest texel with an end point 
      of a bezeir curve. If the closer texel is of the first choice,
      copy it's values. If the closer texel is of an end point
-     of a curve let q=that point. Let n0=(a,0) and n1=(0,b)
+     of a curve let q=that point. Let m0=(a,0) and m1=(0,b)
      where abs(a)=abs(b)=1 and for p inside the texel,
 
-     <p-q, n0> < 0
-     <p-q, n1> < 0
+     <p-q, m0> < 0
+     <p-q, m1> < 0
 
-     If the texel is within the glyph, let S=-1
-     otherwise, let S=1. Swap n0, n1 as necessary
-     to encode S in their cross product.
+     then let S=+1 if texel inside glyph and -1 if outside
+     the glyph. Set n0=m0 and n1=m1.
 
 
-  9) our final shader is then quite simple:
+  7) our final shader is then quite simple:
 
-      pp=p-q;
-      d0=dot(pp, n0);
-      d1=dot(pp, n1);
-      C=n0.x*n1.y - n1.x*n0.y;
-      d = sign(C) * min(d0, d1);
-     
+      {
+        dot_n0_v1= -n0.x*n1.y + n0.y*n1.x;
+
+        // negative indicates both must
+        // pass the text, and negative
+        // indicates only one need to pass
+        sC= (dot_n0_v1<0.0) ? +1.0 : -1.0;
+        
+        pp=p-q;
+        d0=dot(pp, n0);
+        d1=dot(pp, n1);
+        pseudo_signed_distance = sign(sC) * min(sC*d0, sc*d1);
+      }
+
       gives a simple pseudo-distance that 
       cooperates with anti-aliasing.
 
       The signed L1 distance can be given by:
+
+      {
+        v0=vec2(-n0.y, n0.x);
+        v1=vec2(-n1.y, n1.x);
+
+        //make velocity vector both
+        //"leave" the point q
+        w0=-v0; 
+        w1=+v1;
+
+        s0=sign(v0*pp);
+        s1=sign(v1*pp);
+
+        // if x-direction moves faster, then the
+        // dot is also useable if the point of
+        // the quadrant is above or below the
+        // quadrant of the velocity vector 
+        m0=( abs(v0.x)>abs(v0.y) ) ? 1.0 : -1.0;
+        m1=( abs(v1.x)>abs(v1.y) ) ? 1.0 : -1.0;
+
+        use_dot0=step(0.0, max(s0.x*m0, s0.y*m0) );
+        use_dot1=step(0.0, max(s1.x*m0, s1.y*m1) );
+        
+        dist_pp= abs(pp.x) + abs(pp.y);
+        D0=mix( dist_pp, abs(d0), use_dot0);
+        D1=mix( dist_pp, abs(d1), use_dot1);
+        
+        dist=min(D0, D1);
+        signed_distance=sign(pseudo_signed_distance) * dist
+      }
       
-      pp=p-q;
-      d0=dot(pp, n0);
-      d1=dot(pp, n1);
-
-      v0=vec2(-n0.y, n0.x); 
-      v1=vec2(-n1.y, n1.x); 
-
-      r0=sign(v0)*sign(pp);
-      r1=sign(v1)*sign(pp);
-
-      C=n0.x*n1.y - n1.x*n0.y;
-      d = sign(C) * min(d0, d1);
-
-      dist=(d0<0 && d1<0)?
-        |p.x-q.y| + |p.y-q.y|:
-        min(|v0|, |v1|);
-
-      sign_distance=sign(d)*dist;
-
-      The reason for the (v0<0 && v1<0)
-      is that is when the point p is in
-      the anti-corner of the line segment;
-      that anti-corner is where using
-      the min() of the two values gives
-      a pseudo-distance.
-
-      That anti-corner case only occurs
-      when a texel has two distinct curves
-      through it. 
-
-      For when there are no curves through it, 
-      v0<0 and v1<0 for entire texel and 
-      thus the L1 distance to the nearest
-      curve end point is used.
-
-      For when there is one curve, then
-      v1 is always positive and has
-      greater magnitude than v0 so
-      the return value always is
-      from v0.
+      
  */
 
 
@@ -1186,6 +1168,10 @@ pack_lines(ivec2 pt, int L,
       if(outline_data->prev_neighbor(curves[0].m_curve)==curves[1].m_curve)
         {
           dd = -dd;
+
+          std::swap(n_vector[0], n_vector[1]);
+          std::swap(offset[0], offset[1]);
+          std::swap(v_vector[0], v_vector[1]);
         }
       use_and = (dd>0.0f);
     }
@@ -1221,21 +1207,7 @@ pack_lines(ivec2 pt, int L,
   //  [1].x = offset[0]
   //  [1].y = offset[1]
   
-  //we are going to implicitly store which logical operation
-  //in the ordering of the lines as folows:
-  //If the "restricted" cross product of n_vector[0] X n_vector[1]
-  //is negative then we use AND:
-  float cross_value;
-  cross_value=n_vector[0].x()*n_vector[1].y() - n_vector[0].y()*n_vector[1].x();
-  
-  if((cross_value<0.0) xor (use_and))
-    {
-      std::swap(n_vector[0], n_vector[1]);
-      std::swap(offset[0], offset[1]);
-    }
-  
   vecN<uint8_t, 4> packed_normals;
-    
   packed_normals=pack_from_minus_one_plus_one( vec4(n_vector[0].x(),
                                                     n_vector[0].y(),
                                                     n_vector[1].x(),
