@@ -208,11 +208,35 @@ namespace
   }
 
   void
-  generate_packing_data(vecN<vec2, 2> &n,
-                        vecN<float, 2> &offsets,
-                        const vec2 &p0,
+  generate_packing_data(const vecN<vec2, 2> &n_vector,
+                        vecN<float, 2> &offset,
+                        vecN<uint8_t, 4> &packed_normals,
+                        const vec2 &texel_center,
                         int curve_count)
   {
+    packed_normals=pack_from_minus_one_plus_one( vec4(n_vector[0].x(),
+                                                      n_vector[0].y(),
+                                                      n_vector[1].x(),
+                                                      n_vector[1].y()) );
+    /*
+      we need to increment offsets[]
+      normally we would just increment
+      offset[i] by dot(n_vector[i], fpt),
+      but we need to keep in mind that
+      we store the normal in 8 bits,
+      so we will get the normal back
+      from the 8-bit encoding and
+      do the computation from that value.
+    */
+    for(int i=0;i<2;++i)
+      {
+        vec2 n( packed_normals[2*i], packed_normals[2*i+1]);
+        
+        n/=(254.0f*0.5f);
+        n+=vec2(-1.0f, -1.0f);
+        offset[i]+=dot(n, texel_center);
+      }
+    
     if(curve_count==0)
       {
         /*
@@ -223,25 +247,11 @@ namespace
     else if(curve_count==1)
       {
         /*
-          replace normals[1] with J(normals[0])
-          and set offsets[] to q where
+          we can pick any point q so that
+          <q, n0> = - offset[0], so a reasonable
+          value is q = - n0/||n0|| * offset
 
-          q = p0 + M*J(n[0])
-
-          then:
-           a) <p-q, n0>       = < p-p0, n0>
-           b) <p-q, J(n[0]) > = < p-p0, J(n[0]) > - M||n0||^2
-         choose L so that quantity in b) is always smaller
-         than the quantiy a).
-         
-         note that:
-
-          < p-p0, n0> - < p-q, J(n[0]) > =  < p-p0, n0> - < p-p0, J(n[0]) > - M||n0||^2
-                                         <  ||n0|| ( ||p-p0|| - M||n0|| ) 
-
-          so pick M = 2L where L=diameters of glyph, then above 
-          gives that min( <p-q, n0>, <p-q,n1> ) = <p-q, n0>
-
+          
          */
       }
     else 
@@ -1107,8 +1117,7 @@ pack_lines(ivec2 pt, int L,
            const WRATHFreeTypeSupport::OutlineData *outline_data)
 {
   vecN<vec2,2> n_vector, v_vector;
-  vec2 p0(0.0f, 0.0f);
-  vecN<float,2> offset;
+  vecN<float,2> offset, offset_in_texels;;
   bool use_and(false);
   
   far_away_offset*=m_pow2_mipmap_level;
@@ -1137,15 +1146,7 @@ pack_lines(ivec2 pt, int L,
       offset[i]=offset[0];
     }
 
-  if(curve_count>0)
-    {
-      p0=curves[0].m_points.front().m_texel_normalized_coordinate
-        + vec2(pt.x(), pt.y());
-    }
-  else
-    {
-      p0=vec2(0.0f, 0.0f);
-    }
+  
         
   if(curve_count>=2)
     {
@@ -1176,42 +1177,29 @@ pack_lines(ivec2 pt, int L,
       use_and = (dd>0.0f);
     }
   
-  /*
-    update no_intersection_texel_is_full
-    if there are any curves, take the
-    middle of the right edge as the test
-    point.
-   */
-  if(curve_count>=1)
-    {
-      float dot0, dot1;
-      vec2 q(1.0f, 0.5f);
-
-      dot0=dot( n_vector[0], q) - offset[0];
-      dot1=dot( n_vector[1], q) - offset[1];
-      
-      if(use_and)
-        {
-          no_intersection_texel_is_full= dot0>0.0f and dot1>0.0f;
-        }
-      else
-        {
-          no_intersection_texel_is_full= dot0>0.0f or dot1>0.0f;
-        }
-    }
-
-  //now pack into the texture data
-  //packing is:
-  //  [0].xy = normal[0].xy
-  //  [0].zw = normal[1].zw
-  //  [1].x = offset[0]
-  //  [1].y = offset[1]
   
+ 
   vecN<uint8_t, 4> packed_normals;
-  packed_normals=pack_from_minus_one_plus_one( vec4(n_vector[0].x(),
-                                                    n_vector[0].y(),
-                                                    n_vector[1].x(),
-                                                    n_vector[1].y()) );
+
+  /*
+    now, offset[] is for using the equation
+    f(p) = <p, n> - offset,
+    
+    but we want to find a common point q so
+    that we will use
+    
+    f(p) = <p - q, n>
+
+    i.e. a q so that for i=0,1 
+    <q, n[i] > = offset[i] 
+     */
+  offset_in_texels=offset;
+  generate_packing_data(n_vector, offset, 
+                        packed_normals, 
+                        vec2(pt.x(), pt.y()),
+                        curve_count); 
+
+ 
   WRATHassert(m_bytes_per_pixel[0]==4);
   for(int i=0;i<4;++i)
     {
@@ -1225,51 +1213,40 @@ pack_lines(ivec2 pt, int L,
       --curve_count;
     }
   
-  {
-    vec2 fpt(pt.x(), pt.y());
-    /*
-      we need to increment offsets[]
-      normally we would just increment
-      offset[i] by dot(n_vector[i], fpt),
-      but we need to keep in mind that
-      we store the normal in 8 bits,
-      so we will get the normal back
-      from the 8-bit encoding and
-      do the computation from that value.
-    */
-    for(int i=0;i<2;++i)
-      {
-        vec2 n( packed_normals[2*i], packed_normals[2*i+1]);
-        
-        n/=(254.0f*0.5f);
-        n+=vec2(-1.0f, -1.0f);
-        offset[i]+=dot(n, fpt);
-      }
-
-    /*
-      now, offset[] is for using the equation
-       f(p) = <p, n> - offset,
-
-       but we want to find a common point q so
-       that we will use
-
-       f(p) = <p - q, n>
-
-       i.e. a q so that for i=0,1 
-       <q, n[i] > = offset[i] 
-     */
-    generate_packing_data(n_vector, offset, p0, curve_count); 
     
-    WRATHassert(m_bytes_per_pixel[1]==4);
-    vecN<uint8_t, 4> as_fp16;
+  WRATHassert(m_bytes_per_pixel[1]==4);
+  vecN<uint8_t, 4> as_fp16;
     
-    WRATHUtil::convert_to_halfp_from_float(as_fp16, offset);
-    for(int i=0; i<4; ++i)
-      {
-        analytic_data[1][4*L+i]=as_fp16[i];
-      }      
-  }
+  WRATHUtil::convert_to_halfp_from_float(as_fp16, offset);
+  for(int i=0; i<4; ++i)
+    {
+      analytic_data[1][4*L+i]=as_fp16[i];
+    }      
   
+  /*
+    update no_intersection_texel_is_full
+    if there are any curves, take the
+    middle of the right edge as the test
+    point.
+  */
+  if(curve_count>=1)
+    {
+      float dot0, dot1;
+      vec2 q(1.0f, 0.5f);
+      
+      dot0=dot( n_vector[0], q) - offset_in_texels[0];
+      dot1=dot( n_vector[1], q) - offset_in_texels[1];
+      
+      if(use_and)
+        {
+          no_intersection_texel_is_full= dot0>0.0f and dot1>0.0f;
+        }
+      else
+        {
+          no_intersection_texel_is_full= dot0>0.0f or dot1>0.0f;
+        }
+    }
+    
 }
 
 
