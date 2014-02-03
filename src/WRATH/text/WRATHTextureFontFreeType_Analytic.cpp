@@ -137,6 +137,44 @@ using namespace WRATHFreeTypeSupport;
 
 namespace
 {
+  class nearest_pixel_finder:boost::noncopyable
+  {
+  public:
+    nearest_pixel_finder(void):
+      m_ready(false)
+    {}
+    
+    void
+    reserve(unsigned int sz)
+    {
+      WRATHassert(m_list.empty());
+      WRATHassert(!m_ready);
+      m_list.reserve(sz);
+    }
+
+    void
+    add_point(ivec2 texel, vec2 curve_pt)
+    {
+      m_list.push_back(point(texel, curve_pt));
+    }
+
+    void
+    finalize(void);
+
+    /*
+      Returns the coordinates of the nearest
+      Bezier curve end point in texel coordindates
+     */
+    enum return_code
+    find_nearest(ivec2 texel, int &max_dist, vec2 &out_curve_pt) const;
+
+  private:
+    typedef std::pair<ivec2, vec2> point;
+
+    std::vector<point> m_list;
+    bool m_ready;
+  };
+
   class texel_gap
   {
   public:
@@ -374,14 +412,28 @@ namespace
   }
   
  
+  /*
+     for each texel that is marked as empty,
+     search along a line for non-empty texels. 
+     If there is one, take the closest texel
+     along the line and store the L1-distance 
+     to it.
+     \param glyph_size size of 2D grid
+     \param bytes_per_pixel array of sizes for raw texel data
+     \param analytic_pixel_data location of analytic pixel data
+     \param distances 2d array tracking distance to nearest texel with a feature
+     \param dim choose if line is horizontal or vertical:
+                if dim=0 search along horizontal line, 
+                if dim=1 search along vertical line
+   */
   template<unsigned int P>
   void
-  find_neighbors_for_empty_texels_worker(ivec2 glyph_size,
-                                         ivec2 bytes_per_pixel,
-                                         const boost::multi_array<bool, 2> &texel_is_unfilled,
-                                         const vecN<c_array<uint8_t>, P> &analytic_pixel_data,
-                                         boost::multi_array<int, 2> &distances,
-                                         int dim)
+  fill_empty_texels_worker(ivec2 glyph_size,
+                           ivec2 bytes_per_pixel,
+                           const boost::multi_array<bool, 2> &texel_is_unfilled,
+                           const vecN<c_array<uint8_t>, P> &analytic_pixel_data,
+                           boost::multi_array<int, 2> &distances,
+                           int dim)
   {
     WRATHassert(dim==0 or dim==1);
 
@@ -479,10 +531,11 @@ namespace
 
   template<unsigned int P>
   void
-  find_neighbors_for_empty_texels(ivec2 glyph_size,
-                                  ivec2 bytes_per_pixel,
-                                  boost::multi_array<bool, 2> &texel_is_unfilled,
-                                  const vecN<c_array<uint8_t>, P> &analytic_pixel_data)
+  fill_empty_texels(ivec2 glyph_size,
+                    ivec2 bytes_per_pixel,
+                    boost::multi_array<bool, 2> &texel_is_unfilled,
+                    const vecN<c_array<uint8_t>, P> &analytic_pixel_data,
+                    const nearest_pixel_finder &end_pts)
   {
 
     if(glyph_size.x()<=0 or glyph_size.y()<=0)
@@ -494,22 +547,36 @@ namespace
               distances.data()+distances.num_elements(),
               glyph_size.x() + glyph_size.y() + 2);
 
-    find_neighbors_for_empty_texels_worker(glyph_size, bytes_per_pixel,
-                                           texel_is_unfilled,
-                                           analytic_pixel_data,
-                                           distances,
-                                           0);
+    fill_empty_texels_worker(glyph_size, bytes_per_pixel,
+                             texel_is_unfilled,
+                             analytic_pixel_data,
+                             distances,
+                             0);
     
-    find_neighbors_for_empty_texels_worker(glyph_size, bytes_per_pixel,
-                                           texel_is_unfilled,
-                                           analytic_pixel_data,
-                                           distances,
-                                           1);
+    fill_empty_texels_worker(glyph_size, bytes_per_pixel,
+                             texel_is_unfilled,
+                             analytic_pixel_data,
+                             distances,
+                             1);
 
-    /*
-      TODO:
+    /*     
        - now also check the Bezier curve end points.
      */
+    for(int x=0; x<glyph_size.x(); ++x)
+      {
+        for(int y=0; y<glyph_size.y(); ++y)
+          {
+            vec2 curve_pt(0.0f, 0.0f);
+            if(texel_is_unfilled[x][y] 
+               and routine_success==end_pts.find_nearest( ivec2(x,y), distances[x][y], curve_pt))
+              {
+                /*
+                  fill the texel with data so that the computed distance
+                  value ends up as the L1-distance to curve_pt.
+                 */
+              }
+          }
+      }
   }
   
        
@@ -556,6 +623,46 @@ namespace
     WRATHImage *m_image;
   };
 
+}
+
+////////////////////////////////////////
+// nearest_pixel_finder methods
+void
+nearest_pixel_finder::
+finalize(void)
+{
+  m_ready=true;
+  /*
+    TODO: make a quad tree so that
+    search can be done much faster
+   */
+}
+
+enum return_code
+nearest_pixel_finder::
+find_nearest(ivec2 pt, int &rdist, vec2 &out_curve_pt) const
+{
+  WRATHassert(m_ready);
+  enum return_code R(routine_fail);
+
+  /*
+    TODO: walk a quad tree to make a fast search
+   */
+  for(std::vector<point>::const_iterator iter=m_list.begin(), 
+        end=m_list.end(); iter!=end; ++iter)
+    {
+      int dist;
+
+      dist=std::abs(pt.x()-iter->first.x()) 
+        + std::abs(pt.y()-iter->first.y());
+      if(dist < rdist)
+        {
+          rdist=dist;
+          out_curve_pt=iter->second;
+          R=routine_success;
+        }
+    }
+  return R;
 }
 
 //////////////////////////////////////////
@@ -937,8 +1044,26 @@ generate_character(WRATHTextureFont::glyph_index_type G)
   boost::multi_array<int, 2> covered;
   boost::multi_array<bool, 2> no_intersection_texel_is_full_table(boost::extents[glyph_size.x()][glyph_size.y()]);
   boost::multi_array<bool, 2> texel_is_unfilled(boost::extents[glyph_size.x()][glyph_size.y()]);
-  
-                                               
+  nearest_pixel_finder curve_end_point_list;
+                                          
+  /*
+    build a list of texels that have end point
+    of bezier curves
+   */
+  curve_end_point_list.reserve(outline_data.number_curves());
+  for(int i=0, endi=outline_data.number_curves(); i<endi; ++i)
+    {
+      const BezierCurve *curve;
+      ivec2 pt;
+      vec2 fpt;
+
+      curve=outline_data.bezier_curve(i);
+      fpt=outline_data.bitmap_from_point(curve->pt0());
+      pt=ivec2(outline_data.bitmap_from_point(fpt));
+      curve_end_point_list.add_point(pt, fpt);
+    }
+  curve_end_point_list.finalize();
+     
 
   if(m_mipmap_level>0 and glyph_size.x()>0 and glyph_size.y()>0)
     {
@@ -1046,9 +1171,12 @@ generate_character(WRATHTextureFont::glyph_index_type G)
           
         } //of for(x=...)
     } //of for(y=...)
-  find_neighbors_for_empty_texels(glyph_size, m_bytes_per_pixel,
-                                  texel_is_unfilled,
-                                  analytic_pixel_data[0]);
+
+  fill_empty_texels(glyph_size, m_bytes_per_pixel,
+                    texel_is_unfilled,
+                    analytic_pixel_data[0],
+                    curve_end_point_list);
+
 
   if(m_mipmap_level>0 and glyph_size.x()>0 and glyph_size.y()>0)
     {
