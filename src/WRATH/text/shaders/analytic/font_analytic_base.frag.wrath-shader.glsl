@@ -23,19 +23,9 @@ uniform mediump sampler2D wrath_AnalyticPositionTexture;
 
 
 
-#ifdef WRATH_FONT_ANALYTIC_PIXEL_RELATIVE_COORDINATES
-
-#ifndef WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE 
-#define WRATH_FONT_ANALYTIC_MAX_GLYPH_NORMALIZED_SIZE 1.0
-#endif
-
-#endif
-
-
 /*
-  tex_v=texture2D(texture_unit0, tex_coord);
-  tex_o=texture2D(texture_unit1, tex_coord);
-  prelative_coord= relative_coord attribute
+  tex_v=texture2D(wrath_AnalyticNormalTexture, tex_coord);
+  tex_o=texture2D(wrath_AnalyticPositionTexture, tex_coord);
  */
 mediump float
 wrath_analytic_font_compute_distance(in mediump vec2 GlyphTextureCoordinate,

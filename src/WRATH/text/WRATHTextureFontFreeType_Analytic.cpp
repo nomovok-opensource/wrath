@@ -68,14 +68,19 @@
      Additionally, find the nearest texel with an end point 
      of a bezeir curve. If the closer texel is of the first choice,
      copy it's values. If the closer texel is of an end point
-     of a curve let q=that point. Let m0=(a,0) and m1=(0,b)
-     where abs(a)=abs(b)=1 and for p inside the texel,
+     of a curve let q=that point. Let n=(a,b) where 
+     abs(a)=abs(b)=1 and 
 
-     <p-q, m0> < 0
-     <p-q, m1> < 0
+     <p-q,n> > 0 for all p in texel if glyph is covered
+     <p-q,n> < 0 for all p in texel if glyph is uncovered
 
-     then let S=+1 if texel inside glyph and -1 if outside
-     the glyph. Set n0=m0 and n1=m1.
+     Set n0=n1=n. Then we have that
+
+     abs(<p-q,n>) = L1-norm of (p-q)
+
+     thus regardless of what shader selects for
+     the distance value (be it norm or L1-distance
+     to corner) the value is the same.
 
 
   7) our final shader is then quite simple:
@@ -84,14 +89,19 @@
         dot_n0_v1= -n0.x*n1.y + n0.y*n1.x;
 
         // negative indicates both must
-        // pass the text, and negative
-        // indicates only one need to pass
+        // pass the text, and positive
+        // indicates only one needs to pass
         sC= (dot_n0_v1<0.0) ? +1.0 : -1.0;
         
         pp=p-q;
         d0=dot(pp, n0);
         d1=dot(pp, n1);
         pseudo_signed_distance = sign(sC) * min(sC*d0, sc*d1);
+
+        //alternatively:
+        pseudo_signed_distance = (dot_n0_v1<0.0)?
+          max(d0, d1)
+          min(d0, d1);
       }
 
       gives a simple pseudo-distance that 
@@ -118,8 +128,8 @@
         m0=( abs(v0.x)>abs(v0.y) ) ? 1.0 : -1.0;
         m1=( abs(v1.x)>abs(v1.y) ) ? 1.0 : -1.0;
 
-        use_dot0=step(0.0, max(s0.x*m0, s0.y*m0) );
-        use_dot1=step(0.0, max(s1.x*m0, s1.y*m1) );
+        use_dot0=step(0.0, max(s0.x*m0, -s0.y*m0) );
+        use_dot1=step(0.0, max(s1.x*m0, -s1.y*m1) );
         
         dist_pp= abs(pp.x) + abs(pp.y);
         D0=mix( dist_pp, abs(d0), use_dot0);
@@ -297,6 +307,8 @@ namespace
                         const vec2 &texel_center,
                         int curve_count)
   {
+    vecN<vec2, 2> quantized_n;
+
     packed_normals=pack_from_minus_one_plus_one( vec4(n_vector[0].x(),
                                                       n_vector[0].y(),
                                                       n_vector[1].x(),
@@ -304,7 +316,7 @@ namespace
     /*
       we need to increment offsets[]
       normally we would just increment
-      offset[i] by dot(n_vector[i], fpt),
+      offset[i] by dot(n_vector[i], texel_center),
       but we need to keep in mind that
       we store the normal in 8 bits,
       so we will get the normal back
@@ -318,6 +330,8 @@ namespace
         n/=(254.0f*0.5f);
         n+=vec2(-1.0f, -1.0f);
         offset[i]+=dot(n, texel_center);
+
+        quantized_n[i]=n;
       }
     
     if(curve_count==0)
@@ -332,18 +346,37 @@ namespace
         /*
           we can pick any point q so that
           <q, n0> = - offset[0], so a reasonable
-          value is q = - n0/||n0|| * offset
-
-          
+          value is q = - n0/||n0|| * offset          
          */
       }
     else 
       {
         /*
           replace offsets[] with point q so that
-           <q, n0> = - offsets[0],  
-           <q, n1> = - offsets[1],  
+           <q, n0> = offsets[0],  
+           <q, n1> = offsets[1]  
          */
+        float det, d0, d1;
+        vec2 q, a, b;
+        
+        a=vec2(+quantized_n[1].y(), -quantized_n[1].x());
+        b=vec2(-quantized_n[0].y(), +quantized_n[0].x());
+        det=quantized_n[0].x()*quantized_n[1].y()
+          - quantized_n[0].y()*quantized_n[1].x();
+        q=(offset[0]*a + offset[1]*b)/det;
+
+        d0=dot(q, quantized_n[0]);
+        d1=dot(q, quantized_n[1]);
+
+        if(std::abs(offset[0]-d0)>0.0001f
+           or std::abs(offset[1]-d1)>0.0001f)
+          {
+            std::cout << "\nAh cufk: "
+                      << "\n\td0=" << d0 << ", off0=" << offset[0]
+                      << ", delta=" << std::abs(offset[0]-d0)
+                      << "\n\td1=" << d1 << ", off1=" << offset[1]
+                      << ", delta=" << std::abs(offset[1]-d1);
+          }
       }
   }
 
@@ -538,6 +571,8 @@ namespace
                     const nearest_pixel_finder &end_pts)
   {
 
+    return;
+
     if(glyph_size.x()<=0 or glyph_size.y()<=0)
       {
         return;
@@ -572,7 +607,7 @@ namespace
               {
                 /*
                   fill the texel with data so that the computed distance
-                  value ends up as the L1-distance to curve_pt.
+                  value ends up as the L1-distance to curve_pt; 
                  */
               }
           }
