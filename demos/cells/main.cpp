@@ -56,8 +56,6 @@ public:
 
   //text renderer options
   command_line_argument_value<int> m_text_renderer;
-  command_line_argument_value<int> m_text_renderer_line_analytic_format;
-  command_line_argument_value<bool> m_text_renderer_curve_analytic_format;
   command_line_argument_value<int> m_text_renderer_sub_choice;
   command_line_argument_value<int> m_text_renderer_coverage_min_filter;
   command_line_argument_value<int> m_text_renderer_converage_mag_filter;
@@ -121,20 +119,6 @@ public:
                     "Specify text renderer, 0=FreeType alpha, "
                     "1=multi-res coverage, 2=distance, 3=analytic, 4=curve_analytic",
                     *this),
-
-    m_text_renderer_line_analytic_format(1, "line_analytic_format",
-                                         "Only has affect if text_renderer is 3 "
-                                         "Select texture format for analytic "
-                                         "text renderer(only has affect for values "
-                                         "0=use (GRBA8, RGBA8), "
-                                         "1=use (RGBA8, LA_16F), "
-                                         "2=use (RGBA8, LA_32F), ", 
-                                         *this),
-
-    m_text_renderer_curve_analytic_format(true, "curve_analytic_include_scale_data",
-                                          "Only has affect if text_renderer is 4 "
-                                          "if on curve analytic texture includes scaling data",
-                                          *this),
                                      
     m_text_renderer_sub_choice(1, "text_renderer_sub_choice",
                                "0=no AA, 1=AA, 2=mix with coverage "
@@ -808,35 +792,6 @@ generate_font(const cmd_line_type &cmd_line)
   
 
   WRATHTextureFontFreeType_Analytic::mipmap_level(analytic_mip_value);
-  
-  if(cmd_line.m_text_renderer_curve_analytic_format.m_value)
-    {
-      WRATHTextureFontFreeType_CurveAnalytic::include_scaling_data(true);
-    }
-  else 
-    {
-      WRATHTextureFontFreeType_CurveAnalytic::include_scaling_data(false);
-    }
-
-  switch(cmd_line.m_text_renderer_line_analytic_format.m_value)
-    {
-    default:
-    case 0:
-      {        
-        WRATHTextureFontFreeType_Analytic::creation_texture_mode(WRATHTextureFontFreeType_Analytic::local_pixel_coordinates);
-      }
-      break;
-
-    case 1:
-      WRATHTextureFontFreeType_Analytic::creation_texture_mode(WRATHTextureFontFreeType_Analytic::global_pixel_coordinates_16bit);
-      break;
-
-    case 2: 
-        WRATHTextureFontFreeType_Analytic::creation_texture_mode(WRATHTextureFontFreeType_Analytic::global_pixel_coordinates_32bit);
-      break;
-    }
-  
-  
   
   switch(cmd_line.m_text_renderer.m_value)
     {

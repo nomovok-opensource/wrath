@@ -23,9 +23,9 @@ uniform mediump sampler2D wrath_DetailedCoverageTexture;
 uniform mediump sampler2D wrath_DetailedIndexTexture; 
 
 mediump float
-wrath_detailed_wrath_glyph_compute_coverage(in vec2 GlyphCoordinate,
-                                in vec2 GlyphNormalizedCoordinate,
-                                in float GlyphIndex)
+wrath_detailed_wrath_glyph_compute_coverage(in mediump vec2 GlyphCoordinate,
+                                            in mediump vec2 GlyphNormalizedCoordinate,
+                                            in mediump float GlyphIndex)
 {
   mediump vec4 loc_sz;
   mediump vec2 idx_tex;
@@ -65,11 +65,11 @@ wrath_detailed_wrath_glyph_compute_coverage(in vec2 GlyphCoordinate,
 }
 
 mediump float 
-wrath_detailed_wrath_glyph_is_covered(in vec2 GlyphCoordinate,
-                          in vec2 GlyphNormalizedCoordinate,
-                          in float GlyphIndex)
+wrath_detailed_wrath_glyph_is_covered(in mediump vec2 GlyphCoordinate,
+                                      in mediump vec2 GlyphNormalizedCoordinate,
+                                      in mediump float GlyphIndex)
 {
   return step(0.5, wrath_detailed_wrath_glyph_compute_coverage(GlyphCoordinate,
-                                                   GlyphNormalizedCoordinate,
-                                                   GlyphIndex));
+                                                               GlyphNormalizedCoordinate,
+                                                               GlyphIndex));
 }

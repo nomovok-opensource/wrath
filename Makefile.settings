@@ -20,7 +20,7 @@ GL_INCLUDEPATH=/usr/include
 # additional flags for location of GL .so's
 # only needed for GLES2/3 and only if the .so
 # are not in the library path already
-# GLES_LIB_PATH= -L/some/place
+# GLES_LIB_PATH_FLAGS= -L/opt/mesa.ilo2/lib
 
 # GL_VERSION
 #  2 = GLES2 or OpenGL 2.x

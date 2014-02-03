@@ -227,22 +227,24 @@ WRATHTextureFontFreeType_Distance::
 create_glyph(std::vector<uint8_t> &pdata, const ivec2 &sz)
 {
   WRATHImage *pImage;
-  GLenum format;
+  GLenum internal_format, external_format;
 
   #if defined(WRATH_GLES_VERSION) && WRATH_GLES_VERSION==2
   {
-    format=GL_LUMINANCE;
+    internal_format=GL_LUMINANCE;
+    external_format=GL_LUMINANCE;
   }
   #else
   {
-    format=GL_RED;
+    internal_format=GL_R8;
+    external_format=GL_RED;
   }
   #endif
 
   pImage=WRATHNew WRATHImage(sz,
                              WRATHImage::ImageFormat()
-                             .internal_format(format)
-                             .pixel_data_format(format)
+                             .internal_format(internal_format)
+                             .pixel_data_format(external_format)
                              .pixel_type(GL_UNSIGNED_BYTE)
                              .magnification_filter(GL_LINEAR)
                              .minification_filter(GL_LINEAR)
@@ -252,7 +254,7 @@ create_glyph(std::vector<uint8_t> &pdata, const ivec2 &sz)
 
   pImage->respecify_sub_image(0,
                               WRATHImage::PixelImageFormat()
-                              .pixel_data_format(format)
+                              .pixel_data_format(external_format)
                               .pixel_type(GL_UNSIGNED_BYTE),
                               pdata,
                               ivec2(0,0), sz);

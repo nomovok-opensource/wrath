@@ -109,9 +109,11 @@ namespace
 
 
 #if defined(WRATH_GLES_VERSION) && WRATH_GLES_VERSION==2
-  #define COVERAGE_FORMAT GL_LUMINANCE
+  #define INTERNAL_CVG_FORMAT GL_LUMINANCE
+  #define EXTERNAL_CVG_FORMAT GL_LUMINANCE
 #else
-  #define COVERAGE_FORMAT GL_RED
+  #define INTERNAL_CVG_FORMAT GL_R8
+  #define EXTERNAL_CVG_FORMAT GL_RED
 #endif
 
 ///////////////////////////////
@@ -126,8 +128,8 @@ common_data_type(void):
                  .minification_filter(GL_NEAREST)),
 
   m_coverage_format(WRATHImage::ImageFormat()
-                    .internal_format(COVERAGE_FORMAT)
-                    .pixel_data_format(COVERAGE_FORMAT)
+                    .internal_format(INTERNAL_CVG_FORMAT)
+                    .pixel_data_format(EXTERNAL_CVG_FORMAT)
                     .pixel_type(GL_UNSIGNED_BYTE)
                     .magnification_filter(GL_LINEAR)
                     .minification_filter(GL_LINEAR))

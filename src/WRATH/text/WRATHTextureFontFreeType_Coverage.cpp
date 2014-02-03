@@ -293,22 +293,24 @@ WRATHTextureFontFreeType_Coverage::
 create_glyph(std::vector<glyph_mipmap_level> &pdata)
 {
   WRATHImage *pImage;
-  GLenum format;
+  GLenum internal_format, external_format;
 
   #if defined(WRATH_GLES_VERSION) && WRATH_GLES_VERSION==2
   {
-    format=GL_LUMINANCE;
+    internal_format=GL_LUMINANCE;
+    external_format=GL_LUMINANCE;
   }
   #else
   {
-    format=GL_RED;
+    internal_format=GL_R8;
+    external_format=GL_RED;
   }
   #endif
 
   pImage=WRATHNew WRATHImage(pdata[0].size(),
                              WRATHImage::ImageFormat()
-                             .internal_format(format)
-                             .pixel_data_format(format)
+                             .internal_format(internal_format)
+                             .pixel_data_format(external_format)
                              .pixel_type(GL_UNSIGNED_BYTE)
                              .magnification_filter(m_magnification_filter)
                              .minification_filter(m_minification_filter)
@@ -325,7 +327,7 @@ create_glyph(std::vector<glyph_mipmap_level> &pdata)
     {
       pImage->respecify_sub_image(i, //lod
                                   WRATHImage::PixelImageFormat()
-                                  .pixel_data_format(format)
+                                  .pixel_data_format(external_format)
                                   .pixel_type(GL_UNSIGNED_BYTE),
                                   pdata[i].pixels(),
                                   ivec2(0,0),
