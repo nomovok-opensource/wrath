@@ -137,6 +137,51 @@ using namespace WRATHFreeTypeSupport;
 
 namespace
 {
+  class texel_gap
+  {
+  public:
+    texel_gap(int b, int e):
+      m_begin(b),
+      m_end(e)
+    {}
+
+    /*
+      indicates a -range-, i.e those texels
+      in the half open range [begin, end)
+      have no curves going through them
+     */
+    int m_begin, m_end;
+  };
+
+  class texel_gap_list
+  {
+  public:
+    typedef std::list<texel_gap> list_type;
+    
+    void
+    add_empty_texel(int loc)
+    {
+      if(m_data.empty() || m_data.back().m_end!=loc)
+        {
+          m_data.push_back(texel_gap(loc, loc+1));
+        }
+      else
+        {
+          ++m_data.back().m_end;
+        }
+    }
+
+    const std::list<texel_gap>&
+    gaps(void) const
+    {
+      return m_data;
+    }
+
+  private:
+    std::list<texel_gap> m_data;
+  };
+
+
   unsigned int
   compute_num_levels_needed(const ivec2 &glyph_size,
                             int mipmap_levels)
@@ -313,14 +358,29 @@ namespace
     }
     #endif
   }
+  template<unsigned int P>
+  void
+  copy_analytic_pixel_data(int srcL, int L, ivec2 bytes_per_pixel,
+                           const vecN<c_array<uint8_t>, P> &analytic_pixel_data)
+  {
+    for(unsigned int p=0;p<P;++p)
+      {
+        for(int i=0; i<4; ++i)
+          {
+            analytic_pixel_data[p][ L*bytes_per_pixel[p] + i ]=
+              analytic_pixel_data[p][ srcL*bytes_per_pixel[p] + i ];
+          }
+      }
+  }
   
  
   template<unsigned int P>
   void
   find_neighbors_for_empty_texels_worker(ivec2 glyph_size,
                                          ivec2 bytes_per_pixel,
-                                         boost::multi_array<bool, 2> &texel_is_unfilled,
+                                         const boost::multi_array<bool, 2> &texel_is_unfilled,
                                          const vecN<c_array<uint8_t>, P> &analytic_pixel_data,
+                                         boost::multi_array<int, 2> &distances,
                                          int dim)
   {
     WRATHassert(dim==0 or dim==1);
@@ -329,73 +389,88 @@ namespace
 
     for(int y=0; y<glyph_size[other_dim]; ++y)
       {
-        int last_filled_texel, first_filled_texel_on_line;
-        int prevL, firstL;
+        //create list of gaps.
+        texel_gap_list gap_list;
+        ivec2 pt;
 
-        last_filled_texel=-1;
-        first_filled_texel_on_line=-1;
-
+        pt[other_dim]=y;
         for(int x=0; x<glyph_size[dim]; ++x)
           {
-            ivec2 pt;
-
             pt[dim]=x;
-            pt[other_dim]=y;
-
             if(texel_is_unfilled[pt.x()][pt.y()])
               {
-                /*
-                  note that we do not fill on the right/downmost 
-                  texel, this is becuase that texel is -padding-
-                  and needs to be cleared always.
-                 */
-                if(last_filled_texel>=0 and x+1!=glyph_size[dim])
-                  {
-                    int L;
+                gap_list.add_empty_texel(x);
+              }
+            else
+              {
+                distances[pt.x()][pt.y()]=0;
+              }
+          }
 
-                    L=pt.x() + pt.y()*glyph_size.x();
-                    texel_is_unfilled[pt.x()][pt.y()]=false;
-                    for(unsigned int p=0;p<P;++p)
+        for(texel_gap_list::list_type::const_iterator iter=gap_list.gaps().begin(),
+              end=gap_list.gaps().end(); iter!=end; ++iter)
+          {
+            int b(iter->m_begin), e(iter->m_end);
+            int mid( (b+e)/2 ), srcL;
+
+            if(e==glyph_size.x())
+              {
+                //if there is no texel at the end,
+                //then use the texel from the beginning.
+                mid=glyph_size.x() - 1;
+              }
+
+            if(b!=0)
+              {
+                pt[dim]=b-1;
+                srcL=pt.x() + pt.y()*glyph_size.x();
+
+                for(int x=b; x<=mid; ++x)
+                  {           
+                    int dist;
+         
+                    pt[dim]=x;
+                    dist=x-(b-1);
+                    WRATHassert(dist>0);
+                    if(distances[pt.x()][pt.y()] > dist)
                       {
-                        for(int i=0; i<4; ++i)
-                          {
-                            analytic_pixel_data[p][ L*bytes_per_pixel[p] + i ]=
-                              analytic_pixel_data[p][ prevL*bytes_per_pixel[p] + i ];
-                          }
+                        distances[pt.x()][pt.y()]=dist;
+                        copy_analytic_pixel_data(srcL, 
+                                                 pt.x() + pt.y()*glyph_size.x(), 
+                                                 bytes_per_pixel,
+                                                 analytic_pixel_data);
                       }
                   }
               }
             else
               {
-                last_filled_texel=x;
-                prevL= pt.x() + pt.y()*glyph_size.x();
-                if(first_filled_texel_on_line<0)
-                  {
-                    first_filled_texel_on_line=x;
-                    firstL=prevL;
-                  }
+                //there is no texel to the left that
+                //has a feature, so all must use the right
+                mid=0;
               }
-          }
-        
-        for(int x=0; x<first_filled_texel_on_line; ++x)
-          {
-            int L;
-            ivec2 pt;
 
-            pt[dim]=x;
-            pt[other_dim]=y;
-
-            WRATHassert(texel_is_unfilled[pt.x()][pt.y()]);
-            L=pt.x() + pt.y()*glyph_size.x();
-            texel_is_unfilled[pt.x()][pt.y()]=false;
-            for(unsigned int p=0;p<P;++p)
+            if(e < glyph_size[dim])
               {
-                for(int i=0; i<4; ++i)
-                  {
-                    analytic_pixel_data[p][ L*bytes_per_pixel[p] + i ]
-                      =analytic_pixel_data[p][ firstL*bytes_per_pixel[p] + i];
+                pt[dim]=e;
+                srcL=pt.x() + pt.y()*glyph_size.x();
+                for(int x=mid; x<e; ++x)
+                  {          
+                    int dist;
+          
+                    pt[dim]=x;
+                    dist=e-x;
+                    WRATHassert(dist>0);
+                    if(distances[pt.x()][pt.y()] > dist)
+                      {
+                        distances[pt.x()][pt.y()]=dist;
+                        copy_analytic_pixel_data(srcL, 
+                                                 pt.x() + pt.y()*glyph_size.x(), 
+                                                 bytes_per_pixel,
+                                                 analytic_pixel_data);
+                      }
                   }
               }
+
           }
       }
   }
@@ -409,22 +484,32 @@ namespace
                                   boost::multi_array<bool, 2> &texel_is_unfilled,
                                   const vecN<c_array<uint8_t>, P> &analytic_pixel_data)
   {
-    return;
 
     if(glyph_size.x()<=0 or glyph_size.y()<=0)
       {
         return;
       }
-    
+    boost::multi_array<int, 2> distances(boost::extents[glyph_size.x()][glyph_size.y()]);
+    std::fill(distances.data(),
+              distances.data()+distances.num_elements(),
+              glyph_size.x() + glyph_size.y() + 2);
+
     find_neighbors_for_empty_texels_worker(glyph_size, bytes_per_pixel,
                                            texel_is_unfilled,
                                            analytic_pixel_data,
+                                           distances,
                                            0);
     
     find_neighbors_for_empty_texels_worker(glyph_size, bytes_per_pixel,
                                            texel_is_unfilled,
                                            analytic_pixel_data,
+                                           distances,
                                            1);
+
+    /*
+      TODO:
+       - now also check the Bezier curve end points.
+     */
   }
   
        
