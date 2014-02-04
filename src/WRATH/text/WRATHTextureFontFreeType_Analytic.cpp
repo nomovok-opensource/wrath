@@ -305,14 +305,24 @@ namespace
                         vecN<float, 2> &offset,
                         vecN<uint8_t, 4> &packed_normals,
                         const vec2 &texel_center,
-                        int curve_count)
+                        int &curve_count)
   {
     vecN<vec2, 2> quantized_n;
+
+    
 
     packed_normals=pack_from_minus_one_plus_one( vec4(n_vector[0].x(),
                                                       n_vector[0].y(),
                                                       n_vector[1].x(),
                                                       n_vector[1].y()) );
+
+    if(curve_count>=2 
+     and packed_normals[0]==packed_normals[2]
+     and packed_normals[1]==packed_normals[3])
+    {
+      --curve_count;
+    }
+
     /*
       we need to increment offsets[]
       normally we would just increment
@@ -367,16 +377,6 @@ namespace
 
         d0=dot(q, quantized_n[0]);
         d1=dot(q, quantized_n[1]);
-
-        if(std::abs(offset[0]-d0)>0.0001f
-           or std::abs(offset[1]-d1)>0.0001f)
-          {
-            std::cout << "\nAh cufk: "
-                      << "\n\td0=" << d0 << ", off0=" << offset[0]
-                      << ", delta=" << std::abs(offset[0]-d0)
-                      << "\n\td1=" << d1 << ", off1=" << offset[1]
-                      << ", delta=" << std::abs(offset[1]-d1);
-          }
       }
   }
 
@@ -1405,24 +1405,53 @@ pack_lines(ivec2 pt, int L,
         the dot computation above assumes that
         curve0 comes before curve1, if it did
         not, then it needs to be negated.
-        TODO: we need to handle the case where
-              there are curve(s) between the
-              two curves we take, and correctly
-              take the orientation from there
-              OR modify FreeTypeSupport so that
-              the curves are ordered in the same
-              order in which they appear in the contour.
-        
-       */
-      if(outline_data->prev_neighbor(curves[0].m_curve)==curves[1].m_curve)
-        {
-          dd = -dd;
+        Additionally, we need that the curve
+        from which n_vector[0] comes is before
+        the curve from which n_vector[1] comes.
 
+        To than end, we use an order independent
+        way to compute if the the combine rule
+        is a logical-and or a logical-or.
+        The method is take the midpoint of the
+        2 curves and then take the midpoint
+        of those 2 points. That point should
+        either be on the "inside" side of both
+        or on the "outside" side of both.
+        if the former, then the combile rule is
+        logical-and, otherwise logical-or.
+       */
+      vec2 p0, p1, p, p0a, p0b, p1a, p1b;
+      float dot0, dot1;
+      bool bad_dot;
+      
+      p0a=curves[0].m_points.front().m_texel_normalized_coordinate;
+      p0b=curves[0].m_points.back().m_texel_normalized_coordinate;
+      p0=0.5f*(p0a+p0b);
+        
+      p1a=curves[1].m_points.front().m_texel_normalized_coordinate;
+      p1b=curves[1].m_points.back().m_texel_normalized_coordinate;
+      p1=0.5f*(p1a+p1b);
+
+      p=0.5f*(p0+p1);
+      dot0=dot( n_vector[0], p-p0);
+      dot1=dot( n_vector[1], p-p1);
+
+      bad_dot=( (dot0>0.0f) xor (dot1>0.0f) );
+      WRATHunused(bad_dot);
+
+      use_and=(dot0>0.0f or dot1>0.0f);
+
+      if(use_and xor dd>0.0f)
+        {
+          /*
+            dd<0.0f means use logical-or,
+            thus the order of the curves
+            is wrong
+           */
           std::swap(n_vector[0], n_vector[1]);
           std::swap(offset[0], offset[1]);
           std::swap(v_vector[0], v_vector[1]);
         }
-      use_and = (dd>0.0f);
     }
   
   
@@ -1454,12 +1483,7 @@ pack_lines(ivec2 pt, int L,
       analytic_data[0][ m_bytes_per_pixel[0]*L+i ]=packed_normals[i];
     }
 
-  if(curve_count>=2 
-     and packed_normals[0]==packed_normals[2]
-     and packed_normals[1]==packed_normals[3])
-    {
-      --curve_count;
-    }
+  
   
     
   WRATHassert(m_bytes_per_pixel[1]==4);
