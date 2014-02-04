@@ -235,10 +235,9 @@ private:
   void
   pack_lines(ivec2 pt, int L, 
              const std::vector<WRATHFreeTypeSupport::OutlineData::curve_segment> &curves,
-             int curve_count, float far_away_offset,
+             int curve_count, bool texel_center_inside,
              vecN<c_array<uint8_t>, 2> analytic_data,
-             bool &,
-             const WRATHFreeTypeSupport::OutlineData *);
+             bool &);
 
   WRATHImage*
   allocate_glyph(std::vector< vecN<std::vector<uint8_t>, 2> > &analytic_pixel_data,

@@ -54,11 +54,11 @@ wrath_analytic_font_compute_distance(in mediump vec2 GlyphTextureCoordinate,
   #endif
 
 
-  p=GlyphCoordinate;
+  p=GlyphCoordinate - tex_o;
   X_Y=(2.0)*(255.0/254.0)*tex_v.xzyw - vec4(1.0, 1.0, 1.0, 1.0);
   Cv= Lv.xy*Mv.yx;
 
-  dL_dM=p.x*X + p.y*Y - offsetL_M;
+  dL_dM=p.x*X + p.y*Y;
   d=(Cv.y<Cv.x)?
     max(dL, dM):
     min(dL, dM);

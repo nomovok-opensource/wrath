@@ -147,6 +147,18 @@ using namespace WRATHFreeTypeSupport;
 
 namespace
 {
+  class per_pixel_flags
+  {
+  public:
+    per_pixel_flags(void):
+      m_distance(std::numeric_limits<int>::max())
+    {}
+
+    bool m_covered; //if texel center is inside glyph
+    bool m_no_curves_intersect; //if not curves intersect glyph
+    int m_distance; //L1-distance to nearest texel with curves
+  };
+
   class nearest_pixel_finder:boost::noncopyable
   {
   public:
@@ -172,11 +184,16 @@ namespace
     finalize(void);
 
     /*
-      Returns the coordinates of the nearest
-      Bezier curve end point in texel coordindates
+      if the closes Bezier end point curve
+      is closer than max_dist, then writes 
+      the appropiate data to analytic_pixel_data
+      at location L.
      */
-    enum return_code
-    find_nearest(ivec2 texel, int &max_dist, vec2 &out_curve_pt) const;
+    void
+    find_nearest(ivec2 texel, 
+                 const per_pixel_flags &texel_flags,
+                 int L,
+                 const vecN<c_array<uint8_t>, 2> &analytic_pixel_data) const;
 
   private:
     typedef std::pair<ivec2, vec2> point;
@@ -305,10 +322,32 @@ namespace
                         vecN<float, 2> &offset,
                         vecN<uint8_t, 4> &packed_normals,
                         const vec2 &texel_center,
-                        int &curve_count)
+                        int &curve_count,
+                        bool texel_inside_if_curve_count_zero)
   {
     vecN<vec2, 2> quantized_n;
 
+    if(curve_count==0)
+      {        
+        /*
+          generate a normal vector and offsets so that 
+          if texel is covered, then both dots are always
+          positive and if texel is not covered both dots
+          are always negative.
+         */        
+        offset=vec2(-1000.0f, -1000.0f);
+        if(texel_inside_if_curve_count_zero)
+          {
+            //normals are all 1's means dot product is always positive
+            packed_normals=vecN<uint8_t, 4>(254, 127, 127, 254);
+          }
+        else
+          {
+            //normals are all -1's means dot product is always negative
+            packed_normals=vecN<uint8_t, 4>(127, 0, 0, 127);
+          }
+        return;
+      }
     
 
     packed_normals=pack_from_minus_one_plus_one( vec4(n_vector[0].x(),
@@ -317,12 +356,12 @@ namespace
                                                       n_vector[1].y()) );
 
     if(curve_count>=2 
-     and packed_normals[0]==packed_normals[2]
-     and packed_normals[1]==packed_normals[3])
-    {
-      --curve_count;
-    }
-
+       and packed_normals[0]==packed_normals[2]
+       and packed_normals[1]==packed_normals[3])
+      {
+        curve_count=1;
+      }
+    
     /*
       we need to increment offsets[]
       normally we would just increment
@@ -340,34 +379,19 @@ namespace
         n/=(254.0f*0.5f);
         n+=vec2(-1.0f, -1.0f);
         offset[i]+=dot(n, texel_center);
-
+        
         quantized_n[i]=n;
       }
     
-    if(curve_count==0)
-      {
-        /*
-          do nothing, later pass will 
-          fill empty texel correctly.
-        */
-      }
-    else if(curve_count==1)
-      {
-        /*
-          we can pick any point q so that
-          <q, n0> = - offset[0], so a reasonable
-          value is q = - n0/||n0|| * offset          
-         */
-      }
-    else 
+    if(curve_count>=2)
       {
         /*
           replace offsets[] with point q so that
-           <q, n0> = offsets[0],  
-           <q, n1> = offsets[1]  
-         */
-        float det, d0, d1;
-        vec2 q, a, b;
+          <q, n0> = offsets[0],  
+          <q, n1> = offsets[1]  
+        */
+        float det;
+        vec2 a, b, q;
         
         a=vec2(+quantized_n[1].y(), -quantized_n[1].x());
         b=vec2(-quantized_n[0].y(), +quantized_n[0].x());
@@ -375,9 +399,25 @@ namespace
           - quantized_n[0].y()*quantized_n[1].x();
         q=(offset[0]*a + offset[1]*b)/det;
 
-        d0=dot(q, quantized_n[0]);
-        d1=dot(q, quantized_n[1]);
+        offset=q;
       }
+    else if(curve_count==1)
+      {
+        float f;
+        vec2 q;
+
+        /*
+          we can pick any point q so that
+          1) <q, n0> = offset[0]
+          2)               
+        */
+        f=offset[0]/quantized_n[0].magnitudeSq();
+        q=quantized_n[0]*f; 
+
+        offset=q;       
+      }
+        
+
   }
 
   GLenum
@@ -461,9 +501,8 @@ namespace
    */
   void
   fill_empty_texels_worker(ivec2 glyph_size,
-                           const boost::multi_array<bool, 2> &texel_is_unfilled,
+                           boost::multi_array<per_pixel_flags, 2> &texel_flags,
                            const vecN<c_array<uint8_t>, 2> &analytic_pixel_data,
-                           boost::multi_array<int, 2> &distances,
                            int dim)
   {
     WRATHassert(dim==0 or dim==1);
@@ -480,13 +519,13 @@ namespace
         for(int x=0; x<glyph_size[dim]; ++x)
           {
             pt[dim]=x;
-            if(texel_is_unfilled[pt.x()][pt.y()])
+            if(texel_flags[pt.x()][pt.y()].m_no_curves_intersect)
               {
                 gap_list.add_empty_texel(x);
               }
             else
               {
-                distances[pt.x()][pt.y()]=0;
+                texel_flags[pt.x()][pt.y()].m_distance=0;
               }
           }
 
@@ -515,9 +554,9 @@ namespace
                     pt[dim]=x;
                     dist=x-(b-1);
                     WRATHassert(dist>0);
-                    if(distances[pt.x()][pt.y()] > dist)
+                    if(texel_flags[pt.x()][pt.y()].m_distance > dist)
                       {
-                        distances[pt.x()][pt.y()]=dist;
+                        texel_flags[pt.x()][pt.y()].m_distance=dist;
                         copy_analytic_pixel_data(srcL, 
                                                  pt.x() + pt.y()*glyph_size.x(), 
                                                  analytic_pixel_data);
@@ -542,9 +581,9 @@ namespace
                     pt[dim]=x;
                     dist=e-x;
                     WRATHassert(dist>0);
-                    if(distances[pt.x()][pt.y()] > dist)
+                    if(texel_flags[pt.x()][pt.y()].m_distance > dist)
                       {
-                        distances[pt.x()][pt.y()]=dist;
+                        texel_flags[pt.x()][pt.y()].m_distance=dist;
                         copy_analytic_pixel_data(srcL, 
                                                  pt.x() + pt.y()*glyph_size.x(), 
                                                  analytic_pixel_data);
@@ -559,7 +598,7 @@ namespace
   
   void
   fill_empty_texels(ivec2 glyph_size,
-                    boost::multi_array<bool, 2> &texel_is_unfilled,
+                    boost::multi_array<per_pixel_flags, 2> &texel_flags,
                     const vecN<c_array<uint8_t>, 2> &analytic_pixel_data,
                     const nearest_pixel_finder &end_pts)
   {
@@ -570,38 +609,29 @@ namespace
       {
         return;
       }
-    boost::multi_array<int, 2> distances(boost::extents[glyph_size.x()][glyph_size.y()]);
-    std::fill(distances.data(),
-              distances.data()+distances.num_elements(),
-              glyph_size.x() + glyph_size.y() + 2);
-
+    
     fill_empty_texels_worker(glyph_size, 
-                             texel_is_unfilled,
+                             texel_flags,
                              analytic_pixel_data,
-                             distances,
                              0);
     
     fill_empty_texels_worker(glyph_size, 
-                             texel_is_unfilled,
+                             texel_flags,
                              analytic_pixel_data,
-                             distances,
                              1);
 
     /*     
        - now also check the Bezier curve end points.
      */
-    for(int x=0; x<glyph_size.x(); ++x)
+    for(int y=0; y<glyph_size.y(); ++y)
       {
-        for(int y=0; y<glyph_size.y(); ++y)
+        for(int x=0, L=y*glyph_size.x(); x<glyph_size.x(); ++x, ++L)
           {
-            vec2 curve_pt(0.0f, 0.0f);
-            if(texel_is_unfilled[x][y] 
-               and routine_success==end_pts.find_nearest( ivec2(x,y), distances[x][y], curve_pt))
+            if(texel_flags[x][y].m_no_curves_intersect)
               {
-                /*
-                  fill the texel with data so that the computed distance
-                  value ends up as the L1-distance to curve_pt; 
-                 */
+                end_pts.find_nearest(ivec2(x,y), 
+                                     texel_flags[x][y],
+                                     L, analytic_pixel_data);
               }
           }
       }
@@ -666,12 +696,21 @@ finalize(void)
    */
 }
 
-enum return_code
+void
 nearest_pixel_finder::
-find_nearest(ivec2 pt, int &rdist, vec2 &out_curve_pt) const
+find_nearest(ivec2 pt, 
+             const per_pixel_flags &texel_flags,
+             int L,
+             const vecN<c_array<uint8_t>, 2> &analytic_pixel_data) const
 {
   WRATHassert(m_ready);
-  enum return_code R(routine_fail);
+  int dist(texel_flags.m_distance);
+  const point *pt_to_use(NULL);
+
+  if(dist<=0)
+    {
+      return;
+    }
 
   /*
     TODO: walk a quad tree to make a fast search
@@ -679,18 +718,30 @@ find_nearest(ivec2 pt, int &rdist, vec2 &out_curve_pt) const
   for(std::vector<point>::const_iterator iter=m_list.begin(), 
         end=m_list.end(); iter!=end; ++iter)
     {
-      int dist;
+      int d;
 
-      dist=std::abs(pt.x()-iter->first.x()) 
+      d=std::abs(pt.x()-iter->first.x()) 
         + std::abs(pt.y()-iter->first.y());
-      if(dist < rdist)
+      if(d < dist)
         {
-          rdist=dist;
-          out_curve_pt=iter->second;
-          R=routine_success;
+          dist=d;
+          pt_to_use=&(*iter);
         }
     }
-  return R;
+
+  if(pt_to_use!=NULL)
+    {
+      /*
+        write the offset data of pt_to_use into analytic_pixel_data[1][ 4*L ]
+       */
+
+      /*
+        depending on weather the texel is left or right, above or below
+        and covered or not, choose normal vector correctly
+        and fill analytic_pixel_data[0][ 4*L ]
+       */
+    }
+
 }
 
 //////////////////////////////////////////
@@ -1069,8 +1120,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
   outline_data.compute_analytic_values(analytic_data, reverse_component);
 
   boost::multi_array<int, 2> covered;
-  boost::multi_array<bool, 2> no_intersection_texel_is_full_table(boost::extents[glyph_size.x()][glyph_size.y()]);
-  boost::multi_array<bool, 2> texel_is_unfilled(boost::extents[glyph_size.x()][glyph_size.y()]);
+  boost::multi_array<per_pixel_flags, 2> texel_flags(boost::extents[glyph_size.x()][glyph_size.y()]);
   nearest_pixel_finder curve_end_point_list;
                                           
   /*
@@ -1138,31 +1188,22 @@ generate_character(WRATHTextureFont::glyph_index_type G)
       for(int x=0;x<glyph_size.x();++x)
         {
           unsigned int curve_count, curves_used(0);
-          float far_away_offset;
           
           /*
-            save the value for the mipmap levels to use.
+            record if texel is considered covered
+            if no curves go through it.
            */
-          no_intersection_texel_is_full_table[x][y]=no_intersection_texel_is_full;
+          texel_flags[x][y].m_covered=no_intersection_texel_is_full;
 
-          if(x<bitmap_sz.x() and y<bitmap_sz.y() 
+          if(sub_primitive_maker!=NULL
+             and x<bitmap_sz.x() and y<bitmap_sz.y() 
              and no_intersection_texel_is_full)
             {
-              far_away_offset=-1.0f;
-              if(sub_primitive_maker!=NULL)
-                {
-                  sub_primitive_maker->mark_texel(x,y);
-                }
-            }
-          else
-            {
-              far_away_offset=1.0f;
+              sub_primitive_maker->mark_texel(x,y);
             }
           
-          if(x<bitmap_sz.x() and y<bitmap_sz.y() 
-             and !analytic_data[x][y].m_empty)
+          if(x<bitmap_sz.x() and y<bitmap_sz.y() and !analytic_data[x][y].m_empty)
             {
-              
               curve_count=
                 outline_data.compute_localized_affectors(analytic_data[x][y], 
                                                          ivec2(x,y), ncts);
@@ -1184,10 +1225,11 @@ generate_character(WRATHTextureFont::glyph_index_type G)
           int L;
           L=x + y*glyph_size.x();
 
-          texel_is_unfilled[x][y]=(curves_used==0);
-          pack_lines(ivec2(x,y), L, ncts, curves_used, far_away_offset,
-                     analytic_pixel_data[0], no_intersection_texel_is_full,
-                     &outline_data);
+          texel_flags[x][y].m_no_curves_intersect=(curves_used==0);
+          pack_lines(ivec2(x,y), L, ncts, curves_used, 
+                     texel_flags[x][y].m_covered,
+                     analytic_pixel_data[0], 
+                     no_intersection_texel_is_full);
            
 
           if(curves_used>0 and sub_primitive_maker!=NULL)
@@ -1200,7 +1242,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
     } //of for(y=...)
 
   fill_empty_texels(glyph_size, 
-                    texel_is_unfilled,
+                    texel_flags,
                     analytic_pixel_data[0],
                     curve_end_point_list);
 
@@ -1224,19 +1266,8 @@ generate_character(WRATHTextureFont::glyph_index_type G)
               for(int xlod=0; xlod<end_xlod; ++xlod)
                 {
                   int x(xlod<<LOD), y(ylod<<LOD);
-                  unsigned int curve_count, curves_used(0);
-                  float far_away_offset;
+                  unsigned int curve_count, curves_used(0);                  
                   
-                  if(x<bitmap_sz.x() and y<bitmap_sz.y() 
-                     and no_intersection_texel_is_full_table[x][y])
-                    {
-                      far_away_offset=-1.0f;
-                    }
-                  else
-                    {
-                      far_away_offset=1.0f;
-                    }
-
                   curve_count=
                     outline_data.compute_localized_affectors_LOD(LOD,
                                                                  analytic_data,
@@ -1253,13 +1284,13 @@ generate_character(WRATHTextureFont::glyph_index_type G)
                       //TODO: if a curve is too degnerate substitute far_away_line.
                       ++curves_used;
                     }
-
               
                   L=xlod + ylod*end_xlod;
                   pack_lines(ivec2(x, y), 
-                             L, ncts, curves_used, far_away_offset,
-                             analytic_pixel_data[LOD], no_intersection_texel_is_full,
-                             &outline_data);
+                             L, ncts, curves_used, 
+                             texel_flags[x][y].m_covered,
+                             analytic_pixel_data[LOD], 
+                             no_intersection_texel_is_full);
                 }
             }
         }
@@ -1268,11 +1299,9 @@ generate_character(WRATHTextureFont::glyph_index_type G)
         {
           unsigned int LOD_delta(LOD-m_mipmap_level-1);
           int end_xlod, end_ylod;
-          float far_away_offset;
 
           end_xlod=glyph_size.x()>>LOD;
           end_ylod=glyph_size.y()>>LOD;
-          
           
           for(int ylod=0;ylod<end_ylod; ++ylod)
             {
@@ -1282,21 +1311,11 @@ generate_character(WRATHTextureFont::glyph_index_type G)
               for(int xlod=0;xlod<end_xlod; ++xlod)
                 {
                   int x(xlod<<LOD_delta), y(ylod<<LOD_delta);
-                  
-                  if(covered[x][y]>=0)
-                    {
-                      far_away_offset=-1.0f;
-                    }
-                  else
-                    {
-                      far_away_offset=1.0f;
-                    }
 
                   L=xlod + ylod*end_xlod;
                   pack_lines(ivec2(x, y), 
-                             L, ncts, 0, far_away_offset,
-                             analytic_pixel_data[LOD], no_intersection_texel_is_full,
-                             &outline_data);
+                             L, ncts, 0, covered[x][y]>=0,
+                             analytic_pixel_data[LOD], no_intersection_texel_is_full);
                 }
             }
         }
@@ -1351,22 +1370,13 @@ void
 WRATHTextureFontFreeType_Analytic::
 pack_lines(ivec2 pt, int L, 
            const std::vector<WRATHFreeTypeSupport::OutlineData::curve_segment> &curves,
-           int curve_count, float far_away_offset,
+           int curve_count, bool texel_inside_if_curve_count_zero,
            vecN<c_array<uint8_t>, 2> analytic_data,
-           bool &no_intersection_texel_is_full,
-           const WRATHFreeTypeSupport::OutlineData *outline_data)
+           bool &no_intersection_texel_is_full)
 {
-  vecN<vec2,2> n_vector, v_vector;
+  vecN<vec2, 2> n_vector, v_vector;
   vecN<float,2> offset, offset_in_texels;;
   bool use_and(false);
-  
-  far_away_offset*=m_pow2_mipmap_level;
-
-  if(curve_count==0)
-    {
-      n_vector[0]=v_vector[0]=vec2(0.0f, 0.0f);
-      offset[0]=far_away_offset;
-    }
 
   for(int i=0, end_i=std::min(2, curve_count); i<end_i; ++i)
     { 
@@ -1379,11 +1389,11 @@ pack_lines(ivec2 pt, int L,
     if there is only 1 curve, we make
     the 2nd curve the same as the first.
    */
-  for(int i=curve_count; i<2; ++i)
+  if(curve_count==1)
     {
-      n_vector[i]=n_vector[0];
-      v_vector[i]=v_vector[0];
-      offset[i]=offset[0];
+      n_vector[1]=n_vector[0];
+      v_vector[1]=v_vector[0];
+      offset[1]=offset[0];
     }
 
   
@@ -1433,7 +1443,7 @@ pack_lines(ivec2 pt, int L,
 
       use_and=(dot0>0.0f or dot1>0.0f);
 
-      if(use_and xor dd>0.0f)
+      if(use_and xor (dd>0.0f) )
         {
           /*
             dd<0.0f means use logical-or,
@@ -1466,16 +1476,14 @@ pack_lines(ivec2 pt, int L,
   generate_packing_data(n_vector, offset, 
                         packed_normals, 
                         vec2(pt.x(), pt.y()),
-                        curve_count); 
+                        curve_count,
+                        texel_inside_if_curve_count_zero); 
 
  
   for(int i=0;i<4;++i)
     {
       analytic_data[0][ 4*L+i ]=packed_normals[i];
     }
-
-  
-  
     
   vecN<uint8_t, 4> as_fp16;
   WRATHUtil::convert_to_halfp_from_float(as_fp16, offset);
@@ -1495,8 +1503,8 @@ pack_lines(ivec2 pt, int L,
       float dot0, dot1;
       vec2 q(1.0f, 0.5f);
       
-      dot0=dot( n_vector[0], q) - offset_in_texels[0];
-      dot1=dot( n_vector[1], q) - offset_in_texels[1];
+      dot0=dot(n_vector[0], q) - offset_in_texels[0];
+      dot1=dot(n_vector[1], q) - offset_in_texels[1];
       
       if(use_and)
         {
