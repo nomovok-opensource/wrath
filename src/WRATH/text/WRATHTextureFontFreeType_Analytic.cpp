@@ -429,17 +429,17 @@ namespace
     }
     #endif
   }
-  template<unsigned int P>
+
   void
-  copy_analytic_pixel_data(int srcL, int L, ivec2 bytes_per_pixel,
-                           const vecN<c_array<uint8_t>, P> &analytic_pixel_data)
+  copy_analytic_pixel_data(int srcL, int L, 
+                           const vecN<c_array<uint8_t>, 2> &analytic_pixel_data)
   {
-    for(unsigned int p=0;p<P;++p)
+    for(unsigned int p=0;p<2;++p)
       {
         for(int i=0; i<4; ++i)
           {
-            analytic_pixel_data[p][ L*bytes_per_pixel[p] + i ]=
-              analytic_pixel_data[p][ srcL*bytes_per_pixel[p] + i ];
+            analytic_pixel_data[p][ L*4 + i ]=
+              analytic_pixel_data[p][ srcL*4 + i ];
           }
       }
   }
@@ -459,12 +459,10 @@ namespace
                 if dim=0 search along horizontal line, 
                 if dim=1 search along vertical line
    */
-  template<unsigned int P>
   void
   fill_empty_texels_worker(ivec2 glyph_size,
-                           ivec2 bytes_per_pixel,
                            const boost::multi_array<bool, 2> &texel_is_unfilled,
-                           const vecN<c_array<uint8_t>, P> &analytic_pixel_data,
+                           const vecN<c_array<uint8_t>, 2> &analytic_pixel_data,
                            boost::multi_array<int, 2> &distances,
                            int dim)
   {
@@ -522,7 +520,6 @@ namespace
                         distances[pt.x()][pt.y()]=dist;
                         copy_analytic_pixel_data(srcL, 
                                                  pt.x() + pt.y()*glyph_size.x(), 
-                                                 bytes_per_pixel,
                                                  analytic_pixel_data);
                       }
                   }
@@ -550,7 +547,6 @@ namespace
                         distances[pt.x()][pt.y()]=dist;
                         copy_analytic_pixel_data(srcL, 
                                                  pt.x() + pt.y()*glyph_size.x(), 
-                                                 bytes_per_pixel,
                                                  analytic_pixel_data);
                       }
                   }
@@ -560,14 +556,11 @@ namespace
       }
   }
 
-
-
-  template<unsigned int P>
+  
   void
   fill_empty_texels(ivec2 glyph_size,
-                    ivec2 bytes_per_pixel,
                     boost::multi_array<bool, 2> &texel_is_unfilled,
-                    const vecN<c_array<uint8_t>, P> &analytic_pixel_data,
+                    const vecN<c_array<uint8_t>, 2> &analytic_pixel_data,
                     const nearest_pixel_finder &end_pts)
   {
 
@@ -582,13 +575,13 @@ namespace
               distances.data()+distances.num_elements(),
               glyph_size.x() + glyph_size.y() + 2);
 
-    fill_empty_texels_worker(glyph_size, bytes_per_pixel,
+    fill_empty_texels_worker(glyph_size, 
                              texel_is_unfilled,
                              analytic_pixel_data,
                              distances,
                              0);
     
-    fill_empty_texels_worker(glyph_size, bytes_per_pixel,
+    fill_empty_texels_worker(glyph_size, 
                              texel_is_unfilled,
                              analytic_pixel_data,
                              distances,
@@ -831,8 +824,7 @@ WRATHTextureFontFreeType_Analytic(WRATHFreeTypeSupport::LockableFace::handle pfa
                                   const WRATHTextureFontKey &presource_name):
   WRATHTextureFontFreeTypeT<WRATHTextureFontFreeType_Analytic>(pface, presource_name),
   m_generate_sub_quads(generate_sub_quads()),
-  m_mipmap_level(mipmap_level()),
-  m_bytes_per_pixel(4, 4)
+  m_mipmap_level(mipmap_level())
 {
   ctor_init();
   m_page_tracker.connect(boost::bind(&WRATHTextureFontFreeType_Analytic::on_create_texture_page, this,
@@ -896,24 +888,24 @@ ctor_init(void)
 WRATHTextureFontFreeType_Analytic::
 ~WRATHTextureFontFreeType_Analytic()
 {
-
-#if defined(WRATH_FONT_GENERATION_STATS)  
-  /*
-    I want to know how long it took to 
-    generate the glyphs on average
-   */
-  std::cout << "[Analytic]" << simple_name() << " "
-            << glyph_data_stats()
-            << " spread across " 
-            << m_page_tracker.number_texture_pages()
-            << " pages\n";
-#endif
-  
+  #if defined(WRATH_FONT_GENERATION_STATS)  
+  {
+    /*
+      I want to know how long it took to 
+      generate the glyphs on average
+    */
+    std::cout << "[Analytic]" << simple_name() << " "
+              << glyph_data_stats()
+              << " spread across " 
+              << m_page_tracker.number_texture_pages()
+              << " pages\n";
+  }
+  #endif  
 }
 
 WRATHImage*
 WRATHTextureFontFreeType_Analytic::
-allocate_glyph(std::vector< vecN<std::vector<uint8_t>, number_textures_per_page> > &analytic_pixel_data,
+allocate_glyph(std::vector< vecN<std::vector<uint8_t>, 2> > &analytic_pixel_data,
                const ivec2 &glyph_size)
 {
   WRATHImage *pImage;
@@ -924,7 +916,7 @@ allocate_glyph(std::vector< vecN<std::vector<uint8_t>, number_textures_per_page>
 
   for(unsigned int LOD=0; LOD<analytic_pixel_data.size(); ++LOD)
     {
-      for(int layer=0; layer<number_textures_per_page; ++layer)
+      for(int layer=0; layer<2; ++layer)
         {
           pImage->respecify_sub_image(layer,
                                       LOD, //LOD
@@ -1056,8 +1048,8 @@ generate_character(WRATHTextureFont::glyph_index_type G)
 
   num_levels_total=compute_num_levels_needed(glyph_size, m_mipmap_level);
 
-  std::vector< vecN<std::vector<uint8_t>, number_textures_per_page> > packed_analytic_pixel_data(num_levels_total);
-  std::vector< vecN<c_array<uint8_t>, number_textures_per_page> > analytic_pixel_data(num_levels_total);
+  std::vector< vecN<std::vector<uint8_t>, 2> > packed_analytic_pixel_data(num_levels_total);
+  std::vector< vecN<c_array<uint8_t>, 2> > analytic_pixel_data(num_levels_total);
   std::vector<OutlineData::curve_segment> ncts(2);
   std::vector<bool> reverse_component;
 
@@ -1066,9 +1058,9 @@ generate_character(WRATHTextureFont::glyph_index_type G)
       int product_size((glyph_size.x()>>LOD)*(glyph_size.y()>>LOD));
 
       /* allocate pixel data*/
-      for(int i=0;i<number_textures_per_page;++i)
+      for(int i=0;i<2;++i)
         {
-          packed_analytic_pixel_data[LOD][i].resize(m_bytes_per_pixel[i]*product_size);
+          packed_analytic_pixel_data[LOD][i].resize(4*product_size);
           analytic_pixel_data[LOD][i]=packed_analytic_pixel_data[LOD][i];
         }
     }
@@ -1207,7 +1199,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
         } //of for(x=...)
     } //of for(y=...)
 
-  fill_empty_texels(glyph_size, m_bytes_per_pixel,
+  fill_empty_texels(glyph_size, 
                     texel_is_unfilled,
                     analytic_pixel_data[0],
                     curve_end_point_list);
@@ -1360,7 +1352,7 @@ WRATHTextureFontFreeType_Analytic::
 pack_lines(ivec2 pt, int L, 
            const std::vector<WRATHFreeTypeSupport::OutlineData::curve_segment> &curves,
            int curve_count, float far_away_offset,
-           vecN<c_array<uint8_t>, number_textures_per_page> analytic_data,
+           vecN<c_array<uint8_t>, 2> analytic_data,
            bool &no_intersection_texel_is_full,
            const WRATHFreeTypeSupport::OutlineData *outline_data)
 {
@@ -1477,18 +1469,15 @@ pack_lines(ivec2 pt, int L,
                         curve_count); 
 
  
-  WRATHassert(m_bytes_per_pixel[0]==4);
   for(int i=0;i<4;++i)
     {
-      analytic_data[0][ m_bytes_per_pixel[0]*L+i ]=packed_normals[i];
+      analytic_data[0][ 4*L+i ]=packed_normals[i];
     }
 
   
   
     
-  WRATHassert(m_bytes_per_pixel[1]==4);
   vecN<uint8_t, 4> as_fp16;
-    
   WRATHUtil::convert_to_halfp_from_float(as_fp16, offset);
   for(int i=0; i<4; ++i)
     {

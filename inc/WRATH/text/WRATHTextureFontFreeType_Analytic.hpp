@@ -224,12 +224,6 @@ public:
   texture_consumption(void);
 
 private:
-
-  
-  enum
-    {
-      number_textures_per_page=2
-    };
   
   void
   ctor_init(void);
@@ -242,12 +236,12 @@ private:
   pack_lines(ivec2 pt, int L, 
              const std::vector<WRATHFreeTypeSupport::OutlineData::curve_segment> &curves,
              int curve_count, float far_away_offset,
-             vecN<c_array<uint8_t>, number_textures_per_page> analytic_data,
+             vecN<c_array<uint8_t>, 2> analytic_data,
              bool &,
              const WRATHFreeTypeSupport::OutlineData *);
 
   WRATHImage*
-  allocate_glyph(std::vector< vecN<std::vector<uint8_t>, number_textures_per_page> > &analytic_pixel_data,
+  allocate_glyph(std::vector< vecN<std::vector<uint8_t>, 2> > &analytic_pixel_data,
                  const ivec2 &sz);
 
   void
@@ -264,8 +258,7 @@ private:
   unsigned int m_mipmap_level;
   bool m_is_ttf;
   float m_pow2_mipmap_level;
-
-  vecN<int, number_textures_per_page> m_bytes_per_pixel;
+  
   WRATHImage::ImageFormatArray m_format;
 
   WRATHTextureFontUtil::TexturePageTracker m_page_tracker;
