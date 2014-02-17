@@ -18,8 +18,8 @@
 
 
 
-#ifndef __OSTREAM_UTILITY_HPP__
-#define __OSTREAM_UTILITY_HPP__
+#ifndef WRATH_OSTREAM_UTILITY_HPP_
+#define WRATH_OSTREAM_UTILITY_HPP_
 
 #include "WRATHConfig.hpp"
 #include <iostream>

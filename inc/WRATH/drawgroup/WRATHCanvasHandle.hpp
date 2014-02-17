@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_CANVAS_HANDLE_HPP__
-#define __WRATH_CANVAS_HANDLE_HPP__
+#ifndef WRATH_HEADER_CANVAS_HANDLE_HPP_
+#define WRATH_HEADER_CANVAS_HANDLE_HPP_
 
 #include "WRATHCanvas.hpp"
 

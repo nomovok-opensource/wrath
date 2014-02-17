@@ -30,13 +30,13 @@
   
  */
 
-#if !defined(__WRATH_TRIANGULATION_HPP__) || defined(__WRATH_TRIANGULATION_IMPLEMENT_TCC__)
+#if !defined(WRATH_HEADER_TRIANGULATION_HPP_) || defined(WRATH_HEADER_TRIANGULATION_IMPLEMENT_TCC_)
 #error "Direction inclusion of private header file WRATHTriangulationImplement.tcc"
 #endif
 
 #include "WRATHConfig.hpp"
 
-#define __WRATH_TRIANGULATION_IMPLEMENT_TCC__
+#define WRATH_HEADER_TRIANGULATION_IMPLEMENT_TCC_
 
 #include <limits>
 #include <algorithm>

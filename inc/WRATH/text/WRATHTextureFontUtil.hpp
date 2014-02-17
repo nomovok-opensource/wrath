@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_TEXTURE_FONT_UTIL_HPP__
-#define __WRATH_TEXTURE_FONT_UTIL_HPP__
+#ifndef WRATH_HEADER_TEXTURE_FONT_UTIL_HPP_
+#define WRATH_HEADER_TEXTURE_FONT_UTIL_HPP_
 
 #include "WRATHConfig.hpp"
 #include <boost/signals2.hpp>

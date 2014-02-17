@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_BASE_SOURCE_HPP__
-#define __WRATH_BASE_SOURCE_HPP__
+#ifndef WRATH_HEADER_BASE_SOURCE_HPP_
+#define WRATH_HEADER_BASE_SOURCE_HPP_
 
 
 /*! \addtogroup Group

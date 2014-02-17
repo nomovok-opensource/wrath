@@ -45,8 +45,8 @@
  * Silicon Graphics, Inc.
  */
 
-#ifndef __wrath_tess_glu_hpp__
-#define __wrath_tess_glu_hpp__
+#ifndef wrath_tess_glu_hpp_
+#define wrath_tess_glu_hpp_
 
 #include "WRATHConfig.hpp"
 

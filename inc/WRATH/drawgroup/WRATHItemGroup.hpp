@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_ITEM_GROUP_HPP__
-#define __WRATH_ITEM_GROUP_HPP__
+#ifndef WRATH_HEADER_ITEM_GROUP_HPP_
+#define WRATH_HEADER_ITEM_GROUP_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHRawDrawData.hpp"

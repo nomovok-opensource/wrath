@@ -20,12 +20,12 @@
 
 
 
-#if !defined(__WRATH_TEXTURE_FONT_FreeType_MIX_HPP__)  || defined(__WRATH_TEXTURE_FONT_FreeType_MIX_IMPLEMENT_TCC__)
+#if !defined(WRATH_HEADER_TEXTURE_FONT_FreeType_MIX_HPP_)  || defined(WRATH_HEADER_TEXTURE_FONT_FreeType_MIX_IMPLEMENT_TCC_)
 #error "Direction inclusion of private header file WRATHTextureFontFreeType_MixImplement.tcc"
 #endif
 
 
-#define __WRATH_TEXTURE_FONT_FreeType_MIX_IMPLEMENT_TCC__
+#define WRATH_HEADER_TEXTURE_FONT_FreeType_MIX_IMPLEMENT_TCC_
 template<typename T, typename S>
 WRATHTextureFontFreeType_TMixSupport::PerMixClass&
 WRATHTextureFontFreeType_TMix<T,S>::

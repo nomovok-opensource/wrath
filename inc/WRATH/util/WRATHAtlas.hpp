@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_ATLAS_HPP__
-#define __WRATH_ATLAS_HPP__
+#ifndef WRATH_HEADER_ATLAS_HPP_
+#define WRATH_HEADER_ATLAS_HPP_
 
 #include "WRATHConfig.hpp"
 #include <map>

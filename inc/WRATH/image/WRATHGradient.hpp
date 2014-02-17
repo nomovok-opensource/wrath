@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_GRADIENT_HPP__
-#define __WRATH_GRADIENT_HPP__
+#ifndef WRATH_HEADER_GRADIENT_HPP_
+#define WRATH_HEADER_GRADIENT_HPP_
 
 
 #include "WRATHConfig.hpp"

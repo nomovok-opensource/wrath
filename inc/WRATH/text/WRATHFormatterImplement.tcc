@@ -19,11 +19,11 @@
  */
 
 
-#if !defined(__WRATH_FORMATTER_HPP__) || defined(__WRATH_FORMATTER_IMPLEMENT_TCC__)
+#if !defined(WRATH_HEADER_FORMATTER_HPP_) || defined(WRATH_HEADER_FORMATTER_IMPLEMENT_TCC_)
 #error "Direction inclusion of private header file WRATHFormatterImplement.tcc" 
 #endif
 
-#define __WRATH_FORMATTER_IMPLEMENT_TCC__
+#define WRATH_HEADER_FORMATTER_IMPLEMENT_TCC_
 
 namespace WRATHFormatterImplement
 {

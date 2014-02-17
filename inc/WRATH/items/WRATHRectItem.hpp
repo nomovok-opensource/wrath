@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_IMAGE_ELEMENT_HPP__
-#define __WRATH_IMAGE_ELEMENT_HPP__
+#ifndef WRATH_HEADER_IMAGE_ELEMENT_HPP_
+#define WRATH_HEADER_IMAGE_ELEMENT_HPP_
 
 #include "WRATHConfig.hpp"
 #include <boost/utility.hpp>

@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_SHAPE_DISTANCE_FIELD_GPU_HPP__
-#define __WRATH_SHAPE_DISTANCE_FIELD_GPU_HPP__
+#ifndef WRATH_HEADER_SHAPE_DISTANCE_FIELD_GPU_HPP_
+#define WRATH_HEADER_SHAPE_DISTANCE_FIELD_GPU_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHShapeSimpleTessellator.hpp"

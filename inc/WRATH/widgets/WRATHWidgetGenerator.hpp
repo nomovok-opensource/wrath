@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_WIDGET_GENERATOR_HPP__
-#define __WRATH_WIDGET_GENERATOR_HPP__
+#ifndef WRATH_HEADER_WIDGET_GENERATOR_HPP_
+#define WRATH_HEADER_WIDGET_GENERATOR_HPP_
 
 #include "WRATHConfig.hpp"
 #include <boost/type_traits.hpp>

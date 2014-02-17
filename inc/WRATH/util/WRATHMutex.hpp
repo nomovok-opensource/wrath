@@ -18,8 +18,8 @@
 
 
 
-#ifndef __WRATH_MUTEX_HPP__
-#define __WRATH_MUTEX_HPP__
+#ifndef WRATH_HEADER_MUTEX_HPP_
+#define WRATH_HEADER_MUTEX_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHassert.hpp"

@@ -19,11 +19,11 @@
  */
 
 
-#if !defined(__WRATH_LAYER_ITEM_CONST_COLOR_HPP__) || defined(__WRATH_LAYER_ITEM_CONST_COLOR_IMPLEMENT_TCC__)
+#if !defined(WRATH_HEADER_LAYER_ITEM_CONST_COLOR_HPP_) || defined(WRATH_HEADER_LAYER_ITEM_CONST_COLOR_IMPLEMENT_TCC_)
 #error "Direction inclusion of private header file WRATHLayerItemNodeColorValueImplement.tcc" 
 #endif
 
-#define __WRATH_LAYER_ITEM_CONST_COLOR_IMPLEMENT_TCC__
+#define WRATH_HEADER_LAYER_ITEM_CONST_COLOR_IMPLEMENT_TCC_
 
 #include "WRATHStaticInit.hpp"
 

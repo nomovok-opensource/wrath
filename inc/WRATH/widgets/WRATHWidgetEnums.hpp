@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_WIDGET_ENUMS_HPP__
-#define __WRATH_WIDGET_ENUMS_HPP__
+#ifndef WRATH_HEADER_WIDGET_ENUMS_HPP_
+#define WRATH_HEADER_WIDGET_ENUMS_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHDrawType.hpp"

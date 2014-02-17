@@ -32,8 +32,8 @@
 **
 */
 
-#ifndef __geom_h_
-#define __geom_h_
+#ifndef wrath_glu_geom_h_
+#define wrath_glu_geom_h_
 
 #include "mesh.hpp"
 
@@ -51,15 +51,15 @@
                          ((u)->s == (v)->s && (u)->t <= (v)->t))
 #endif
 
-#define EdgeEval(u,v,w) __wrath__gl_edgeEval(u,v,w)
-#define EdgeSign(u,v,w) __wrath__gl_edgeSign(u,v,w)
+#define EdgeEval(u,v,w) glu_wrath_gl_edgeEval(u,v,w)
+#define EdgeSign(u,v,w) glu_wrath_gl_edgeSign(u,v,w)
 
 /* Versions of VertLeq, EdgeSign, EdgeEval with s and t transposed. */
 
 #define TransLeq(u,v)   (((u)->t < (v)->t) || \
                          ((u)->t == (v)->t && (u)->s <= (v)->s))
-#define TransEval(u,v,w)        __wrath__gl_transEval(u,v,w)
-#define TransSign(u,v,w)        __wrath__gl_transSign(u,v,w)
+#define TransEval(u,v,w)        glu_wrath_gl_transEval(u,v,w)
+#define TransSign(u,v,w)        glu_wrath_gl_transSign(u,v,w)
 
 
 #define EdgeGoesLeft(e)         VertLeq( (e)->Dst, (e)->Org )
@@ -69,15 +69,15 @@
 #define ABS(x)  ((x) < 0 ? -(x) : (x))
 #define VertL1dist(u,v) (ABS(u->s - v->s) + ABS(u->t - v->t))
 
-#define VertCCW(u,v,w)  __wrath__gl_vertCCW(u,v,w)
+#define VertCCW(u,v,w)  glu_wrath_gl_vertCCW(u,v,w)
 
-int             __wrath__gl_vertLeq( GLUvertex *u, GLUvertex *v );
-double  __wrath__gl_edgeEval( GLUvertex *u, GLUvertex *v, GLUvertex *w );
-double  __wrath__gl_edgeSign( GLUvertex *u, GLUvertex *v, GLUvertex *w );
-double  __wrath__gl_transEval( GLUvertex *u, GLUvertex *v, GLUvertex *w );
-double  __wrath__gl_transSign( GLUvertex *u, GLUvertex *v, GLUvertex *w );
-int             __wrath__gl_vertCCW( GLUvertex *u, GLUvertex *v, GLUvertex *w );
-void            __wrath__gl_edgeIntersect( GLUvertex *o1, GLUvertex *d1,
+int             glu_wrath_gl_vertLeq( GLUvertex *u, GLUvertex *v );
+double  glu_wrath_gl_edgeEval( GLUvertex *u, GLUvertex *v, GLUvertex *w );
+double  glu_wrath_gl_edgeSign( GLUvertex *u, GLUvertex *v, GLUvertex *w );
+double  glu_wrath_gl_transEval( GLUvertex *u, GLUvertex *v, GLUvertex *w );
+double  glu_wrath_gl_transSign( GLUvertex *u, GLUvertex *v, GLUvertex *w );
+int             glu_wrath_gl_vertCCW( GLUvertex *u, GLUvertex *v, GLUvertex *w );
+void            glu_wrath_gl_edgeIntersect( GLUvertex *o1, GLUvertex *d1,
                                     GLUvertex *o2, GLUvertex *d2,
                                     GLUvertex *v );
 

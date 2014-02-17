@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_DRAW_TYPE_HPP__
-#define __WRATH_DRAW_TYPE_HPP__
+#ifndef WRATH_HEADER_DRAW_TYPE_HPP_
+#define WRATH_HEADER_DRAW_TYPE_HPP_
 
 
 /*! \addtogroup Group

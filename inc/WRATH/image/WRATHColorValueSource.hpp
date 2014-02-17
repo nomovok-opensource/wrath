@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_CONST_COLOR_SOURCE_HPP__
-#define __WRATH_CONST_COLOR_SOURCE_HPP__
+#ifndef WRATH_HEADER_CONST_COLOR_SOURCE_HPP_
+#define WRATH_HEADER_CONST_COLOR_SOURCE_HPP_
 
 #include "WRATHConfig.hpp"
 #include <boost/utility.hpp>

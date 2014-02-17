@@ -54,7 +54,7 @@
 #define LEQ(x,y)        VertLeq((GLUvertex *)x, (GLUvertex *)y)
 #endif
 
-/* really __wrath__gl_pqHeapNewPriorityQ */
+/* really glu_wrath_gl_pqHeapNewPriorityQ */
 PriorityQ *pqNewPriorityQ( int (*leq)(PQkey key1, PQkey key2) )
 {
   PriorityQ *pq = (PriorityQ *)memAlloc( sizeof( PriorityQ ));
@@ -84,7 +84,7 @@ PriorityQ *pqNewPriorityQ( int (*leq)(PQkey key1, PQkey key2) )
   return pq;
 }
 
-/* really __wrath__gl_pqHeapDeletePriorityQ */
+/* really glu_wrath_gl_pqHeapDeletePriorityQ */
 void pqDeletePriorityQ( PriorityQ *pq )
 {
   memFree( pq->handles );
@@ -145,7 +145,7 @@ static void FloatUp( PriorityQ *pq, long curr )
   }
 }
 
-/* really __wrath__gl_pqHeapInit */
+/* really glu_wrath_gl_pqHeapInit */
 void pqInit( PriorityQ *pq )
 {
   long i;
@@ -158,7 +158,7 @@ void pqInit( PriorityQ *pq )
   pq->initialized = TRUE;
 }
 
-/* really __wrath__gl_pqHeapInsert */
+/* really glu_wrath_gl_pqHeapInsert */
 /* returns LONG_MAX iff out of memory */
 PQhandle pqInsert( PriorityQ *pq, PQkey keyNew )
 {
@@ -207,7 +207,7 @@ PQhandle pqInsert( PriorityQ *pq, PQkey keyNew )
   return free_handle;
 }
 
-/* really __wrath__gl_pqHeapExtractMin */
+/* really glu_wrath_gl_pqHeapExtractMin */
 PQkey pqExtractMin( PriorityQ *pq )
 {
   PQnode *n = pq->nodes;
@@ -230,7 +230,7 @@ PQkey pqExtractMin( PriorityQ *pq )
   return min;
 }
 
-/* really __wrath__gl_pqHeapDelete */
+/* really glu_wrath_gl_pqHeapDelete */
 void pqDelete( PriorityQ *pq, PQhandle hCurr )
 {
   PQnode *n = pq->nodes;

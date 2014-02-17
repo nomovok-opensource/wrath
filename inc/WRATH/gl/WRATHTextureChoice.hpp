@@ -18,8 +18,8 @@
 
 
 
-#ifndef __WRATH_TEXTURE_CHOICE_HPP__
-#define __WRATH_TEXTURE_CHOICE_HPP__
+#ifndef WRATH_HEADER_TEXTURE_CHOICE_HPP_
+#define WRATH_HEADER_TEXTURE_CHOICE_HPP_
 
 #include "WRATHConfig.hpp"
 #include <map>

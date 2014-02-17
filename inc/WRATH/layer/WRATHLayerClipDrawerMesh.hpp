@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_UI_CLIP_DRAWER_MESH_HPP__
-#define __WRATH_UI_CLIP_DRAWER_MESH_HPP__
+#ifndef WRATH_HEADER_UI_CLIP_DRAWER_MESH_HPP_
+#define WRATH_HEADER_UI_CLIP_DRAWER_MESH_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHLayerClipDrawer.hpp"

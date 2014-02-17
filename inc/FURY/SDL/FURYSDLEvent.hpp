@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __FURY_SDL_EVENT_HPP__
-#define __FURY_SDL_EVENT_HPP__
+#ifndef FURY_SDL_EVENT_HPP_
+#define FURY_SDL_EVENT_HPP_
 
 #include "WRATHConfig.hpp"
 #include <boost/utility.hpp>

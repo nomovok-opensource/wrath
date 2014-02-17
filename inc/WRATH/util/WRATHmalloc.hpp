@@ -19,8 +19,8 @@
 
 
 
-#ifndef _WRATH_MALLOC_HPP__
-#define _WRATH_MALLOC_HPP__
+#ifndef WRATH_MALLOC_HPP_
+#define WRATH_MALLOC_HPP_
 
 #include "WRATHConfig.hpp"
 #include <cstdlib>

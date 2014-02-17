@@ -22,8 +22,8 @@
  * @{
  */
 
-#ifndef __WRATH_DEFAULT_SHAPE_SHADER_HPP__
-#define __WRATH_DEFAULT_SHAPE_SHADER_HPP__
+#ifndef WRATH_HEADER_DEFAULT_SHAPE_SHADER_HPP_
+#define WRATH_HEADER_DEFAULT_SHAPE_SHADER_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHBrush.hpp"

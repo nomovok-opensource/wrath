@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_LAYER_CLIP_DRAWER_HPP__
-#define __WRATH_LAYER_CLIP_DRAWER_HPP__
+#ifndef WRATH_HEADER_LAYER_CLIP_DRAWER_HPP_
+#define WRATH_HEADER_LAYER_CLIP_DRAWER_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHReferenceCountedObject.hpp"

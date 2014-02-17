@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __VECN_HPP__
-#define __VECN_HPP__
+#ifndef WRATH_VECN_HPP_
+#define WRATH_VECN_HPP_
 
 
 #include "WRATHConfig.hpp"

@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_CANVAS_HPP__
-#define __WRATH_CANVAS_HPP__
+#ifndef WRATH_HEADER_CANVAS_HPP_
+#define WRATH_HEADER_CANVAS_HPP_
 
 #include "WRATHConfig.hpp"
 #include <map>

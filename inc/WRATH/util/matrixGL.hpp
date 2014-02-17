@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __MATRIX_GL_HPP__
-#define __MATRIX_GL_HPP__
+#ifndef WRATH_MATRIX_GL_HPP_
+#define WRATH_MATRIX_GL_HPP_
 
 #include "WRATHConfig.hpp"
 #include <iomanip>

@@ -36,7 +36,7 @@
 #include "dict-list.hpp"
 #include "memalloc.hpp"
 
-/* really __wrath__gl_dictListNewDict */
+/* really glu_wrath_gl_dictListNewDict */
 Dict *dictNewDict( void *frame,
                    int (*leq)(void *frame, DictKey key1, DictKey key2) )
 {
@@ -57,7 +57,7 @@ Dict *dictNewDict( void *frame,
   return dict;
 }
 
-/* really __wrath__gl_dictListDeleteDict */
+/* really glu_wrath_gl_dictListDeleteDict */
 void dictDeleteDict( Dict *dict )
 {
   DictNode *node, *next;
@@ -69,7 +69,7 @@ void dictDeleteDict( Dict *dict )
   memFree( dict );
 }
 
-/* really __wrath__gl_dictListInsertBefore */
+/* really glu_wrath_gl_dictListInsertBefore */
 DictNode *dictInsertBefore( Dict *dict, DictNode *node, DictKey key )
 {
   DictNode *newNode;
@@ -90,7 +90,7 @@ DictNode *dictInsertBefore( Dict *dict, DictNode *node, DictKey key )
   return newNode;
 }
 
-/* really __wrath__gl_dictListDelete */
+/* really glu_wrath_gl_dictListDelete */
 void dictDelete( Dict *dict, DictNode *node ) /*ARGSUSED*/
 {
   node->next->prev = node->prev;
@@ -98,7 +98,7 @@ void dictDelete( Dict *dict, DictNode *node ) /*ARGSUSED*/
   memFree( node );
 }
 
-/* really __wrath__gl_dictListSearch */
+/* really glu_wrath_gl_dictListSearch */
 DictNode *dictSearch( Dict *dict, DictKey key )
 {
   DictNode *node = &dict->head;

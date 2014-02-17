@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_BUFFER_OBJECT_HPP__
-#define __WRATH_BUFFER_OBJECT_HPP__
+#ifndef WRATH_HEADER_BUFFER_OBJECT_HPP_
+#define WRATH_HEADER_BUFFER_OBJECT_HPP_
 
 #include "WRATHConfig.hpp"
 #include <vector>

@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __TYPE_TAG_HPP__
-#define __TYPE_TAG_HPP__
+#ifndef WRATH_TYPE_TAG_HPP_
+#define WRATH_TYPE_TAG_HPP_
 
 
 #include "WRATHConfig.hpp"

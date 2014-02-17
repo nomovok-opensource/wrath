@@ -22,8 +22,8 @@
  */
 
 
-#ifndef __WRATH_ITEM_TYPES_HPP__
-#define __WRATH_ITEM_TYPES_HPP__
+#ifndef WRATH_HEADER_ITEM_TYPES_HPP_
+#define WRATH_HEADER_ITEM_TYPES_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHBaseItem.hpp"

@@ -19,11 +19,11 @@
  */
 
 
-#if !defined(__WRATH_WRAPPER_HPP__) || defined(__WRATH_WRAPPER_IMPLEMENT_TCC__)
+#if !defined(WRATH_HEADER_WRAPPER_HPP_) || defined(WRATH_HEADER_WRAPPER_IMPLEMENT_TCC_)
 #error "Direction inclusion of private header file WRATHWrapperImplement.tcc" 
 #endif
 
-#define __WRATH_WRAPPER_IMPLEMENT_TCC__
+#define WRATH_HEADER_WRAPPER_IMPLEMENT_TCC_
 namespace WRATHUtil
 {
   template<typename T>

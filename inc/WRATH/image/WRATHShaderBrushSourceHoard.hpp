@@ -22,8 +22,8 @@
  * @{
  */
 
-#ifndef __WRATH_SHADER_HOARD_HPP__
-#define __WRATH_SHADER_HOARD_HPP__
+#ifndef WRATH_HEADER_SHADER_HOARD_HPP_
+#define WRATH_HEADER_SHADER_HOARD_HPP_
 
 #include "WRATHConfig.hpp"
 #include <boost/tuple/tuple.hpp>

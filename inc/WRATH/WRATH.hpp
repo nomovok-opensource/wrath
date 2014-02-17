@@ -22,8 +22,8 @@
   it contains documentation only.
  */
 
-#ifndef __WRATH_HPP__
-#define __WRATH_HPP__
+#ifndef WRATH_HEADER_HPP_
+#define WRATH_HEADER_HPP_
 
 
 /*!

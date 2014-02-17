@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_BBOX_FORWARD_DECLARE_HPP__
-#define __WRATH_BBOX_FORWARD_DECLARE_HPP__
+#ifndef WRATH_HEADER_BBOX_FORWARD_DECLARE_HPP_
+#define WRATH_HEADER_BBOX_FORWARD_DECLARE_HPP_
 
 template<unsigned int N, typename T=float>
 class WRATHBBox;

@@ -195,7 +195,7 @@ extern int RandomSweep;
 /* Determine the polygon normal and project vertices onto the plane
  * of the polygon.
  */
-void __wrath__gl_projectPolygon( wrath_GLUtesselator *tess )
+void glu_wrath_gl_projectPolygon( wrath_GLUtesselator *tess )
 {
   GLUvertex *v, *vHead = &tess->mesh->vHead;
   double norm[3];

@@ -72,14 +72,14 @@ static void RenderLonelyTriangles( wrath_GLUtesselator *tess, GLUface *head );
 
 /************************ Strips and Fans decomposition ******************/
 
-/* __wrath__gl_renderMesh( tess, mesh ) takes a mesh and breaks it into triangle
+/* glu_wrath_gl_renderMesh( tess, mesh ) takes a mesh and breaks it into triangle
  * fans, strips, and separate triangles.  A substantial effort is made
  * to use as few rendering primitives as possible (ie. to make the fans
  * and strips as large as possible).
  *
  * The rendering output is provided as callbacks (see the api).
  */
-void __wrath__gl_renderMesh( wrath_GLUtesselator *tess, GLUmesh *mesh )
+void glu_wrath_gl_renderMesh( wrath_GLUtesselator *tess, GLUmesh *mesh )
 {
   GLUface *f;
 
@@ -332,11 +332,11 @@ static void RenderStrip( wrath_GLUtesselator *tess, GLUhalfEdge *e, long size )
 
 /************************ Boundary contour decomposition ******************/
 
-/* __wrath__gl_renderBoundary( tess, mesh ) takes a mesh, and outputs one
+/* glu_wrath_gl_renderBoundary( tess, mesh ) takes a mesh, and outputs one
  * contour for each face marked "inside".  The rendering output is
  * provided as callbacks (see the api).
  */
-void __wrath__gl_renderBoundary( wrath_GLUtesselator *tess, GLUmesh *mesh )
+void glu_wrath_gl_renderBoundary( wrath_GLUtesselator *tess, GLUmesh *mesh )
 {
   GLUface *f;
   GLUhalfEdge *e;
@@ -431,14 +431,14 @@ static int ComputeNormal( wrath_GLUtesselator *tess, double norm[3], int check )
   return sign;
 }
 
-/* __wrath__gl_renderCache( tess ) takes a single contour and tries to render it
+/* glu_wrath_gl_renderCache( tess ) takes a single contour and tries to render it
  * as a triangle fan.  This handles convex polygons, as well as some
  * non-convex polygons if we get lucky.
  *
  * Returns TRUE if the polygon was successfully rendered.  The rendering
  * output is provided as callbacks (see the api).
  */
-WRATH_GLUboolean __wrath__gl_renderCache( wrath_GLUtesselator *tess )
+WRATH_GLUboolean glu_wrath_gl_renderCache( wrath_GLUtesselator *tess )
 {
   CachedVertex *v0 = tess->cache;
   CachedVertex *vn = v0 + tess->cacheCount;

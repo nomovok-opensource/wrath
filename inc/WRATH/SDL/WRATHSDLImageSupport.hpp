@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_SDL_IMAGE_SUPPORT_HPP__
-#define __WRATH_SDL_IMAGE_SUPPORT_HPP__
+#ifndef WRATH_HEADER_SDL_IMAGE_SUPPORT_HPP_
+#define WRATH_HEADER_SDL_IMAGE_SUPPORT_HPP_
 
 #include "WRATHConfig.hpp"
 #include <SDL_image.h>

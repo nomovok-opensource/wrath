@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_ATOMIC_HPP__
-#define __WRATH_ATOMIC_HPP__
+#ifndef WRATH_HEADER_ATOMIC_HPP_
+#define WRATH_HEADER_ATOMIC_HPP_
 
 #include "WRATHConfig.hpp"
 

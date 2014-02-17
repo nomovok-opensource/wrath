@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_GPU_CONFIG_HPP__
-#define __WRATH_GPU_CONFIG_HPP__
+#ifndef WRATH_HEADER_GPU_CONFIG_HPP_
+#define WRATH_HEADER_GPU_CONFIG_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHgl.hpp"

@@ -22,8 +22,8 @@
  */
 
 
-#ifndef __WRATH_SHAPE_ITEM_HPP__
-#define __WRATH_SHAPE_ITEM_HPP__
+#ifndef WRATH_HEADER_SHAPE_ITEM_HPP_
+#define WRATH_HEADER_SHAPE_ITEM_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHBaseItem.hpp"

@@ -19,11 +19,11 @@
  */
 
 
-#if !defined(__WRATH_LAYER_ITEM_UNIFORM_PACKER_HYBRID_HPP__) || defined(__WRATH_LAYER_ITEM_UNIFORM_PACKER_HYBRID_IMPLEMENT__)
+#if !defined(WRATH_HEADER_LAYER_ITEM_UNIFORM_PACKER_HYBRID_HPP_) || defined(WRATH_HEADER_LAYER_ITEM_UNIFORM_PACKER_HYBRID_IMPLEMENT_TCC_)
 #error "Direction inclusion of private header file WRATHLayerNodeValuePackerHybridImplement.tcc" 
 #endif
 
-#define __WRATH_LAYER_ITEM_UNIFORM_PACKER_HYBRID_IMPLEMENT__
+#define WRATH_HEADER_LAYER_ITEM_UNIFORM_PACKER_HYBRID_IMPLEMENT_TCC_
 
 namespace WRATHLayerNodeValuePackerHybridImplement
 {

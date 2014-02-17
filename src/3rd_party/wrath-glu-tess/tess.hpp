@@ -32,8 +32,8 @@
 **
 */
 
-#ifndef __tess_h_
-#define __tess_h_
+#ifndef wrath_glu_tess_h_
+#define wrath_glu_tess_h_
 
 #include <setjmp.h>
 #include "gluos.hpp"
@@ -130,44 +130,44 @@ struct wrath_GLUtesselator {
   void *polygonData;            /* client data for current polygon */
 };
 
-void REGALWRATH_GLU_CALL __wrath__gl_noBeginData( WRATH_GLUenum type, int winding_number, void *polygonData );
-void REGALWRATH_GLU_CALL __wrath__gl_noEdgeFlagData( WRATH_GLUboolean boundaryEdge, void *polygonData );
-void REGALWRATH_GLU_CALL __wrath__gl_noVertexData( void *data, void *polygonData );
-void REGALWRATH_GLU_CALL __wrath__gl_noEndData( void *polygonData );
-void REGALWRATH_GLU_CALL __wrath__gl_noErrorData( WRATH_GLUenum errnum, void *polygonData );
-void REGALWRATH_GLU_CALL __wrath__gl_noCombineData( double coords[3], void *data[4],
+void REGALWRATH_GLU_CALL glu_wrath_gl_noBeginData( WRATH_GLUenum type, int winding_number, void *polygonData );
+void REGALWRATH_GLU_CALL glu_wrath_gl_noEdgeFlagData( WRATH_GLUboolean boundaryEdge, void *polygonData );
+void REGALWRATH_GLU_CALL glu_wrath_gl_noVertexData( void *data, void *polygonData );
+void REGALWRATH_GLU_CALL glu_wrath_gl_noEndData( void *polygonData );
+void REGALWRATH_GLU_CALL glu_wrath_gl_noErrorData( WRATH_GLUenum errnum, void *polygonData );
+void REGALWRATH_GLU_CALL glu_wrath_gl_noCombineData( double coords[3], void *data[4],
                          float weight[4], void **outData,
                          void *polygonData );
-WRATH_GLUboolean REGALWRATH_GLU_CALL __wrath__gl_noWindingData(int winding_rule,
+WRATH_GLUboolean REGALWRATH_GLU_CALL glu_wrath_gl_noWindingData(int winding_rule,
                                             void *polygonData);
 
 #define CALL_BEGIN_OR_BEGIN_DATA(a,w)                    \
-   if (tess->callBeginData != &__wrath__gl_noBeginData) \
+   if (tess->callBeginData != &glu_wrath_gl_noBeginData) \
      (*tess->callBeginData)((a),(w), tess->polygonData); \
    else (*tess->callBegin)((a), (w));
 
 #define CALL_VERTEX_OR_VERTEX_DATA(a) \
-   if (tess->callVertexData != &__wrath__gl_noVertexData) \
+   if (tess->callVertexData != &glu_wrath_gl_noVertexData) \
       (*tess->callVertexData)((a),tess->polygonData); \
    else (*tess->callVertex)((a));
 
 #define CALL_EDGE_FLAG_OR_EDGE_FLAG_DATA(a) \
-   if (tess->callEdgeFlagData != &__wrath__gl_noEdgeFlagData) \
+   if (tess->callEdgeFlagData != &glu_wrath_gl_noEdgeFlagData) \
       (*tess->callEdgeFlagData)((a),tess->polygonData); \
    else (*tess->callEdgeFlag)((a));
 
 #define CALL_END_OR_END_DATA() \
-   if (tess->callEndData != &__wrath__gl_noEndData) \
+   if (tess->callEndData != &glu_wrath_gl_noEndData) \
       (*tess->callEndData)(tess->polygonData); \
    else (*tess->callEnd)();
 
 #define CALL_COMBINE_OR_COMBINE_DATA(a,b,c,d) \
-   if (tess->callCombineData != &__wrath__gl_noCombineData) \
+   if (tess->callCombineData != &glu_wrath_gl_noCombineData) \
       (*tess->callCombineData)((a),(b),(c),(d),tess->polygonData); \
    else (*tess->callCombine)((a),(b),(c),(d));
 
 #define CALL_ERROR_OR_ERROR_DATA(a) \
-   if (tess->callErrorData != &__wrath__gl_noErrorData) \
+   if (tess->callErrorData != &glu_wrath_gl_noErrorData) \
       (*tess->callErrorData)((a),tess->polygonData); \
    else (*tess->callError)((a));
 

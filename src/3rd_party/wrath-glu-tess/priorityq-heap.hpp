@@ -32,8 +32,8 @@
 **
 */
 
-#ifndef __priorityq_heap_h_
-#define __priorityq_heap_h_
+#ifndef wrath_glu_priorityq_heap_h_
+#define wrath_glu_priorityq_heap_h_
 
 /* Use #define's so that another heap implementation can use this one */
 
@@ -41,8 +41,8 @@
 #define PQhandle                PQHeapHandle
 #define PriorityQ               PriorityQHeap
 
-#define pqNewPriorityQ(leq)     __wrath__gl_pqHeapNewPriorityQ(leq)
-#define pqDeletePriorityQ(pq)   __wrath__gl_pqHeapDeletePriorityQ(pq)
+#define pqNewPriorityQ(leq)     glu_wrath_gl_pqHeapNewPriorityQ(leq)
+#define pqDeletePriorityQ(pq)   glu_wrath_gl_pqHeapDeletePriorityQ(pq)
 
 /* The basic operations are insertion of a new key (pqInsert),
  * and examination/extraction of a key whose value is minimum
@@ -57,12 +57,12 @@
  * If the heap is empty, pqMinimum/pqExtractMin will return a NULL key.
  * This may also be tested with pqIsEmpty.
  */
-#define pqInit(pq)              __wrath__gl_pqHeapInit(pq)
-#define pqInsert(pq,key)        __wrath__gl_pqHeapInsert(pq,key)
-#define pqMinimum(pq)           __wrath__gl_pqHeapMinimum(pq)
-#define pqExtractMin(pq)        __wrath__gl_pqHeapExtractMin(pq)
-#define pqDelete(pq,handle)     __wrath__gl_pqHeapDelete(pq,handle)
-#define pqIsEmpty(pq)           __wrath__gl_pqHeapIsEmpty(pq)
+#define pqInit(pq)              glu_wrath_gl_pqHeapInit(pq)
+#define pqInsert(pq,key)        glu_wrath_gl_pqHeapInsert(pq,key)
+#define pqMinimum(pq)           glu_wrath_gl_pqHeapMinimum(pq)
+#define pqExtractMin(pq)        glu_wrath_gl_pqHeapExtractMin(pq)
+#define pqDelete(pq,handle)     glu_wrath_gl_pqHeapDelete(pq,handle)
+#define pqIsEmpty(pq)           glu_wrath_gl_pqHeapIsEmpty(pq)
 
 
 /* Since we support deletion the data structure is a little more
@@ -101,7 +101,7 @@ PQkey           pqExtractMin( PriorityQ *pq );
 void            pqDelete( PriorityQ *pq, PQhandle handle );
 
 
-#define __wrath__gl_pqHeapMinimum(pq)   ((pq)->handles[(pq)->nodes[1].handle].key)
-#define __wrath__gl_pqHeapIsEmpty(pq)   ((pq)->size == 0)
+#define glu_wrath_gl_pqHeapMinimum(pq)   ((pq)->handles[(pq)->nodes[1].handle].key)
+#define glu_wrath_gl_pqHeapIsEmpty(pq)   ((pq)->size == 0)
 
 #endif

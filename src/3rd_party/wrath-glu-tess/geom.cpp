@@ -37,14 +37,14 @@
 #include "mesh.hpp"
 #include "geom.hpp"
 
-int __wrath__gl_vertLeq( GLUvertex *u, GLUvertex *v )
+int glu_wrath_gl_vertLeq( GLUvertex *u, GLUvertex *v )
 {
   /* Returns TRUE if u is lexicographically <= v. */
 
   return VertLeq( u, v );
 }
 
-double __wrath__gl_edgeEval( GLUvertex *u, GLUvertex *v, GLUvertex *w )
+double glu_wrath_gl_edgeEval( GLUvertex *u, GLUvertex *v, GLUvertex *w )
 {
   /* Given three vertices u,v,w such that VertLeq(u,v) && VertLeq(v,w),
    * evaluates the t-coord of the edge uw at the s-coord of the vertex v.
@@ -75,7 +75,7 @@ double __wrath__gl_edgeEval( GLUvertex *u, GLUvertex *v, GLUvertex *w )
   return 0;
 }
 
-double __wrath__gl_edgeSign( GLUvertex *u, GLUvertex *v, GLUvertex *w )
+double glu_wrath_gl_edgeSign( GLUvertex *u, GLUvertex *v, GLUvertex *w )
 {
   /* Returns a number whose sign matches EdgeEval(u,v,w) but which
    * is cheaper to evaluate.  Returns > 0, == 0 , or < 0
@@ -101,7 +101,7 @@ double __wrath__gl_edgeSign( GLUvertex *u, GLUvertex *v, GLUvertex *w )
  * Define versions of EdgeSign, EdgeEval with s and t transposed.
  */
 
-double __wrath__gl_transEval( GLUvertex *u, GLUvertex *v, GLUvertex *w )
+double glu_wrath_gl_transEval( GLUvertex *u, GLUvertex *v, GLUvertex *w )
 {
   /* Given three vertices u,v,w such that TransLeq(u,v) && TransLeq(v,w),
    * evaluates the t-coord of the edge uw at the s-coord of the vertex v.
@@ -131,7 +131,7 @@ double __wrath__gl_transEval( GLUvertex *u, GLUvertex *v, GLUvertex *w )
   return 0;
 }
 
-double __wrath__gl_transSign( GLUvertex *u, GLUvertex *v, GLUvertex *w )
+double glu_wrath_gl_transSign( GLUvertex *u, GLUvertex *v, GLUvertex *w )
 {
   /* Returns a number whose sign matches TransEval(u,v,w) but which
    * is cheaper to evaluate.  Returns > 0, == 0 , or < 0
@@ -152,7 +152,7 @@ double __wrath__gl_transSign( GLUvertex *u, GLUvertex *v, GLUvertex *w )
 }
 
 
-int __wrath__gl_vertCCW( GLUvertex *u, GLUvertex *v, GLUvertex *w )
+int glu_wrath_gl_vertCCW( GLUvertex *u, GLUvertex *v, GLUvertex *w )
 {
   /* For almost-degenerate situations, the results are not reliable.
    * Unless the floating-point arithmetic can be performed without
@@ -202,7 +202,7 @@ printf("*********************%d\n",RandomInterpolate);
 
 #define Swap(a,b)       do { GLUvertex *t = a; a = b; b = t; } while (0)
 
-void __wrath__gl_edgeIntersect( GLUvertex *o1, GLUvertex *d1,
+void glu_wrath_gl_edgeIntersect( GLUvertex *o1, GLUvertex *d1,
                          GLUvertex *o2, GLUvertex *d2,
                          GLUvertex *v )
 /* Given edges (o1,d1) and (o2,d2), compute their point of intersection.

@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_FONT_CONFIG_HPP__
-#define __WRATH_FONT_CONFIG_HPP__
+#ifndef WRATH_HEADER_FONT_CONFIG_HPP_
+#define WRATH_HEADER_FONT_CONFIG_HPP_
 
 #include "WRATHConfig.hpp"
 #include <iostream>

@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_COLUMN_FORMATTER_HPP__
-#define __WRATH_COLUMN_FORMATTER_HPP__
+#ifndef WRATH_HEADER_COLUMN_FORMATTER_HPP_
+#define WRATH_HEADER_COLUMN_FORMATTER_HPP_
 
 #include "WRATHConfig.hpp"
 #include <locale>

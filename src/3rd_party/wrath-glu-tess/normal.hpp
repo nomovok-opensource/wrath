@@ -32,14 +32,14 @@
 **
 */
 
-#ifndef __normal_h_
-#define __normal_h_
+#ifndef wrath_glu_normal_h_
+#define wrath_glu_normal_h_
 
 #include "tess.hpp"
 
-/* __wrath__gl_projectPolygon( tess ) determines the polygon normal
+/* glu_wrath_gl_projectPolygon( tess ) determines the polygon normal
  * and project vertices onto the plane of the polygon.
  */
-void __wrath__gl_projectPolygon( wrath_GLUtesselator *tess );
+void glu_wrath_gl_projectPolygon( wrath_GLUtesselator *tess );
 
 #endif

@@ -20,8 +20,8 @@
 
 
 
-#ifndef __WRATH_TEXTURE_FONT_HPP__
-#define __WRATH_TEXTURE_FONT_HPP__
+#ifndef WRATH_HEADER_TEXTURE_FONT_HPP_
+#define WRATH_HEADER_TEXTURE_FONT_HPP_
 
 #include "WRATHConfig.hpp"
 #include <stdint.h>

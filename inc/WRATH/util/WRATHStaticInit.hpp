@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_STATIC_INIT_HPP__
-#define __WRATH_STATIC_INIT_HPP__
+#ifndef WRATH_HEADER_STATIC_INIT_HPP_
+#define WRATH_HEADER_STATIC_INIT_HPP_
 
 #include "WRATHConfig.hpp"
 

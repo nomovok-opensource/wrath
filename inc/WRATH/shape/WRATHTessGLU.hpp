@@ -18,8 +18,8 @@
 
 
 
-#ifndef __WRATH_TESS_GLU_HPP__
-#define __WRATH_TESS_GLU_HPP__
+#ifndef WRATH_HEADER_TESS_GLU_HPP_
+#define WRATH_HEADER_TESS_GLU_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHgl.hpp"

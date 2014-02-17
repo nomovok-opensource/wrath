@@ -19,11 +19,11 @@
  */
 
 
-#if !defined(__OPENGL_TRAIT_H__) || defined(__OPENGL_TRAIT_IMPLEMENT_TCC__)
+#if !defined(WRATH_OPENGL_TRAIT_H_) || defined(WRATH_OPENGL_TRAIT_IMPLEMENT_TCC_)
 #error "Direction inclusion of private header file opengl_trait_implement.tcc" 
 #endif
 
-#define __OPENGL_TRAIT_IMPLEMENT_TCC__
+#define WRATH_OPENGL_TRAIT_IMPLEMENT_TCC_
 
 
 template<>
