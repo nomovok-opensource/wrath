@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __DRAW_ITEM_HPP__
-#define __DRAW_ITEM_HPP__
+#ifndef DRAW_ITEM_HPP
+#define DRAW_ITEM_HPP
 
 #include <QObject>
 #include <QPainter>

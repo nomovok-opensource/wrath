@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __TEST_WIDGET_HPP__
-#define __TEST_WIDGET_HPP__
+#ifndef TEST_WIDGET_HPP
+#define TEST_WIDGET_HPP
 
 #include <QWidget>
 #include "test_list.hpp"

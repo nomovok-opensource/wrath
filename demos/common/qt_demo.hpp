@@ -17,8 +17,8 @@
  */
 
 
-#ifndef _QT_DEMO_HPP__
-#define _QT_DEMO_HPP__
+#ifndef QT_DEMO_HPP
+#define QT_DEMO_HPP
 
 
 #include "WRATHConfig.hpp"

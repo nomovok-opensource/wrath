@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __SIMPLE2D_TRANSFORMATION__
-#define __SIMPLE2D_TRANSFORMATION__
+#ifndef SIMPLE2D_TRANSFORMATION
+#define SIMPLE2D_TRANSFORMATION
 
 #include <QPointF>
 #include <complex>

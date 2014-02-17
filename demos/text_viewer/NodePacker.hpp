@@ -17,8 +17,8 @@
  */
 
 
-#ifndef _UNIFORM_PACKER_HPP_
-#define _UNIFORM_PACKER_HPP_
+#ifndef UNIFORM_PACKER_HPP_
+#define UNIFORM_PACKER_HPP_
 
 
 #include "WRATHLayerItemDrawerFactory.hpp"

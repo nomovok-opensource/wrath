@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_DEMO_IMAGE_SUPPORT_HPP__
-#define __WRATH_DEMO_IMAGE_SUPPORT_HPP__
+#ifndef WRATH_DEMO_IMAGE_SUPPORT_HPP
+#define WRATH_DEMO_IMAGE_SUPPORT_HPP
 
 #include "WRATHConfig.hpp"
 

@@ -30,8 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 /** \file generic_command_line.hpp */
-#ifndef __GENERIC_COMMAND_LINE_HPP__
-#define __GENERIC_COMMAND_LINE_HPP__
+#ifndef GENERIC_COMMAND_LINE_HPP
+#define GENERIC_COMMAND_LINE_HPP
 
 
 #include <iostream>

@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __FILE_TYPES_HPP__
-#define __FILE_TYPES_HPP__
+#ifndef FILE_TYPES_HPP
+#define FILE_TYPES_HPP
 
 #include "WRATHConfig.hpp"
 

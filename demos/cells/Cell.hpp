@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __CELLS_HPP__
-#define __CELLS_HPP__
+#ifndef CELLS_HPP
+#define CELLS_HPP
 
 
 #include "WRATHConfig.hpp"

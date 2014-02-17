@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __TEST_WIDGET_GL_HPP__
-#define __TEST_WIDGET_GL_HPP__
+#ifndef TEST_WIDGET_GL_HPP
+#define TEST_WIDGET_GL_HPP
 
 #include <QGLWidget>
 #include "test_list.hpp"

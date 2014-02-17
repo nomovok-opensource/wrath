@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __MAIN_WIDGET_HPP__
-#define __MAIN_WIDGET_HPP__
+#ifndef MAIN_WIDGET_HPP
+#define MAIN_WIDGET_HPP
 
 //Qt timers ony "run" Qt slots, which must be member
 //function of QObject derived types.
