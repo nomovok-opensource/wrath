@@ -19,13 +19,13 @@
  */
 
 
-#if !defined(__WRATH_SHAPE_SIMPLE_TESSELLATOR_HPP__) || defined(__WRATH_SHAPE_SIMPLE_TESSELLATOR_IMPLEMENT_TCC__)
+#if !defined(WRATH_HEADER_SHAPE_SIMPLE_TESSELLATOR_HPP_) || defined(WRATH_HEADER_SHAPE_SIMPLE_TESSELLATOR_IMPLEMENT_TCC_)
 #error "Direction inclusion of private header file WRATHShapeSimpleTessellatorImplement.tcc" 
 #endif
 
 #include "WRATHConfig.hpp"
 
-#define __WRATH_SHAPE_SIMPLE_TESSELLATOR_IMPLEMENT_TCC__
+#define WRATH_HEADER_SHAPE_SIMPLE_TESSELLATOR_IMPLEMENT_TCC_
 
 namespace WRATHShapeSimpleTessellatorPrivateImplement
 {

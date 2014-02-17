@@ -32,8 +32,8 @@
 **
 */
 
-#ifndef __mesh_h_
-#define __mesh_h_
+#ifndef wrath_glu_mesh_h_
+#define wrath_glu_mesh_h_
 
 #include "wrath-glu-tess.hpp"
 
@@ -103,9 +103,9 @@ typedef struct ActiveRegion ActiveRegion;       /* Internal data */
  *
  * The mesh does NOT support isolated vertices; a vertex is deleted along
  * with its last edge.  Similarly when two faces are merged, one of the
- * faces is deleted (see __wrath__gl_meshDelete below).  For mesh operations,
+ * faces is deleted (see glu_wrath_gl_meshDelete below).  For mesh operations,
  * all face (loop) and vertex pointers must not be NULL.  However, once
- * mesh manipulation is finished, __wrath__gl_MeshZapFace can be used to delete
+ * mesh manipulation is finished, glu_wrath_gl_MeshZapFace can be used to delete
  * faces of the mesh, one at a time.  All external faces can be "zapped"
  * before the mesh is returned to the client; then a NULL face indicates
  * a region which is not part of the output polygon.
@@ -186,10 +186,10 @@ struct GLUmesh {
  *
  * ********************** Basic Edge Operations **************************
  *
- * __wrath__gl_meshMakeEdge( mesh ) creates one edge, two vertices, and a loop.
+ * glu_wrath_gl_meshMakeEdge( mesh ) creates one edge, two vertices, and a loop.
  * The loop (face) consists of the two new half-edges.
  *
- * __wrath__gl_meshSplice( eOrg, eDst ) is the basic operation for changing the
+ * glu_wrath_gl_meshSplice( eOrg, eDst ) is the basic operation for changing the
  * mesh connectivity and topology.  It changes the mesh so that
  *      eOrg->Onext <- OLD( eDst->Onext )
  *      eDst->Onext <- OLD( eOrg->Onext )
@@ -205,7 +205,7 @@ struct GLUmesh {
  *  - if eOrg->Lface != eDst->Lface, two distinct loops are joined into one
  * In both cases, eDst->Lface is changed and eOrg->Lface is unaffected.
  *
- * __wrath__gl_meshDelete( eDel ) removes the edge eDel.  There are several cases:
+ * glu_wrath_gl_meshDelete( eDel ) removes the edge eDel.  There are several cases:
  * if (eDel->Lface != eDel->Rface), we join two loops into one; the loop
  * eDel->Lface is deleted.  Otherwise, we are splitting one loop into two;
  * the newly created loop will contain eDel->Dst.  If the deletion of eDel
@@ -213,15 +213,15 @@ struct GLUmesh {
  *
  * ********************** Other Edge Operations **************************
  *
- * __wrath__gl_meshAddEdgeVertex( eOrg ) creates a new edge eNew such that
+ * glu_wrath_gl_meshAddEdgeVertex( eOrg ) creates a new edge eNew such that
  * eNew == eOrg->Lnext, and eNew->Dst is a newly created vertex.
  * eOrg and eNew will have the same left face.
  *
- * __wrath__gl_meshSplitEdge( eOrg ) splits eOrg into two edges eOrg and eNew,
+ * glu_wrath_gl_meshSplitEdge( eOrg ) splits eOrg into two edges eOrg and eNew,
  * such that eNew == eOrg->Lnext.  The new vertex is eOrg->Dst == eNew->Org.
  * eOrg and eNew will have the same left face.
  *
- * __wrath__gl_meshConnect( eOrg, eDst ) creates a new edge from eOrg->Dst
+ * glu_wrath_gl_meshConnect( eOrg, eDst ) creates a new edge from eOrg->Dst
  * to eDst->Org, and returns the corresponding half-edge eNew.
  * If eOrg->Lface == eDst->Lface, this splits one loop into two,
  * and the newly created loop is eNew->Lface.  Otherwise, two disjoint
@@ -229,41 +229,41 @@ struct GLUmesh {
  *
  * ************************ Other Operations *****************************
  *
- * __wrath__gl_meshNewMesh() creates a new mesh with no edges, no vertices,
+ * glu_wrath_gl_meshNewMesh() creates a new mesh with no edges, no vertices,
  * and no loops (what we usually call a "face").
  *
- * __wrath__gl_meshUnion( mesh1, mesh2 ) forms the union of all structures in
+ * glu_wrath_gl_meshUnion( mesh1, mesh2 ) forms the union of all structures in
  * both meshes, and returns the new mesh (the old meshes are destroyed).
  *
- * __wrath__gl_meshDeleteMesh( mesh ) will free all storage for any valid mesh.
+ * glu_wrath_gl_meshDeleteMesh( mesh ) will free all storage for any valid mesh.
  *
- * __wrath__gl_meshZapFace( fZap ) destroys a face and removes it from the
+ * glu_wrath_gl_meshZapFace( fZap ) destroys a face and removes it from the
  * global face list.  All edges of fZap will have a NULL pointer as their
  * left face.  Any edges which also have a NULL pointer as their right face
  * are deleted entirely (along with any isolated vertices this produces).
  * An entire mesh can be deleted by zapping its faces, one at a time,
  * in any order.  Zapped faces cannot be used in further mesh operations!
  *
- * __wrath__gl_meshCheckMesh( mesh ) checks a mesh for self-consistency.
+ * glu_wrath_gl_meshCheckMesh( mesh ) checks a mesh for self-consistency.
  */
 
-GLUhalfEdge     *__wrath__gl_meshMakeEdge( GLUmesh *mesh );
-int             __wrath__gl_meshSplice( GLUhalfEdge *eOrg, GLUhalfEdge *eDst );
-int             __wrath__gl_meshDelete( GLUhalfEdge *eDel );
+GLUhalfEdge     *glu_wrath_gl_meshMakeEdge( GLUmesh *mesh );
+int             glu_wrath_gl_meshSplice( GLUhalfEdge *eOrg, GLUhalfEdge *eDst );
+int             glu_wrath_gl_meshDelete( GLUhalfEdge *eDel );
 
-GLUhalfEdge     *__wrath__gl_meshAddEdgeVertex( GLUhalfEdge *eOrg );
-GLUhalfEdge     *__wrath__gl_meshSplitEdge( GLUhalfEdge *eOrg );
-GLUhalfEdge     *__wrath__gl_meshConnect( GLUhalfEdge *eOrg, GLUhalfEdge *eDst );
+GLUhalfEdge     *glu_wrath_gl_meshAddEdgeVertex( GLUhalfEdge *eOrg );
+GLUhalfEdge     *glu_wrath_gl_meshSplitEdge( GLUhalfEdge *eOrg );
+GLUhalfEdge     *glu_wrath_gl_meshConnect( GLUhalfEdge *eOrg, GLUhalfEdge *eDst );
 
-GLUmesh         *__wrath__gl_meshNewMesh( void );
-GLUmesh         *__wrath__gl_meshUnion( GLUmesh *mesh1, GLUmesh *mesh2 );
-void            __wrath__gl_meshDeleteMesh( GLUmesh *mesh );
-void            __wrath__gl_meshZapFace( GLUface *fZap );
+GLUmesh         *glu_wrath_gl_meshNewMesh( void );
+GLUmesh         *glu_wrath_gl_meshUnion( GLUmesh *mesh1, GLUmesh *mesh2 );
+void            glu_wrath_gl_meshDeleteMesh( GLUmesh *mesh );
+void            glu_wrath_gl_meshZapFace( GLUface *fZap );
 
 #ifdef NDEBUG
-#define         __wrath__gl_meshCheckMesh( mesh )
+#define         glu_wrath_gl_meshCheckMesh( mesh )
 #else
-void            __wrath__gl_meshCheckMesh( GLUmesh *mesh );
+void            glu_wrath_gl_meshCheckMesh( GLUmesh *mesh );
 #endif
 
 #endif

@@ -228,7 +228,7 @@ SetNames(const string &functionName,
   m_argListOnly=argListOnly.str();
 
   m_functionPointerName=sm_prefix+"_function_ptr_"+m_functionName;
-  m_debugFunctionName=sm_prefix+"_debug_function__"+m_functionName;
+  m_debugFunctionName=sm_prefix+"_debug_function_"+m_functionName;
   m_localFunctionName=sm_prefix+"_local_function_"+m_functionName;
   m_doNothingFunctionName=sm_prefix+"_do_nothing_function_"+m_functionName;
   m_existsFunctionName=sm_prefix+"_exists_function_"+m_functionName;
@@ -573,8 +573,8 @@ void
 openGL_function_info::
 HeaderStart(ostream &headerFile, const list<string> &fileNames)
 {
-  headerFile << "#ifndef " << prefix() << "__GENERIC__HEADER__\n"
-             << "#define " << prefix() << "__GENERIC__HEADER__\n\n\n"
+  headerFile << "#ifndef " << prefix() << "_GENERIC_HEADER_\n"
+             << "#define " << prefix() << "_GENERIC_HEADER_\n\n\n"
              << "#include \"WRATHConfig.hpp\"\n"
              << "#if defined __WIN32__ && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)\n"  
              << "#define WIN32_LEAN_AND_MEAN 1\n#include <windows.h>\n#endif\n";

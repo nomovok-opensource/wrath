@@ -18,8 +18,8 @@
 
 
 
-#ifndef __WRATH_TIME_HPP__
-#define __WRATH_TIME_HPP__
+#ifndef WRATH_HEADER_TIME_HPP_
+#define WRATH_HEADER_TIME_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHUtil.hpp"

@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_RESOURCE_MANAGER_HPP__
-#define __WRATH_RESOURCE_MANAGER_HPP__
+#ifndef WRATH_HEADER_RESOURCE_MANAGER_HPP_
+#define WRATH_HEADER_RESOURCE_MANAGER_HPP_
 
 #include "WRATHConfig.hpp"
 #include <map>

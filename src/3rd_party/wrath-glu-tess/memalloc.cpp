@@ -35,7 +35,7 @@
 #include "memalloc.hpp"
 #include <string.h>
 
-int __wrath__gl_memInit( size_t maxFast )
+int glu_wrath_gl_memInit( size_t maxFast )
 {
 #ifndef NO_MALLOPT
 /*  mallopt( M_MXFAST, maxFast );*/
@@ -47,7 +47,7 @@ int __wrath__gl_memInit( size_t maxFast )
 }
 
 #ifdef MEMORY_DEBUG
-void *__wrath__gl_memAlloc( size_t n )
+void *glu_wrath_gl_memAlloc( size_t n )
 {
   return memset( WRATHmalloc( n ), 0xa5, n );
 }

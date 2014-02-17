@@ -248,13 +248,13 @@ public: // basic math operators
         
     Self &operator/=(const Self &b) {
                 Self remainder; 
-                __do_div(*this, b, *this, remainder);
+                sm_do_div(*this, b, *this, remainder);
                 return *this;
     }
         
     Self &operator%=(const Self &b) {
                 Self quotient;          
-                __do_div(*this, b, quotient, *this);
+                sm_do_div(*this, b, quotient, *this);
                 return *this;
     }
         
@@ -354,7 +354,7 @@ public:
         while (ii != 0 && i) {
                 
                         Self remainder;
-                        __do_div(ii, Self(radix), ii, remainder);
+                        sm_do_div(ii, Self(radix), ii, remainder);
                 sz [--i] = "0123456789abcdefghijklmnopqrstuvwxyz"[remainder.to_integer()];
         }
 
@@ -363,7 +363,7 @@ public:
         
 private:
         template <typename T>
-        static void __do_div(const T &numerator, const T &denominator, T &quotient, T &remainder) {
+        static void sm_do_div(const T &numerator, const T &denominator, T &quotient, T &remainder) {
 
                 static const int bits = sizeof(T) * CHAR_BIT;
 

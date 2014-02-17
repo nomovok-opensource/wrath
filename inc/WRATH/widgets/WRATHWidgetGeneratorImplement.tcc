@@ -23,10 +23,10 @@
   Should only be included from WRATHWidgetGenerator.hpp
  */
 
-#if !defined(__WRATH_WIDGET_GENERATOR_HPP__) || defined(__WRATH_WIDGET_GENERATOR_IMPLEMENT_TCC__)
+#if !defined(WRATH_HEADER_WIDGET_GENERATOR_HPP_) || defined(WRATH_HEADER_WIDGET_GENERATOR_IMPLEMENT_TCC_)
 #error "Direction inclusion of private header file WRATHWidgetGeneratorImplement.tcc"
 #endif
-#define __WRATH_WIDGET_GENERATOR_IMPLEMENT_TCC__
+#define WRATH_HEADER_WIDGET_GENERATOR_IMPLEMENT_TCC_
 
 ////////////////////////////////////////
 // WRATHWidgetGeneratorT methods

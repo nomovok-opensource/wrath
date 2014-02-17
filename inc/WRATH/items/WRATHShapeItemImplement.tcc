@@ -23,10 +23,10 @@
   Should only be included from WRATHShapeItem.hpp
  */
 
-#if !defined(__WRATH_SHAPE_ITEM_HPP__) || defined(__WRATH_SHAPE_ITEM_IMPLEMENT_TCC__)
+#if !defined(WRATH_HEADER_SHAPE_ITEM_HPP_) || defined(WRATH_HEADER_SHAPE_ITEM_IMPLEMENT_TCC_)
 #error "Direction inclusion of private header file WRATHShapeItemImplement.tcc"
 #endif
-#define __WRATH_SHAPE_ITEM_IMPLEMENT_TCC__
+#define WRATH_HEADER_SHAPE_ITEM_IMPLEMENT_TCC_
 
 namespace WRATHShapeDrawerImplementHelper
 {

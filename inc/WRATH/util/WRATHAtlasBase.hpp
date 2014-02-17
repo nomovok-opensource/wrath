@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_ATLAS_BASE_HPP__
-#define __WRATH_ATLAS_BASE_HPP__
+#ifndef WRATH_HEADER_ATLAS_BASE_HPP_
+#define WRATH_HEADER_ATLAS_BASE_HPP_
 
 #include "WRATHConfig.hpp"
 #include <stdint.h>

@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_GL_GET_HPP__
-#define __WRATH_GL_GET_HPP__
+#ifndef WRATH_HEADER_GL_GET_HPP_
+#define WRATH_HEADER_GL_GET_HPP_
 
 
 #include "WRATHConfig.hpp"

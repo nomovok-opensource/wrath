@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_GL_EXTENSION_LIST_HPP__
-#define __WRATH_GL_EXTENSION_LIST_HPP__
+#ifndef WRATH_HEADER_GL_EXTENSION_LIST_HPP_
+#define WRATH_HEADER_GL_EXTENSION_LIST_HPP_
 
 #include "WRATHConfig.hpp"
 #include <set>

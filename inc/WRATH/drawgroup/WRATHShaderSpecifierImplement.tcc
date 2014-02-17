@@ -19,11 +19,11 @@
  */
 
 
-#if !defined(__WRATH_SHADER_SPECIFIER_HPP__) || defined(__WRATH_SHADER_SPECIFIER_TCC__)
+#if !defined(WRATH_HEADER_SHADER_SPECIFIER_HPP_) || defined(WRATH_HEADER_SHADER_SPECIFIER_TCC_)
 #error "Direction inclusion of private header file WRATHShaderSpecifierImplement.tcc" 
 #endif
 
-#define __WRATH_SHADER_SPECIFIER_TCC__
+#define WRATH_HEADER_SHADER_SPECIFIER_TCC_
 
 
 template<typename T>

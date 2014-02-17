@@ -26,12 +26,12 @@
    I will simply copy-paste from the Qt header values.
 */
 
-#if !defined(__FURY_QT_EVENT_HPP__) || defined(__FURY_QT_EVENT_CODE_VALUES_TCC__)
+#if !defined(FURY_QT_EVENT_HPP_) || defined(FURY_QT_EVENT_CODE_VALUES_TCC_)
 #error "Direction inclusion of private header file FURYQTKeyCodes.values.tcc"
 #endif
 
-#define __FURY_QT_EVENT_CODE_VALUES_TCC__
-#define __FURY_QT_KEYCODE(X) FURYKey_##X
+#define FURY_QT_EVENT_CODE_VALUES_TCC_
+#define FURY_QT_KEYCODE(X) FURYKey_##X
 
 /*
   FURYQTKeyCodeMadness files are sed/gcc genarated files.
@@ -47,8 +47,8 @@
   as aliases for FURYKey_PageUp and FURYKey_PageDown, respectively
 */
 
-        __FURY_QT_KEYCODE(Pageup)=Qt::Key_PageUp,
-        __FURY_QT_KEYCODE(Pagedown)=Qt::Key_PageDown,
+        FURY_QT_KEYCODE(Pageup)=Qt::Key_PageUp,
+        FURY_QT_KEYCODE(Pagedown)=Qt::Key_PageDown,
 
 
-#undef __FURY_QT_KEYCODE
+#undef FURY_QT_KEYCODE

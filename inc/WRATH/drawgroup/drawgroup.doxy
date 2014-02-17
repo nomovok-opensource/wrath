@@ -121,5 +121,5 @@ A simple tutorial of using the WRATHCanvas:
  */
 
 
-#error "Include of " __FILE __ " which is a documentation files"
+#error "Include of " __FILE__ " which is a documentation files"
 

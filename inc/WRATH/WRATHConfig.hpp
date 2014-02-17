@@ -25,8 +25,8 @@
  * classes that have standard container member variables on debug builds.
 */
 
-#ifndef __WRATH_CONFIG_HPP__
-#define __WRATH_CONFIG_HPP__
+#ifndef WRATH_HEADER_CONFIG_HPP_
+#define WRATH_HEADER_CONFIG_HPP_
 
 // Error out if standard headers already included
 #if defined(_GLIBCXX_VECTOR) || defined(_GLIBCXX_LIST) || defined(_GLIBCXX_DEQUE) || defined(_GLIBCXX_STRING) || defined(_GLIBCXX_MAP) || defined(_GLIBCXX_SET)

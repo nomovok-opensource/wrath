@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __OPENGL_TRAIT_H__
-#define __OPENGL_TRAIT_H__
+#ifndef WRATH_OPENGL_TRAIT_H_
+#define WRATH_OPENGL_TRAIT_H_
 
 #include "WRATHConfig.hpp"
 #include "WRATHgl.hpp"

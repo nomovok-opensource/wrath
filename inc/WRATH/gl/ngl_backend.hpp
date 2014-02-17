@@ -18,8 +18,8 @@
 
 
 
-#ifndef __NGL_BACKEND_HPP__
-#define __NGL_BACKEND_HPP__
+#ifndef WRATH_NGL_BACKEND_HPP_
+#define WRATH_NGL_BACKEND_HPP_
 
 #include "WRATHConfig.hpp"
 #include <iostream>

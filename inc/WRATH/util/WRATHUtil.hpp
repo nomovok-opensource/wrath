@@ -18,8 +18,8 @@
 
 
 
-#ifndef __WRATH_UTIL_HPP__
-#define __WRATH_UTIL_HPP__
+#ifndef WRATH_HEADER_UTIL_HPP_
+#define WRATH_HEADER_UTIL_HPP_
 
 #include "WRATHConfig.hpp"
 #include <boost/integer_traits.hpp>

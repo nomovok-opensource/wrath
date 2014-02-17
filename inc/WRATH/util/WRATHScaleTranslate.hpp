@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_SCALE_TRANSLATE_HPP__
-#define __WRATH_SCALE_TRANSLATE_HPP__
+#ifndef WRATH_HEADER_SCALE_TRANSLATE_HPP_
+#define WRATH_HEADER_SCALE_TRANSLATE_HPP_
 
 #include "WRATHConfig.hpp"
 #include "type_tag.hpp"

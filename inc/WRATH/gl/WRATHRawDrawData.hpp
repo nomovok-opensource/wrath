@@ -18,8 +18,8 @@
 
 
 
-#ifndef __WRATH_RAW_DRAW_DATA_HPP__
-#define __WRATH_RAW_DRAW_DATA_HPP__
+#ifndef WRATH_HEADER_RAW_DRAW_DATA_HPP_
+#define WRATH_HEADER_RAW_DRAW_DATA_HPP_
 
 #include "WRATHConfig.hpp"
 #include <set>

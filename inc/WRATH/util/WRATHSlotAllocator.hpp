@@ -18,8 +18,8 @@
 
 
 
-#ifndef __WRATH_SLOT_ALLOCATOR_HPP__
-#define __WRATH_SLOT_ALLOCATOR_HPP__
+#ifndef WRATH_HEADER_SLOT_ALLOCATOR_HPP_
+#define WRATH_HEADER_SLOT_ALLOCATOR_HPP_
 
 #include "WRATHConfig.hpp"
 #include <boost/utility.hpp>

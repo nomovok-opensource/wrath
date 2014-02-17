@@ -22,8 +22,8 @@
  */
 
 
-#ifndef __WRATH_TEXT_DATA_HPP__
-#define __WRATH_TEXT_DATA_HPP__
+#ifndef WRATH_HEADER_TEXT_DATA_HPP_
+#define WRATH_HEADER_TEXT_DATA_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHassert.hpp" 

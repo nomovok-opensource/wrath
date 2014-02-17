@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_FAMILY_HPP__
-#define __WRATH_FAMILY_HPP__
+#ifndef WRATH_HEADER_FAMILY_HPP_
+#define WRATH_HEADER_FAMILY_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHWidgetEnums.hpp"

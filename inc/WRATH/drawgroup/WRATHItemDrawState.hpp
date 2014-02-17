@@ -19,8 +19,8 @@
 
 #include "WRATHConfig.hpp"
 
-#ifndef __WRATH_ITEM_DRAW_STATE_HPP__
-#define __WRATH_ITEM_DRAW_STATE_HPP__
+#ifndef WRATH_HEADER_ITEM_DRAW_STATE_HPP_
+#define WRATH_HEADER_ITEM_DRAW_STATE_HPP_
 
 
 /*! \addtogroup Group

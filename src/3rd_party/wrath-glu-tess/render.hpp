@@ -32,21 +32,21 @@
 **
 */
 
-#ifndef __render_h_
-#define __render_h_
+#ifndef wrath_glu_render_h_
+#define wrath_glu_render_h_
 
 #include "mesh.hpp"
 
-/* __wrath__gl_renderMesh( tess, mesh ) takes a mesh and breaks it into triangle
+/* glu_wrath_gl_renderMesh( tess, mesh ) takes a mesh and breaks it into triangle
  * fans, strips, and separate triangles.  A substantial effort is made
  * to use as few rendering primitives as possible (ie. to make the fans
  * and strips as large as possible).
  *
  * The rendering output is provided as callbacks (see the api).
  */
-void __wrath__gl_renderMesh( wrath_GLUtesselator *tess, GLUmesh *mesh );
-void __wrath__gl_renderBoundary( wrath_GLUtesselator *tess, GLUmesh *mesh );
+void glu_wrath_gl_renderMesh( wrath_GLUtesselator *tess, GLUmesh *mesh );
+void glu_wrath_gl_renderBoundary( wrath_GLUtesselator *tess, GLUmesh *mesh );
 
-WRATH_GLUboolean __wrath__gl_renderCache( wrath_GLUtesselator *tess );
+WRATH_GLUboolean glu_wrath_gl_renderCache( wrath_GLUtesselator *tess );
 
 #endif

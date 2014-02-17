@@ -143,7 +143,7 @@ namespace
 }
 
 
-/*ARGSUSED*/ void REGALWRATH_GLU_CALL __wrath__gl_noBeginData( WRATH_GLUenum type, int winding_number, 
+/*ARGSUSED*/ void REGALWRATH_GLU_CALL glu_wrath_gl_noBeginData( WRATH_GLUenum type, int winding_number, 
                                                                void *polygonData ) 
 {
   IGNORE(polygonData);
@@ -151,33 +151,33 @@ namespace
   IGNORE(winding_number); 
 }
 
-/*ARGSUSED*/ void REGALWRATH_GLU_CALL __wrath__gl_noEdgeFlagData( WRATH_GLUboolean boundaryEdge,
+/*ARGSUSED*/ void REGALWRATH_GLU_CALL glu_wrath_gl_noEdgeFlagData( WRATH_GLUboolean boundaryEdge,
                                        void *polygonData )
 {
   IGNORE(polygonData);
   IGNORE(boundaryEdge); 
 }
 
-/*ARGSUSED*/ void REGALWRATH_GLU_CALL __wrath__gl_noVertexData( void *data,
+/*ARGSUSED*/ void REGALWRATH_GLU_CALL glu_wrath_gl_noVertexData( void *data,
                                               void *polygonData ) 
 {
   IGNORE(polygonData);
   IGNORE(data); 
 }
 
-/*ARGSUSED*/ void REGALWRATH_GLU_CALL __wrath__gl_noEndData( void *polygonData ) 
+/*ARGSUSED*/ void REGALWRATH_GLU_CALL glu_wrath_gl_noEndData( void *polygonData ) 
 {
   IGNORE(polygonData);
 }
 
-/*ARGSUSED*/ void REGALWRATH_GLU_CALL __wrath__gl_noErrorData( WRATH_GLUenum errnum,
+/*ARGSUSED*/ void REGALWRATH_GLU_CALL glu_wrath_gl_noErrorData( WRATH_GLUenum errnum,
                                              void *polygonData ) 
 {
   IGNORE(polygonData);
   IGNORE(errnum); 
 }
 
-/*ARGSUSED*/ void REGALWRATH_GLU_CALL __wrath__gl_noCombineData( double coords[3],
+/*ARGSUSED*/ void REGALWRATH_GLU_CALL glu_wrath_gl_noCombineData( double coords[3],
                                                void *data[4],
                                                float weight[4],
                                                void **outData,
@@ -190,7 +190,7 @@ namespace
   IGNORE(outData); 
 }
 
-/*ARGSUSED*/ WRATH_GLUboolean REGALWRATH_GLU_CALL __wrath__gl_noWindingData(int winding_rule,
+/*ARGSUSED*/ WRATH_GLUboolean REGALWRATH_GLU_CALL glu_wrath_gl_noWindingData(int winding_rule,
                                                                             void *polygonData) 
 { 
   IGNORE(polygonData);
@@ -259,14 +259,14 @@ wrath_gluNewTess( void )
 
   tess->callWinding= &noWinding;
 
-  tess->callBeginData= &__wrath__gl_noBeginData;
-  tess->callEdgeFlagData= &__wrath__gl_noEdgeFlagData;
-  tess->callVertexData= &__wrath__gl_noVertexData;
-  tess->callEndData= &__wrath__gl_noEndData;
-  tess->callErrorData= &__wrath__gl_noErrorData;
-  tess->callCombineData= &__wrath__gl_noCombineData;
+  tess->callBeginData= &glu_wrath_gl_noBeginData;
+  tess->callEdgeFlagData= &glu_wrath_gl_noEdgeFlagData;
+  tess->callVertexData= &glu_wrath_gl_noVertexData;
+  tess->callEndData= &glu_wrath_gl_noEndData;
+  tess->callErrorData= &glu_wrath_gl_noErrorData;
+  tess->callCombineData= &glu_wrath_gl_noCombineData;
 
-  tess->callWindingData= &__wrath__gl_noWindingData;
+  tess->callWindingData= &glu_wrath_gl_noWindingData;
 
   tess->polygonData= NULL;
 
@@ -278,7 +278,7 @@ static void MakeDormant( wrath_GLUtesselator *tess )
   /* Return the tessellator to its original dormant state. */
 
   if( tess->mesh != NULL ) {
-    __wrath__gl_meshDeleteMesh( tess->mesh );
+    glu_wrath_gl_meshDeleteMesh( tess->mesh );
   }
   tess->state = T_DORMANT;
   tess->lastEdge = NULL;
@@ -387,7 +387,7 @@ wrath_gluGetTessPropertyBoundaryOnly(wrath_GLUtesselator *tess)
 WRATH_GLUboolean
 call_tess_winding_or_winding_data_implement(wrath_GLUtesselator *tess, int a)
 {
-  if (tess->callWindingData != &__wrath__gl_noWindingData) 
+  if (tess->callWindingData != &glu_wrath_gl_noWindingData) 
     return (*tess->callWindingData)(a, tess->polygonData); 
    else 
      return (*tess->callWinding)(a);
@@ -413,7 +413,7 @@ wrath_gluTessCallback( wrath_GLUtesselator *tess, WRATH_GLUenum which, WRATH_GLU
     return;
   case WRATH_GLU_TESS_BEGIN_DATA:
     tess->callBeginData = (fn == NULL) ?
-        &__wrath__gl_noBeginData : (void (REGALWRATH_GLU_CALL *)(WRATH_GLUenum, int, void *)) fn;
+        &glu_wrath_gl_noBeginData : (void (REGALWRATH_GLU_CALL *)(WRATH_GLUenum, int, void *)) fn;
     return;
   case WRATH_GLU_TESS_EDGE_FLAG:
     tess->callEdgeFlag = (fn == NULL) ? &noEdgeFlag :
@@ -425,7 +425,7 @@ wrath_gluTessCallback( wrath_GLUtesselator *tess, WRATH_GLUenum which, WRATH_GLU
     return;
   case WRATH_GLU_TESS_EDGE_FLAG_DATA:
     tess->callEdgeFlagData= (fn == NULL) ?
-        &__wrath__gl_noEdgeFlagData : (void (REGALWRATH_GLU_CALL *)(WRATH_GLUboolean, void *)) fn;
+        &glu_wrath_gl_noEdgeFlagData : (void (REGALWRATH_GLU_CALL *)(WRATH_GLUboolean, void *)) fn;
     /* If the client wants boundary edges to be flagged,
      * we render everything as separate triangles (no strips or fans).
      */
@@ -437,13 +437,13 @@ wrath_gluTessCallback( wrath_GLUtesselator *tess, WRATH_GLUenum which, WRATH_GLU
     return;
   case WRATH_GLU_TESS_VERTEX_DATA:
     tess->callVertexData = (fn == NULL) ?
-        &__wrath__gl_noVertexData : (void (REGALWRATH_GLU_CALL *)(void *, void *)) fn;
+        &glu_wrath_gl_noVertexData : (void (REGALWRATH_GLU_CALL *)(void *, void *)) fn;
     return;
   case WRATH_GLU_TESS_END:
     tess->callEnd = (fn == NULL) ? &noEnd : (void (REGALWRATH_GLU_CALL *)(void)) fn;
     return;
   case WRATH_GLU_TESS_END_DATA:
-    tess->callEndData = (fn == NULL) ? &__wrath__gl_noEndData :
+    tess->callEndData = (fn == NULL) ? &glu_wrath_gl_noEndData :
                                        (void (REGALWRATH_GLU_CALL *)(void *)) fn;
     return;
   case WRATH_GLU_TESS_ERROR:
@@ -451,14 +451,14 @@ wrath_gluTessCallback( wrath_GLUtesselator *tess, WRATH_GLUenum which, WRATH_GLU
     return;
   case WRATH_GLU_TESS_ERROR_DATA:
     tess->callErrorData = (fn == NULL) ?
-        &__wrath__gl_noErrorData : (void (REGALWRATH_GLU_CALL *)(WRATH_GLUenum, void *)) fn;
+        &glu_wrath_gl_noErrorData : (void (REGALWRATH_GLU_CALL *)(WRATH_GLUenum, void *)) fn;
     return;
   case WRATH_GLU_TESS_COMBINE:
     tess->callCombine = (fn == NULL) ? &noCombine :
         (void (REGALWRATH_GLU_CALL *)(double [3],void *[4], float [4], void ** )) fn;
     return;
   case WRATH_GLU_TESS_COMBINE_DATA:
-    tess->callCombineData = (fn == NULL) ? &__wrath__gl_noCombineData :
+    tess->callCombineData = (fn == NULL) ? &glu_wrath_gl_noCombineData :
                                            (void (REGALWRATH_GLU_CALL *)(double [3],
                                                      void *[4],
                                                      float [4],
@@ -474,7 +474,7 @@ wrath_gluTessCallback( wrath_GLUtesselator *tess, WRATH_GLUenum which, WRATH_GLU
     return;
 
   case WRATH_GLU_TESS_WINDING_CALLBACK_DATA:
-    tess->callWindingData=(fn==NULL)? &__wrath__gl_noWindingData: (WRATH_GLUboolean (REGALWRATH_GLU_CALL *)(int, void*)) fn;
+    tess->callWindingData=(fn==NULL)? &glu_wrath_gl_noWindingData: (WRATH_GLUboolean (REGALWRATH_GLU_CALL *)(int, void*)) fn;
     return;
 
   default:
@@ -491,14 +491,14 @@ static int AddVertex( wrath_GLUtesselator *tess, double coords[3], void *data )
   if( e == NULL ) {
     /* Make a self-loop (one vertex, one edge). */
 
-    e = __wrath__gl_meshMakeEdge( tess->mesh );
+    e = glu_wrath_gl_meshMakeEdge( tess->mesh );
     if (e == NULL) return 0;
-    if ( !__wrath__gl_meshSplice( e, e->Sym ) ) return 0;
+    if ( !glu_wrath_gl_meshSplice( e, e->Sym ) ) return 0;
   } else {
     /* Create a new vertex and edge which immediately follow e
      * in the ordering around the left face.
      */
-    if (__wrath__gl_meshSplitEdge( e ) == NULL) return 0;
+    if (glu_wrath_gl_meshSplitEdge( e ) == NULL) return 0;
     e = e->Lnext;
   }
 
@@ -539,7 +539,7 @@ static int EmptyCache( wrath_GLUtesselator *tess )
   CachedVertex *v = tess->cache;
   CachedVertex *vLast;
 
-  tess->mesh = __wrath__gl_meshNewMesh();
+  tess->mesh = glu_wrath_gl_meshNewMesh();
   if (tess->mesh == NULL) return 0;
 
   for( vLast = v + tess->cacheCount; v < vLast; ++v ) {
@@ -659,7 +659,7 @@ wrath_gluTessEndPolygon( wrath_GLUtesselator *tess )
        * intersections, edge flags, and of course it does not generate
        * an explicit mesh either.
        */
-      if( __wrath__gl_renderCache( tess )) {
+      if( glu_wrath_gl_renderCache( tess )) {
         tess->polygonData= NULL;
         return;
       }
@@ -670,15 +670,15 @@ wrath_gluTessEndPolygon( wrath_GLUtesselator *tess )
   /* Determine the polygon normal and project vertices onto the plane
    * of the polygon.
    */
-  __wrath__gl_projectPolygon( tess );
+  glu_wrath_gl_projectPolygon( tess );
 
-  /* __wrath__gl_computeInterior( tess ) computes the planar arrangement specified
+  /* glu_wrath_gl_computeInterior( tess ) computes the planar arrangement specified
    * by the given contours, and further subdivides this arrangement
    * into regions.  Each region is marked "inside" if it belongs
    * to the polygon, according to the rule given by tess->windingRule.
    * Each interior region is guaranteed be monotone.
    */
-  if ( !__wrath__gl_computeInterior( tess ) ) {
+  if ( !glu_wrath_gl_computeInterior( tess ) ) {
      longjmp(tess->env,1);      /* could've used a label */
   }
 
@@ -691,25 +691,25 @@ wrath_gluTessEndPolygon( wrath_GLUtesselator *tess )
      * Otherwise we tessellate all the regions marked "inside".
      */
     if( tess->boundaryOnly ) {
-      rc = __wrath__gl_meshSetWindingNumber( mesh, 1, TRUE );
+      rc = glu_wrath_gl_meshSetWindingNumber( mesh, 1, TRUE );
     } else {
-      rc = __wrath__gl_meshTessellateInterior( mesh );
+      rc = glu_wrath_gl_meshTessellateInterior( mesh );
     }
     if (rc == 0) longjmp(tess->env,1);  /* could've used a label */
 
-    __wrath__gl_meshCheckMesh( mesh );
+    glu_wrath_gl_meshCheckMesh( mesh );
 
     if( tess->callBegin != &noBegin || tess->callEnd != &noEnd
        || tess->callVertex != &noVertex || tess->callEdgeFlag != &noEdgeFlag
-       || tess->callBeginData != &__wrath__gl_noBeginData
-       || tess->callEndData != &__wrath__gl_noEndData
-       || tess->callVertexData != &__wrath__gl_noVertexData
-       || tess->callEdgeFlagData != &__wrath__gl_noEdgeFlagData )
+       || tess->callBeginData != &glu_wrath_gl_noBeginData
+       || tess->callEndData != &glu_wrath_gl_noEndData
+       || tess->callVertexData != &glu_wrath_gl_noVertexData
+       || tess->callEdgeFlagData != &glu_wrath_gl_noEdgeFlagData )
     {
       if( tess->boundaryOnly ) {
-        __wrath__gl_renderBoundary( tess, mesh );  /* output boundary contours */
+        glu_wrath_gl_renderBoundary( tess, mesh );  /* output boundary contours */
       } else {
-        __wrath__gl_renderMesh( tess, mesh );      /* output strips and fans */
+        glu_wrath_gl_renderMesh( tess, mesh );      /* output strips and fans */
       }
     }
     if( tess->callMesh != &noMesh ) {
@@ -720,14 +720,14 @@ wrath_gluTessEndPolygon( wrath_GLUtesselator *tess )
        * the freedom for an implementation to not generate the exterior
        * faces in the first place.
        */
-      __wrath__gl_meshDiscardExterior( mesh );
+      glu_wrath_gl_meshDiscardExterior( mesh );
       (*tess->callMesh)( mesh );                /* user wants the mesh itself */
       tess->mesh = NULL;
       tess->polygonData= NULL;
       return;
     }
   }
-  __wrath__gl_meshDeleteMesh( mesh );
+  glu_wrath_gl_meshDeleteMesh( mesh );
   tess->polygonData= NULL;
   tess->mesh = NULL;
 }
@@ -738,7 +738,7 @@ wrath_gluTessEndPolygon( wrath_GLUtesselator *tess )
 void REGALWRATH_GLU_CALL
 gluDeleteMesh( GLUmesh *mesh )
 {
-  __wrath__gl_meshDeleteMesh( mesh );
+  glu_wrath_gl_meshDeleteMesh( mesh );
 }
 #endif
 

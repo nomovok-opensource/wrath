@@ -20,7 +20,7 @@
 
 
 
-#if !defined(__WRATH_TEXT_DATA_STREAM_HPP__) 
+#if !defined(WRATH_HEADER_TEXT_DATA_STREAM_HPP_) 
 #error "Direction inclusion of private header file WRATHTextDataStreamManipulatorsImplement.tcc"
 #endif
 

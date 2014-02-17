@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_FONT_SHADER_SPECIFIER_HPP__
-#define __WRATH_FONT_SHADER_SPECIFIER_HPP__
+#ifndef WRATH_HEADER_FONT_SHADER_SPECIFIER_HPP_
+#define WRATH_HEADER_FONT_SHADER_SPECIFIER_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHShaderSpecifier.hpp"

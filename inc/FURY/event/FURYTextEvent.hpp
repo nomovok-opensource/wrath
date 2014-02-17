@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __FURY_TEXT_EVENT_HPP__
-#define __FURY_TEXT_EVENT_HPP__
+#ifndef FURY_TEXT_EVENT_HPP_
+#define FURY_TEXT_EVENT_HPP_
 
 
 #include "WRATHConfig.hpp"

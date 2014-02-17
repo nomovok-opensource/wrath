@@ -32,10 +32,10 @@
 **
 */
 
-#ifndef __tessmono_h_
-#define __tessmono_h_
+#ifndef wrath_glu_tessmono_h_
+#define wrath_glu_tessmono_h_
 
-/* __wrath__gl_meshTessellateMonoRegion( face ) tessellates a monotone region
+/* glu_wrath_gl_meshTessellateMonoRegion( face ) tessellates a monotone region
  * (what else would it do??)  The region must consist of a single
  * loop of half-edges (see mesh.h) oriented CCW.  "Monotone" in this
  * case means that any vertical line intersects the interior of the
@@ -44,16 +44,16 @@
  * Tessellation consists of adding interior edges (actually pairs of
  * half-edges), to split the region into non-overlapping triangles.
  *
- * __wrath__gl_meshTessellateInterior( mesh ) tessellates each region of
+ * glu_wrath_gl_meshTessellateInterior( mesh ) tessellates each region of
  * the mesh which is marked "inside" the polygon.  Each such region
  * must be monotone.
  *
- * __wrath__gl_meshDiscardExterior( mesh ) zaps (ie. sets to NULL) all faces
+ * glu_wrath_gl_meshDiscardExterior( mesh ) zaps (ie. sets to NULL) all faces
  * which are not marked "inside" the polygon.  Since further mesh operations
  * on NULL faces are not allowed, the main purpose is to clean up the
  * mesh so that exterior loops are not represented in the data structure.
  *
- * __wrath__gl_meshSetWindingNumber( mesh, value, keepOnlyBoundary ) resets the
+ * glu_wrath_gl_meshSetWindingNumber( mesh, value, keepOnlyBoundary ) resets the
  * winding numbers on all edges so that regions marked "inside" the
  * polygon have a winding number of "value", and regions outside
  * have a winding number of 0.
@@ -62,10 +62,10 @@
  * separate an interior region from an exterior one.
  */
 
-int __wrath__gl_meshTessellateMonoRegion( GLUface *face );
-int __wrath__gl_meshTessellateInterior( GLUmesh *mesh );
-void __wrath__gl_meshDiscardExterior( GLUmesh *mesh );
-int __wrath__gl_meshSetWindingNumber( GLUmesh *mesh, int value,
+int glu_wrath_gl_meshTessellateMonoRegion( GLUface *face );
+int glu_wrath_gl_meshTessellateInterior( GLUmesh *mesh );
+void glu_wrath_gl_meshDiscardExterior( GLUmesh *mesh );
+int glu_wrath_gl_meshSetWindingNumber( GLUmesh *mesh, int value,
                                 WRATH_GLUboolean keepOnlyBoundary );
 
 #endif

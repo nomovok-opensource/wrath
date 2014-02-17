@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_ASSERT_HPP__
-#define __WRATH_ASSERT_HPP__
+#ifndef WRATH_HEADER_ASSERT_HPP_
+#define WRATH_HEADER_ASSERT_HPP_
 
 
 #include "WRATHConfig.hpp"

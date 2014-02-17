@@ -19,13 +19,13 @@
  */
 
 
-#if !defined(__WRATH_SHAPE_DISTANCE_FIELD_HPP__) || defined(__WRATH_SHAPE_DISTANCE_FIELD_IMPL_TCC__)
+#if !defined(WRATH_HEADER_SHAPE_DISTANCE_FIELD_HPP_) || defined(WRATH_HEADER_SHAPE_DISTANCE_FIELD_IMPL_TCC_)
 #error "Direction inclusion of private header file WRATHShapeDistanceFieldImplement.tcc" 
 #endif
 
 #include "WRATHConfig.hpp"
 
-#define __WRATH_SHAPE_DISTANCE_FIELD_IMPL_TCC__
+#define WRATH_HEADER_SHAPE_DISTANCE_FIELD_IMPL_TCC_
 namespace WRATHShapeDistanceFieldImplement
 {
   inline

@@ -42,7 +42,7 @@
 #define AddWinding(eDst,eSrc)   (eDst->winding += eSrc->winding, \
                                  eDst->Sym->winding += eSrc->Sym->winding)
 
-/* __wrath__gl_meshTessellateMonoRegion( face ) tessellates a monotone region
+/* glu_wrath_gl_meshTessellateMonoRegion( face ) tessellates a monotone region
  * (what else would it do??)  The region must consist of a single
  * loop of half-edges (see mesh.h) oriented CCW.  "Monotone" in this
  * case means that any vertical line intersects the interior of the
@@ -69,7 +69,7 @@
  * to the fan is a simple orientation test.  By making the fan as large
  * as possible, we restore the invariant (check it yourself).
  */
-int __wrath__gl_meshTessellateMonoRegion( GLUface *face )
+int glu_wrath_gl_meshTessellateMonoRegion( GLUface *face )
 {
   GLUhalfEdge *up, *lo;
 
@@ -95,7 +95,7 @@ int __wrath__gl_meshTessellateMonoRegion( GLUface *face )
        */
       while( lo->Lnext != up && (EdgeGoesLeft( lo->Lnext )
              || EdgeSign( lo->Org, lo->Dst, lo->Lnext->Dst ) <= 0 )) {
-        GLUhalfEdge *tempHalfEdge= __wrath__gl_meshConnect( lo->Lnext, lo );
+        GLUhalfEdge *tempHalfEdge= glu_wrath_gl_meshConnect( lo->Lnext, lo );
         if (tempHalfEdge == NULL) return 0;
         lo = tempHalfEdge->Sym;
       }
@@ -104,7 +104,7 @@ int __wrath__gl_meshTessellateMonoRegion( GLUface *face )
       /* lo->Org is on the left.  We can make CCW triangles from up->Dst. */
       while( lo->Lnext != up && (EdgeGoesRight( up->Lprev )
              || EdgeSign( up->Dst, up->Org, up->Lprev->Org ) >= 0 )) {
-        GLUhalfEdge *tempHalfEdge= __wrath__gl_meshConnect( up, up->Lprev );
+        GLUhalfEdge *tempHalfEdge= glu_wrath_gl_meshConnect( up, up->Lprev );
         if (tempHalfEdge == NULL) return 0;
         up = tempHalfEdge->Sym;
       }
@@ -117,7 +117,7 @@ int __wrath__gl_meshTessellateMonoRegion( GLUface *face )
    */
   assert( lo->Lnext != up );
   while( lo->Lnext->Lnext != up ) {
-    GLUhalfEdge *tempHalfEdge= __wrath__gl_meshConnect( lo->Lnext, lo );
+    GLUhalfEdge *tempHalfEdge= glu_wrath_gl_meshConnect( lo->Lnext, lo );
     if (tempHalfEdge == NULL) return 0;
     lo = tempHalfEdge->Sym;
   }
@@ -126,11 +126,11 @@ int __wrath__gl_meshTessellateMonoRegion( GLUface *face )
 }
 
 
-/* __wrath__gl_meshTessellateInterior( mesh ) tessellates each region of
+/* glu_wrath_gl_meshTessellateInterior( mesh ) tessellates each region of
  * the mesh which is marked "inside" the polygon.  Each such region
  * must be monotone.
  */
-int __wrath__gl_meshTessellateInterior( GLUmesh *mesh )
+int glu_wrath_gl_meshTessellateInterior( GLUmesh *mesh )
 {
   GLUface *f, *next;
 
@@ -139,7 +139,7 @@ int __wrath__gl_meshTessellateInterior( GLUmesh *mesh )
     /* Make sure we don''t try to tessellate the new triangles. */
     next = f->next;
     if( f->inside ) {
-      if ( !__wrath__gl_meshTessellateMonoRegion( f ) ) return 0;
+      if ( !glu_wrath_gl_meshTessellateMonoRegion( f ) ) return 0;
     }
   }
 
@@ -147,12 +147,12 @@ int __wrath__gl_meshTessellateInterior( GLUmesh *mesh )
 }
 
 
-/* __wrath__gl_meshDiscardExterior( mesh ) zaps (ie. sets to NULL) all faces
+/* glu_wrath_gl_meshDiscardExterior( mesh ) zaps (ie. sets to NULL) all faces
  * which are not marked "inside" the polygon.  Since further mesh operations
  * on NULL faces are not allowed, the main purpose is to clean up the
  * mesh so that exterior loops are not represented in the data structure.
  */
-void __wrath__gl_meshDiscardExterior( GLUmesh *mesh )
+void glu_wrath_gl_meshDiscardExterior( GLUmesh *mesh )
 {
   GLUface *f, *next;
 
@@ -161,14 +161,14 @@ void __wrath__gl_meshDiscardExterior( GLUmesh *mesh )
     /* Since f will be destroyed, save its next pointer. */
     next = f->next;
     if( ! f->inside ) {
-      __wrath__gl_meshZapFace( f );
+      glu_wrath_gl_meshZapFace( f );
     }
   }
 }
 
 #define MARKED_FOR_DELETION     0x7fffffff
 
-/* __wrath__gl_meshSetWindingNumber( mesh, value, keepOnlyBoundary ) resets the
+/* glu_wrath_gl_meshSetWindingNumber( mesh, value, keepOnlyBoundary ) resets the
  * winding numbers on all edges so that regions marked "inside" the
  * polygon have a winding number of "value", and regions outside
  * have a winding number of 0.
@@ -176,7 +176,7 @@ void __wrath__gl_meshDiscardExterior( GLUmesh *mesh )
  * If keepOnlyBoundary is TRUE, it also deletes all edges which do not
  * separate an interior region from an exterior one.
  */
-int __wrath__gl_meshSetWindingNumber( GLUmesh *mesh, int value,
+int glu_wrath_gl_meshSetWindingNumber( GLUmesh *mesh, int value,
                                 WRATH_GLUboolean keepOnlyBoundary )
 {
   GLUhalfEdge *e, *eNext;
@@ -193,7 +193,7 @@ int __wrath__gl_meshSetWindingNumber( GLUmesh *mesh, int value,
       if( ! keepOnlyBoundary ) {
         e->winding = 0;
       } else {
-        if ( !__wrath__gl_meshDelete( e ) ) return 0;
+        if ( !glu_wrath_gl_meshDelete( e ) ) return 0;
       }
     }
   }

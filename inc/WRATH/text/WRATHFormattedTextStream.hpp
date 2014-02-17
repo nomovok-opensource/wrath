@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_FORMATTED_TEXT_DATA_HPP__
-#define __WRATH_FORMATTED_TEXT_DATA_HPP__
+#ifndef WRATH_HEADER_FORMATTED_TEXT_DATA_HPP_
+#define WRATH_HEADER_FORMATTED_TEXT_DATA_HPP_
 
 #include "WRATHConfig.hpp"
 #include <algorithm>

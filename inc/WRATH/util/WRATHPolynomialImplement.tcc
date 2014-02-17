@@ -19,11 +19,11 @@
  */
 
 
-#if !defined(__WRATH_POLYNOMIAL_HPP__) || defined(__WRATH_POLYNOMIAL_IMPLEMENT_TCC__)
+#if !defined(WRATH_HEADER_POLYNOMIAL_HPP_) || defined(WRATH_HEADER_POLYNOMIAL_IMPLEMENT_TCC_)
 #error "Direction inclusion of private header file WRATHPolynomialImplement.tcc" 
 #endif
 
-#define __WRATH_POLYNOMIAL_IMPLEMENT_TCC__
+#define WRATH_HEADER_POLYNOMIAL_IMPLEMENT_TCC_
 
 #include "WRATHConfig.hpp"
 #include <boost/multi_array.hpp>

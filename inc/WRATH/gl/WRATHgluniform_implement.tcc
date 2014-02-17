@@ -19,11 +19,11 @@
  */
 
 
-#if !defined(__WRATH_GL_UNIFORM_HPP__) || defined(__WRATH_GL_UNIFORM_IMPLEMENT_TCC__)
+#if !defined(WRATH_HEADER_GL_UNIFORM_HPP_) || defined(WRATH_HEADER_GL_UNIFORM_IMPLEMENT_TCC_)
 #error "Direction inclusion of private header file "__FILE__
 #endif
 
-#define __WRATH_GL_UNIFORM_IMPLEMENT_TCC__
+#define WRATH_HEADER_GL_UNIFORM_IMPLEMENT_TCC_
 
 #if defined(WRATH_GL_VERSION) || WRATH_GLES_VERSION>=3
 #define WRATH_GL_SUPPORT_NON_SQUARE_MATRICES

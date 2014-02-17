@@ -32,18 +32,18 @@
 **
 */
 
-#ifndef __sweep_h_
-#define __sweep_h_
+#ifndef wrath_glu_sweep_h_
+#define wrath_glu_sweep_h_
 
 #include "mesh.hpp"
 
-/* __wrath__gl_computeInterior( tess ) computes the planar arrangement specified
+/* glu_wrath_gl_computeInterior( tess ) computes the planar arrangement specified
  * by the given contours, and further subdivides this arrangement
  * into regions.  Each region is marked "inside" if it belongs
  * to the polygon, according to the rule given by tess->windingRule.
  * Each interior region is guaranteed be monotone.
  */
-int __wrath__gl_computeInterior( wrath_GLUtesselator *tess );
+int glu_wrath_gl_computeInterior( wrath_GLUtesselator *tess );
 
 
 /* The following is here *only* for access by debugging routines */

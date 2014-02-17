@@ -18,8 +18,8 @@
 
 
 
-#ifndef __VECTOR_GL_HPP__
-#define __VECTOR_GL_HPP__
+#ifndef WRATH_VECTOR_GL_HPP_
+#define WRATH_VECTOR_GL_HPP_
 
 
 #include "WRATHConfig.hpp"

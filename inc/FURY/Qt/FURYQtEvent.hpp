@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __FURY_QT_EVENT_HPP__
-#define __FURY_QT_EVENT_HPP__
+#ifndef FURY_QT_EVENT_HPP_
+#define FURY_QT_EVENT_HPP_
 
 #include "WRATHConfig.hpp"
 #include "FURYEvent.hpp"

@@ -18,8 +18,8 @@
 
 
 
-#ifndef __REORDER_C_ARRAY_HPP__
-#define __REORDER_C_ARRAY_HPP__
+#ifndef WRATH_REORDER_C_ARRAY_HPP_
+#define WRATH_REORDER_C_ARRAY_HPP_
 
 #include "WRATHConfig.hpp"
 #include "c_array.hpp"

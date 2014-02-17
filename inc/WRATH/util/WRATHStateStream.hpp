@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_STATE_STREAM_HPP__
-#define __WRATH_STATE_STREAM_HPP__
+#ifndef WRATH_HEADER_STATE_STREAM_HPP_
+#define WRATH_HEADER_STATE_STREAM_HPP_
 
 #include "WRATHConfig.hpp"
 #include <vector>

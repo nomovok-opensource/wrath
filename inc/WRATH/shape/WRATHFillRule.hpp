@@ -23,8 +23,8 @@
  */
 
 
-#ifndef __WRATH_FILL_RULE_HPP__
-#define __WRATH_FILL_RULE_HPP__
+#ifndef WRATH_HEADER_FILL_RULE_HPP_
+#define WRATH_HEADER_FILL_RULE_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHReferenceCountedObject.hpp"

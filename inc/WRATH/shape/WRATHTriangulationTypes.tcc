@@ -23,10 +23,10 @@
   Should only be included from WRATHTriangulation.hpp
  */
 
-#if !defined(__WRATH_TRIANGULATION_HPP__) || defined(__WRATH_TRIANGULATION_TYPE_TCC__)
+#if !defined(WRATH_HEADER_TRIANGULATION_HPP_) || defined(WRATH_HEADER_TRIANGULATION_TYPE_TCC_)
 #error "Direction inclusion of private header file WRATHTriangulationTypes.tcc"
 #endif
-#define __WRATH_TRIANGULATION_TYPE_TCC__
+#define WRATH_HEADER_TRIANGULATION_TYPE_TCC_
 
 
 #include "WRATHConfig.hpp"

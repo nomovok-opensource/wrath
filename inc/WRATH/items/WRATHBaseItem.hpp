@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_BASE_ITEM_HPP__
-#define __WRATH_BASE_ITEM_HPP__
+#ifndef WRATH_HEADER_BASE_ITEM_HPP_
+#define WRATH_HEADER_BASE_ITEM_HPP_
 
 #include "WRATHConfig.hpp"
 #include <boost/signals2.hpp>

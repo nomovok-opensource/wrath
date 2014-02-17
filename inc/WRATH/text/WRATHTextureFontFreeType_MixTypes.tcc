@@ -20,12 +20,12 @@
 
 
 
-#if !defined(__WRATH_TEXTURE_FONT_FreeType_MIX_HPP__)  || defined(__WRATH_TEXTURE_FONT_FreeType_MIX_TYPES_TCC__)
+#if !defined(WRATH_HEADER_TEXTURE_FONT_FreeType_MIX_HPP_)  || defined(WRATH_HEADER_TEXTURE_FONT_FreeType_MIX_TYPES_TCC_)
 #error "Direction inclusion of private header file WRATHTextureFontFreeType_MixType.tcc"
 #endif
 
 
-#define __WRATH_TEXTURE_FONT_FreeType_MIX_TYPES_TCC__
+#define WRATH_HEADER_TEXTURE_FONT_FreeType_MIX_TYPES_TCC_
 #include "WRATHConfig.hpp"
 
 #include <typeinfo>

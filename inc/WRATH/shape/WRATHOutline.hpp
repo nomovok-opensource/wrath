@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_OUTLINE_HPP__
-#define __WRATH_OUTLINE_HPP__
+#ifndef WRATH_HEADER_OUTLINE_HPP_
+#define WRATH_HEADER_OUTLINE_HPP_
 
 #include "WRATHConfig.hpp"
 #include <vector>

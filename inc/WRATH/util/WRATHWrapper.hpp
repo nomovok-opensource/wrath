@@ -20,8 +20,8 @@
 
 
 
-#ifndef __WRATH_WRAPPER_HPP__
-#define __WRATH_WRAPPER_HPP__
+#ifndef WRATH_HEADER_WRAPPER_HPP_
+#define WRATH_HEADER_WRAPPER_HPP_
 
 #include "WRATHConfig.hpp"
 

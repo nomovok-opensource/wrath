@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_ABSTRACT_DATA_SINK_HPP__
-#define __WRATH_ABSTRACT_DATA_SINK_HPP__
+#ifndef WRATH_HEADER_ABSTRACT_DATA_SINK_HPP_
+#define WRATH_HEADER_ABSTRACT_DATA_SINK_HPP_
 
 #include "WRATHConfig.hpp"
 #include <boost/utility.hpp>

@@ -19,11 +19,11 @@
  */
 
 
-#if !defined(__WRATH_LAYER_ITEM_NODE_DEPTH_ORDER_HPP__) || defined(__WRATH_LAYER_ITEM_NODE_DEPTH_ORDER_PRIVATE__)
+#if !defined(WRATH_HEADER_LAYER_ITEM_NODE_DEPTH_ORDER_HPP_) || defined(WRATH_HEADER_LAYER_ITEM_NODE_DEPTH_ORDER_PRIVATE_TCC_)
 #error "Direction inclusion of private header file WRATHLayerItemNodeDepthOrderPrivate.tcc" 
 #endif
 
-#define __WRATH_LAYER_ITEM_NODE_DEPTH_ORDER_PRIVATE__
+#define WRATH_HEADER_LAYER_ITEM_NODE_DEPTH_ORDER_PRIVATE_TCC_
 
 template<enum WRATHLayerItemNodeDepthType::depth_order_t pz_order_type, 
          typename T, 

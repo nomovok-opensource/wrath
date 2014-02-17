@@ -32,8 +32,8 @@
 **
 */
 
-#ifndef __priorityq_sort_h_
-#define __priorityq_sort_h_
+#ifndef wrath_glu_priorityq_sort_h_
+#define wrath_glu_priorityq_sort_h_
 
 #include "priorityq-heap.hpp"
 
@@ -55,8 +55,8 @@
 #define PQhandle                PQSortHandle
 #define PriorityQ               PriorityQSort
 
-#define pqNewPriorityQ(leq)     __wrath__gl_pqSortNewPriorityQ(leq)
-#define pqDeletePriorityQ(pq)   __wrath__gl_pqSortDeletePriorityQ(pq)
+#define pqNewPriorityQ(leq)     glu_wrath_gl_pqSortNewPriorityQ(leq)
+#define pqDeletePriorityQ(pq)   glu_wrath_gl_pqSortDeletePriorityQ(pq)
 
 /* The basic operations are insertion of a new key (pqInsert),
  * and examination/extraction of a key whose value is minimum
@@ -71,12 +71,12 @@
  * If the heap is empty, pqMinimum/pqExtractMin will return a NULL key.
  * This may also be tested with pqIsEmpty.
  */
-#define pqInit(pq)              __wrath__gl_pqSortInit(pq)
-#define pqInsert(pq,key)        __wrath__gl_pqSortInsert(pq,key)
-#define pqMinimum(pq)           __wrath__gl_pqSortMinimum(pq)
-#define pqExtractMin(pq)        __wrath__gl_pqSortExtractMin(pq)
-#define pqDelete(pq,handle)     __wrath__gl_pqSortDelete(pq,handle)
-#define pqIsEmpty(pq)           __wrath__gl_pqSortIsEmpty(pq)
+#define pqInit(pq)              glu_wrath_gl_pqSortInit(pq)
+#define pqInsert(pq,key)        glu_wrath_gl_pqSortInsert(pq,key)
+#define pqMinimum(pq)           glu_wrath_gl_pqSortMinimum(pq)
+#define pqExtractMin(pq)        glu_wrath_gl_pqSortExtractMin(pq)
+#define pqDelete(pq,handle)     glu_wrath_gl_pqSortDelete(pq,handle)
+#define pqIsEmpty(pq)           glu_wrath_gl_pqSortIsEmpty(pq)
 
 
 /* Since we support deletion the data structure is a little more

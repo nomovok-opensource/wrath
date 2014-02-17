@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_UTF8_HPP__
-#define __WRATH_UTF8_HPP__
+#ifndef WRATH_HEADER_UTF8_HPP_
+#define WRATH_HEADER_UTF8_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHassert.hpp" 

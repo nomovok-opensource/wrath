@@ -19,12 +19,12 @@
  */
 
 
-#if  !defined(__WRATH_INTERLEAVED_ATTRIBUTES_HPP__) || defined(__WRATH_INTERLEAVED_ATTRIBUTES_PRIVATE_TCC__)
+#if  !defined(WRATH_HEADER_INTERLEAVED_ATTRIBUTES_HPP_) || defined(WRATH_HEADER_INTERLEAVED_ATTRIBUTES_PRIVATE_TCC_)
 #error "Direction inclusion of private header file WRATHInterleavedAttributesPrivate.tcc"
 #endif
 
 
-#define __WRATH_INTERLEAVED_ATTRIBUTES_PRIVATE_HPP__
+#define WRATH_HEADER_INTERLEAVED_ATTRIBUTES_PRIVATE_HPP_
 
 #include "WRATHConfig.hpp"
 #include <boost/tuple/tuple.hpp>

@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_BASIC_TEXT_ITEM_HPP__
-#define __WRATH_BASIC_TEXT_ITEM_HPP__
+#ifndef WRATH_HEADER_BASIC_TEXT_ITEM_HPP_
+#define WRATH_HEADER_BASIC_TEXT_ITEM_HPP_
 
 #include "WRATHConfig.hpp"
 #include <string>

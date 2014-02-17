@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_BUFFER_ALLOCATOR_HPP__
-#define __WRATH_BUFFER_ALLOCATOR_HPP__
+#ifndef WRATH_HEADER_BUFFER_ALLOCATOR_HPP_
+#define WRATH_HEADER_BUFFER_ALLOCATOR_HPP_
 
 #include "WRATHConfig.hpp"
 #include <map>

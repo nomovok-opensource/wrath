@@ -32,8 +32,8 @@
 **
 */
 
-#ifndef __memalloc_simple_h_
-#define __memalloc_simple_h_
+#ifndef wrath_glu_memalloc_simple_h_
+#define wrath_glu_memalloc_simple_h_
 
 #include <stdlib.h>
 #include "WRATHmalloc.hpp"
@@ -41,15 +41,15 @@
 #define memRealloc      WRATHrealloc
 #define memFree         WRATHfree
 
-#define memInit         __wrath__gl_memInit
-/*extern void           __wrath__gl_memInit( size_t );*/
-extern int              __wrath__gl_memInit( size_t );
+#define memInit         glu_wrath_gl_memInit
+/*extern void           glu_wrath_gl_memInit( size_t );*/
+extern int              glu_wrath_gl_memInit( size_t );
 
 #ifndef MEMORY_DEBUG
 #define memAlloc        WRATHmalloc
 #else
-#define memAlloc        __wrath__gl_memAlloc
-extern void *           __wrath__gl_memAlloc( size_t );
+#define memAlloc        glu_wrath_gl_memAlloc
+extern void *           glu_wrath_gl_memAlloc( size_t );
 #endif
 
 #endif

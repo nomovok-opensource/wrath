@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_LAYER_HPP__
-#define __WRATH_LAYER_HPP__
+#ifndef WRATH_HEADER_LAYER_HPP_
+#define WRATH_HEADER_LAYER_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHLayerBase.hpp"

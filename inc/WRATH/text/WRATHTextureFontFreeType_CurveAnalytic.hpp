@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_TEXTURE_FONT_FreeType_CURVE_ANALYTIC_HPP__
-#define __WRATH_TEXTURE_FONT_FreeType_CURVE_ANALYTIC_HPP__
+#ifndef WRATH_HEADER_TEXTURE_FONT_FreeType_CURVE_ANALYTIC_HPP_
+#define WRATH_HEADER_TEXTURE_FONT_FreeType_CURVE_ANALYTIC_HPP_
 
 #include "WRATHConfig.hpp"
 #include <vector>

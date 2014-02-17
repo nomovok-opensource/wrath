@@ -22,8 +22,8 @@
  * @{
  */
 
-#ifndef __WRATH_BRUSH_HPP__
-#define __WRATH_BRUSH_HPP__
+#ifndef WRATH_HEADER_BRUSH_HPP_
+#define WRATH_HEADER_BRUSH_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHUtil.hpp"

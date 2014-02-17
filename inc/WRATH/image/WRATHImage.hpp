@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_IMAGE_HPP__
-#define __WRATH_IMAGE_HPP__
+#ifndef WRATH_HEADER_IMAGE_HPP_
+#define WRATH_HEADER_IMAGE_HPP_
 
 
 #include "WRATHConfig.hpp"

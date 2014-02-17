@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_FONT_DATABASE_HPP__
-#define __WRATH_FONT_DATABASE_HPP__
+#ifndef WRATH_HEADER_FONT_DATABASE_HPP_
+#define WRATH_HEADER_FONT_DATABASE_HPP_
 
 #include "WRATHConfig.hpp"
 #include <ft2build.h>

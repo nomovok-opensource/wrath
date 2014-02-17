@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_TEXT_ITEM_TYPES_HPP__
-#define __WRATH_TEXT_ITEM_TYPES_HPP__
+#ifndef WRATH_HEADER_TEXT_ITEM_TYPES_HPP_
+#define WRATH_HEADER_TEXT_ITEM_TYPES_HPP_
 
 
 /*! \addtogroup Items

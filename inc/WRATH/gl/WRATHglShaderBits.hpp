@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_GL_SHADER_BITS_HPP__
-#define __WRATH_GL_SHADER_BITS_HPP__
+#ifndef WRATH_HEADER_GL_SHADER_BITS_HPP_
+#define WRATH_HEADER_GL_SHADER_BITS_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHgl.hpp"

@@ -20,12 +20,12 @@
 
 
 
-#if !defined(__WRATH_TESS_GLU_HPP__) || defined(__WRATH_TESS_GLU_PRIVATE_TCC__)
+#if !defined(WRATH_HEADER_TESS_GLU_HPP_) || defined(WRATH_HEADER_TESS_GLU_PRIVATE_TCC_)
 #error "Direction inclusion of private header file WRATHTessGLUPrivate.tcc" 
 #endif
 
 
-#define __WRATH_TESS_GLU_PRIVATE_TCC__
+#define WRATH_HEADER_TESS_GLU_PRIVATE_TCC_
 
 class WRATHTessGLU;
 

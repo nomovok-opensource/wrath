@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_DRAW_COMMAND_HPP__
-#define __WRATH_DRAW_COMMAND_HPP__
+#ifndef WRATH_HEADER_DRAW_COMMAND_HPP_
+#define WRATH_HEADER_DRAW_COMMAND_HPP_
 
 #include "WRATHConfig.hpp"
 #include <boost/utility.hpp>

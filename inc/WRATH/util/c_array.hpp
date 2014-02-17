@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __C_ARRAY_HPP__
-#define __C_ARRAY_HPP__
+#ifndef WRATH_C_ARRAY_HPP_
+#define WRATH_C_ARRAY_HPP_
 
 #include "WRATHConfig.hpp"
 #include <cmath>

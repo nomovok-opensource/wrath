@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_FreeType_SUPPORT_HPP__
-#define __WRATH_FreeType_SUPPORT_HPP__
+#ifndef WRATH_HEADER_FreeType_SUPPORT_HPP_
+#define WRATH_HEADER_FreeType_SUPPORT_HPP_
 
 #include "WRATHConfig.hpp"
 #include <ft2build.h>

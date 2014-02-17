@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __WRATH_WIDGET_HANDLE_HPP__
-#define __WRATH_WIDGET_HANDLE_HPP__
+#ifndef WRATH_HEADER_WIDGET_HANDLE_HPP_
+#define WRATH_HEADER_WIDGET_HANDLE_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHWidget.hpp"

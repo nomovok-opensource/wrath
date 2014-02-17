@@ -19,8 +19,8 @@
 
 
 
-#ifndef __WRATH_BBOX_HPP__
-#define __WRATH_BBOX_HPP__
+#ifndef WRATH_HEADER_BBOX_HPP_
+#define WRATH_HEADER_BBOX_HPP_
 
 #include "WRATHConfig.hpp"
 #include "WRATHBBoxForwardDeclare.hpp"

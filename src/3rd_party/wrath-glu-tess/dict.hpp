@@ -32,8 +32,8 @@
 **
 */
 
-#ifndef __dict_list_h_
-#define __dict_list_h_
+#ifndef wrath_glu_dict_list_h_
+#define wrath_glu_dict_list_h_
 
 /* Use #define's so that another heap implementation can use this one */
 
@@ -41,19 +41,19 @@
 #define Dict            DictList
 #define DictNode        DictListNode
 
-#define dictNewDict(frame,leq)          __wrath__gl_dictListNewDict(frame,leq)
-#define dictDeleteDict(dict)            __wrath__gl_dictListDeleteDict(dict)
+#define dictNewDict(frame,leq)          glu_wrath_gl_dictListNewDict(frame,leq)
+#define dictDeleteDict(dict)            glu_wrath_gl_dictListDeleteDict(dict)
 
-#define dictSearch(dict,key)            __wrath__gl_dictListSearch(dict,key)
-#define dictInsert(dict,key)            __wrath__gl_dictListInsert(dict,key)
-#define dictInsertBefore(dict,node,key) __wrath__gl_dictListInsertBefore(dict,node,key)
-#define dictDelete(dict,node)           __wrath__gl_dictListDelete(dict,node)
+#define dictSearch(dict,key)            glu_wrath_gl_dictListSearch(dict,key)
+#define dictInsert(dict,key)            glu_wrath_gl_dictListInsert(dict,key)
+#define dictInsertBefore(dict,node,key) glu_wrath_gl_dictListInsertBefore(dict,node,key)
+#define dictDelete(dict,node)           glu_wrath_gl_dictListDelete(dict,node)
 
-#define dictKey(n)                      __wrath__gl_dictListKey(n)
-#define dictSucc(n)                     __wrath__gl_dictListSucc(n)
-#define dictPred(n)                     __wrath__gl_dictListPred(n)
-#define dictMin(d)                      __wrath__gl_dictListMin(d)
-#define dictMax(d)                      __wrath__gl_dictListMax(d)
+#define dictKey(n)                      glu_wrath_gl_dictListKey(n)
+#define dictSucc(n)                     glu_wrath_gl_dictListSucc(n)
+#define dictPred(n)                     glu_wrath_gl_dictListPred(n)
+#define dictMin(d)                      glu_wrath_gl_dictListMin(d)
+#define dictMax(d)                      glu_wrath_gl_dictListMax(d)
 
 
 
@@ -75,12 +75,12 @@ DictNode        *dictSearch( Dict *dict, DictKey key );
 DictNode        *dictInsertBefore( Dict *dict, DictNode *node, DictKey key );
 void            dictDelete( Dict *dict, DictNode *node );
 
-#define         __wrath__gl_dictListKey(n)      ((n)->key)
-#define         __wrath__gl_dictListSucc(n)     ((n)->next)
-#define         __wrath__gl_dictListPred(n)     ((n)->prev)
-#define         __wrath__gl_dictListMin(d)      ((d)->head.next)
-#define         __wrath__gl_dictListMax(d)      ((d)->head.prev)
-#define        __wrath__gl_dictListInsert(d,k) (dictInsertBefore((d),&(d)->head,(k)))
+#define         glu_wrath_gl_dictListKey(n)      ((n)->key)
+#define         glu_wrath_gl_dictListSucc(n)     ((n)->next)
+#define         glu_wrath_gl_dictListPred(n)     ((n)->prev)
+#define         glu_wrath_gl_dictListMin(d)      ((d)->head.next)
+#define         glu_wrath_gl_dictListMax(d)      ((d)->head.prev)
+#define        glu_wrath_gl_dictListInsert(d,k) (dictInsertBefore((d),&(d)->head,(k)))
 
 
 /*** Private data structures ***/
