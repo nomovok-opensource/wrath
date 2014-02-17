@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __TEXT_CHUNK_HPP__
-#define __TEXT_CHUNK_HPP__
+#ifndef TEXT_CHUNK_HPP
+#define TEXT_CHUNK_HPP
 
 #include "WRATHConfig.hpp"
 #include <fstream>

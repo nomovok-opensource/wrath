@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __TEXT_ITEM_HPP__
-#define __TEXT_ITEM_HPP__
+#ifndef TEXT_ITEM_HPP
+#define TEXT_ITEM_HPP
 
 
 

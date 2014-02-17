@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __TRANSFORMATION_NODE_HPP__
-#define __TRANSFORMATION_NODE_HPP__
+#ifndef TRANSFORMATION_NODE_HPP
+#define TRANSFORMATION_NODE_HPP
 
 #include <QObject>
 #include "simple_2d_transformation.hpp"

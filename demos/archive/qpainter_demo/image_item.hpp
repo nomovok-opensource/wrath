@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __IMAGE_ITEM_HPP__
-#define __IMAGE_ITEM_HPP__
+#ifndef IMAGE_ITEM_HPP
+#define IMAGE_ITEM_HPP
 
 #include <QObject>
 #include <QPainter>

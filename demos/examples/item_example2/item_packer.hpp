@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __ITEM_PACKER_HPP__
-#define __ITEM_PACKER_HPP__
+#ifndef ITEM_PACKER_HPP
+#define ITEM_PACKER_HPP
 
 #include "WRATHConfig.hpp"
 #include "WRATHCanvas.hpp"

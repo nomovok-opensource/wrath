@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __TABLE_DEMO_HPP__
-#define __TABLE_DEMO_HPP__
+#ifndef TABLE_DEMO_HPP
+#define TABLE_DEMO_HPP
 
 #include "WRATHConfig.hpp"
 #include <boost/multi_array.hpp>

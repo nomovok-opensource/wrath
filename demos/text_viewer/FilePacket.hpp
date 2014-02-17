@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __FILE_PACKET_HPP__
-#define __FILE_PACKET_HPP__
+#ifndef FILE_PACKET_HPP
+#define FILE_PACKET_HPP
 
 #include "WRATHConfig.hpp"
 #include <vector>

@@ -17,8 +17,8 @@
  */
 
 
-#ifndef _SDL_DEMO_HPP__
-#define _SDL_DEMO_HPP__
+#ifndef SDL_DEMO_HPP
+#define SDL_DEMO_HPP
 
 
 #include "WRATHConfig.hpp"
