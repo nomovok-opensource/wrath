@@ -80,7 +80,7 @@ shader_out WRATH_CONST_COLOR_PREC vec4 wrath_brush_const_color;
 #ifdef WRATH_NONLINEAR_BRUSH_PRESENT
 void wrath_shader_brush_prepare(void)
 #else
-void wrath_shader_brush_prepare(in vec2 highp p)
+void wrath_shader_brush_prepare(in highp vec2 p)
 #endif
 {
   #if !defined(FRAG_POS_DEFINED) && !defined(WRATH_NONLINEAR_BRUSH_PRESENT)
