@@ -702,7 +702,7 @@ append_fetch_code(WRATHGLShader::shader_source &src,
        << "\n{"
        << "\n\tmediump float node_texel;"
        << "\n\tnode_texel=("
-       << index_name << " + 0.5) / 255.0;";
+       << index_name << " + 0.5) / 256.0;";
   
   
   append_extract_code(spec, ostr);  
