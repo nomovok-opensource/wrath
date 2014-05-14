@@ -1105,10 +1105,7 @@ assemble(void)
             WRATHwarning("\nAction warning log for \"" 
                          << resource_name() << "\":\n"
                          << m_action_log << "\n");
-          }
-        
-        if(post_action_warning)
-          {
+
             std::ostringstream oo;
             
             oo << "good_program_post_action_warning" << m_name << ".glsl";
