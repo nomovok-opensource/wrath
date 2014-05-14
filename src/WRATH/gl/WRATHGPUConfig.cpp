@@ -76,9 +76,13 @@ WRATHGPUConfig::
 default_shader_version(void)
 {
   #if defined(WRATH_GLES_VERSION) && WRATH_GLES_VERSION>=3
+  {
     return "300 es";
+  }
   #elif defined(WRATH_GL_VERSION) && WRATH_GL_VERSION>=3
-    return "330 core";
+  {
+    return "130";
+  }
   #endif
 
   return "";

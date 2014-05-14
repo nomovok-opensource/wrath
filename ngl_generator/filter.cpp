@@ -26,12 +26,28 @@
 bool
 use_function_pointer(const std::string &filename)
 {
+  return true;
+
+  /*
+    Bah humbug: just require that ngl_backend implementation
+    can handle functions that are core in GLES2.so The issue
+    is that GLES3 is the same .so as GLES2, so to get its
+    function pointers means one needs to use eglGetProcAddress,
+    so telling by the filename will not work. The correct thing
+    is that we have a list of all the GLES2 core functions
+    and if it is not one of those, then do the eglGetProcAdress.
+    However, dlopen and dlsym can be used instead to get the
+    function pointers even if the function is core GLES2,
+    so we just always fetch the fnction pointer.
+
   return filename.find("gl2.h")==std::string::npos;
+  */
 }
 
 
 
-int main(int argc, char **argv)
+int 
+main(int argc, char **argv)
 {
   /*read each file passed and output them to stdout after filtering */
 
