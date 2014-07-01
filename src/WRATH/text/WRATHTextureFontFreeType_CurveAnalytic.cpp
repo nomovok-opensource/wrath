@@ -3005,7 +3005,7 @@ pack(AnalyticDataPacket *packet,
           ca_cb_rule[i]|=(15<<4);
         }
       
-      if(numbers.m_tangled)
+      if((numbers.m_tangled) xor (numbers.m_rule==and_rule))
         {
           ca_cb_rule[i]|=15;
         }

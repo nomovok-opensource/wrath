@@ -94,7 +94,7 @@
   uniform curve_analytic_precision sampler2D wrath_CurveAnalyticABTexture;   //RGBA_16F (A0,B0,A1,B1)
   uniform curve_analytic_precision sampler2D wrath_CurveAnalyticQTexture;    //RGBA_16F (QaX, QaY, QbX, QbY)
   uniform curve_analytic_precision sampler2D wrath_CurveAnalyticP2Texture;   //LA_16F (p2x, p2y) OR RGBA_16F (p2x, p2y, mag_Qa, mag_Qb)
-  uniform curve_analytic_precision sampler2D wrath_CurveAnalyticRuleTexture; //RGBA4444 (cA, cB, rule, tangle)
+  uniform curve_analytic_precision sampler2D wrath_CurveAnalyticRuleTexture; //RGBA4444 (cA, cB, rule, tangleXorRule)
   
 #endif
 
@@ -144,7 +144,7 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
   curve_analytic_precision vec4 A0_B0_A1_B1;
   curve_analytic_precision vec4 Qa_Qb;
   curve_analytic_precision vec2 sa_sb, ta_tb, dependent_tex, sigma_ab, omega_ab;
-  curve_analytic_precision vec4 ca_cb_rule_tangle;
+  curve_analytic_precision vec4 ca_cb_rule_tangleXorRule;
   curve_analytic_precision float omega, zeta, sigma, sigma_min, sigma_max;
   curve_analytic_precision vec4 p2_QaScale_QbScale;
 
@@ -162,11 +162,11 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
 #define tb ta_tb.y
 #define sa sa_sb.x
 #define sb sa_sb.y
-#define ca ca_cb_rule_tangle.x
-#define cb ca_cb_rule_tangle.y
-#define ca_cb ca_cb_rule_tangle.xy
-#define rule ca_cb_rule_tangle.z
-#define tangle ca_cb_rule_tangle.w
+#define ca ca_cb_rule_tangleXorRule.x
+#define cb ca_cb_rule_tangleXorRule.y
+#define ca_cb ca_cb_rule_tangleXorRule.xy
+#define rule ca_cb_rule_tangleXorRule.z
+#define tangleXorRule ca_cb_rule_tangleXorRule.w
 #define sigma_a sigma_ab.x
 #define sigma_b sigma_ab.y
 #define omega_a omega_ab.x
@@ -209,7 +209,7 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
     dependent_tex2.y=dependent_tex.y;
 
     dependent_tex2.x=rule_texture2D(wrath_CurveAnalyticNextCurveTexture, dependent_tex).r;
-    ca_cb_rule_tangle=rule_texture2D(wrath_CurveAnalyticRuleTexture, dependent_tex).rgba;
+    ca_cb_rule_tangleXorRule=rule_texture2D(wrath_CurveAnalyticRuleTexture, dependent_tex).rgba;
     Ma_Pa=float_texture2D(wrath_CurveAnalyticM_P_Texture, dependent_tex);
     Qa=float_texture2D_2channel(wrath_CurveAnalyticQTexture, dependent_tex);
     QaScale=float_texture2D(wrath_CurveAnalyticScaleTexture, dependent_tex).r;
@@ -279,7 +279,7 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
     p2_QaScale_QbScale=float_texture2D(wrath_CurveAnalyticP2Texture, dependent_tex);
     
 
-    ca_cb_rule_tangle=rule_texture2D(wrath_CurveAnalyticRuleTexture, dependent_tex).rgba;
+    ca_cb_rule_tangleXorRule=rule_texture2D(wrath_CurveAnalyticRuleTexture, dependent_tex).rgba;
     pp=GlyphCoordinate-p2;
     /*
       Qa:= | Qa_x  Qa_y |
@@ -346,7 +346,7 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
       rather than having tangle, store the value
       for zeto in the texture.
    */
-  zeta=( (rule>0.5) ^^ (tangle>0.5) )?1.0:-1.0;
+  zeta=(tangleXorRule>0.5) ? 1.0 : -1.0;
 
   
 
@@ -424,7 +424,7 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
 #undef cb   
 #undef ca_cb  
 #undef rule
-#undef tangle
+#undef tangleXorRule
 #undef sigma_a  
 #undef sigma_b 
 #undef omega_a 
