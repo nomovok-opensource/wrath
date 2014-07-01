@@ -245,6 +245,35 @@ public:
   void
   store_separate_curves(bool v);
 
+  /*!\fn bool use_highp(void)
+    The curve data for a 
+    WRATHTextureFontFreeType_CurveAnalytic
+    and computations for rendering
+    can be in 32-bit float (highp)
+    or 16-bit float (mediump).
+    Returns true if computation and
+    rendering for the next created
+    WRATHTextureFontFreeType_CurveAnalytic
+    will be 32-bit (highp). Default
+    value is false.
+   */
+  static
+  bool
+  use_highp(void);
+
+  /*!\fn void use_highp(bool)
+    The curve data for a 
+    WRATHTextureFontFreeType_CurveAnalytic
+    and computations for rendering
+    can be in 32-bit float (highp)
+    or 16-bit float (mediump).
+    Default value is false.
+    \param v value to use
+   */
+  static
+  void
+  use_highp(bool v);
+  
   /*!\fn curvature_collapse(float v)
     Sets the value C for the subsequently
     created WRATHTextureFontFreeType_CurveAnalytic

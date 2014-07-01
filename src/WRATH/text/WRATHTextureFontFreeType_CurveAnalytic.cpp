@@ -127,6 +127,12 @@
   #define HALF_FLOAT_INTERNAL_FORMAT_2CHANNEL GL_LUMINANCE_ALPHA
   #define HALF_FLOAT_INTERNAL_FORMAT_1CHANNEL GL_LUMINANCE
   #define HALF_FLOAT_PIXEL_TYPE GL_HALF_FLOAT_OES
+
+  #define FLOAT_INTERNAL_FORMAT_4CHANNEL GL_RGBA
+  #define FLOAT_INTERNAL_FORMAT_2CHANNEL GL_LUMINANCE_ALPHA
+  #define FLOAT_INTERNAL_FORMAT_1CHANNEL GL_LUMINANCE
+  #define FLOAT_PIXEL_TYPE GL_FLOAT
+
   #define PIXEL_TYPE_2CHANNEL GL_LUMINANCE_ALPHA
   #define PIXEL_TYPE_1CHANNEL GL_LUMINANCE
   #define UNSIGNED_BYTE_INTERNAL_FORMAT_1CHANNEL GL_LUMINANCE
@@ -135,6 +141,12 @@
   #define HALF_FLOAT_INTERNAL_FORMAT_2CHANNEL GL_RG16F
   #define HALF_FLOAT_INTERNAL_FORMAT_1CHANNEL GL_R16F
   #define HALF_FLOAT_PIXEL_TYPE GL_HALF_FLOAT
+
+  #define FLOAT_INTERNAL_FORMAT_4CHANNEL GL_RGBA32F
+  #define FLOAT_INTERNAL_FORMAT_2CHANNEL GL_RG32F
+  #define FLOAT_INTERNAL_FORMAT_1CHANNEL GL_R32F
+  #define FLOAT_PIXEL_TYPE GL_FLOAT
+
   #define PIXEL_TYPE_2CHANNEL GL_RG
   #define PIXEL_TYPE_1CHANNEL GL_RED
   #define UNSIGNED_BYTE_INTERNAL_FORMAT_1CHANNEL GL_R8
@@ -158,7 +170,8 @@ namespace
 
   enum 
     {
-      separate_curve=1
+      separate_curve    = 1,
+      use_highp_storage = 2,
     };
 
   class MakeEvenFilter:public WRATHFreeTypeSupport::geometry_data_filter
@@ -388,6 +401,43 @@ namespace
     int m_id_curveA, m_id_curveB; //Id's of each curve
   };
 
+
+  template<bool use_highp>
+  class transparent_converter
+  {
+  public:
+  };
+  
+  template<>
+  class transparent_converter<false>
+  {
+  public:
+    typedef uint16_t type_f;      
+    
+    template<unsigned int N>
+    static
+    void 
+    convert_impl(vecN<type_f, N> &dest, const vecN<float, N> &src)
+    {
+      WRATHUtil::convert_to_halfp_from_float(dest, src);
+    } 
+  };
+  
+  template<>
+  class transparent_converter<true>
+  {
+  public:
+    typedef uint32_t type_f;      
+    
+    template<unsigned int N>
+    static
+    void 
+    convert_impl(vecN<type_f, N> &dest, const vecN<float, N> &src)
+    {
+      std::memcpy(dest.c_ptr(), src.c_ptr(), sizeof(float)*N);
+    } 
+  };
+
   /*
     AnalyticData packed into the textures..
    */
@@ -437,11 +487,35 @@ namespace
       return raw.reinterpret_pointer<T>();
     }
 
+    
 
+    template<bool use_highp>
+    class packer:public transparent_converter<use_highp>
+    {
+    public:
+      typedef typename transparent_converter<use_highp>::type_f type_f;
+
+      template<unsigned int N>
+      static
+      void 
+      convert(vecN<type_f, N> &dest, const vecN<float, N> &src)
+      {
+        transparent_converter<use_highp>::template convert_impl<N>(dest, src);
+      }
+
+      static
+      void
+      pack(AnalyticDataPacket *packet,
+           uint32_t flags,
+           const std::vector<AnalyticData> &numbers,
+           int curve_offset);
+    };
+    
     void
     pack(uint32_t flags,
          const std::vector<AnalyticData> &numbers,
-         int curve_offset); 
+         int curve_offset);
+    
   };
   
 
@@ -798,6 +872,11 @@ namespace
         {
           r|=separate_curve;
         }
+      
+      if(use_highp())
+        {
+          r|=use_highp_storage;
+        }
 
       return r;
     }
@@ -822,6 +901,20 @@ namespace
     {
       WRATHAutoLockMutex(m_mutex);
       return m_force_power2_texture;
+    }
+
+    bool
+    use_highp(void)
+    {
+      WRATHAutoLockMutex(m_mutex);
+      return m_use_highp;
+    }
+
+    void
+    use_highp(bool b)
+    {
+      WRATHAutoLockMutex(m_mutex);
+      m_use_highp=b;
     }
 
     void
@@ -890,16 +983,25 @@ namespace
 
     static
     void
-    append_rgba16f(int &layer, const std::string &pname,
-                   std::vector<std::string> &sampler_names,
-                   WRATHImage::ImageFormatArray &fmt);
+    append_rgbaf(int &layer, const std::string &pname,
+                 std::vector<std::string> &sampler_names,
+                 WRATHImage::ImageFormatArray &fmt,
+                 bool use_highp);
 
     static
     void
-    append_la16f(int &layer, const std::string &pname,
-                 std::vector<std::string> &sampler_names,
-                 WRATHImage::ImageFormatArray &fmt);
+    append_laf(int &layer, const std::string &pname,
+               std::vector<std::string> &sampler_names,
+               WRATHImage::ImageFormatArray &fmt,
+               bool use_highp);
     
+    static
+    void
+    append_float1(int &layer, const std::string &pname,
+                  std::vector<std::string> &sampler_names,
+                  WRATHImage::ImageFormatArray &fmt,
+                  bool use_highp);
+
 
     WRATHImage::ImageFormatArray m_index_fmt;
 
@@ -908,11 +1010,12 @@ namespace
     int m_texture_creation_size;
     bool m_store_separate_curves;
     float m_curvature_collapse;
+    bool m_use_highp;
 
     WRATHMutex m_curve_consumption_counter_mutex;
     WRATHImage::TextureAllocatorHandle::texture_consumption_data_type m_curve_consumption;
-    vecN<GeometryDataImageSet*, 2> m_all_data;
-    vecN<WRATHTextureFont::GlyphGLSL, 2> m_glyph_glsl;
+    vecN<GeometryDataImageSet*, 4> m_all_data; 
+    vecN<WRATHTextureFont::GlyphGLSL, 4> m_glyph_glsl;
   };
 
   common_data_type&
@@ -1363,7 +1466,8 @@ common_data_type(void):
   m_force_power2_texture(false),
   m_texture_creation_size(1024),
   m_store_separate_curves(false),
-  m_curvature_collapse(0.05f)
+  m_curvature_collapse(0.05f),
+  m_use_highp(false)
 {
   
   m_allocator=WRATHImage::create_texture_allocator(true, m_texture_creation_size,
@@ -1499,24 +1603,15 @@ build_sampler_names_and_format(int I,
            cobined into one LA8
        */
 
-      append_rgba16f(current_layer, "wrath_CurveAnalyticM_P_Texture",
-                     sampler_names, curve_fmt);
+      append_rgbaf(current_layer, "wrath_CurveAnalyticM_P_Texture",
+                   sampler_names, curve_fmt, I&use_highp_storage);
 
-      append_la16f(current_layer, "wrath_CurveAnalyticQTexture",
-                   sampler_names, curve_fmt);
+      append_laf(current_layer, "wrath_CurveAnalyticQTexture",
+                 sampler_names, curve_fmt, I&use_highp_storage);
+
       
-      
-      append_custom(current_layer, "wrath_CurveAnalyticScaleTexture",
-                    sampler_names, curve_fmt,
-                    WRATHImage::ImageFormat()
-                    .internal_format(HALF_FLOAT_INTERNAL_FORMAT_1CHANNEL)
-                    .pixel_type(HALF_FLOAT_PIXEL_TYPE)
-                    .pixel_data_format(PIXEL_TYPE_1CHANNEL)
-                    .magnification_filter(GL_NEAREST)
-                    .minification_filter(GL_NEAREST)
-                    .automatic_mipmap_generation(false)
-                    .max_mip_level(0));
-    
+      append_float1(current_layer, "wrath_CurveAnalyticScaleTexture",
+                   sampler_names, curve_fmt, I&use_highp_storage);    
 
       append_custom(current_layer, "wrath_CurveAnalyticNextCurveTexture",
                     sampler_names, curve_fmt,
@@ -1548,15 +1643,15 @@ build_sampler_names_and_format(int I,
     }
   else
     {
-      append_rgba16f(current_layer, "wrath_CurveAnalyticABTexture",
-                     sampler_names, curve_fmt);
+      append_rgbaf(current_layer, "wrath_CurveAnalyticABTexture",
+                   sampler_names, curve_fmt, I&use_highp_storage);
 
-      append_rgba16f(current_layer, "wrath_CurveAnalyticQTexture",
-                     sampler_names, curve_fmt);
+      append_rgbaf(current_layer, "wrath_CurveAnalyticQTexture",
+                   sampler_names, curve_fmt, I&use_highp_storage);
 
      
-      append_rgba16f(current_layer, "wrath_CurveAnalyticP2Texture",
-                     sampler_names, curve_fmt);
+      append_rgbaf(current_layer, "wrath_CurveAnalyticP2Texture",
+                   sampler_names, curve_fmt, I&use_highp_storage);
     
       append_custom(current_layer, "wrath_CurveAnalyticRuleTexture",
                     sampler_names, curve_fmt,
@@ -1588,15 +1683,36 @@ append_custom(int &layer, const std::string &pname,
 
 void
 common_data_type::
-append_la16f(int &layer, const std::string &pname,
-             std::vector<std::string> &sampler_names,
-             WRATHImage::ImageFormatArray &fmt)
+append_float1(int &layer, const std::string &pname,
+              std::vector<std::string> &sampler_names,
+              WRATHImage::ImageFormatArray &fmt,
+              bool use_highp)
 {
   
   append_custom(layer, pname, sampler_names, fmt,
                 WRATHImage::ImageFormat()
-                .internal_format(HALF_FLOAT_INTERNAL_FORMAT_2CHANNEL)
-                .pixel_type(HALF_FLOAT_PIXEL_TYPE)
+                .internal_format(use_highp ? FLOAT_INTERNAL_FORMAT_1CHANNEL : HALF_FLOAT_INTERNAL_FORMAT_1CHANNEL)
+                .pixel_type(use_highp ? FLOAT_PIXEL_TYPE : HALF_FLOAT_PIXEL_TYPE)
+                .pixel_data_format(PIXEL_TYPE_1CHANNEL)
+                .magnification_filter(GL_NEAREST)
+                .minification_filter(GL_NEAREST)
+                .automatic_mipmap_generation(false)
+                .max_mip_level(0));
+                                 
+}
+
+void
+common_data_type::
+append_laf(int &layer, const std::string &pname,
+           std::vector<std::string> &sampler_names,
+           WRATHImage::ImageFormatArray &fmt,
+           bool use_highp)
+{
+  
+  append_custom(layer, pname, sampler_names, fmt,
+                WRATHImage::ImageFormat()
+                .internal_format(use_highp ? FLOAT_INTERNAL_FORMAT_2CHANNEL : HALF_FLOAT_INTERNAL_FORMAT_2CHANNEL)
+                .pixel_type(use_highp ? FLOAT_PIXEL_TYPE : HALF_FLOAT_PIXEL_TYPE)
                 .pixel_data_format(PIXEL_TYPE_2CHANNEL)
                 .magnification_filter(GL_NEAREST)
                 .minification_filter(GL_NEAREST)
@@ -1608,14 +1724,15 @@ append_la16f(int &layer, const std::string &pname,
 
 void
 common_data_type::
-append_rgba16f(int &layer, const std::string &pname,
-               std::vector<std::string> &sampler_names,
-               WRATHImage::ImageFormatArray &fmt)
+append_rgbaf(int &layer, const std::string &pname,
+             std::vector<std::string> &sampler_names,
+             WRATHImage::ImageFormatArray &fmt,
+             bool use_highp)
 {
   append_custom(layer, pname, sampler_names, fmt,
                 WRATHImage::ImageFormat()
-                .internal_format(HALF_FLOAT_INTERNAL_FORMAT_4CHANNEL)
-                .pixel_type(HALF_FLOAT_PIXEL_TYPE)
+                .internal_format(use_highp ? FLOAT_INTERNAL_FORMAT_4CHANNEL : HALF_FLOAT_INTERNAL_FORMAT_4CHANNEL)
+                .pixel_type(use_highp ? FLOAT_PIXEL_TYPE : HALF_FLOAT_PIXEL_TYPE)
                 .pixel_data_format(GL_RGBA)
                 .magnification_filter(GL_NEAREST)
                 .minification_filter(GL_NEAREST)
@@ -2747,10 +2864,27 @@ AnalyticDataPacket(uint32_t flags,
   pack(flags, one_curve, 0);
 }
 
-
 void
 AnalyticDataPacket::
 pack(uint32_t flags,
+     const std::vector<AnalyticData> &curve_sets,
+     int curve_offset)
+{
+  if(flags&use_highp_storage)
+    {
+      AnalyticDataPacket::packer<true>::pack(this, flags, curve_sets, curve_offset);
+    }
+  else
+    {
+      AnalyticDataPacket::packer<false>::pack(this, flags, curve_sets, curve_offset);
+    }
+}
+
+template<bool use_highp>
+void
+AnalyticDataPacket::packer<use_highp>::
+pack(AnalyticDataPacket *packet,
+     uint32_t flags,
      const std::vector<AnalyticData> &curve_sets,
      int curve_offset)
 {
@@ -2771,37 +2905,37 @@ pack(uint32_t flags,
    */
   if(flags&separate_curve)
     {
-      c_array<vecN<uint16_t,2> >  q;
+      c_array<vecN<type_f,2> >  q;
       c_array<uint8_t> next;
-      c_array<vecN<uint16_t,4> > m_p2;
-      c_array< vecN<uint16_t,1> > scale;
+      c_array<vecN<type_f,4> > m_p2;
+      c_array<vecN<type_f,1> > scale;
       
-      m_p2=add_layer< vecN<uint16_t,4> >(N);
+      m_p2=packet->add_layer< vecN<type_f,4> >(N);
       for(unsigned int i=0; i<N; ++i)
         {
           const AnalyticData &numbers(curve_sets[i]);
-          WRATHUtil::convert_to_halfp_from_float(m_p2[i], numbers.a0_a1_p2());
+          convert(m_p2[i], numbers.a0_a1_p2());
         }
         
 
-      q=add_layer< vecN<uint16_t,2> >(N); 
+      q=packet->add_layer< vecN<type_f,2> >(N); 
       for(unsigned int i=0; i<N; ++i)
         {
           const AnalyticData &numbers(curve_sets[i]);
-          WRATHUtil::convert_to_halfp_from_float(q[i], numbers.qa());
+          convert(q[i], numbers.qa());
         }
 
       
-      scale=add_layer<vecN<uint16_t,1> >(N);
+      scale=packet->add_layer<vecN<type_f,1> >(N);
       for(unsigned int i=0; i<N; ++i)
         {
           const AnalyticData &numbers(curve_sets[i]);
           vecN<float, 1> v(numbers.m_quad_coeffA);
           
-          WRATHUtil::convert_to_halfp_from_float(scale[i], v);
+          convert(scale[i], v);
         }
       
-      next=add_layer<uint8_t>(N);
+      next=packet->add_layer<uint8_t>(N);
       for(unsigned int i=0; i<N; ++i)
         {
           const AnalyticData &numbers(curve_sets[i]);
@@ -2814,32 +2948,32 @@ pack(uint32_t flags,
       
         }
 
-      ca_cb_rule=add_layer<uint16_t>(N);
+      ca_cb_rule=packet->add_layer<uint16_t>(N);
     }
   else
     {
-      c_array<vecN<uint16_t, 4> > a0_b0_a1_b1, qa_qb;
-      c_array<vecN<uint16_t, 4> > p2_scale;
+      c_array<vecN<type_f, 4> > a0_b0_a1_b1, qa_qb;
+      c_array<vecN<type_f, 4> > p2_scale;
       
-      a0_b0_a1_b1=add_layer< vecN<uint16_t,4> >(N);
-      qa_qb=add_layer< vecN<uint16_t,4> >(N);
+      a0_b0_a1_b1=packet->add_layer< vecN<type_f,4> >(N);
+      qa_qb=packet->add_layer< vecN<type_f,4> >(N);
       for(unsigned int i=0; i<N; ++i)
         {
           const AnalyticData &numbers(curve_sets[i]);
           
-          WRATHUtil::convert_to_halfp_from_float(a0_b0_a1_b1[i], numbers.m_a0_b0_a1_b1);
-          WRATHUtil::convert_to_halfp_from_float(qa_qb[i], numbers.m_qa_qb);
+          convert(a0_b0_a1_b1[i], numbers.m_a0_b0_a1_b1);
+          convert(qa_qb[i], numbers.m_qa_qb);
         }
       
-      p2_scale=add_layer< vecN<uint16_t,4> >(N);
+      p2_scale=packet->add_layer< vecN<type_f,4> >(N);
       for(unsigned int i=0; i<N; ++i)
         {
           const AnalyticData &numbers(curve_sets[i]);
           
-          WRATHUtil::convert_to_halfp_from_float(p2_scale[i], numbers.p2_scale_ab());
+          convert(p2_scale[i], numbers.p2_scale_ab());
         }
               
-      ca_cb_rule=add_layer<uint16_t>(N);
+      ca_cb_rule=packet->add_layer<uint16_t>(N);
     }
 
   
@@ -3247,6 +3381,19 @@ store_separate_curves(void)
   return common_data().store_separate_curves();
 }
 
+bool
+WRATHTextureFontFreeType_CurveAnalytic::
+use_highp(void)
+{
+  return common_data().use_highp();
+}
+
+void
+WRATHTextureFontFreeType_CurveAnalytic::
+use_highp(bool v)
+{
+  common_data().use_highp(v);
+}
 
 
 WRATHTextureFont::glyph_data_type*
