@@ -76,7 +76,7 @@ shader_in mediump vec4 color;
 shader_out mediump vec4 tex_color;
 
 
-
+shader_out mediump vec2 giggles;
 
 void
 shader_main(void)
@@ -94,6 +94,8 @@ shader_main(void)
 
   //position of vertex inside of glyph
   glyph_position=abs_glyph_normalized_coordinate*glyph_size_and_bottom_left.xy;
+
+  giggles=glyph_position;
 
   wrath_font_prepare_glyph_vs(glyph_position,
                               glyph_size_and_bottom_left.zw,

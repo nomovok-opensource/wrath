@@ -130,6 +130,14 @@
 #define float_texture2D_2channel(X, Y) float_texture2D(X,Y).rg
 #endif
 
+
+
+
+curve_analytic_precision vec4 wrath_curve_analytic_pa_pb;
+curve_analytic_precision vec2 wrath_curve_analytic_ta_tb;
+curve_analytic_precision vec2 wrath_curve_analytic_sigma_ab;
+curve_analytic_precision float wrath_curve_analytic_idx;
+
 /*
   - Should the GlyphTextureCoordiante actually be highp for large index textures?
   - Should output and GlyphCoordinate have precision curve_analytic_precision?  
@@ -188,6 +196,11 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
   dependent_tex.y=GlyphIndex;
 
   
+  wrath_curve_analytic_pa_pb = vec4(10000.0);
+  wrath_curve_analytic_ta_tb = vec2(100.0);
+  wrath_curve_analytic_sigma_ab = vec2(1000.0);
+  wrath_curve_analytic_idx = 255.0*dependent_tex.x;
+
   if(dependent_tex.x<0.5/255.0)
     {
       return -1.0;
@@ -210,12 +223,14 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
 
     dependent_tex2.x=rule_texture2D(wrath_CurveAnalyticNextCurveTexture, dependent_tex).r;
     ca_cb_rule_tangle=rule_texture2D(wrath_CurveAnalyticRuleTexture, dependent_tex).rgba;
+
     Ma_Pa=float_texture2D(wrath_CurveAnalyticM_P_Texture, dependent_tex);
     Qa=float_texture2D_2channel(wrath_CurveAnalyticQTexture, dependent_tex);
     QaScale=float_texture2D(wrath_CurveAnalyticScaleTexture, dependent_tex).r;
+
     dependent_tex2.x=(255.0*dependent_tex2.x + 0.5)/256.0;
-    Mb_Pb=float_texture2D(wrath_CurveAnalyticM_P_Texture, dependent_tex2);
-        
+
+    Mb_Pb=float_texture2D(wrath_CurveAnalyticM_P_Texture, dependent_tex2);        
     Qb=float_texture2D_2channel(wrath_CurveAnalyticQTexture, dependent_tex2);
     QbScale=float_texture2D(wrath_CurveAnalyticScaleTexture, dependent_tex2).r;
     
@@ -270,7 +285,6 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
                                2.0*ta_tb - 1.0,
                                step(1.0, ta_tb));
 
-    
   }
   #else
   {
@@ -317,9 +331,7 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
   }
   #endif
 
-  
-  
-  
+    
 
 
   /*
@@ -368,12 +380,9 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
 
   /*
     Make:
-     sigma_a=-(A1*ta + ta*ta*ca - pa_y)*A0;
-     sigma_b= (B1*tb + tb*tb*cb - pb_y)*B0;
-   and if CURVE_ANALYTIC_STORE_SCALING is defined,
-   use QaScale_QbScale in place of ca_cb
+     sigma_a=-(A1*ta + ta*ta*QaScale - pa_y)*A0;
+     sigma_b= (B1*tb + tb*tb*QbScale - pb_y)*B0;
   */
-
   #ifdef WRATH_CURVE_ANALYTIC_SEPARATE_CURVES
   {
     A0_B0=-A0_B0;
@@ -383,9 +392,6 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
     A0=-A0;
   }
   #endif
-
-
-  
   sigma_ab=(A1_B1*ta_tb + sa_sb*QaScale_QbScale - pa_pb_y)*sign(A0_B0);
   
 
@@ -402,6 +408,10 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
     sigma_max:
     sigma_min;
 
+
+  wrath_curve_analytic_pa_pb = pa_pb;
+  wrath_curve_analytic_ta_tb = ta_tb;
+  wrath_curve_analytic_sigma_ab = sigma_ab;
 
   return sigma;
 
