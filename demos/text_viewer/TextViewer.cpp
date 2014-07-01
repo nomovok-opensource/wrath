@@ -201,6 +201,7 @@ public:
   command_line_argument_value<std::string> m_tex_varying_fs_prec, m_tex_recip_prec; 
   command_line_argument_value<int> m_text_renderer;
   command_line_argument_value<bool> m_text_renderer_curve_analytic_separate_curve_storage;
+  command_line_argument_value<bool> m_text_renderer_curve_analytic_highp;
   command_line_argument_value<int> m_text_renderer_sub_choice;
   command_line_argument_value<int> m_text_renderer_coverage_min_filter;
   command_line_argument_value<int> m_text_renderer_converage_mag_filter;
@@ -319,7 +320,13 @@ public:
                                                           "instead of curve corner pairs, thus using fewer "
                                                           "textures and less texture memory but at cost "
                                                           "of more expensive fragment shader",
-                                                        *this),
+                                                          *this),
+    m_text_renderer_curve_analytic_highp(true, "curve_analytic_highp",
+                                         "Only has affect if text_renderer is 4 "
+                                         "if on, then floating point texture storage "
+                                         "and rendering are done in 32-bit float, "
+                                         "when off, done in 16-bit float",
+                                         *this),
 
     m_text_renderer_sub_choice(1, "text_renderer_sub_choice",
                                "0=no AA, 1=AA, 2=mix with coverage "
@@ -974,7 +981,7 @@ TextViewer(cmd_line_type &cmd_line):
 
   WRATHTextureFontFreeType_Analytic::mipmap_level(analytic_mip_value);
   WRATHTextureFontFreeType_CurveAnalytic::store_separate_curves(cmd_line.m_text_renderer_curve_analytic_separate_curve_storage.m_value);
-
+  WRATHTextureFontFreeType_CurveAnalytic::use_highp(cmd_line.m_text_renderer_curve_analytic_highp.m_value);
   
   std::string font_fragment_shader;
   enum WRATHGLShader::shader_source_type fragment_shader_type;
