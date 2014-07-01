@@ -210,12 +210,13 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
 
     dependent_tex2.x=rule_texture2D(wrath_CurveAnalyticNextCurveTexture, dependent_tex).r;
     ca_cb_rule_tangleXorRule=rule_texture2D(wrath_CurveAnalyticRuleTexture, dependent_tex).rgba;
+
     Ma_Pa=float_texture2D(wrath_CurveAnalyticM_P_Texture, dependent_tex);
     Qa=float_texture2D_2channel(wrath_CurveAnalyticQTexture, dependent_tex);
     QaScale=float_texture2D(wrath_CurveAnalyticScaleTexture, dependent_tex).r;
+
     dependent_tex2.x=(255.0*dependent_tex2.x + 0.5)/256.0;
-    Mb_Pb=float_texture2D(wrath_CurveAnalyticM_P_Texture, dependent_tex2);
-        
+    Mb_Pb=float_texture2D(wrath_CurveAnalyticM_P_Texture, dependent_tex2);    
     Qb=float_texture2D_2channel(wrath_CurveAnalyticQTexture, dependent_tex2);
     QbScale=float_texture2D(wrath_CurveAnalyticScaleTexture, dependent_tex2).r;
     
@@ -240,7 +241,7 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
     pa_pb_x =  PP_AB.xz*Qa_Qb_x + PP_AB.yw*Qa_Qb_y;
     pa_pb_y = -PP_AB.xz*Qa_Qb_y + PP_AB.yw*Qa_Qb_x;
    
-    ta_tb= pa_pb_x/A0_B0;
+    ta_tb= pa_pb_x*A0_B0;
 
 
     /*
@@ -297,7 +298,7 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
     pa_pb_x =  pp.x*Qa_Qb_x + pp.y*Qa_Qb_y;
     pa_pb_y = -pp.x*Qa_Qb_y + pp.y*Qa_Qb_x;
   
-    ta_tb=pa_pb_x/A0_B0;
+    ta_tb=pa_pb_x*A0_B0;
     /*
       omega_a!=0 <--> t_a>=0
       omega_b!=0 <--> t_b>=0
@@ -368,12 +369,9 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
 
   /*
     Make:
-     sigma_a=-(A1*ta + ta*ta*ca - pa_y)*A0;
-     sigma_b= (B1*tb + tb*tb*cb - pb_y)*B0;
-   and if CURVE_ANALYTIC_STORE_SCALING is defined,
-   use QaScale_QbScale in place of ca_cb
+     sigma_a=-(A1*ta + ta*ta*QaScale - pa_y)*sign(A0);
+     sigma_b= (B1*tb + tb*tb*QbScale - pb_y)*sign(B0);
   */
-
   #ifdef WRATH_CURVE_ANALYTIC_SEPARATE_CURVES
   {
     A0_B0=-A0_B0;
@@ -383,9 +381,6 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
     A0=-A0;
   }
   #endif
-
-
-  
   sigma_ab=(A1_B1*ta_tb + sa_sb*QaScale_QbScale - pa_pb_y)*sign(A0_B0);
   
 

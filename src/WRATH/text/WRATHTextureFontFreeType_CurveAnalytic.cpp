@@ -2731,6 +2731,7 @@ AnalyticData(bool make_rotation_unitary,
   m_a0_b0_a1_b1=vec4(alpha_data.m_0, beta_data.m_0,
                      alpha_data.m_1, beta_data.m_1);
 
+
   m_qa_qb=vec4(alpha_data.m_q.x(), alpha_data.m_q.y(),
                beta_data.m_q.x(), beta_data.m_q.y());
   
@@ -2825,6 +2826,13 @@ AnalyticData(bool make_rotation_unitary,
     }
   
   
+
+  /*
+    optimization:
+     rendering needs reciprocal of a0 and b0, so save the reciprocal instead
+   */
+  m_a0_b0_a1_b1.x() = 1.0f/m_a0_b0_a1_b1.x();
+  m_a0_b0_a1_b1.y() = 1.0f/m_a0_b0_a1_b1.y();
 
   /*
   if(m_tangled)
