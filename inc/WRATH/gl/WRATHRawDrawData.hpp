@@ -47,7 +47,6 @@
  */
 
 /*!\class WRATHDrawOrder
-
   A WRATHDrawOrder is an abstract interface
   to specifying a drawing order (as such
   elements using different WRATHDrawOrder's 
@@ -120,7 +119,6 @@ public:
 
 protected:
   /*!\fn note_change(void)  
-
     A derived class should call note_change() 
     on itself whenever it's internal state 
     has changed in such a way that it's drawing 
@@ -520,13 +518,11 @@ private:
 };
 
 /*!\class WRATHRawDrawData
-  A WRATHRawDrawData is a collection of a
-  pointers to const WRATHRawDrawDataElement 's.
-  It is assumed that the objects are constant
-  when they are used by a WRATHRawDrawData. If one
-  needs to change the value, it is required to
-  first remove it from the WRATHRawDrawData and
-  then re-add it.  
+  A WRATHRawDrawData is a collection of
+  pointers to WRATHRawDrawDataElement objects
+  that provides an interface to add and remove
+  those objects and in addition to execute the
+  draw commands encoded by them.
  */
 class WRATHRawDrawData:
   public WRATHTripleBufferEnabler::PhasedDeletedObject
@@ -589,13 +585,10 @@ public:
 
   /*!\fn void add_element
     Adds a draw "command" to the WRATHRawDrawData
-    It is an error to have the same WRATHRawDrawDataElement
-    added to multiple WRATHRawDrawData objects.
-    It is an error to change the contents
-    of a WRATHRawDrawDataElement while it is on
-    a WRATHRawDrawData object. Additionally, a single
-    WRATHRawDrawDataElement may only be on one
-    WRATHRawDrawData at a time.
+    A single WRATHRawDrawDataElement may only be on one
+    WRATHRawDrawData at a time, i.e. it must be 
+    removed (\ref remove_element()) before being
+    added again to another \ref WRATHRawDataData.
 
     May only be called from the simulation thread.
 

@@ -2094,7 +2094,7 @@ sub_select_index(uint8_t &pixel,
     case 1:
       {
         const WRATHFreeTypeSupport::BezierCurve *a, *b;
-        ivec2 texel_center;
+        ivec2 texel_center, ta, tb;
         int da, db;
         
         /*
@@ -2103,10 +2103,14 @@ sub_select_index(uint8_t &pixel,
         */
         a=curves.begin()->first;
         b=m_outline_data.prev_neighbor(a);
+
+        WRATHassert(b->pt1() == a->pt0());
         
         texel_center=m_outline_data.point_from_bitmap(ivec2(x, y));
-        da=(texel_center - a->pt1()).L1norm();
-        db=(texel_center - b->pt1()).L1norm();
+        ta=texel_center - a->pt1();
+        tb=texel_center - b->pt1();
+        da=std::min( std::abs(ta.x()), std::abs(ta.y()) );
+        db=std::min( std::abs(tb.x()), std::abs(tb.y()) );
         
         if(da<db)
           {

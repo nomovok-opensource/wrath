@@ -1932,7 +1932,7 @@ namespace WRATHFreeTypeSupport
     }
 
     /*!\fn int bitmap_x_from_point
-      Converts TO coordinates of bitmap 
+      Converts to coordinates of bitmap 
       from coordinates of the BezierCurve
       objects.
       \param x x-coordinate to convert
@@ -1945,7 +1945,7 @@ namespace WRATHFreeTypeSupport
     }
 
     /*!\fn int bitmap_y_from_point    
-      Converts TO coordinates of bitmap 
+      Converts to coordinates of bitmap 
       from coordinates of the BezierCurve
       objects.
       \param y y-coordinate to convert
@@ -1958,8 +1958,8 @@ namespace WRATHFreeTypeSupport
     }
 
     /*!\fn vec2 bitmap_from_point(vec2, enum bitmap_conversion_t) const
-      Converts from coordinates of bitmap 
-      to coordinates of the BezierCurve
+      Converts to coordinates of bitmap 
+      from coordinates of the BezierCurve
       objects.
       \param p coordinate to convert
       \param t bitmap conversion convention
@@ -1980,8 +1980,8 @@ namespace WRATHFreeTypeSupport
     }
     
     /*!\fn vec2 bitmap_from_point(ivec2, enum bitmap_conversion_t) const    
-      Converts from coordinates of bitmap 
-      to coordinates of the BezierCurve
+      Converts to coordinates of bitmap 
+      from coordinates of the BezierCurve
       objects.
       \param p coordinate to convert
       \param t bitmap conversion convention
@@ -1995,8 +1995,8 @@ namespace WRATHFreeTypeSupport
 
     /*!\fn int bitmap_coord_from_point(float, enum WRATHUtil::coordinate_type, 
                                        enum bitmap_conversion_t)  const    
-      Converts from coordinates of bitmap 
-      to coordinates of the BezierCurve
+      Converts to coordinates of bitmap 
+      from coordinates of the BezierCurve
       objects.
       \param v coordinate to convert
       \param tp which coordinate (use WRATHUtil::x_fixed for x-coordinate
@@ -2020,8 +2020,8 @@ namespace WRATHFreeTypeSupport
 
     /*!\fn int point_from_bitmap_coord(int, enum WRATHUtil::coordinate_type, 
                                        enum bitmap_conversion_t)  const    
-      Converts TO coordinates of bitmap 
-      from coordinates of the BezierCurve
+      Converts from coordinates of bitmap 
+      to coordinates of the BezierCurve
       objects.
       \param ip coordinate to convert
       \param tp which coordinate (use WRATHUtil::x_fixed for x-coordinate
@@ -2040,7 +2040,7 @@ namespace WRATHFreeTypeSupport
     }
 
     /*!\fn ivec2 point_from_bitmap
-      Converts TO coordinates of bitmap from coordinates of the BezierCurve
+      Converts from coordinates of bitmap to coordinates of the BezierCurve
       objects.
       \param ip ivec2 coordinates to convert
       \param t bitmap conversion convention
@@ -2057,7 +2057,7 @@ namespace WRATHFreeTypeSupport
     }
 
     /*!\fn float bitmap_from_point(float, int coordinate, enum bitmap_conversion_t) const    
-      Converts tp coordinates of bitmap 
+      Converts to coordinates of bitmap 
       from coordinates of the BezierCurve
       objects.
       \param p coordinate to convert
