@@ -1494,6 +1494,11 @@ common_data_type(void):
 
       for(int type=0; type<WRATHTextureFont::GlyphGLSL::num_linearity_types; ++type)
         {          
+
+          m_glyph_glsl[i].m_fragment_processor[type]
+            .add_macro("curve_analytic_precision", 
+                       (i&use_highp_storage) ? "highp" : "mediump");
+
           if(i&separate_curve)
             {
               m_glyph_glsl[i].m_fragment_processor[type]
@@ -1542,6 +1547,9 @@ common_data_type(void):
               m_glyph_glsl[i].m_fragment_processor[type].remove_macro("WRATH_CURVE_ANALYTIC_USE_LA_LOOKUP");
             }
           #endif
+
+          m_glyph_glsl[i].m_fragment_processor[type]
+            .remove_macro("curve_analytic_precision");
         }
 
       m_glyph_glsl[i].m_custom_data_use.push_back(0);

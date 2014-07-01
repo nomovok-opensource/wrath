@@ -81,20 +81,20 @@
 
 #ifdef WRATH_CURVE_ANALYTIC_SEPARATE_CURVES
 
-  uniform mediump sampler2D wrath_CurveAnalyticIndexTexture;//A8
-  uniform mediump sampler2D wrath_CurveAnalyticQTexture; 
-  uniform mediump sampler2D wrath_CurveAnalyticM_P_Texture;
-  uniform mediump sampler2D wrath_CurveAnalyticScaleTexture;
-  uniform mediump sampler2D wrath_CurveAnalyticNextCurveTexture; //L8
-  uniform mediump sampler2D wrath_CurveAnalyticRuleTexture; //RGBA4444 (cA, cB, rule, reserved)
+  uniform curve_analytic_precision sampler2D wrath_CurveAnalyticIndexTexture;//A8
+  uniform curve_analytic_precision sampler2D wrath_CurveAnalyticQTexture; 
+  uniform curve_analytic_precision sampler2D wrath_CurveAnalyticM_P_Texture;
+  uniform curve_analytic_precision sampler2D wrath_CurveAnalyticScaleTexture;
+  uniform curve_analytic_precision sampler2D wrath_CurveAnalyticNextCurveTexture; //L8
+  uniform curve_analytic_precision sampler2D wrath_CurveAnalyticRuleTexture; //RGBA4444 (cA, cB, rule, reserved)
  
 #else
 
-  uniform mediump sampler2D wrath_CurveAnalyticIndexTexture;//A8
-  uniform mediump sampler2D wrath_CurveAnalyticABTexture;   //RGBA_16F (A0,B0,A1,B1)
-  uniform mediump sampler2D wrath_CurveAnalyticQTexture;    //RGBA_16F (QaX, QaY, QbX, QbY)
-  uniform mediump sampler2D wrath_CurveAnalyticP2Texture;   //LA_16F (p2x, p2y) OR RGBA_16F (p2x, p2y, mag_Qa, mag_Qb)
-  uniform mediump sampler2D wrath_CurveAnalyticRuleTexture; //RGBA4444 (cA, cB, rule, tangle)
+  uniform curve_analytic_precision sampler2D wrath_CurveAnalyticIndexTexture;//A8
+  uniform curve_analytic_precision sampler2D wrath_CurveAnalyticABTexture;   //RGBA_16F (A0,B0,A1,B1)
+  uniform curve_analytic_precision sampler2D wrath_CurveAnalyticQTexture;    //RGBA_16F (QaX, QaY, QbX, QbY)
+  uniform curve_analytic_precision sampler2D wrath_CurveAnalyticP2Texture;   //LA_16F (p2x, p2y) OR RGBA_16F (p2x, p2y, mag_Qa, mag_Qb)
+  uniform curve_analytic_precision sampler2D wrath_CurveAnalyticRuleTexture; //RGBA4444 (cA, cB, rule, tangle)
   
 #endif
 
@@ -130,20 +130,23 @@
 #define float_texture2D_2channel(X, Y) float_texture2D(X,Y).rg
 #endif
 
-
+/*
+  - Should the GlyphTextureCoordiante actually be highp for large index textures?
+  - Should output and GlyphCoordinate have precision curve_analytic_precision?  
+ */
 mediump float
 wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
                                             in mediump vec2 GlyphTextureCoordinate,
                                             in mediump float GlyphIndex)
 {
-  mediump vec2 pp;
-  mediump vec4 pa_pb;
-  mediump vec4 A0_B0_A1_B1;
-  mediump vec4 Qa_Qb;
-  mediump vec2 sa_sb, ta_tb, dependent_tex, sigma_ab, omega_ab;
-  mediump vec4 ca_cb_rule_tangle;
-  mediump float omega, zeta, sigma, sigma_min, sigma_max;
-  mediump vec4 p2_QaScale_QbScale;
+  curve_analytic_precision vec2 pp;
+  curve_analytic_precision vec4 pa_pb;
+  curve_analytic_precision vec4 A0_B0_A1_B1;
+  curve_analytic_precision vec4 Qa_Qb;
+  curve_analytic_precision vec2 sa_sb, ta_tb, dependent_tex, sigma_ab, omega_ab;
+  curve_analytic_precision vec4 ca_cb_rule_tangle;
+  curve_analytic_precision float omega, zeta, sigma, sigma_min, sigma_max;
+  curve_analytic_precision vec4 p2_QaScale_QbScale;
 
 #define p2 p2_QaScale_QbScale.xy
 #define QaScale p2_QaScale_QbScale.z
@@ -199,9 +202,9 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
   
   #ifdef WRATH_CURVE_ANALYTIC_SEPARATE_CURVES
   {
-    mediump vec4 Ma_Pa, Mb_Pb;
-    mediump vec4 PP_AB;
-    mediump vec2 dependent_tex2;
+    curve_analytic_precision vec4 Ma_Pa, Mb_Pb;
+    curve_analytic_precision vec4 PP_AB;
+    curve_analytic_precision vec2 dependent_tex2;
 
     dependent_tex2.y=dependent_tex.y;
 
