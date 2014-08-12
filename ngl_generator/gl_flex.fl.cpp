@@ -49,39 +49,39 @@ CGLGLTYPE {CGLTYPE}|{GLTYPE}
 
 
 
-extern{space}+{CGLGLTYPE}{space}+APIENTRY{space}+gl[^\n]*\n  { 
+extern{space}+{CGLGLTYPE}{space}*+APIENTRY{space}+gl[^\n]*\n  { 
   openGL_function_info *ptr;
   ptr=new openGL_function_info(yytext,"extern", "APIENTRY");
   openGL_functionList.push_back(ptr); 
 }
 
 
-WINGDIAPI{space}+{CGLGLTYPE}{space}+APIENTRY{space}+gl[^\n]*\n  { 
+WINGDIAPI{space}+{CGLGLTYPE}{space}*+APIENTRY{space}+gl[^\n]*\n  { 
   openGL_function_info *ptr;
   ptr=new openGL_function_info(yytext,"WINGDIAPI", "APIENTRY");
   openGL_functionList.push_back(ptr); 
 }
 
 
-GLAPI{space}+{CGLGLTYPE}{space}+APIENTRY{space}+gl[^\n]*\n  { 
+GLAPI{space}+{CGLGLTYPE}{space}*+APIENTRY{space}+gl[^\n]*\n  { 
   openGL_function_info *ptr;
   ptr=new openGL_function_info(yytext, "GLAPI", "APIENTRY");
   openGL_functionList.push_back(ptr); 
 }
 
-extern{space}+{CGLGLTYPE}{space}+GLAPIENTRY{space}+gl[^\n]*\n  { 
+extern{space}+{CGLGLTYPE}{space}*+GLAPIENTRY{space}+gl[^\n]*\n  { 
   openGL_function_info *ptr;
   ptr=new openGL_function_info(yytext,"extern", "GLAPIENTRY");
   openGL_functionList.push_back(ptr); 
 }
 
-GLAPI{space}+{CGLGLTYPE}{space}+GLAPIENTRY{space}+gl[^\n]*\n  { 
+GLAPI{space}+{CGLGLTYPE}{space}*+GLAPIENTRY{space}+gl[^\n]*\n  { 
   openGL_function_info *ptr;
   ptr=new openGL_function_info(yytext, "GLAPI", "GLAPIENTRY");
   openGL_functionList.push_back(ptr); 
 }
 
-GL_APICALL{space}+{CGLGLTYPE}{space}+GL_APIENTRY{space}+gl[^\n]*\n  { 
+GL_APICALL{space}+{CGLGLTYPE}{space}*+GL_APIENTRY{space}+gl[^\n]*\n  { 
   openGL_function_info *ptr;
   ptr=new openGL_function_info(yytext,"GL_APICALL", "GL_APIENTRY");
   openGL_functionList.push_back(ptr); 
