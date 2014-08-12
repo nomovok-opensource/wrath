@@ -341,11 +341,6 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
     However when tangle is true, zeta is a value
     to force the test value, thus for min-rule
     it is -1 and for max it is +1.
-
-    TODO:
-      there is no need to do the xor here.
-      rather than having tangle, store the value
-      for zeto in the texture.
    */
   zeta=(tangleXorRule>0.5) ? 1.0 : -1.0;
 
@@ -381,8 +376,11 @@ wrath_curve_analytic_compute_quasi_distance(in mediump vec2 GlyphCoordinate,
     A0=-A0;
   }
   #endif
-  sigma_ab=(A1_B1*ta_tb + sa_sb*QaScale_QbScale - pa_pb_y)*sign(A0_B0);
-  
+  //sigma_ab=(A1_B1*ta_tb + sa_sb*QaScale_QbScale - pa_pb_y)*sign(A0_B0);
+  sigma_ab=(A1_B1*ta_tb + sa_sb*QaScale_QbScale - pa_pb_y);
+  sigma_a = (A0>0.0) ? sigma_a : -sigma_a;
+  sigma_b = (B0>0.0) ? sigma_b : -sigma_b;
+
 
 
   sigma_a=(omega_a>0.5)?sigma_a:zeta;
