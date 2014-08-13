@@ -31,15 +31,20 @@ namespace
     sdl_fury_event_state(void):
       m_capture_all(false),
       m_last_size(0, 0),
-      m_text_mode(false)
+      m_text_mode(false),
+      m_repeat_enabled(false),
+      m_repeat_delay(1),
+      m_repeat_interval(1)
     {
-      SDL_EnableUNICODE(0);
+      //SDL_EnableUNICODE(0);
     }
 
     FURYSDL::EventProducer::signal_t m_sig;
     bool m_capture_all;
     ivec2 m_last_size;
     bool m_text_mode;
+    bool m_repeat_enabled;
+    int m_repeat_delay, m_repeat_interval;
   };
 
   sdl_fury_event_state&
@@ -80,7 +85,7 @@ namespace
   }
 
   FURYKeyModifier
-  compute_modifier(SDLMod flags)
+  compute_modifier(Uint16 flags)
   {
     uint32_t a(0);
 
@@ -119,12 +124,12 @@ namespace
         // AltGr
       }*/
 
-    if(flags&KMOD_LMETA)
+    if(flags&KMOD_LGUI)
       {
         a|=FURYKeyModifier::left_meta_down;
       }
 
-    if(flags&KMOD_RMETA)
+    if(flags&KMOD_RGUI)
       {
         a|=FURYKeyModifier::right_meta_down;
       }
@@ -198,20 +203,15 @@ feed_event(const SDL_Event *ev)
         }
       break;
 
+      /*
+        TODO:
+          SDL_TEXTINPUT/SDL_TEXTEDITING
+       */
+
     case SDL_KEYUP:
-      if(st(m_state).m_text_mode)
-        {
-          break;
-        }
-      //fall through
     case SDL_KEYDOWN:
       {
-        if(st(m_state).m_text_mode)
-          {
-            std::vector<uint32_t> pvalues(1, ev->key.keysym.unicode);
-            h=WRATHNew FURYTextEvent(pvalues);
-          }
-        else
+        if(!ev->key.repeat || st(m_state).m_repeat_enabled)
           {
             h=WRATHNew FURYKeyEvent(FURYKey(ev->key.keysym.sym), 
                                     ev->key.type==SDL_KEYDOWN,
@@ -274,12 +274,26 @@ feed_event(const SDL_Event *ev)
       }
       break;
 
-    case SDL_VIDEORESIZE:
+    case SDL_WINDOWEVENT:
       {
-        ivec2 new_size(ev->resize.w, ev->resize.h);
-        h=WRATHNew FURYResizeEvent(st(m_state).m_last_size, 
-                                   new_size);
-        st(m_state).m_last_size=new_size;
+        switch(ev->window.event)
+          {
+          case SDL_WINDOWEVENT_RESIZED:
+            {
+              ivec2 new_size(ev->window.data1, ev->window.data2);
+              h=WRATHNew FURYResizeEvent(st(m_state).m_last_size, 
+                                         new_size);
+              st(m_state).m_last_size=new_size;
+            }
+            break;
+
+          case SDL_WINDOWEVENT_CLOSE:
+            {
+              h=WRATHNew FURYEvent(FURYEvent::Quit);
+            }
+            break;
+
+          }
       }
       break;
 
@@ -301,23 +315,16 @@ void
 FURYSDL::EventProducer::
 enable_key_repeat(bool v)
 {
-  if(v)
-    {
-      SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,
-                          SDL_DEFAULT_REPEAT_INTERVAL);
-    }
-  else
-    {
-      SDL_EnableKeyRepeat(0, SDL_DEFAULT_REPEAT_INTERVAL);
-    }
+  st(m_state).m_repeat_enabled=v;
 }
 
 void
 FURYSDL::EventProducer::
 enable_key_repeat(int delay, int interval)
 {
-  SDL_EnableKeyRepeat( std::max(delay, 0),
-                       std::max(interval, 0) );
+  st(m_state).m_repeat_delay=delay;
+  st(m_state).m_repeat_interval=interval;
+  
 }
 
 
@@ -326,7 +333,7 @@ FURYSDL::EventProducer::
 enable_text_mode(bool v)
 {
   st(m_state).m_text_mode=v;
-  SDL_EnableUNICODE(v?1:0);
+  //SDL_EnableUNICODE(v?1:0);
 }
 
 

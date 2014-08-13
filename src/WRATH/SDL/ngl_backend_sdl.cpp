@@ -28,13 +28,13 @@ ngl_loadFunction_default(const char *);
 void*
 ngl_loadFunction(const char *name)
 {
-  #ifdef WRATH_GLES_VERSION
-  {
-    return ngl_loadFunction_default(name);
-  }
-  #else
-  {
-    return SDL_GL_GetProcAddress(name);
-  }
-  #endif
+  void *q;
+
+  q=ngl_loadFunction_default(name);
+  if(q==NULL)
+    {
+      q=SDL_GL_GetProcAddress(name);
+    }
+
+  return q;
 }

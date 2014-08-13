@@ -30,6 +30,7 @@
 #include <boost/signals2.hpp>
 
 #include <SDL_events.h>
+#include <SDL_keycode.h>
 
 namespace FURYSDL
 {

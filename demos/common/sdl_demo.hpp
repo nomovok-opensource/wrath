@@ -30,11 +30,8 @@
 #include <iostream>
 #include <sys/time.h>
 #include <vector>
-#include <SDL/SDL.h>
-
-#ifndef WRATH_GL_VERSION
-#include <EGL/egl.h>
-#endif
+#include <SDL.h>
+#include <SDL_video.h>
 
 class DemoKernel;
 class DemoKernelMaker;
@@ -165,6 +162,15 @@ public:
   command_line_argument_value<int> m_bpp;
   command_line_argument_value<std::string> m_libGL;
 
+  command_line_argument_value<int> m_gl_major, m_gl_minor;
+  command_line_argument_value<bool> m_gl_forward_compatible_context;
+  command_line_argument_value<bool> m_gl_debug_context;
+  command_line_argument_value<bool> m_gl_core_profile;
+
+  command_line_argument_value<std::string> m_log_gl_commands;
+  command_line_argument_value<std::string> m_log_alloc_commands;
+  command_line_argument_value<bool> m_print_gl_info;
+
   DemoKernelMaker(void);
 
   virtual
@@ -194,27 +200,18 @@ private:
   enum return_code
   init_sdl(void);
 
-#ifndef WRATH_GL_VERSION
-  enum return_code
-  get_egl_configs(std::vector<EGLConfig>* p_egl_configs);
-
-  unsigned int
-  get_egl_compatible_bpp(std::vector<EGLConfig>* target);
-
-  int
-  choose_egl_config(std::vector<EGLConfig>* configs);
-
-  enum return_code
-  create_and_bind_context(EGLConfig* config);
-#endif
+  std::ofstream *m_gl_log;
+  std::ofstream *m_alloc_log;
 
   bool m_end_demo_flag;
   bool m_call_update;
+  GLuint m_vao;
 
   DemoKernel *m_d;
   FURYSDL::EventProducer *m_ep;
   FURYSDL::EventProducer::connect_t m_connect;
-  SDL_Surface *m_window;
+  SDL_Window *m_window;
+  SDL_GLContext m_ctx;
 };
 
 

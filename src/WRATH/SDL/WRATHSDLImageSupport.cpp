@@ -47,10 +47,9 @@ namespace
       memset(&tgt_fmt, 0, sizeof(tgt_fmt));
 
       // Set the target format to correspond the source WRATHImage pixel format      
-      tgt_fmt.palette = NULL; // Ba wha if?!
+      tgt_fmt.palette = NULL; 
       tgt_fmt.BitsPerPixel = tgt_fmt_wrath.bytes_per_pixel() * 8;
       tgt_fmt.BytesPerPixel = tgt_fmt_wrath.bytes_per_pixel();
-      tgt_fmt.alpha = src_fmt->alpha;
            
       // RGB
       if(tgt_fmt_wrath.bytes_per_pixel() == 1)

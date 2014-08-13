@@ -195,8 +195,6 @@ public:
   command_line_argument_value<int> m_max_transformations;
   command_line_argument_value<bool> m_vs_force_highp, m_fs_force_highp;
    
-  command_line_argument_value<std::string> m_log_GL, m_log_alloc;
- 
   command_line_argument_value<std::string> m_tex_attr_prec, m_tex_varying_vs_prec;
   command_line_argument_value<std::string> m_tex_varying_fs_prec, m_tex_recip_prec; 
   command_line_argument_value<int> m_text_renderer;
@@ -274,8 +272,6 @@ public:
   command_line_argument_value<bool> m_load_font_in_thread;
   command_line_argument_value<bool> m_font_render_use_sub_quads;
 
-  command_line_argument_value<bool> m_show_extensions;
-
   command_line_argument_value<bool> m_enable_fill_aa;
   command_line_argument_value<bool> m_enable_stroke_aa;
 
@@ -289,12 +285,6 @@ public:
                      "if true, all variables in vertex shader are highp", *this),
     m_fs_force_highp(false, "fs_force_highp", 
                      "if true, all variables in fragment shader are highp", *this),
-
-
-    m_log_GL("", "log_gl", "If non empty, logs GL commands to the named file", *this),
-    m_log_alloc("", "log_alloc", 
-                "If non empty, logs allocs and deallocs to the named file", *this),
-
 
     m_tex_attr_prec("highp", "font_tex_attr", 
                     "Precision qualifier for font texture coordiante attribute", *this), 
@@ -502,10 +492,6 @@ public:
                                 "decreases pixel coverage at cost of increasing primitive count",
                                 *this),
 
-    m_show_extensions(false, "show_gl_extensions",
-                      "If true print to std::cout the supported GL extensions",
-                      *this),
-
     m_enable_fill_aa(true, "enable_fill_aa", "if true enable anti-aliasing on filling shapes", *this),
     m_enable_stroke_aa(true, "enable_stroke_aa", "if true enable anti-aliasing on stroking shapes", *this)
   {}
@@ -692,8 +678,7 @@ private:
 
   std::vector<on_key_command> m_key_commands;
 
-  std::ostream *m_log_alloc_stream;
-  std::ofstream *m_gl_log_stream;
+  
   vec4 m_bg_color;
 
   WRATHTextureFont *m_font;
@@ -834,8 +819,7 @@ TextViewer::
 TextViewer(cmd_line_type &cmd_line):
   DemoKernel(&cmd_line),
 
-  m_log_alloc_stream(NULL),
-  m_gl_log_stream(NULL),
+  
   m_bg_color(cmd_line.m_bg_red.m_value,
              cmd_line.m_bg_green.m_value,
              cmd_line.m_bg_blue.m_value,
@@ -927,27 +911,7 @@ TextViewer(cmd_line_type &cmd_line):
         .add_source(cmd_line.m_custom_font_shader.m_value);
     }
 
-  if(!cmd_line.m_log_GL.m_value.empty())
-    {
-      m_gl_log_stream=WRATHNew std::ofstream(cmd_line.m_log_GL.m_value.c_str());
-      ngl_LogStream(m_gl_log_stream);
-      ngl_log_gl_commands(true);
-    }
-
-  if(!cmd_line.m_log_alloc.m_value.empty())
-    {
-      m_log_alloc_stream=WRATHNew std::ofstream(cmd_line.m_log_alloc.m_value.c_str());
-      WRATHMemory::set_new_log(m_log_alloc_stream);
-    }
-
-  if(cmd_line.m_show_extensions.m_value)
-    {
-      std::cout << "\n\nGL extensions: "
-                << glGetString(GL_EXTENSIONS)
-                << "\n";
-    }
-
-
+  
   if(cmd_line.m_grab_keyboard.m_value)
     {
       grab_keyboard(true);
@@ -1574,20 +1538,6 @@ clean_up(void)
     {
       return;
     }
-
-  if(m_gl_log_stream!=NULL)
-    {
-      ngl_LogStream(&std::cerr);
-      ngl_log_gl_commands(false);
-      WRATHPhasedDelete(m_gl_log_stream);
-    }
-
-  if(m_log_alloc_stream!=NULL)
-    {
-      WRATHMemory::set_new_log(NULL);
-      WRATHPhasedDelete(m_log_alloc_stream);
-    }
-
 
   if(m_fps_text!=NULL)
     {
