@@ -18,10 +18,13 @@
 
 
 #include "WRATHConfig.hpp"
+#include "WRATHglGet.hpp"
+#include "ngl_backend.hpp"
 #include <QtGlobal> 
 #include <QtOpenGL>
 #include <QGLWidget>
 #include <typeinfo>
+#include <fstream>
 #include "vectorGL.hpp"
 #include "qt_demo.hpp"
 
