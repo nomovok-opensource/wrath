@@ -178,9 +178,6 @@ public:
   command_line_argument_value<int> m_max_transformations;
   command_line_argument_value<bool> m_vs_force_highp, m_fs_force_highp;
 
-  command_line_argument_value<std::string> m_log_GL;
-  command_line_argument_value<std::string> m_log_alloc;
-
   command_line_argument_value<std::string> m_tex_attr_prec, m_tex_varying_vs_prec;
   command_line_argument_value<std::string> m_tex_varying_fs_prec, m_tex_recip_prec; 
   command_line_argument_value<int> m_text_renderer;
@@ -255,10 +252,6 @@ public:
     m_fs_force_highp(false, "fs_force_highp", 
                      "if true, all variables in fragment shader are highp", *this),
     
-
-    m_log_GL("", "log_gl", "If non empty, logs GL commands to the named file", *this),
-    m_log_alloc("", "log_alloc", 
-                "If non empty, logs allocs and deallocs to the named file", *this),
 
 
     m_tex_attr_prec("highp", "font_tex_attr", 
@@ -490,7 +483,6 @@ private:
   std::vector<vec3> velocities;
   float fps;
   ivec2 window_size;  
-  std::ofstream *gl_log_stream;
   float m_text_ratio;
   bool vis_flag;
 
@@ -655,7 +647,6 @@ DemoImage(cmd_line_type &pcmd_line):
   last_swap_time(0),
   paused(false),
   velocities(items.size()),
-  gl_log_stream(NULL),
   m_text_ratio(1.0f),
   vis_flag(true),
 
@@ -676,13 +667,6 @@ DemoImage(cmd_line_type &pcmd_line):
   WRATHTextureFont* (*fetcher)(int psize, 
                                const std::string &pfilename, 
                                int face_index);
-
-  if(!cmd_line.m_log_GL.m_value.empty())
-    {
-      gl_log_stream=WRATHNew std::ofstream(cmd_line.m_log_GL.m_value.c_str());
-      ngl_LogStream(gl_log_stream);
-      ngl_log_gl_commands(true);
-    }
 
 
   m_tr=WRATHNew WRATHTripleBufferEnabler();
@@ -1353,13 +1337,6 @@ clean_up(void)
   if(root==NULL)
     {
       return;
-    }
-
-  if(gl_log_stream!=NULL)
-    {
-      WRATHDelete(gl_log_stream);
-      ngl_LogStream(&std::cerr);
-      ngl_log_gl_commands(false);
     }
 
   end_record_time=get_time();

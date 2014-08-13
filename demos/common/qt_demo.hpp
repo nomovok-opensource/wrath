@@ -153,6 +153,15 @@ public:
   command_line_argument_value<bool> m_use_msaa;
   command_line_argument_value<int> m_msaa;
 
+  command_line_argument_value<int> m_gl_major, m_gl_minor;
+  command_line_argument_value<bool> m_gl_forward_compatible_context;
+  command_line_argument_value<bool> m_gl_debug_context;
+  command_line_argument_value<bool> m_gl_core_profile;
+
+  command_line_argument_value<std::string> m_log_gl_commands;
+  command_line_argument_value<std::string> m_log_alloc_commands;
+  command_line_argument_value<bool> m_print_gl_info;
+
   DemoKernelMaker(void):
     m_red_bits(-1, "red_bits", 
                "Bpp of red channel, non-positive values mean use Qt defaults",
@@ -180,6 +189,24 @@ public:
            "to request for MSAA. If not, Qt will choose the "
            "sample count as the highest available value",
            *this),
+
+    #ifdef WRATH_GLES_VERSION
+     m_gl_major(2, "gles_major", "GLES major version", *this),
+     m_gl_minor(0, "gles_minor", "GLEs minor version", *this),
+    #else
+     m_gl_major(3, "gl_major", "GL major version", *this),
+     m_gl_minor(3, "gl_minor", "GL minor version", *this),
+    #endif
+    
+    m_gl_forward_compatible_context(false, "foward_context", "if true request forward compatible context", *this),
+    m_gl_debug_context(false, "debug_context", "if true request a context with debug", *this),
+    m_gl_core_profile(true, "core_context", "if true request a context which is core profile", *this), 
+    
+    m_log_gl_commands("", "log_gl", "if non-empty, GL commands are logged to the named file. "
+                      "If value is stderr then logged to stderr, if value is stdout logged to stdout", *this),
+    m_log_alloc_commands("", "log_alloc", "If non empty, logs allocs and deallocs to the named file", *this),
+    m_print_gl_info(false, "print_gl_info", "If true print to stdout GL information", *this),
+
     m_w(NULL)
   {}
 

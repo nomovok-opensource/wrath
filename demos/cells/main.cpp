@@ -51,7 +51,6 @@ public:
   command_line_argument_value<int> m_max_transformations;
 
   //logging options
-  command_line_argument_value<std::string> m_log_GL, m_log_alloc;    
   command_line_argument_value<bool> m_print_events;
 
   //text renderer options
@@ -108,9 +107,6 @@ public:
     m_max_transformations(100, "max_tr", 
                           "Maximum number of transformation nodes per draw call", 
                           *this),
-    m_log_GL("", "log_gl", "If non empty, logs GL commands to the named file", *this),
-    m_log_alloc("", "log_alloc", 
-                "If non empty, logs allocs and deallocs to the named file", *this),
     m_print_events(false, "print_events", "If true, print events to console", *this),
 
 
@@ -326,10 +322,6 @@ private:
   WRATHTime m_paint_time, m_total_time;
   int m_number_frames;
 
-  std::ostream *m_log_alloc_stream;
-  std::ostream *m_gl_log_stream;
-
-
   bool m_touch_emulate;
   int32_t m_double_click_time;
   int32_t m_zoom_gesture_begin_time;
@@ -376,8 +368,6 @@ TableView(cmd_line_type &cmd_line):
   m_thicken_down(false),
   m_thinnen_down(false),
   m_number_frames(0),
-  m_log_alloc_stream(NULL),
-  m_gl_log_stream(NULL),
   m_touch_emulate(cmd_line.m_touch_emulate.m_value),
   m_double_click_time(cmd_line.m_double_click_time.m_value),
   m_zoom_gesture_begin_time(cmd_line.m_zoom_gesture_begin_time.m_value),
@@ -401,19 +391,6 @@ TableView(cmd_line_type &cmd_line):
 
   enable_key_repeat(false);
 
-  if(!cmd_line.m_log_GL.m_value.empty())
-    {
-      m_gl_log_stream=WRATHNew std::ofstream(cmd_line.m_log_GL.m_value.c_str());
-      ngl_LogStream(m_gl_log_stream);
-      ngl_log_gl_commands(true);
-    }
-
-  if(!cmd_line.m_log_alloc.m_value.empty())
-    {
-      m_log_alloc_stream=WRATHNew std::ofstream(cmd_line.m_log_alloc.m_value.c_str());
-      WRATHMemory::set_new_log(m_log_alloc_stream);
-    }
-
   /*
     command to specify maximum number of nodes per draw call...
    */
@@ -433,19 +410,6 @@ void
 TableView::
 clean_up(void)
 {
-  if(m_gl_log_stream!=NULL)
-    {
-      ngl_LogStream(&std::cerr);
-      ngl_log_gl_commands(false);
-      WRATHPhasedDelete(m_gl_log_stream);
-    }
-
-  if(m_log_alloc_stream!=NULL)
-    {
-      WRATHMemory::set_new_log(NULL);
-      WRATHPhasedDelete(m_log_alloc_stream);
-    }
-
   float t( std::max(1,m_total_time.elapsed()));
   int nn(std::max(1,m_number_frames));
 

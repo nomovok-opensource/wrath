@@ -130,6 +130,10 @@ private:
 
   bool m_end_demo_flag;
 
+  std::ofstream *m_gl_log;
+  std::ofstream *m_alloc_log;
+  GLuint m_vao;
+
   DemoKernel *m_d;
   DemoKernelMaker *m_maker;
   FURYQT::EventProducer *m_ep;
@@ -144,6 +148,9 @@ DemoWidget::
 DemoWidget(DemoKernelMaker *pp):
   QGLWidget(make_format(pp), 0, 0, make_flags(pp)),
   m_end_demo_flag(false),
+  m_gl_log(NULL),
+  m_alloc_log(NULL),
+  m_vao(0),
   m_d(NULL),
   m_maker(pp),
   m_ep(NULL)
@@ -161,6 +168,10 @@ DemoWidget(DemoKernelMaker *pp):
 
   setAttribute(Qt::WA_AcceptTouchEvents);
   setAttribute(Qt::WA_DeleteOnClose);
+
+  /*
+    TODO: Qt calls to observe m_make->gl_major and m_maker->gl_minor
+   */
 
   /*
     Qt madness and idiocy... calling show or showFullscreen()
@@ -190,6 +201,29 @@ DemoWidget::
   WRATHDelete(m_ep);
   m_ep=NULL;
   m_maker->m_w=NULL;
+
+  #ifdef glBindVertexArray
+  {
+    if(m_vao!=0)
+      {
+        glBindVertexArray(0);
+        glDeleteVertexArrays(1, &m_vao);
+      }
+  }
+  #endif
+
+  ngl_LogStream(NULL);
+  ngl_log_gl_commands(false);
+  WRATHMemory::set_new_log(NULL);
+
+  if(m_gl_log!=NULL)
+    {
+      WRATHDelete(m_gl_log);
+    }
+  if(m_alloc_log!=NULL)
+    {
+      WRATHDelete(m_alloc_log);
+    }
 }
 
 
@@ -233,6 +267,102 @@ DemoWidget::
 initializeGL(void)
 {
   Q_ASSERT(m_d==NULL);
+
+  if(!m_maker->m_log_gl_commands.m_value.empty())
+    {
+      std::ostream *ostr;
+      if(m_maker->m_log_gl_commands.m_value=="stderr")
+	{
+	  ostr=&std::cerr;
+	}
+      else if(m_maker->m_log_gl_commands.m_value=="stdout")
+	{
+	  ostr=&std::cout;
+	} 
+      else
+	{
+	  m_gl_log=WRATHNew std::ofstream(m_maker->m_log_gl_commands.m_value.c_str());
+	  ostr=m_gl_log;
+	}
+      
+      ngl_log_gl_commands(true);
+      ngl_LogStream(ostr);
+    }
+
+  if(!m_maker->m_log_alloc_commands.m_value.empty())
+    {
+      std::ostream *ostr;
+      if(m_maker->m_log_gl_commands.m_value=="stderr")
+	{
+	  ostr=&std::cerr;
+	}
+      else if(m_maker->m_log_gl_commands.m_value=="stdout")
+	{
+	  ostr=&std::cout;
+	} 
+      else
+	{
+          if(m_maker->m_log_alloc_commands.m_value!=m_maker->m_log_gl_commands.m_value)
+            {
+              m_alloc_log=WRATHNew std::ofstream(m_maker->m_log_gl_commands.m_value.c_str());
+              ostr=m_alloc_log;
+            }
+          else
+            {
+              ostr=m_gl_log;
+            }
+	}
+      WRATHMemory::set_new_log(ostr);
+    }
+
+  #ifdef glBindVertexArray
+  {
+    if(ngl_functionExists(glBindVertexArray))
+      {
+        glGenVertexArrays(1, &m_vao);
+        glBindVertexArray(m_vao);
+      }
+  }
+  #endif
+
+  if(m_maker->m_print_gl_info.m_value)
+    {
+      std::cout << "\nGL_VERSION:" << glGetString(GL_VERSION)
+                << "\nGL_VENDOR:" << glGetString(GL_VENDOR)
+                << "\nGL_RENDERER:" << glGetString(GL_RENDERER)
+                << "\nGL_SHADING_LANGUAGE_VERSION:" << glGetString(GL_SHADING_LANGUAGE_VERSION)
+                << "\nGL_MAX_VERTEX_ATTRIBS:" << WRATHglGet<GLint>(GL_MAX_VERTEX_ATTRIBS)
+                << "\nGL_MAX_VERTEX_TEXTURE_IMAGE_UNITS:" << WRATHglGet<GLint>(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS);
+
+      #ifdef WRATH_GL_VERSION
+      {
+        std::cout << "\nGL_MAX_CLIP_DISTANCES:" << WRATHglGet<GLint>(GL_MAX_CLIP_DISTANCES);
+
+        if(ngl_functionExists(glGetStringi))
+          {
+            int cnt;
+            
+            cnt=WRATHglGet<GLint>(GL_NUM_EXTENSIONS);
+            std::cout << "\nGL_EXTENSIONS(" << cnt << "):";
+            for(int i=0; i<cnt; ++i)
+              {
+                std::cout << "\n\t" << glGetStringi(GL_EXTENSIONS, i);
+              }
+          }
+        else
+          {
+            std::cout << "\nGL_EXTENSIONS:" << glGetString(GL_EXTENSIONS);
+          }
+        
+      }
+      #else
+      {
+        std::cout << "\nGL_EXTENSIONS:" << glGetString(GL_EXTENSIONS);
+      }
+      #endif 
+      std::cout << "\n";
+    }
+
   m_d=m_maker->make_demo();
 }
 
