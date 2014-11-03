@@ -55,6 +55,9 @@ include $(dir)/Rules.mk
 dir := $(d)/wavy-text
 include $(dir)/Rules.mk
 
+dir := $(d)/counter
+include $(dir)/Rules.mk
+
 
 
 # Begin standard footer

@@ -59,6 +59,8 @@ qt-wavy-clip2
 qt-wavy-clip2-debug
 qt-wavy-text
 qt-wavy-text-debug
+qt-counter
+qt-counter-debug
 
 
 sdl-cells
@@ -101,6 +103,8 @@ sdl-wavy-clip2
 sdl-wavy-clip2-debug
 sdl-wavy-text
 sdl-wavy-text-debug
+sdl-counter
+sdl-counter-debug
 
 
 

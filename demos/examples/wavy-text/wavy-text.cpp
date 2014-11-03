@@ -53,9 +53,17 @@
 /*
   Choose how the font is realized,
  */
-typedef WRATHTextureFontFreeType_Distance FontType;
-//typedef WRATHTextureFontFreeType_CurveAnalytic FontType;
+//typedef WRATHTextureFontFreeType_Distance FontType;
+typedef WRATHTextureFontFreeType_CurveAnalytic FontType;
 //typedef WRATHMixFontTypes<WRATHTextureFontFreeType_Analytic>::mix FontType;
+
+/*
+  Choose how to pack per-node values
+ */
+//typedef WRATHLayerItemWidgetSupport::DefaultNodePacker Packer;
+typedef WRATHLayerNodeValuePackerUniformArrays Packer;
+//typedef WRATHLayerNodeValuePackerTextureFP32 Packer;
+//typedef WRATHLayerNodeValuePackerTextureFP16 Packer;
 
 class cmd_line_type:public DemoKernelMaker
 {
@@ -116,8 +124,8 @@ public:
 
 private:
   typedef WRATHLayerItemNodeTranslate BaseNode;
-  typedef WobblyNode<WRATHLayerItemNodeTranslate> Node;
-  typedef WRATHLayerItemWidget<Node>::FamilySet FamilySet; 
+  typedef WobblyNode<BaseNode> Node;
+  typedef WRATHLayerItemWidget<Node, Packer>::FamilySet FamilySet; 
   typedef FamilySet::PlainFamily PlainFamily;
   typedef PlainFamily::NodeWidget NodeWidget;
   typedef PlainFamily::TextWidget TextWidget;
