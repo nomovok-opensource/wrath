@@ -316,6 +316,50 @@ public:
     m_gradient(pGradient)
   {}
 
+  
+  /*!\fn WRATHBrush(WRATHImage*, WRATHGradient*, uint32_t)
+    Ctor.
+    \tparam Node type which implement the static method set_shader_brush(WRATHShaderBrush&)
+                 that sets the shader for the brush
+    \param pImage value to which to initialize \ref m_image
+    \param pGradient value to which to initialize \ref m_gradient
+    \param pbits bitfield indicating shader bits, see ctor of
+                 \ref WRATHBrushBits::BrushBits
+   */
+  template<typename Node>
+  WRATHBrush(type_tag<Node>,
+             WRATHImage *pImage=NULL,
+             WRATHGradient *pGradient=NULL,
+             uint32_t pbits=0):
+    WRATHShaderBrush(pbits),
+    m_image(pImage),
+    m_gradient(pGradient)
+  {
+    Node::set_shader_brush(*this);
+  }
+
+  /*!\fn WRATHBrush(WRATHGradient*, WRATHImage*, uint32_t)
+    Ctor.
+    \tparam Node type which implement the static method set_shader_brush(WRATHShaderBrush&)
+                 that sets the shader for the brush 
+    \param pGradient value to which to initialize \ref m_gradient
+    \param pImage value to which to initialize \ref m_image
+    \param pbits bitfield indicating shader bits, see ctor of
+                 \ref WRATHBrushBits::BrushBits
+   */
+  template<typename Node>  
+  WRATHBrush(type_tag<Node>,
+             WRATHGradient *pGradient,
+             WRATHImage *pImage=NULL,
+             uint32_t pbits=0):
+    WRATHShaderBrush(pbits),
+    m_image(pImage),
+    m_gradient(pGradient)
+  {
+    Node::set_shader_brush(*this);
+  }
+
+
   /*!\fn bool image_consistent
     Returns true if \ref m_image
     value is consistent with \ref 
