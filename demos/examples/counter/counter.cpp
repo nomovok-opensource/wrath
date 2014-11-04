@@ -187,8 +187,6 @@ CounterExample(cmd_line_type *cmd_line):
     }
 
 
-  //clear color all white
-  glClearColor(1.0, 1.0, 1.0, 1.0);
 }
 
 CounterExample::~CounterExample()
@@ -234,7 +232,7 @@ void CounterExample::paint(void)
     }
 
   stream.stream() << WRATHText::set_pixel_size(m_virtual_height/2)
-                  << WRATHText::set_color(0, 0, 0)
+                  << WRATHText::set_color(255, 0, 0)
                   << WRATHText::set_font(WRATHFontDatabase::FontProperties()
                                          .family_name("DejaVuSans"),
                                          type_tag<WRATHTextureFontFreeType_Analytic>())
@@ -249,12 +247,12 @@ void CounterExample::paint(void)
       vec2 p;
       float r0, r1, theta, d;
 
-      theta=(static_cast<float>(total_ms)/500.0f + static_cast<float>(i)/4.0f) * 2.0f * float(M_PI);
-      d=static_cast<float>(i)/static_cast<float>(endi) * static_cast<float>(m_virtual_height);
-      p.x()=d*cosf(theta);
-      p.y()=d*sinf(theta);
+      theta=(static_cast<float>(total_ms)/500.0f + static_cast<float>(i+1)/4.0f) * 2.0f * float(M_PI);
+      d=static_cast<float>(i+1)/static_cast<float>(endi) * static_cast<float>(m_virtual_height) * 0.5f;
+      p.x()=d*cosf(theta) + d;
+      p.y()=d*sinf(theta) + d;
       r0=0.0f;
-      r1=m_virtual_height*2.0f;
+      r1=(sinf(0.1f*theta)+2.0f)*static_cast<float>(m_virtual_height) * 0.1f; 
       m_rects[i]->set_gradient(p, r0, p, r1);
     }
 
