@@ -258,7 +258,7 @@ void CounterExample::paint(void)
       total_ms=m_total_time.elapsed();
     }
 
-  stream.stream() << WRATHText::set_pixel_size(m_virtual_height/2)
+  stream.stream() << WRATHText::set_pixel_size(64)
                   << WRATHText::set_color(255, 0, 0)
                   << WRATHText::set_font(WRATHFontDatabase::FontProperties()
                                          .family_name("DejaVuSans"),
