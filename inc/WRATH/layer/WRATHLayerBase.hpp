@@ -48,7 +48,9 @@ class WRATHLayerItemNodeBase;
   (and common) detail oriented boilerplate code.
 
   The WRATHItemDrawState::m_drawer field of WRATHItemDrawState
-  must point to a WRATHLayerBase::DrawerBase derived object.
+  must point to a WRATHLayerBase::DrawerBase derived object
+  for those objects (added with WRATHCanvas::create_and_allocate() 
+  to a WRATHLayerBase 
  */
 class WRATHLayerBase:public WRATHCanvas
 {
@@ -392,12 +394,12 @@ protected:
   void
   on_place_on_deletion_list(void);
 
-  /*!\fn const vecN<std::map<int, WRATHRawDrawData*>, 4>& render_raw_datas(void) const
+  /*!\fn const vecN<std::map<int, WRATHRawDrawData*>, WRATHDrawType::number_draw_types>& render_raw_datas(void) const
     Returns the WRATHRawDrawData keyed by WRATHDrawType.
     The returned map is only modified from the rendering thread
     and should only be used from the rendering thread.
    */
-  const vecN<std::map<int, WRATHRawDrawData*>, 4>&
+  const vecN<std::map<int, WRATHRawDrawData*>, WRATHDrawType::number_draw_types>&
   render_raw_datas(void) const
   {
     return m_render_raw_datas;

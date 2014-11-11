@@ -80,7 +80,7 @@ public:
       /*!
         Item is to be drawn to color
         as opaque. Understood as
-        depth test on, depth wrties on
+        depth test on, depth writes on
         and blending off.
        */
       opaque_draw,
@@ -88,7 +88,7 @@ public:
       /*!
         Item is to be drawn to color
         as transparent. Understood as
-        depth test on, depth wrties off
+        depth test on, depth writes off
         and blending on. Note that one
         will need to set the blending
         function state for items, i.e by adding
@@ -96,6 +96,27 @@ public:
         to the state vector.
       */
       transparent_draw,
+
+      /*!
+        Item is drawn opaque with that
+        is visible regardless of depth.
+        Understood as depth test off, 
+        depth wrties onand blending off.
+       */
+      opaque_overdraw,
+
+      /*!
+        Item is to be drawn as transparent
+        with that is visible regardless 
+        of depth. Understood as
+        depth test off, depth writes off
+        and blending on. Note that one
+        will need to set the blending
+        function state for items, i.e by adding
+        a \ref WRATHGLStateChange::blend_state
+        to the state vector.
+      */
+      transparent_overdraw,
 
       /*!
         An invalid enumeration value, used
@@ -185,6 +206,36 @@ public:
   transparent_pass(int sub_pass=0)
   {
     return WRATHDrawType(sub_pass, transparent_draw);
+  }
+
+  /*!\fn WRATHDrawType overdraw_opaque_pass
+    Convenience function, equivalent
+    to 
+    \code
+    WRATHDrawType(sub_pass, opaque_overdraw);
+    \endcode
+    \param sub_pass value to which to assign \ref m_value
+   */
+  static
+  WRATHDrawType
+  overdraw_opaque_pass(int sub_pass=0)
+  {
+    return WRATHDrawType(sub_pass, opaque_overdraw);
+  }
+
+  /*!\fn WRATHDrawType overdraw_transparent_pass
+    Convenience function, equivalent
+    to 
+    \code
+    WRATHDrawType(sub_pass, transparent_overdraw);
+    \endcode
+    \param sub_pass value to which to assign \ref m_value
+   */
+  static
+  WRATHDrawType
+  overdraw_transparent_pass(int sub_pass=0)
+  {
+    return WRATHDrawType(sub_pass, transparent_overdraw);
   }
 };
 

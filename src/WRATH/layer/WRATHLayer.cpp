@@ -850,6 +850,11 @@ draw_content_pre_children(WRATHRawDrawData::DrawState &gl_state)
   gl_state.selector(WRATHBaseItem::selector_draw());
   draw_render_items(gl_state, render_raw_datas(WRATHDrawType::opaque_draw));
   gl_state.flush_draws();
+
+  glDepthFunc(GL_ALWAYS);
+  gl_state.selector(WRATHBaseItem::selector_draw());
+  draw_render_items(gl_state, render_raw_datas(WRATHDrawType::opaque_overdraw));
+  gl_state.flush_draws();
 }
 
 
@@ -858,7 +863,8 @@ void
 WRATHLayer::
 draw_content_post_children(WRATHRawDrawData::DrawState &gl_state)
 {
-  if(render_raw_datas(WRATHDrawType::transparent_draw).empty())
+  if(render_raw_datas(WRATHDrawType::transparent_draw).empty() 
+     and render_raw_datas(WRATHDrawType::transparent_overdraw).empty())
     {
       return;
     }
@@ -880,6 +886,11 @@ draw_content_post_children(WRATHRawDrawData::DrawState &gl_state)
 
   gl_state.selector(WRATHBaseItem::selector_draw());
   draw_render_items(gl_state, render_raw_datas(WRATHDrawType::transparent_draw));
+  gl_state.flush_draws();
+
+  glDisable(GL_DEPTH_TEST);
+  gl_state.selector(WRATHBaseItem::selector_draw());
+  draw_render_items(gl_state, render_raw_datas(WRATHDrawType::transparent_overdraw));
   gl_state.flush_draws();
 }
 
