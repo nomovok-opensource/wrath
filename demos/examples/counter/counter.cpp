@@ -48,14 +48,15 @@ class cmd_line_type:public DemoKernelMaker
 {
 public:
   command_line_argument_value<int> m_virtual_height, m_virtual_width, m_layer_count;
-  command_line_argument_value<bool> m_gradient, m_blend;
+  command_line_argument_value<bool> m_gradient, m_blend, m_disable_depth_test;
 
   cmd_line_type(void):
     m_virtual_height(128, "virtual_height", "Virtual height to which to scale display", *this),
     m_virtual_width(256, "virtual_width", "Virtual width to which to scale display", *this),
     m_layer_count(100, "layer_count", "# of full screen blends underneath text", *this),
     m_gradient(true, "gradient", "if true, layers are painted with a radial gradient", *this),
-    m_blend(true, "blend", "if true, layers are blended", *this)
+    m_blend(true, "blend", "if true, layers are blended", *this),
+    m_disable_depth_test(false, "disable_depth_test", "if true layers are drawn with depth test and depth writes off", *this)
   {}
 
   virtual
@@ -160,7 +161,7 @@ CounterExample(cmd_line_type *cmd_line):
   /*
     create the text widget
    */
-  m_text_widget=WRATHNew TextWidget(m_layer, WRATHTextItemTypes::text_opaque_non_aa);
+  m_text_widget=WRATHNew TextWidget(m_layer, WRATHTextItemTypes::text_transparent);
   m_text_widget->z_order(-1);
 
   /*
@@ -171,11 +172,25 @@ CounterExample(cmd_line_type *cmd_line):
   WRATHDrawType draw_type;
   if(cmd_line->m_blend.m_value)
     {
-      draw_type=WRATHDrawType::transparent_pass();
+      if(cmd_line->m_disable_depth_test.m_value)
+        {
+          draw_type=WRATHDrawType::overdraw_transparent_pass();
+        }
+      else
+        {
+          draw_type=WRATHDrawType::transparent_pass();
+        }
     }
   else
     {
-      draw_type=WRATHDrawType::opaque_pass();
+      if(cmd_line->m_disable_depth_test.m_value)
+        {
+          draw_type=WRATHDrawType::overdraw_opaque_pass();
+        }
+      else
+        {
+          draw_type=WRATHDrawType::opaque_pass();
+        }
     }
   
   if(cmd_line->m_gradient.m_value)
