@@ -87,7 +87,8 @@ private:
 
 
   typedef FamilySet::PlainFamily::TextWidget TextWidget;
-  typedef FamilySet::ColorRadialGradientFamily::RectWidget RectWidget;
+  typedef FamilySet::ColorRadialGradientFamily::RectWidget RectGradientWidget;
+  typedef FamilySet::ColorFamily::RectWidget RectWidget;
 
   WRATHTripleBufferEnabler::handle m_tr;
   WRATHLayer *m_layer;
@@ -100,6 +101,7 @@ private:
   WRATHGradient *m_gradient;
 
   std::vector<RectWidget*> m_rects;
+  std::vector<RectGradientWidget*> m_gradient_rects;
   TextWidget *m_text_widget;
 };
 
@@ -175,24 +177,41 @@ CounterExample(cmd_line_type *cmd_line):
       m_gradient->set_color(0.25f, WRATHGradient::color(0.0f, 1.0f, 0.0f, 1.0f));
       m_gradient->set_color(0.50f, WRATHGradient::color(0.0f, 0.0f, 1.0f, 1.0f));
       m_gradient->set_color(0.75f, WRATHGradient::color(1.0f, 1.0f, 1.0f, 1.0f));
+
+      //create the brush, the node type specifies the shader
+      WRATHBrush brush(type_tag<RectGradientWidget::Node>(), m_gradient);
+      RectGradientWidget::Drawer drawer(brush, WRATHDrawType::transparent_pass());
+
+      m_gradient_rects.resize(std::max(0, cmd_line->m_layer_count.m_value));
+      for(unsigned int i=0, endi=m_gradient_rects.size(); i<endi ; ++i)
+	{
+	  m_gradient_rects[i]=WRATHNew RectGradientWidget(m_child_layer, drawer);
+	  m_gradient_rects[i]->color(WRATHGradient::color(1.0f, 1.0f, 1.0f, 0.2f));
+	  m_gradient_rects[i]->properties()
+	    ->set_parameters(WRATHDefaultRectAttributePacker::rect_properties(cmd_line->m_virtual_width.m_value,
+									      cmd_line->m_virtual_height.m_value));
+	}
     }
   else
     {
       m_gradient=NULL;
+
+      //create the brush, the node type specifies the shader
+      type_tag<RectWidget::Node> tag;
+      WRATHBrush brush(tag);
+      RectWidget::Drawer drawer(brush, WRATHDrawType::transparent_pass());
+
+      m_rects.resize(std::max(0, cmd_line->m_layer_count.m_value));
+      for(unsigned int i=0, endi=m_rects.size(); i<endi ; ++i)
+	{
+	  m_rects[i]=WRATHNew RectWidget(m_child_layer, drawer);
+	  m_rects[i]->color(WRATHGradient::color(1.0f, 1.0f, 1.0f, 0.2f));
+	  m_rects[i]->properties()->set_parameters(WRATHDefaultRectAttributePacker::rect_properties(cmd_line->m_virtual_width.m_value,
+												    cmd_line->m_virtual_height.m_value));
+	}
     }
 
-  //create the brush, the node type specifies the shader
-  WRATHBrush brush(type_tag<RectWidget::Node>(), m_gradient);
-  RectWidget::Drawer drawer(brush, WRATHDrawType::transparent_pass());
-
-  m_rects.resize(std::max(0, cmd_line->m_layer_count.m_value));
-  for(unsigned int i=0, endi=m_rects.size(); i<endi ; ++i)
-    {
-      m_rects[i]=WRATHNew RectWidget(m_child_layer, drawer);
-      m_rects[i]->color(WRATHGradient::color(1.0f, 1.0f, 1.0f, 0.2f));
-      m_rects[i]->properties()->set_parameters(WRATHDefaultRectAttributePacker::rect_properties(cmd_line->m_virtual_width.m_value,
-                                                                                                cmd_line->m_virtual_height.m_value));
-    }
+  
 
 
 }
@@ -250,7 +269,7 @@ void CounterExample::paint(void)
   m_text_widget->clear();
   m_text_widget->add_text(stream);
 
-  for(unsigned int i=0, endi=m_rects.size(); i<endi ; ++i)
+  for(unsigned int i=0, endi=m_gradient_rects.size(); i<endi ; ++i)
     {
       vec2 p;
       float r0, r1, theta, d;
@@ -261,7 +280,7 @@ void CounterExample::paint(void)
       p.y()=d*sinf(theta) + d;
       r0=0.0f;
       r1=(sinf(0.1f*theta)+2.0f)*static_cast<float>(m_virtual_height) * 0.1f; 
-      m_rects[i]->set_gradient(p, r0, p, r1);
+      m_gradient_rects[i]->set_gradient(p, r0, p, r1);
     }
 
   m_tr->signal_complete_simulation_frame();
