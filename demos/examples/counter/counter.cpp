@@ -162,7 +162,7 @@ CounterExample(cmd_line_type *cmd_line):
   /*
     create the text widget
    */
-  m_text_widget=WRATHNew TextWidget(m_layer, WRATHTextItemTypes::text_opaque);
+  m_text_widget=WRATHNew TextWidget(m_layer, WRATHTextItemTypes::text_opaque_non_aa);
   m_text_widget->z_order(-1);
 
   /*
@@ -183,14 +183,23 @@ CounterExample(cmd_line_type *cmd_line):
   if(cmd_line->m_gradient.m_value)
     {
       m_gradient=WRATHNew WRATHGradient("my little gradient");
-      m_gradient->set_color(0.00f, WRATHGradient::color(1.0f, 0.0f, 0.0f, 0.5f));
-      m_gradient->set_color(0.25f, WRATHGradient::color(0.0f, 1.0f, 0.0f, 0.5f));
-      m_gradient->set_color(0.50f, WRATHGradient::color(0.0f, 0.0f, 1.0f, 0.5f));
-      m_gradient->set_color(0.75f, WRATHGradient::color(1.0f, 1.0f, 1.0f, 0.5f));
+      m_gradient->set_color(0.00f, WRATHGradient::color(1.0f, 0.0f, 0.0f, 1.0f));
+      m_gradient->set_color(0.25f, WRATHGradient::color(0.0f, 1.0f, 0.0f, 1.0f));
+      m_gradient->set_color(0.50f, WRATHGradient::color(0.0f, 0.0f, 1.0f, 1.0f));
+      m_gradient->set_color(0.75f, WRATHGradient::color(1.0f, 1.0f, 1.0f, 1.0f));
 
       //create the brush, the node type specifies the shader
       WRATHBrush brush(type_tag<RectGradientWidget::Node>(), m_gradient);
+
+      //create the drawer from the brush
       RectGradientWidget::Drawer drawer(brush, draw_type);
+
+      if(cmd_line->m_blend.m_value)
+        {
+          //specify how blending is done on the rect items.
+          drawer.m_draw_passes[0]
+            .m_draw_state.add_gl_state_change(WRATHNew WRATHGLStateChange::blend_state(GL_SRC_ALPHA, GL_ONE));
+        }
 
       m_gradient_rects.resize(std::max(0, cmd_line->m_layer_count.m_value));
       for(unsigned int i=0, endi=m_gradient_rects.size(); i<endi ; ++i)
