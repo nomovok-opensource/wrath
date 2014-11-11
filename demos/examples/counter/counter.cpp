@@ -48,13 +48,14 @@ class cmd_line_type:public DemoKernelMaker
 {
 public:
   command_line_argument_value<int> m_virtual_height, m_virtual_width, m_layer_count;
-  command_line_argument_value<bool> m_gradient;
+  command_line_argument_value<bool> m_gradient, m_blend;
 
   cmd_line_type(void):
     m_virtual_height(128, "virtual_height", "Virtual height to which to scale display", *this),
     m_virtual_width(256, "virtual_width", "Virtual width to which to scale display", *this),
     m_layer_count(100, "layer_count", "# of full screen blends underneath text", *this),
-    m_gradient(true, "gradient", "if true, layers are painted with a radial gradient", *this)
+    m_gradient(true, "gradient", "if true, layers are painted with a radial gradient", *this),
+    m_blend(true, "blend", "if true, layers are blended", *this)
   {}
 
   virtual
@@ -169,6 +170,15 @@ CounterExample(cmd_line_type *cmd_line):
    */
   m_text_widget->position(vec2(0.0f, 0.0f));
   
+  WRATHDrawType draw_type;
+  if(cmd_line->m_blend.m_value)
+    {
+      draw_type=WRATHDrawType::transparent_pass();
+    }
+  else
+    {
+      draw_type=WRATHDrawType::opaque_pass();
+    }
   
   if(cmd_line->m_gradient.m_value)
     {
@@ -180,7 +190,7 @@ CounterExample(cmd_line_type *cmd_line):
 
       //create the brush, the node type specifies the shader
       WRATHBrush brush(type_tag<RectGradientWidget::Node>(), m_gradient);
-      RectGradientWidget::Drawer drawer(brush, WRATHDrawType::transparent_pass());
+      RectGradientWidget::Drawer drawer(brush, draw_type);
 
       m_gradient_rects.resize(std::max(0, cmd_line->m_layer_count.m_value));
       for(unsigned int i=0, endi=m_gradient_rects.size(); i<endi ; ++i)
@@ -199,7 +209,7 @@ CounterExample(cmd_line_type *cmd_line):
       //create the brush, the node type specifies the shader
       type_tag<RectWidget::Node> tag;
       WRATHBrush brush(tag);
-      RectWidget::Drawer drawer(brush, WRATHDrawType::transparent_pass());
+      RectWidget::Drawer drawer(brush, draw_type);
 
       m_rects.resize(std::max(0, cmd_line->m_layer_count.m_value));
       for(unsigned int i=0, endi=m_rects.size(); i<endi ; ++i)
@@ -265,10 +275,6 @@ void CounterExample::paint(void)
                                          type_tag<WRATHTextureFontFreeType_Analytic>())
                   << m_frame
                   << "\n" << ms << " ms\n";
-  if(m_frame==0)
-    {
-      stream.stream() << "0123456789";
-    }
 
   m_text_widget->clear();
   m_text_widget->add_text(stream);
