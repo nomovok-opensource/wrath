@@ -48,11 +48,13 @@ class cmd_line_type:public DemoKernelMaker
 {
 public:
   command_line_argument_value<int> m_virtual_height, m_virtual_width, m_layer_count;
+  command_line_argument_value<bool> m_gradient;
 
   cmd_line_type(void):
     m_virtual_height(128, "virtual_height", "Virtual height to which to scale display", *this),
     m_virtual_width(256, "virtual_width", "Virtual width to which to scale display", *this),
-    m_layer_count(100, "layer_count", "# of full screen blends underneath text", *this)
+    m_layer_count(100, "layer_count", "# of full screen blends underneath text", *this),
+    m_gradient(true, "gradient", "if true, layers are painted with a radial gradient", *this)
   {}
 
   virtual
@@ -166,12 +168,18 @@ CounterExample(cmd_line_type *cmd_line):
   m_text_widget->position(vec2(0.0f, 0.0f));
   
   
-  m_gradient=WRATHNew WRATHGradient("my little gradient");
-  m_gradient->set_color(0.00f, WRATHGradient::color(1.0f, 0.0f, 0.0f, 1.0f));
-  m_gradient->set_color(0.25f, WRATHGradient::color(0.0f, 1.0f, 0.0f, 1.0f));
-  m_gradient->set_color(0.50f, WRATHGradient::color(0.0f, 0.0f, 1.0f, 1.0f));
-  m_gradient->set_color(0.75f, WRATHGradient::color(1.0f, 1.0f, 1.0f, 1.0f));
-
+  if(cmd_line->m_gradient.m_value)
+    {
+      m_gradient=WRATHNew WRATHGradient("my little gradient");
+      m_gradient->set_color(0.00f, WRATHGradient::color(1.0f, 0.0f, 0.0f, 1.0f));
+      m_gradient->set_color(0.25f, WRATHGradient::color(0.0f, 1.0f, 0.0f, 1.0f));
+      m_gradient->set_color(0.50f, WRATHGradient::color(0.0f, 0.0f, 1.0f, 1.0f));
+      m_gradient->set_color(0.75f, WRATHGradient::color(1.0f, 1.0f, 1.0f, 1.0f));
+    }
+  else
+    {
+      m_gradient=NULL;
+    }
 
   //create the brush, the node type specifies the shader
   WRATHBrush brush(type_tag<RectWidget::Node>(), m_gradient);
