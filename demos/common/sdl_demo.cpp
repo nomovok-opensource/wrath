@@ -103,15 +103,14 @@ init_sdl(void)
     }
 
   int video_flags;
-  video_flags = SDL_WINDOW_RESIZABLE;
 
   if(m_fullscreen.m_value)
     {
-      video_flags=video_flags | SDL_WINDOW_FULLSCREEN;
-
-      // Setting w/h to 0 will create a full screen window size
-      m_width.m_value = 0;
-      m_height.m_value = 0;
+      video_flags=SDL_WINDOW_FULLSCREEN;
+    }
+  else
+    {
+      video_flags = SDL_WINDOW_RESIZABLE;
     }
 
 
