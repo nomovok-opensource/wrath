@@ -163,7 +163,7 @@ CounterExample(cmd_line_type *cmd_line):
     create the text widget
    */
   m_text_widget=WRATHNew TextWidget(m_layer, WRATHTextItemTypes::text_opaque);
-  
+  m_text_widget->z_order(-1);
 
   /*
     add the text to the text widget
@@ -183,10 +183,10 @@ CounterExample(cmd_line_type *cmd_line):
   if(cmd_line->m_gradient.m_value)
     {
       m_gradient=WRATHNew WRATHGradient("my little gradient");
-      m_gradient->set_color(0.00f, WRATHGradient::color(1.0f, 0.0f, 0.0f, 1.0f));
-      m_gradient->set_color(0.25f, WRATHGradient::color(0.0f, 1.0f, 0.0f, 1.0f));
-      m_gradient->set_color(0.50f, WRATHGradient::color(0.0f, 0.0f, 1.0f, 1.0f));
-      m_gradient->set_color(0.75f, WRATHGradient::color(1.0f, 1.0f, 1.0f, 1.0f));
+      m_gradient->set_color(0.00f, WRATHGradient::color(1.0f, 0.0f, 0.0f, 0.5f));
+      m_gradient->set_color(0.25f, WRATHGradient::color(0.0f, 1.0f, 0.0f, 0.5f));
+      m_gradient->set_color(0.50f, WRATHGradient::color(0.0f, 0.0f, 1.0f, 0.5f));
+      m_gradient->set_color(0.75f, WRATHGradient::color(1.0f, 1.0f, 1.0f, 0.5f));
 
       //create the brush, the node type specifies the shader
       WRATHBrush brush(type_tag<RectGradientWidget::Node>(), m_gradient);
@@ -197,6 +197,7 @@ CounterExample(cmd_line_type *cmd_line):
 	{
 	  m_gradient_rects[i]=WRATHNew RectGradientWidget(m_child_layer, drawer);
 	  m_gradient_rects[i]->color(WRATHGradient::color(1.0f, 1.0f, 1.0f, 0.2f));
+	  m_gradient_rects[i]->z_order(i);
 	  m_gradient_rects[i]->properties()
 	    ->set_parameters(WRATHDefaultRectAttributePacker::rect_properties(cmd_line->m_virtual_width.m_value,
 									      cmd_line->m_virtual_height.m_value));
@@ -216,6 +217,7 @@ CounterExample(cmd_line_type *cmd_line):
 	{
 	  m_rects[i]=WRATHNew RectWidget(m_child_layer, drawer);
 	  m_rects[i]->color(WRATHGradient::color(1.0f, 1.0f, 1.0f, 0.2f));
+	  m_rects[i]->z_order(i);
 	  m_rects[i]->properties()->set_parameters(WRATHDefaultRectAttributePacker::rect_properties(cmd_line->m_virtual_width.m_value,
 												    cmd_line->m_virtual_height.m_value));
 	}
