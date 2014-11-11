@@ -265,6 +265,10 @@ void CounterExample::paint(void)
                                          type_tag<WRATHTextureFontFreeType_Analytic>())
                   << m_frame
                   << "\n" << ms << " ms\n";
+  if(m_frame==0)
+    {
+      stream.stream() << "0123456789";
+    }
 
   m_text_widget->clear();
   m_text_widget->add_text(stream);
