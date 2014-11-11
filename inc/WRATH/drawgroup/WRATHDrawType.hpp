@@ -79,14 +79,22 @@ public:
 
       /*!
         Item is to be drawn to color
-        buffers as opaque
+        as opaque. Understood as
+        depth test on, depth wrties on
+        and blending off.
        */
       opaque_draw,
 
       /*!
         Item is to be drawn to color
-        buffers as transparent
-       */
+        as transparent. Understood as
+        depth test on, depth wrties off
+        and blending on. Note that one
+        will need to set the blending
+        function state for items, i.e by adding
+        a \ref WRATHGLStateChange::blend_state
+        to the state vector.
+      */
       transparent_draw,
 
       /*!

@@ -168,13 +168,26 @@ namespace WRATHItemTypes
   /*!\class Drawer
     A Drawer represents how to draw an item
     in multiple passes.
-    \tparam AttributePacker attribute packer type for the item
-    \tparam Pass type derived from DrawerPass specifying how to draw a pass
+    \tparam pAttributePacker attribute packer type for the item
+    \tparam pPass type derived from DrawerPass specifying how to draw a pass
    */
-  template<typename AttributePacker, typename Pass=DrawerPass>
+  template<typename pAttributePacker, typename pPass=DrawerPass>
   class Drawer
   {
   public:
+
+    /*!\typedef AttributePacker
+      Typedef naming the attribute packer type
+      of template argument.
+     */
+    typedef pAttributePacker AttributePacker;
+
+    /*!\typedef Pass
+      Typedef naming the drawer type
+      of template argument.
+     */
+    typedef pPass Pass;
+
     /*!\fn Drawer(void)
       Ctor. Initialize \ref m_packer as NULL,
       \ref m_draw_passes as an array of length 0.

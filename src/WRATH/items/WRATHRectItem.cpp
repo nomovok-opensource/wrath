@@ -25,12 +25,18 @@
 ///////////////////////////////////////////////////
 //WRATHRectItemTypes::Drawer methods
 WRATHRectItemTypes::Drawer::
-Drawer(const WRATHBrush &brush, WRATHDrawType ppass,
+Drawer(const WRATHBrush &pbrush, WRATHDrawType ppass,
        enum WRATHBaseSource::precision_t v):
-  base_class(&WRATHDefaultRectShader::shader_hoard().fetch(brush, v),
-             WRATHDefaultRectAttributePacker::fetch(),
-             ppass)
+  base_class()
 {
+  WRATHBrush brush(pbrush);
+
+  brush.make_consistent();
+  m_packer=WRATHDefaultRectAttributePacker::fetch();
+  m_draw_passes.clear();
+  m_draw_passes.push_back(Pass(&WRATHDefaultRectShader::shader_hoard().fetch(brush, v),
+                               ppass));
+
   WRATHDefaultRectShader::shader_hoard().add_state(brush, m_draw_passes[0].m_draw_state);
 }
 
