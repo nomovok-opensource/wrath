@@ -167,7 +167,8 @@ public:
   command_line_argument_value<bool> m_gl_debug_context;
   command_line_argument_value<bool> m_gl_core_profile;
 
-  command_line_argument_value<std::string> m_log_gl_commands;
+  command_line_argument_value<bool> m_log_all_gl;
+  command_line_argument_value<std::string> m_log_gl_file;
   command_line_argument_value<std::string> m_log_alloc_commands;
   command_line_argument_value<bool> m_print_gl_info;
 

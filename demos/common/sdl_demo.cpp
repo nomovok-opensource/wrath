@@ -74,7 +74,8 @@ DemoKernelMaker(void):
   m_gl_debug_context(false, "debug_context", "if true request a context with debug", *this),
   m_gl_core_profile(true, "core_context", "if true request a context which is core profile", *this), 
 
-  m_log_gl_commands("", "log_gl", "if non-empty, GL commands are logged to the named file. "
+  m_log_all_gl(false, "log_gl", "if true all GL commands are logged, otherwise only errors are logged", *this),
+  m_log_gl_file("", "log_gl_file", "GL commands/errors are logged to the named file. Default is errors are logged to stderr."
 		    "If value is stderr then logged to stderr, if value is stdout logged to stdout", *this),
   m_log_alloc_commands("", "log_alloc", "If non empty, logs allocs and deallocs to the named file", *this),
   m_print_gl_info(false, "print_gl_info", "If true print to stdout GL information", *this),
@@ -230,43 +231,45 @@ init_sdl(void)
       SDL_ShowCursor(SDL_DISABLE);
     }
 
-  if(!m_log_gl_commands.m_value.empty())
+  if(!m_log_gl_file.m_value.empty())
     {
       std::ostream *ostr;
-      if(m_log_gl_commands.m_value=="stderr")
+      if(m_log_gl_file.m_value=="stderr")
 	{
 	  ostr=&std::cerr;
 	}
-      else if(m_log_gl_commands.m_value=="stdout")
+      else if(m_log_gl_file.m_value=="stdout")
 	{
 	  ostr=&std::cout;
 	} 
       else
 	{
-	  m_gl_log=WRATHNew std::ofstream(m_log_gl_commands.m_value.c_str());
+	  m_gl_log=WRATHNew std::ofstream(m_log_gl_file.m_value.c_str());
 	  ostr=m_gl_log;
 	}
       
-      ngl_log_gl_commands(true);
       ngl_LogStream(ostr);
     }
+
+  ngl_log_gl_commands(m_log_all_gl.m_value);
+        
 
   if(!m_log_alloc_commands.m_value.empty())
     {
       std::ostream *ostr;
-      if(m_log_gl_commands.m_value=="stderr")
+      if(m_log_alloc_commands.m_value=="stderr")
 	{
 	  ostr=&std::cerr;
 	}
-      else if(m_log_gl_commands.m_value=="stdout")
+      else if(m_log_alloc_commands.m_value=="stdout")
 	{
 	  ostr=&std::cout;
 	} 
       else
 	{
-          if(m_log_alloc_commands.m_value!=m_log_gl_commands.m_value)
+          if(m_log_alloc_commands.m_value!=m_log_gl_file.m_value)
             {
-              m_alloc_log=WRATHNew std::ofstream(m_log_gl_commands.m_value.c_str());
+              m_alloc_log=WRATHNew std::ofstream(m_log_alloc_commands.m_value.c_str());
               ostr=m_alloc_log;
             }
           else
