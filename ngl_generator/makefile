@@ -1,7 +1,7 @@
 LL=flex
 CXX?=g++
 CFLAGS=-Wall 
-LINKER=-lfl 
+LINKER= 
 
 all:  extractor filter
 

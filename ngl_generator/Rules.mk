@@ -21,7 +21,7 @@ $(call filelist, gl_flex.cpp): $(call filelist, gl_flex.fl.cpp)
 
 
 EXTRA_CLEAN += $(call filelist, extractor filter gl_flex.cpp lex.yy.c)
-EXTRA_CLEAN += $(call filelist, *.o)
+EXTRA_CLEAN += $(call filelist, *.o *.exe)
 
 .SECONDARY: $(NGL_FILTER) $(NGL_EXTRACTOR)
 

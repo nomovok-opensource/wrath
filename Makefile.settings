@@ -24,6 +24,11 @@ USE_ATOMIC_OPS_REF_COUNTING ?=1
 # GL header file location
 GL_INCLUDEPATH=/usr/include
 
+ifeq ($(MINGW_BUILD),1)
+GL_INCLUDEPATH=/mingw/include
+endif
+
+
 # additional flags for location of GL .so's
 # only needed for GLES2/3 and only if the .so
 # are not in the library path already
