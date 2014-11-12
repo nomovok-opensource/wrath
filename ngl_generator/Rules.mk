@@ -11,13 +11,19 @@ NGL_EXTRACTOR_LDFLAGS :=
 NGL_LL := flex
 
 $(NGL_FILTER): $(call filelist, filter.cpp)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) -o $@ $^
 
 $(NGL_EXTRACTOR): $(call filelist, gl_flex.o HeaderCreator.o)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(NGL_EXTRACTOR_LDFLAGS)
+	$(CXX) -o $@ $^ $(NGL_EXTRACTOR_LDFLAGS)
 
 $(call filelist, gl_flex.cpp): $(call filelist, gl_flex.fl.cpp)
 	$(NGL_LL) -o $@ $^
+
+$(call filelist, gl_flex.o): $(call filelist, gl_flex.cpp)
+	$(CXX) -o $@ -c $^
+
+$(call filelist, HeaderCreator.o): $(call filelist, HeaderCreator.cpp)
+	$(CXX) -o $@ -c $^
 
 
 EXTRA_CLEAN += $(call filelist, extractor filter gl_flex.cpp lex.yy.c)

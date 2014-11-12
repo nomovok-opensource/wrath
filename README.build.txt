@@ -79,5 +79,23 @@ but also each such has a debug variant. The debug versions run horrow
 slow but should be used if any issues arise on device.
 
 
+MS-Windows
+---------------------------
+WRATH can be built with MinGW (atleast the SDL variant so far).
+At the time of this writing, only 32-bit build under MinGW is supported.
+The main caveat is that MinGW has the variable CC set in make
+to cc which is a non-existant compiler. One must export CC=gcc
+or edit Makefile.setting to make sure CC is set to gcc correctly.
+
+As for the subject of dependencies, all the dependencies of WRATH
+do have MinGW ports, look to http://www.gtk.org/download/index.php
+for MinGW ready binaries of fontconfig, freetype and others.
+Binaries and devel files for SDL2 and SDL_image2 are available 
+from libsdl.org and https://www.libsdl.org/projects/SDL_image/.
+Lastly, one must use msys as it provides flex and other needed
+tools for WRATH to be built.
+
+
+
 
 
