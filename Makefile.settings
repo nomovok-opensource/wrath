@@ -126,11 +126,22 @@ endif
 CPPFLAGS = $(DEFINE_FLAGS) $(INCLUDES) $(LIBRARY_CXXFLAGS)
 
 CXXFLAGS = $(WARN_FLAGS)
-CXXFLAGS_RELEASE = -O3 -DNDEBUG -g
+
+CXXFLAGS_RELEASE = -DNDEBUG -g
 CXXFLAGS_DEBUG = -g
 
+
 ifeq ($(MINGW_BUILD),1)
-CXXFLAGS += -m32 -march=native
+# 32-bit gcc/g++ does not emit the correct instructions for various 
+# __sync_add_and_fetch/__sync_sub_and_fetch without additional
+# hand holding on CPU arch, etc. 
+  CXXFLAGS += -m32 -march=native
+
+# -O3 produces crashing .exe's on MinGW (atleast the version tested)
+# whereas -O2 is fine. 
+  CXXFLAGS_RELEASE += -O2
+else
+  CXXFLAGS_RELEASE += -O3
 endif
 
 # Common $(LDFLAGS) (lib and demos) contains all libraries
