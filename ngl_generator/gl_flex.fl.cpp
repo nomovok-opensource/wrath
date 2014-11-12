@@ -16,7 +16,7 @@
  * 
  */
 
-
+%option noyywrap
 
 
 %{ 

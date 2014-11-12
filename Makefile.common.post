@@ -93,12 +93,11 @@ debug/.depend/%.d: debug/%.cpp
 $(DEPS): ngl/$(NGL).hpp
 
 ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),clean-all)
 ifneq ($(MAKECMDGOALS),targets)
 -include $(DEPS)
 endif
 endif
-endif
+
 
 all: release-all debug-all
 
@@ -124,12 +123,7 @@ $(call addtargetname, docs)
 $(call addtargetname, list-shaders)
 
 clean:
-	-rm -f $(DEPS) $(RELEASE_SHADERS) $(DEBUG_SHADERS) $(EXTRA_CLEAN)
-	@[ -d release ] && find release -depth -type d -exec rmdir --ignore-fail-on-non-empty "{}" ";" || true
-	@[ -d debug ] && find debug -depth -type d -exec rmdir --ignore-fail-on-non-empty "{}" ";" || true
-
-clean-all: clean
-	-rm -fr release debug
+	-rm -fr release debug $(EXTRA_CLEAN)
 	-find . -name "*~" -exec rm {} \;
 
-.PHONY: all release-all debug-all docs targets list-shaders clean clean-all
+.PHONY: all release-all debug-all docs targets list-shaders clean 

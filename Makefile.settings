@@ -4,6 +4,13 @@ CXX ?= g++
 LINK = $(CXX)
 SHADERCC=shell_scripts/create_cpp_hpp_from_file.sh
 
+# detect MinGW: requires tweaks to various builds
+MINGW_BUILD = 0
+ifeq ($(findstring MINGW32,$(shell uname -a)),MINGW32)
+MINGW_BUILD = 1
+endif
+
+
 # Use boost::locale, requires boost version atleast 1.48.0 
 # 0=Dont use boost::locale
 # 1=Use boost::locale
@@ -116,6 +123,10 @@ CPPFLAGS = $(DEFINE_FLAGS) $(INCLUDES) $(LIBRARY_CXXFLAGS)
 CXXFLAGS = $(WARN_FLAGS)
 CXXFLAGS_RELEASE = -O3 -DNDEBUG -g
 CXXFLAGS_DEBUG = -g
+
+ifeq ($(MINGW_BUILD),1)
+CXXFLAGS += -m32 -march=native
+endif
 
 # Common $(LDFLAGS) (lib and demos) contains all libraries
 # wrath lib also links to, intentionally.
