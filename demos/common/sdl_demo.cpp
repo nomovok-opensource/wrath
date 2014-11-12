@@ -476,7 +476,7 @@ main(int argc, char **argv)
   ngl_log_gl_commands(false);
   WRATHMemory::set_new_log(NULL);
 
-  if(m_gl_log!=NULL)
+  if(m_gl_log!=NULL and m_gl_log!=m_alloc_log)
     {
       WRATHDelete(m_gl_log);
     }
