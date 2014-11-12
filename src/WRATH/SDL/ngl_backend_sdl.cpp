@@ -30,10 +30,10 @@ ngl_loadFunction(const char *name)
 {
   void *q;
 
-  q=ngl_loadFunction_default(name);
+  q=SDL_GL_GetProcAddress(name);
   if(q==NULL)
     {
-      q=SDL_GL_GetProcAddress(name);
+      q=ngl_loadFunction_default(name);
     }
 
   return q;

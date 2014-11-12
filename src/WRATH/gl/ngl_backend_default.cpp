@@ -28,6 +28,16 @@
 #include <EGL/egl.h>
 #endif
 
+#ifdef _WIN32
+  #define OpenGLLibrary "opengl32.dll"
+#else
+  #ifdef WRATH_GL_VERSION
+    #define OpenGLLibrary "libGL.so"
+  #else
+    #define OpenGLLibrary "libGLESv2.so"
+  #endif
+#endif
+
 namespace
 {
   class libGL_handle
@@ -36,16 +46,7 @@ namespace
     libGL_handle(void)
     {
       m_handle[0]=dlopen(NULL,  RTLD_LAZY);
-
-      #ifdef WRATH_GL_VERSION
-      {
-        m_handle[1]=dlopen("libGL.so", RTLD_LAZY);
-      }
-      #else
-      {
-        m_handle[1]=dlopen("libGLESv2.so", RTLD_LAZY);
-      }
-      #endif      
+      m_handle[1]=dlopen(OpenGLLibrary, RTLD_LAZY);
     }
 
     ~libGL_handle()

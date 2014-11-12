@@ -37,8 +37,12 @@ namespace
       error_code=pthread_mutexattr_init(&mutex_attributes);
       WRATHassert(error_code==0);
       
-      pthread_mutexattr_setprotocol(&mutex_attributes, PTHREAD_PRIO_NONE);
-      
+      #ifndef _WIN32
+      {
+        pthread_mutexattr_setprotocol(&mutex_attributes, PTHREAD_PRIO_NONE);
+      }
+      #endif
+
       #ifdef MUTEX_DEBUG
       {
         error_code=pthread_mutexattr_settype(&mutex_attributes, PTHREAD_MUTEX_ERRORCHECK);
@@ -187,7 +191,7 @@ UnlockImplement(const char *file, int line)
   thread=pthread_self();
 
   WRATHassert(m_locked_from_line!=-1);
-  WRATHassert(m_locking_thread==thread);
+  WRATHassert(pthread_equal(m_locking_thread,thread));
 
   m_locked_from_file="??NotLocked??";
   m_locked_from_line=-1;
@@ -246,7 +250,7 @@ wait_thread(WRATHThreadID id)
   int error_code;
   void *return_value(NULL);
 
-  WRATHassert(id.m_id!=pthread_self());
+  WRATHassert(!pthread_equal(id.m_id, pthread_self()));
 
   error_code=pthread_join(id.m_id, &return_value);
   WRATHassert(error_code==0);

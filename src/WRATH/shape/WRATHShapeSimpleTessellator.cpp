@@ -322,7 +322,9 @@ init(float angle,
     1.0f:-1.0f;
   
   angle=std::max(angle, 0.0001f);
-  sincosf(angle*0.5f, &s, &c);
+  //sincosf(angle*0.5f, &s, &c);
+  s=sinf(angle*0.5f);
+  c=cosf(angle*0.5f);
 
   coeff=negate_dir*0.5f*c/s;
   delta=n*coeff;
@@ -351,7 +353,9 @@ compute(float t, analytic_point_data &output) const
 {
   float s, c;
 
-  sincosf(m_angle0+t*m_angle_speed, &s, &c);
+  //sincosf(m_angle0+t*m_angle_speed, &s, &c);
+  s=sinf(m_angle0+t*m_angle_speed);
+  c=cosf(m_angle0+t*m_angle_speed);
 
   s*=m_radius;
   c*=m_radius;

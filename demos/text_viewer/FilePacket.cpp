@@ -1714,7 +1714,7 @@ load_file(const std::string &pfilename, FileData *file_data,
       ptr=::opendir(pp.c_str());
       if(ptr!=NULL)
         {
-          WRATHassert(*pp.rbegin()=='/');
+          //          WRATHassert(*pp.rbegin()=='/');
           
           include_dir(cmd_data, ptr, pp);
           ::closedir(ptr);
@@ -3419,6 +3419,8 @@ include_dir(const Command &cmd, CommandData &cmd_data)
           filename.push_back('/');
         }
 
+      //TODO: for non-Unix platforms the lack of '/' at the front does not
+      //inply that it is an absolute path.
       if(filename[0]!='/')
         {
           if(cmd_data.m_current_location.back().m_file_path.empty()

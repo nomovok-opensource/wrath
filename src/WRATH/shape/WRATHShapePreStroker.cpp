@@ -124,7 +124,9 @@ do_rounded_cap(float curve_thresh,
       vec2 q;
       float s, c;
 
-      sincosf(theta, &s, &c);
+      s=sinf(theta);
+      c=cosf(theta);
+      //      sincosf(theta, &s, &c);
 
       CapPoint qq(outlineID, is_starting_cap, p, v*s+n*c);
       pts.push_back(qq);
@@ -540,8 +542,9 @@ do_rounded_join(float curve_thresh,
       std::complex<float> cs;
       float s, c;
 
-      //sincosf(theta, &cs.imag(), &cs.real());
-      sincosf(theta, &s, &c);
+      //      sincosf(theta, &s, &c);
+      s=sinf(theta);
+      c=cosf(theta);
       cs=std::complex<float>(c, s);
       cs*=n0z;
       

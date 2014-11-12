@@ -70,4 +70,22 @@
   should we also make a symbol for minor GL version?
  */
 
+#ifdef _WIN32
+#include <math.h>
+inline 
+void 
+sincosf(float angle, float *s, float *c)
+{
+  if(s!=NULL)
+    {
+      *s=sinf(angle);
+    }
+
+  if(c!=NULL)
+    {
+      *c=cosf(angle);
+    }
+}
+#endif
+
 #endif

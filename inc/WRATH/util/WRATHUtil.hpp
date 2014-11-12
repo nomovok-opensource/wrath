@@ -209,11 +209,7 @@ namespace WRATHUtil
   
   /*!\fn std::string filename_fullpath(const std::string&)
     Simple utility function to return the
-    absolute file path from a filename, returns the
-    absoulte file path with relative pathing collapsed
-    as a string with directories  delimited by '/', 
-    for example "./some/path/../file.txt"
-    will essentially return get_current_working() + "/some/file.txt".
+    absolute file path from a filename
     \param S filename 
   */
   std::string

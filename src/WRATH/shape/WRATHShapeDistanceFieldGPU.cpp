@@ -569,9 +569,9 @@ build_fans(const std::vector<vec2> &pts,
   {
     float imag, real;
     
-    sincosf(theta, &imag, &real);
+    real=cosf(theta);
+    imag=sinf(theta);
     delta_z_theta=std::complex<float>(real, imag);
-    //sincosf(theta, &delta_z_theta.imag(), &delta_z_theta.real());
   }
 
   /*

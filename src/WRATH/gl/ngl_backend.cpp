@@ -19,7 +19,7 @@
 
 #include "WRATHConfig.hpp"
 
-#include <dlfcn.h>
+
 #include <sstream>
 #include "WRATHassert.hpp" 
 #include "WRATHgl.hpp"

@@ -35,6 +35,7 @@
 #include <map>
 #include <boost/multi_array.hpp>
 #include <sys/time.h>
+#include <unistd.h>
 #include <boost/signals2.hpp>
 #include <boost/bind.hpp>
 #include "WRATHUtil.hpp"
@@ -3483,12 +3484,7 @@ namespace WRATHFreeTypeSupport
     void
     wait_a_little(void)
     {
-      struct timespec alittle_time;
-
-      //wait for 1ms
-      alittle_time.tv_sec=0;
-      alittle_time.tv_nsec=1000;
-      nanosleep(&alittle_time, NULL);
+      usleep(1);
     }
 
     LockableFace::handle m_ttf_face;

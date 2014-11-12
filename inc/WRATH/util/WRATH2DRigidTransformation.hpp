@@ -203,7 +203,8 @@ public:
   rotation(float angle_in_radians)
   {
     float i, r;
-    sincosf(angle_in_radians, &i, &r);
+    r=cosf(angle_in_radians);
+    i=sinf(angle_in_radians);
     m_rotation=std::complex<float>(r, i);
     
   }             

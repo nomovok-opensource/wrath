@@ -44,128 +44,39 @@ filename_extension(const std::string &S)
     }
 }
 
-namespace {
-
-std::string
-filename_fullpath(const std::string &name, std::list<std::string> &path_list)
-{
-  //get the path without the ".." and "." in it.
-  std::string::const_iterator last_start, current;
-  std::string path_piece;
-  std::ostringstream retval;
-  std::list<std::string>::iterator iter;
-  bool is_absolute_path, is_directory;
-  
-  is_absolute_path=(!name.empty() and name[0]=='/');
-
-  if(!is_absolute_path)
-    {
-      char *path(NULL);
-      path=get_current_dir_name();
-
-      if(path)
-        {
-          retval << "/" << get_current_dir_name() << "/" << name;
-          free(path);
-          return filename_fullpath(retval.str(), path_list);
-        }      
-
-      /*!
-        get_current_dir_name() failed, so we silently
-        do something icky: we pretend that name
-        was an absolute path.
-      */
-    }
-
-  is_directory=(!name.empty() and *name.rbegin()=='/');
-  path_list.clear();
-  
-  last_start=current=name.begin();
-  if(is_absolute_path)
-    {
-      while(current!=name.end() and 
-            (*current=='/' or *current=='\\'))
-        {
-          ++last_start; 
-          ++current;
-        }
-    }
-  
-  for(; current!=name.end(); ++current)
-    {
-      if('/'==*current or '\\'==*current)
-        {
-          //found a slash, add a string from the last slash to the current.
-          if(last_start!=current)
-            {
-              path_piece=std::string(last_start,current);
-              
-              if(path_piece==".." and !path_list.empty() 
-                 and path_list.back()!=".." and 
-                 (is_absolute_path or path_list.back()!="."))
-                  {
-                    path_list.pop_back();
-                  }
-              else if(path_piece!="." 
-                      or (!is_absolute_path and path_list.empty()))
-                {
-                  path_list.push_back(path_piece);
-                }             
-                last_start=current+1;
-            }
-          
-        }
-    }
-  
-  //and finally add the last bit past the last '/'
-  if(last_start!=current)
-    {
-      path_piece=std::string(last_start,current);
-      
-      if(path_piece==".." and !path_list.empty() 
-         and path_list.back()!=".." and 
-           (is_absolute_path or path_list.back()!="."))
-        {
-          path_list.pop_back();
-        }
-      else if(path_piece!="." 
-              or (!is_absolute_path and path_list.empty()))
-        {
-          path_list.push_back(path_piece);
-        }             
-    }
-  
-  retval.str("");
-  
-  WRATHassert(is_absolute_path);
-  retval << "/";
-    
-  for(iter=path_list.begin(); iter!=path_list.end(); ++iter)
-    {
-      if(iter!=path_list.begin())
-          {
-            retval << "/";
-          }
-      retval << *iter;
-    }
-  
-  if(is_directory and !path_list.empty())
-    {
-      retval << "/";
-    }
-  
-  return retval.str();
-}
-
-}
-
 
 std::string
 WRATHUtil::
 filename_fullpath(const std::string &S)
 {
-  std::list<std::string> path_list;
-  return ::filename_fullpath(S, path_list);
+  #ifdef _WIN32
+  {
+    DWORD retval;
+    char buffer[PATH_MAX+1];
+    retval=GetFullPathNameA(S.c_str(), PATH_MAX+1, buffer, NULL);
+    if(retval!=0)
+      {
+        return std::string(buffer);
+      }
+    else
+      {
+        return std::string();
+      }
+  }
+  #else
+  {
+    char buffer[PATH_MAX+1], *r;
+    r=realpath(S.c_str(), buffer);
+    if(r!=NULL)
+      {
+        return std::string(r);
+      }
+    else
+      {
+        return std::string();
+      }
+  }
+  #endif
 }
 
 void
