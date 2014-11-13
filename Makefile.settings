@@ -10,6 +10,10 @@ ifeq ($(findstring MINGW32,$(shell uname -a)),MINGW32)
 MINGW_BUILD = 1
 endif
 
+# if you wish to have console use for MINGW builds
+# set below to 1
+MINGW_CONSOLE_BUILD ?= 0
+
 
 # Use boost::locale, requires boost version atleast 1.48.0 
 # 0=Dont use boost::locale

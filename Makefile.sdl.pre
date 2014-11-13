@@ -2,7 +2,16 @@
 SDL_LIB_SOURCES :=
 
 LIBSDL_CXXFLAGS = `sdl2-config --cflags`
-LIBSDL_LDFLAGS = `sdl2-config --libs` -lSDL2_image
+LIBSDL_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image
+
+ifeq ($(MINGW_BUILD),1)
+  ifeq ($(MINGW_CONSOLE_BUILD),1)
+    TEMP := $(LIBSDL_LDFLAGS)
+    LIBSDL_LDFLAGS := $(subst -mwindows, ,$(TEMP))
+  endif
+  $(info SDL2 Link Flags:$(LIBSDL_LDFLAGS))
+endif
+
 
 # Link SDL builds to libX11 for GLES2 builds
 ifeq ($(GL_TYPE),0)
