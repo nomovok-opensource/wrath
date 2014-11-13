@@ -314,14 +314,6 @@ void CounterExample::handle_event(FURYEvent::handle ev)
       FURYResizeEvent::handle rev(ev.static_cast_handle<FURYResizeEvent>());
       resize(rev->new_size().x(), rev->new_size().y());
     }
-  else if(ev->type()==FURYEvent::KeyUp)
-    {
-      FURYKeyEvent::handle qe(ev.static_cast_handle<FURYKeyEvent>());
-      if(qe->key().m_value == FURYKey_Escape || qe->key().m_value == FURYKey_Q)
-        {
-          end_demo();
-        }
-    }
 }
 
 int main(int argc, char **argv)

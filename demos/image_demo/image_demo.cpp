@@ -1506,10 +1506,6 @@ handle_event(FURYEvent::handle ev)
             m_perspective_on=!m_perspective_on;
             update_z_s();
             break;
-
-          case FURYKey_Escape:
-            end_demo();
-            break;
           }
       }
       break;

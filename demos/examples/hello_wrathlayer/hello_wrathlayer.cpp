@@ -620,14 +620,6 @@ handle_event(FURYEvent::handle ev)
         ev->accept();
         switch(qe->key().m_value)
           {
-          case FURYKey_Escape:
-            /*
-              end_demo is a method inherited from DemoKernel
-              to end the program and close the window
-             */
-            end_demo();
-            break;
-
           case FURYKey_K:
             m_pre_translate.x()+=10.0f;
             break;

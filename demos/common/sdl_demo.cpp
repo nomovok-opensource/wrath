@@ -373,6 +373,16 @@ pre_handle_event(FURYEvent::handle ev)
           }
           break;
 
+	case FURYEvent::KeyUp:
+	  {
+	    FURYKeyEvent::handle qe(ev.static_cast_handle<FURYKeyEvent>());
+	    if(qe->key().m_value == FURYKey_Escape)
+	      {
+		m_end_demo_flag=true;
+	      }
+	  }
+	  break;
+
         default:
           break;
         }
