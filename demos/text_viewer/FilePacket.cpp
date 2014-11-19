@@ -42,6 +42,14 @@
 #include <QFont>
 #endif
 
+#ifdef __WIN32
+  #define DIRECTORY_SLASH '\\'
+  #define DIRECTORY_SLASH_STR "\\"
+#else
+  #define DIRECTORY_SLASH '/'
+  #define DIRECTORY_SLASH_STR "/"
+#endif
+
 template<>
 void
 readvalue_from_string(enum WRATHText::letter_spacing_e &value, const std::string &v)
@@ -866,13 +874,12 @@ stack_data(const stack_data &parent, const std::string &pfilename):
 
       iter=pfilename.find_last_of("/\\");
 
-      //get the path, if the leading character is
-      //a \ or / then the path is absolute:
-      if(pfilename.at(0)=='/'
-         or pfilename.at(0)=='\'')
+      //TODO: on non-Unix an absolute path is not indicated by
+      //first character being a DIRECTORY_SLASH
+      if(pfilename.at(0)==DIRECTORY_SLASH)
         {
           m_file_with_path=pfilename;
-          m_file_path=pfilename.substr(0,iter+1); //include trailing '/'
+          m_file_path=pfilename.substr(0,iter+1); //include trailing DIRECTORY_SLASH
           m_file_without_path=pfilename.substr(1+iter);
         }
       else
@@ -896,7 +903,7 @@ font_glyph_generator(FilePacket *pparent, WRATHTextureFont *pfont):
 {
   std::string::size_type pos;
 
-  pos=pfont->simple_name().find_last_of('/');
+  pos=pfont->simple_name().find_last_of(DIRECTORY_SLASH);
 
   if(pos!=std::string::npos)
     {
@@ -1714,7 +1721,7 @@ load_file(const std::string &pfilename, FileData *file_data,
       ptr=::opendir(pp.c_str());
       if(ptr!=NULL)
         {
-          //          WRATHassert(*pp.rbegin()=='/');
+	  WRATHassert(*pp.rbegin()==DIRECTORY_SLASH);
           
           include_dir(cmd_data, ptr, pp);
           ::closedir(ptr);
@@ -3414,17 +3421,20 @@ include_dir(const Command &cmd, CommandData &cmd_data)
       DIR *ptr;
       std::string filename(cmd.argument(0));
 
-      if(*filename.rbegin()!='/')
-        {
-          filename.push_back('/');
-        }
+     
+      if(*filename.rbegin()!=DIRECTORY_SLASH)
+	{
+	  filename.push_back(DIRECTORY_SLASH);
+	}
+      
+      
 
-      //TODO: for non-Unix platforms the lack of '/' at the front does not
-      //inply that it is an absolute path.
-      if(filename[0]!='/')
+      //TODO: for non-Unix platforms the lack of DIRECTORY_SLASH
+      //at the front does not imply that it is an absolute path.
+      if(filename[0]!=DIRECTORY_SLASH)
         {
           if(cmd_data.m_current_location.back().m_file_path.empty()
-             or *cmd_data.m_current_location.back().m_file_path.rbegin()=='/')
+             or *cmd_data.m_current_location.back().m_file_path.rbegin()==DIRECTORY_SLASH)
             {
               filename=cmd_data.m_current_location.back().m_file_path
                 + filename;
@@ -3432,7 +3442,7 @@ include_dir(const Command &cmd, CommandData &cmd_data)
           else
             {
               filename=cmd_data.m_current_location.back().m_file_path
-                + "/" + filename;
+                + DIRECTORY_SLASH_STR + filename;
             }
           filename=WRATHUtil::filename_fullpath(filename);
         }
@@ -3506,8 +3516,8 @@ include_dir(CommandData &cmd_data,
         {
           is_directory=true;
           ::closedir(ptr);
-          absolute_filename.push_back('/');
-          relative_filename.push_back('/');
+          absolute_filename.push_back(DIRECTORY_SLASH);
+          relative_filename.push_back(DIRECTORY_SLASH);
         }
 
       files.push_back(std::make_pair(!is_directory,

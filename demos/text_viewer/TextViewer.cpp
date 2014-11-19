@@ -49,6 +49,14 @@
 #include "wrath_demo.hpp"
 #include "wrath_demo_image_support.hpp"
 
+#ifdef __WIN32
+  #define DIRECTORY_SLASH '\\'
+  #define DIRECTORY_SLASH_STR "\\"
+#else
+  #define DIRECTORY_SLASH '/'
+  #define DIRECTORY_SLASH_STR "/"
+#endif
+
 #ifdef WRATH_QT
 #include "WRATHQTFontSupport.hpp"
 #define SET_LOAD_FONT_VIA_QT(F, P, G) do { F.m_font_via_qt=WRATHQT::fetch_font<CustomShaderFont<P>::G>; } while(0)
@@ -1428,10 +1436,9 @@ TextViewer(cmd_line_type &cmd_line):
     {
       load_type=FileType::load_directory;
       ::closedir(ptr);
-      if(filename.empty()
-         or *filename.rbegin()!='/')
+      if(filename.empty() or *filename.rbegin()!=DIRECTORY_SLASH)
         {
-          filename.push_back('/');
+          filename.push_back(DIRECTORY_SLASH);
         }
     }
   m_current_display_contents=
