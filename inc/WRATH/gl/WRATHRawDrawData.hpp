@@ -700,6 +700,7 @@ public:
     DrawState(WRATHMultiGLProgram::Selector selector=WRATHMultiGLProgram::Selector(),
               draw_information *pdraw_information=NULL):
       m_prog(NULL),
+      m_current_glsl(NULL),
       m_attr_source(NULL),
       m_currently_bound(NULL),
       m_indx_source(NULL),

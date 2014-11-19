@@ -190,8 +190,10 @@ public:
   void
   set_gradient(const vec2 &pstart, float rstart, const vec2 &pend, float rend)
   {
-    set_position(pstart, pend);
-    set_radius(rstart, rend);
+    m_r0=rstart;
+    m_r1=rend;
+    m_p0=pstart;
+    m_p1=pend;
     update_pack_values();
   }
 

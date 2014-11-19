@@ -353,7 +353,7 @@ add_entry(FcPattern *p)
             FcStrList *iter;
             FcChar8 *current;
             
-            langs_as_strs=FcLangSetGetLangs(lang.m_value);
+            langs_as_strs=FcLangSetGetLangs(lang.m_value); //do we need to free this thing??
             iter=FcStrListCreate(langs_as_strs);
             
             for(current=FcStrListNext(iter); current; current=FcStrListNext(iter))
@@ -362,6 +362,7 @@ add_entry(FcPattern *p)
                 entry.m_fontconfig_details.m_languages.insert(std::string(str));
               }
             FcStrListDone(iter);
+            FcStrSetDestroy(langs_as_strs);
           }
       }
       #endif
