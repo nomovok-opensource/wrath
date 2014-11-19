@@ -20,6 +20,7 @@
 #include "WRATHConfig.hpp"
 #include <sstream>
 #include <vector>
+#include <dirent.h>
 #include "WRATHassert.hpp" 
 #include "WRATHUtil.hpp"
 #include "ieeehalfprecision.h"
@@ -56,7 +57,18 @@ filename_fullpath(const std::string &S)
     retval=GetFullPathNameA(S.c_str(), PATH_MAX+1, buffer, NULL);
     if(retval!=0)
       {
-        return std::string(buffer);
+        std::string return_value(buffer);
+        if(!return_value.empty() and *return_value.rbegin()!='\\')
+          {
+            ::DIR *dir_ptr(NULL);
+
+            dir_ptr=::opendir(return_value.c_str());
+            if(dir_ptr)
+              {
+                return_value.push_back('\\');
+              }
+          }
+        return return_value;        
       }
     else
       {
@@ -66,10 +78,22 @@ filename_fullpath(const std::string &S)
   #else
   {
     char buffer[PATH_MAX+1], *r;
+
     r=realpath(S.c_str(), buffer);
     if(r!=NULL)
       {
-        return std::string(r);
+        std::string return_value(r);
+        if(!return_value.empty() and *return_value.rbegin()!='/')
+          {
+            ::DIR *dir_ptr(NULL);
+
+            dir_ptr=::opendir(return_value.c_str());
+            if(dir_ptr)
+              {
+                return_value.push_back('/');
+              }
+          }
+        return return_value;
       }
     else
       {

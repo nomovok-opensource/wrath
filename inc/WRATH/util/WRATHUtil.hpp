@@ -208,8 +208,10 @@ namespace WRATHUtil
   filename_extension(const std::string &S);
   
   /*!\fn std::string filename_fullpath(const std::string&)
-    Simple utility function to return the
-    absolute file path from a filename
+    Simple utility function to return the absolute file path 
+    from a filename. If the file referred to by the filename
+    is a directory, will append a slash to the return value
+    (for Unix a slash is '/', for MS-Windows it is '\')
     \param S filename 
   */
   std::string
