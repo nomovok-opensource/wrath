@@ -1218,6 +1218,8 @@ consume_curve(WRATHFreeTypeSupport::BezierCurve *curve)
       bool split_as_4, split_as_2;
       int L1dist;
 
+      WRATHunused(R);
+
       /*
         "small" cubics, i.e. those whose end points
         are 2 or fewer texels apart are broken into
@@ -3419,6 +3421,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
   local_glyph_data_type *return_value(NULL);
   ivec2 glyph_advance;
   ivec2 bitmap_sz, bitmap_offset;
+  int bias(-1);
   /*
     Step 1: use FreeType to load the glyph data:    
   */
@@ -3467,7 +3470,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
     */
   int outline_scale_factor(4);
 
-  WRATHFreeTypeSupport::CoordinateConverter coordinate_converter(outline_scale_factor, bitmap_sz, bitmap_offset, 0);
+  WRATHFreeTypeSupport::CoordinateConverter coordinate_converter(outline_scale_factor, bitmap_sz, bitmap_offset, bias);
   CollapsingContourEmitter contour_emitter(m_curvature_collapse,
                                            ttf_face()->face()->glyph->outline, 
                                            coordinate_converter,
@@ -3552,7 +3555,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
     .iadvance(glyph_advance)
     .texture_page(pg)
     .texel_values(pIndex->minX_minY(), pIndex->size())
-    .origin(bitmap_offset)
+    .origin( vec2(bitmap_offset) + vec2(float(-coordinate_converter.internal_offset())/64.0f))
     .bounding_box_size(pIndex->size())
     .character_code(character_code(G))
     .glyph_index(G);

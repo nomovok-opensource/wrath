@@ -904,7 +904,7 @@ generate_character(WRATHTextureFont::glyph_index_type G)
     .iadvance(iadvance)
     .texture_page(m_page_tracker.get_page_number(glyph_image))
     .texel_values(glyph_image->minX_minY(), bitmap_sz)
-    .origin(bitmap_offset)
+    .origin( vec2(bitmap_offset) + vec2(float(-outline_data.internal_offset())/64.0f))
     .bounding_box_size(bitmap_sz)
     .character_code(C)
     .glyph_index(G);
