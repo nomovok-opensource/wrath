@@ -20,10 +20,9 @@
 #include "WRATHConfig.hpp"
 #include <QtOpenGL>
 #include <sstream>
+#include "ngl_backend_lib.hpp"
 
 
-void*
-ngl_loadFunction_default(const char *);
 
 void*
 ngl_loadFunction(const char *name)
@@ -36,15 +35,11 @@ ngl_loadFunction(const char *name)
       return_value=(void*)ctx->getProcAddress(QString(name));
     }
  
-  /*
-    EGL spec is irritating. Only those functions that extension
-    functions will eglGetProcAddress() return. As such we will
-    need to rely on dlopen/dlsym to get functions those functions
-    that are not extensions (i.e. part of the GLES2 specification)
-   */
+  WRATHStaticInit();
+  static NGLBackendLibEGL R;
   if(return_value==NULL)
     {
-      return_value=ngl_loadFunction_default(name);
+      return_value=R.load_function(name);
     }
 
   return return_value;

@@ -23,6 +23,7 @@
 #include "vectorGL.hpp"
 #include "WRATHglGet.hpp"
 #include "sdl_demo.hpp"
+#include "ngl_backend_sdl.hpp"
 
 #ifdef HARMATTAN
 #include <policy/resource-set.h>
@@ -63,16 +64,16 @@ DemoKernelMaker(void):
   m_libGL("", "libGL", "if non-empty use a custom libGL.so", *this),
 
   #ifdef WRATH_GLES_VERSION
-  m_gl_major(2, "gles_major", "GLES major version", *this),
+  m_gl_major(WRATH_GLES_VERSION, "gles_major", "GLES major version", *this),
   m_gl_minor(0, "gles_minor", "GLEs minor version", *this),
   #else
-  m_gl_major(3, "gl_major", "GL major version", *this),
-  m_gl_minor(3, "gl_minor", "GL minor version", *this),
-  #endif
+  m_gl_major(WRATH_GL_VERSION, "gl_major", "GL major version", *this),
+  m_gl_minor(0, "gl_minor", "GL minor version", *this),
 
   m_gl_forward_compatible_context(false, "foward_context", "if true request forward compatible context", *this),
   m_gl_debug_context(false, "debug_context", "if true request a context with debug", *this),
   m_gl_core_profile(true, "core_context", "if true request a context which is core profile", *this), 
+  #endif
 
   m_log_all_gl(false, "log_gl", "if true all GL commands are logged, otherwise only errors are logged", *this),
   m_log_gl_file("", "log_gl_file", "GL commands/errors are logged to the named file. Default is errors are logged to stderr."
@@ -118,7 +119,7 @@ init_sdl(void)
   video_flags|=SDL_WINDOW_OPENGL;
   if(m_libGL.set_by_command_line())
     {
-      SDL_GL_LoadLibrary(m_libGL.m_value.c_str());
+      ngl_set_GL_librarySDL(m_libGL.m_value);
     }
   
   /*

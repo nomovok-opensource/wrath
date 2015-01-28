@@ -163,9 +163,12 @@ public:
   command_line_argument_value<std::string> m_libGL;
 
   command_line_argument_value<int> m_gl_major, m_gl_minor;
-  command_line_argument_value<bool> m_gl_forward_compatible_context;
-  command_line_argument_value<bool> m_gl_debug_context;
-  command_line_argument_value<bool> m_gl_core_profile;
+  
+  #ifdef WRATH_GL_VERSION
+    command_line_argument_value<bool> m_gl_forward_compatible_context;
+    command_line_argument_value<bool> m_gl_debug_context;
+    command_line_argument_value<bool> m_gl_core_profile;
+  #endif
 
   command_line_argument_value<bool> m_log_all_gl;
   command_line_argument_value<std::string> m_log_gl_file;
