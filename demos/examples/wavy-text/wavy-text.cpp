@@ -75,6 +75,7 @@ public:
   command_line_argument_value<std::string> m_family;  
   command_line_argument_value<int> m_pixel_size, m_wrath_font_size;
   command_line_argument_value<bool> m_show_font_file_name;
+  command_line_argument_value<bool> m_animate;
 
   cmd_line_type(void):
     m_text("Hello Wavy World\n\tscroll by panning"
@@ -93,7 +94,8 @@ public:
     m_pixel_size(32, "pixel_size", "Pixel size at which to display the text", *this),
     m_wrath_font_size(48, "wrath_font_size", "Pixel size to realize the font at", *this),
     m_show_font_file_name(false, "show_font_file_name", 
-                          "If true also display filename of font", *this)
+                          "If true also display filename of font", *this),
+    m_animate(true, "animate", "If true, make the waviness of the text animate", *this)
   {}
     
 
@@ -178,6 +180,8 @@ private:
 
   int32_t m_zoom_gesture_begin_time;
   float m_zoom_dividier;
+
+  bool m_animate;
 };
 
 
@@ -190,7 +194,8 @@ WavyTextExample(cmd_line_type *cmd_line):
   m_is_zooming(false),
   m_button_down(false),
   m_zoom_gesture_begin_time(500),
-  m_zoom_dividier(40.0f)
+  m_zoom_dividier(40.0f),
+  m_animate(cmd_line->m_animate.m_value)
 {
   /*
     Create the WRATHTripleBufferEnabler object
@@ -308,7 +313,9 @@ WavyTextExample(cmd_line_type *cmd_line):
 
   m_text_widget->add_text(stream);
   m_text_widget->position(vec2(0.0f, 0.0f));
-
+  m_text_widget->m_wobble_magnitude=0.1f;
+  m_text_widget->m_wobble_phase=0.0f;
+  m_text_widget->m_wobble_freq=2.0f;
    
                     
   glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -368,15 +375,18 @@ move_node(Node *pnode, float delta_t)
       pnode->m_velocity.y()=-pnode->m_velocity.y();
     }
 
-  uint32_t modulas, period_in_ms(3000);
-  float cycle;
-
-  modulas=m_total_time.elapsed()%period_in_ms;
-  cycle=static_cast<float>(modulas)/static_cast<float>(period_in_ms);
-
-  pnode->m_wobble_magnitude=0.1f;
-  pnode->m_wobble_phase=cycle*M_PI*2.0f;  
-  pnode->m_wobble_freq=2.0;
+  if(m_animate)
+    {
+      uint32_t modulas, period_in_ms(3000);
+      float cycle;
+      
+      modulas=m_total_time.elapsed()%period_in_ms;
+      cycle=static_cast<float>(modulas)/static_cast<float>(period_in_ms);
+      
+      pnode->m_wobble_magnitude=0.1f;
+      pnode->m_wobble_phase=cycle*M_PI*2.0f;  
+      pnode->m_wobble_freq=2.0f;
+    }
 }
 
 void 
