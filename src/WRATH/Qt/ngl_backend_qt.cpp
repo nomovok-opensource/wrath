@@ -21,7 +21,7 @@
 #include <QtOpenGL>
 #include <sstream>
 #include "ngl_backend_lib.hpp"
-
+#include "WRATHStaticInit.hpp"
 
 
 void*
