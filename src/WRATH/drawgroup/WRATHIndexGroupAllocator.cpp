@@ -22,7 +22,6 @@
 #include <limits>
 #include "WRATHIndexGroupAllocator.hpp"
 #include "WRATHStaticInit.hpp"
-#include "WRATHDrawCommandIndexBufferAllocator.hpp"
 
 
 /*
@@ -111,20 +110,14 @@ WRATHIndexGroupAllocator(GLenum primitive_type,
 {
   const WRATHTripleBufferEnabler::handle &tr(pstore->buffer_allocator()->triple_buffer_enabler());
 
-  m_index_buffer=WRATHNew WRATHBufferAllocator(tr, buffer_object_hint);
-    
-  WRATHDrawCommandIndexBufferAllocator::params params(m_index_buffer,
-                                                      primitive_type,
-                                                      m_attribute_store->index_type(),
-                                                      m_attribute_store->index_type_size());
-  
-  m_draw_command=WRATHNew WRATHDrawCommandIndexBufferAllocator(tr, params);
-  
+  m_index_buffer=WRATHNew WRATHBufferAllocator(tr, buffer_object_hint);  
+  m_draw_command=WRATHNew DrawCommand(this, primitive_type);
 }
 
 WRATHIndexGroupAllocator::
 ~WRATHIndexGroupAllocator()
 {
+  
   #ifdef WRATHDEBUG  
   {  
     if(!m_index_chunks.empty())
