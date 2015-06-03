@@ -201,7 +201,7 @@ public:
   command_line_argument_value<std::string> m_image;
   command_line_argument_value<unsigned int> m_num_frames;
   command_line_argument_value<std::string> m_record_frame;
-  command_line_argument_value<bool> m_save_png;
+  command_line_argument_value<bool> m_save_png, m_animate_gradient;
 
   cmd_line_type(void):
     m_virtual_height(128, "virtual_height", "Virtual height to which to scale display, negative values mean no scaling", *this),
@@ -214,7 +214,8 @@ public:
     m_image("", "image", "if a valid image use image in addition to gradient", *this),
     m_num_frames(0, "num_frames", "if non-zero exit, after given number of frames", *this),
     m_record_frame("", "record_frame", "if non-empty record frames to files prefixed with value", *this),
-    m_save_png(true, "save_png", "if true save frames as png, if false save as bmp", *this)
+    m_save_png(true, "save_png", "if true save frames as png, if false save as bmp", *this),
+    m_animate_gradient(true, "animate_gradient", "if true animates the radial gradient pattern", *this)
   {}
 
   virtual
@@ -273,7 +274,7 @@ private:
   bool m_show_ms;
   unsigned int m_num_frames;
   std::string m_record_frame;
-  bool m_save_png;
+  bool m_save_png, m_animate_gradient;
 };
 
 
@@ -295,7 +296,8 @@ CounterExample(cmd_line_type *cmd_line):
   m_show_ms(cmd_line->m_show_ms.m_value),
   m_num_frames(cmd_line->m_num_frames.m_value),
   m_record_frame(cmd_line->m_record_frame.m_value),
-  m_save_png(cmd_line->m_save_png.m_value)
+  m_save_png(cmd_line->m_save_png.m_value),
+  m_animate_gradient(cmd_line->m_animate_gradient.m_value)
 {
   /*
     Create the WRATHTripleBufferEnabler object
@@ -477,18 +479,21 @@ void CounterExample::paint(void)
   m_text_widget->clear();
   m_text_widget->add_text(stream);
 
-  for(unsigned int i=0, endi=m_rects.size(); i<endi ; ++i)
+  if(m_animate_gradient || m_frame==0)
     {
-      vec2 p;
-      float r0, r1, theta, d;
-
-      theta=(static_cast<float>(total_ms)/500.0f + static_cast<float>(i+1)/4.0f) * 2.0f * float(M_PI);
-      d=static_cast<float>(i+1)/static_cast<float>(endi) * static_cast<float>(m_virtual_height) * 0.5f;
-      p.x()=d*cosf(theta) + d;
-      p.y()=d*sinf(theta) + d;
-      r0=0.0f;
-      r1=(sinf(0.1f*theta)+2.0f)*static_cast<float>(m_virtual_height) * 0.1f; 
-      m_rects[i]->set_gradient(p, r0, p, r1);
+      for(unsigned int i=0, endi=m_rects.size(); i<endi ; ++i)
+        {
+          vec2 p;
+          float r0, r1, theta, d;
+          
+          theta=(static_cast<float>(total_ms)/500.0f + static_cast<float>(i+1)/4.0f) * 2.0f * float(M_PI);
+          d=static_cast<float>(i+1)/static_cast<float>(endi) * static_cast<float>(m_virtual_height) * 0.5f;
+          p.x()=d*cosf(theta) + d;
+          p.y()=d*sinf(theta) + d;
+          r0=0.0f;
+          r1=(sinf(0.1f*theta)+2.0f)*static_cast<float>(m_virtual_height) * 0.1f; 
+          m_rects[i]->set_gradient(p, r0, p, r1);
+        }
     }
 
   m_tr->signal_complete_simulation_frame();
