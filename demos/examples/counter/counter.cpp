@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <png.h>
 
 #include "vecN.hpp"
 #include "WRATHNew.hpp"
@@ -36,6 +37,7 @@
 
 #include "ngl_backend.hpp"
 #include "wrath_demo.hpp"
+#include "wrath_demo_image_support.hpp"
 
 /*!
 \details
@@ -43,20 +45,176 @@ This example demonstrates the basic usage of the \ref Text
 Module API for the typical "hello world" example.
  */
 
+namespace bmpWriter
+{
+  template<typename T>
+  void
+  sfwrite(const T &value, std::ofstream &file)
+  {
+    file.write(reinterpret_cast<const char*>(&value), sizeof(T));
+  }
+
+  class FileHeader
+  {
+  public:
+    FileHeader(int w, int h):
+      m_filetype(19778),
+      m_filesize(54+4*w*h),
+      m_reserved(0),
+      m_offsetToData(54)
+    {}
+
+    uint16_t m_filetype; //value should be 19778
+    uint32_t m_filesize;
+    uint32_t m_reserved; //should be 0
+    uint32_t m_offsetToData; //offset to image data!    
+
+    void write(std::ofstream &f)
+    {
+      sfwrite(m_filetype, f);
+      sfwrite(m_filesize, f);
+      sfwrite(m_reserved, f);
+      sfwrite(m_offsetToData, f);
+    }
+  };
+
+  class InfoHeader
+  {
+  public:    
+    InfoHeader(int w, int h):
+      m_headerSize(40),
+      m_width(w),
+      m_height(h),
+      m_numPlanes(1),
+      m_bpp(32),
+      m_compressionType(0),
+      m_imageSize(0),
+      m_XpixelsPerMeter(0),
+      m_YpixelsPerMeter(0),
+      m_numberOfColorsUsed(0),
+      m_numberOfImportantColors(0)
+    {}
+
+    uint32_t m_headerSize; //should be 40
+    uint32_t m_width;
+    uint32_t m_height;
+    uint16_t m_numPlanes; //should be 1
+    uint16_t m_bpp; 
+    uint32_t m_compressionType;
+    uint32_t m_imageSize; //if image is not compressed make this 0
+    uint32_t m_XpixelsPerMeter;
+    uint32_t m_YpixelsPerMeter;
+    uint32_t m_numberOfColorsUsed;
+    uint32_t m_numberOfImportantColors; //0=All
+
+    void write(std::ofstream &f)
+    {
+       sfwrite(m_headerSize, f);
+       sfwrite(m_width, f);
+       sfwrite(m_height, f);
+       sfwrite(m_numPlanes, f);
+       sfwrite(m_bpp, f);
+       sfwrite(m_compressionType, f);
+       sfwrite(m_imageSize, f);
+       sfwrite(m_XpixelsPerMeter, f);
+       sfwrite(m_YpixelsPerMeter, f);
+       sfwrite(m_numberOfColorsUsed, f);
+       sfwrite(m_numberOfImportantColors, f);
+    }
+  };
+  
+  void write_bmp(int w, int h, std::vector<vecN<uint8_t,4> > &pixels, std::ofstream &f)
+  {
+    FileHeader file_header(w,h);
+    InfoHeader info_header(w,h);
+    
+    file_header.write(f);
+    info_header.write(f);
+    for(int i=0, endi=w*h; i<endi; ++i)
+      {
+        /*
+          bmp format is bgra,
+          pixel format is rgba
+         */
+        sfwrite(pixels[i][2],f);
+        sfwrite(pixels[i][1],f);
+        sfwrite(pixels[i][0],f);
+        sfwrite(pixels[i][3],f);
+      }
+
+  }
+}
+
+static
+void 
+save_png(int w, int h, std::vector<vecN<uint8_t,4> > &pixels, FILE *file)
+{
+  png_structp png_ptr;
+  png_infop info_ptr;
+  std::vector<vecN<uint8_t,4> > framebuffer(w*h);
+  if(file==NULL)
+    {
+      return;
+    }
+
+  png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL); 
+  if (png_ptr==NULL) 
+    {
+      return;
+    }
+  info_ptr = png_create_info_struct(png_ptr);
+  if(info_ptr==NULL)
+    {
+      return;
+    }
+  
+  if (setjmp(png_jmpbuf(png_ptr)))
+    {
+      png_destroy_write_struct(&png_ptr, &info_ptr);
+      return;
+    }
+  
+  png_init_io(png_ptr, file);
+  png_set_IHDR(png_ptr, info_ptr, w, h, 8, 
+               PNG_COLOR_TYPE_RGBA,
+               PNG_INTERLACE_NONE, 
+               PNG_COMPRESSION_TYPE_DEFAULT, 
+               PNG_FILTER_TYPE_DEFAULT);
+  
+  png_write_info(png_ptr, info_ptr);
+  
+  for(int y=0; y<h; ++y) 
+    {     
+      png_write_row(png_ptr, &pixels[(h-1-y)*w][0]);
+    }
+  png_write_end(png_ptr, NULL);
+  
+  png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
+  png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
+}
 
 class cmd_line_type:public DemoKernelMaker
 {
 public:
   command_line_argument_value<int> m_virtual_height, m_virtual_width, m_layer_count;
-  command_line_argument_value<bool> m_gradient, m_blend, m_disable_depth_test;
+  command_line_argument_value<bool> m_gradient, m_blend, m_disable_depth_test, m_show_ms;
+  command_line_argument_value<std::string> m_image;
+  command_line_argument_value<unsigned int> m_num_frames;
+  command_line_argument_value<std::string> m_record_frame;
+  command_line_argument_value<bool> m_save_png;
 
   cmd_line_type(void):
-    m_virtual_height(128, "virtual_height", "Virtual height to which to scale display", *this),
+    m_virtual_height(128, "virtual_height", "Virtual height to which to scale display, negative values mean no scaling", *this),
     m_virtual_width(256, "virtual_width", "Virtual width to which to scale display", *this),
     m_layer_count(100, "layer_count", "# of full screen blends underneath text", *this),
     m_gradient(true, "gradient", "if true, layers are painted with a radial gradient", *this),
     m_blend(true, "blend", "if true, layers are blended", *this),
-    m_disable_depth_test(false, "disable_depth_test", "if true layers are drawn with depth test and depth writes off", *this)
+    m_disable_depth_test(false, "disable_depth_test", "if true layers are drawn with depth test and depth writes off", *this),
+    m_show_ms(true, "show_ms", "if true show ms to display frame", *this),
+    m_image("", "image", "if a valid image use image in addition to gradient", *this),
+    m_num_frames(0, "num_frames", "if non-zero exit, after given number of frames", *this),
+    m_record_frame("", "record_frame", "if non-empty record frames to files prefixed with value", *this),
+    m_save_png(true, "save_png", "if true save frames as png, if false save as bmp", *this)
   {}
 
   virtual
@@ -85,11 +243,19 @@ public:
   virtual void paint(void);
 
 private:
+
+  void 
+  save_framebuffer(const std::string &filename);
+
+  void 
+  save_framebuffer_png(const std::string &filename);
+
+  void 
+  save_framebuffer_bmp(const std::string &filename);
+
   typedef WRATHLayerTranslateFamilySet FamilySet;
-
-
   typedef FamilySet::PlainFamily::TextWidget TextWidget;
-  typedef FamilySet::ColorRadialGradientFamily::RectWidget RectWidget;
+  typedef FamilySet::ColorRadialGradientSimpleXSimpleYImageFamily::RectWidget RectWidget;
 
   WRATHTripleBufferEnabler::handle m_tr;
   WRATHLayer *m_layer;
@@ -100,9 +266,14 @@ private:
   unsigned int m_virtual_height;
 
   WRATHGradient *m_gradient;
+  WRATHImage *m_image;
 
   std::vector<RectWidget*> m_rects;
   TextWidget *m_text_widget;
+  bool m_show_ms;
+  unsigned int m_num_frames;
+  std::string m_record_frame;
+  bool m_save_png;
 };
 
 
@@ -120,7 +291,11 @@ CounterExample(cmd_line_type *cmd_line):
   DemoKernel(cmd_line),
   m_layer(NULL),
   m_frame(0),
-  m_text_widget(0)
+  m_text_widget(0),
+  m_show_ms(cmd_line->m_show_ms.m_value),
+  m_num_frames(cmd_line->m_num_frames.m_value),
+  m_record_frame(cmd_line->m_record_frame.m_value),
+  m_save_png(cmd_line->m_save_png.m_value)
 {
   /*
     Create the WRATHTripleBufferEnabler object
@@ -206,8 +381,18 @@ CounterExample(cmd_line_type *cmd_line):
       m_gradient=NULL;
     }
 
+  m_image=WRATHDemo::fetch_image(cmd_line->m_image.m_value,
+                                 WRATHImage::ImageFormat()
+                                 .internal_format(GL_RGBA)
+                                 .pixel_data_format(GL_RGBA)
+                                 .pixel_type(GL_UNSIGNED_BYTE)
+                                 .magnification_filter(GL_LINEAR)
+                                 .minification_filter(GL_LINEAR),
+                                 false,
+                                 WRATHDemo::dont_flip_y);
+
   //create the brush, the node type specifies the shader
-  WRATHBrush brush(type_tag<RectWidget::Node>(), m_gradient);
+  WRATHBrush brush(type_tag<RectWidget::Node>(), m_gradient, m_image);
 
   //create the drawer from the brush
   RectWidget::Drawer drawer(brush, draw_type);
@@ -222,8 +407,11 @@ CounterExample(cmd_line_type *cmd_line):
   m_rects.resize(std::max(0, cmd_line->m_layer_count.m_value));
   for(unsigned int i=0, endi=m_rects.size(); i<endi ; ++i)
     {
+      float alpha;
+      alpha = (endi>10) ? 0.2f : 1.0f/static_cast<float>(endi);
+
       m_rects[i]=WRATHNew RectWidget(m_child_layer, drawer);
-      m_rects[i]->color(WRATHGradient::color(1.0f, 1.0f, 1.0f, 0.2f));
+      m_rects[i]->color(WRATHGradient::color(1.0f, 1.0f, 1.0f, alpha));
       m_rects[i]->z_order(i);
       m_rects[i]->properties()
         ->set_parameters(WRATHDefaultRectAttributePacker::rect_properties(cmd_line->m_virtual_width.m_value,
@@ -279,8 +467,12 @@ void CounterExample::paint(void)
                   << WRATHText::set_font(WRATHFontDatabase::FontProperties()
                                          .family_name("DejaVuSans"),
                                          type_tag<WRATHTextureFontFreeType_Analytic>())
-                  << m_frame
-                  << "\n" << ms << " ms\n";
+                  << m_frame << "\n";
+
+  if(m_show_ms)
+    {
+      stream.stream() << ms << " ms\n";
+    }
 
   m_text_widget->clear();
   m_text_widget->add_text(stream);
@@ -303,11 +495,66 @@ void CounterExample::paint(void)
   m_tr->signal_begin_presentation_frame();
   m_layer->clear_and_draw();
 
+  if(!m_record_frame.empty())
+    {
+      std::ostringstream filename;
+    
+      filename << m_record_frame << std::setfill('0') << std::setw(5) << m_frame;
+
+      if(m_save_png)
+        {
+          filename << ".png";
+          save_framebuffer_png(filename.str());
+        }
+      else
+        {
+          filename << ".bmp";
+          save_framebuffer_bmp(filename.str());
+        }
+    }
+
   ++m_frame;
   update_widget();
+
+  if(m_num_frames>0 && m_frame>=m_num_frames)
+    {
+      end_demo();
+    }
 }
 
-void CounterExample::handle_event(FURYEvent::handle ev)
+void
+CounterExample::
+save_framebuffer_bmp(const std::string &filename)
+{
+  std::ofstream file(filename.c_str());
+  std::vector<vecN<uint8_t,4> > framebuffer(width()*height());
+  
+  glReadPixels(0, 0, width(), height(), GL_RGBA, GL_UNSIGNED_BYTE, &framebuffer[0]);
+  bmpWriter::write_bmp(width(), height(), framebuffer, file);    
+}
+
+void
+CounterExample::
+save_framebuffer_png(const std::string &filename)
+{
+  FILE *file;
+  std::vector<vecN<uint8_t,4> > framebuffer(width()*height());
+
+  file=fopen(filename.c_str(), "wb");
+  if(file==NULL)
+    {
+      return;
+    }
+
+  glReadPixels(0, 0, width(), height(), GL_RGBA, GL_UNSIGNED_BYTE, &framebuffer[0]);
+  save_png(width(), height(), framebuffer, file); 
+  fclose(file);
+}
+
+
+void 
+CounterExample::
+handle_event(FURYEvent::handle ev)
 {
   if(ev->type()==FURYEvent::Resize)
     {
@@ -316,7 +563,8 @@ void CounterExample::handle_event(FURYEvent::handle ev)
     }
 }
 
-int main(int argc, char **argv)
+int 
+main(int argc, char **argv)
 {
     cmd_line_type cmd_line;
     return cmd_line.main(argc, argv);
