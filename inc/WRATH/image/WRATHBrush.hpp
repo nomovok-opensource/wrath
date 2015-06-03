@@ -317,7 +317,7 @@ public:
   {}
 
   
-  /*!\fn WRATHBrush(WRATHImage*, WRATHGradient*, uint32_t)
+  /*!\fn WRATHBrush(type_tag<Node>, WRATHImage*, WRATHGradient*, uint32_t)
     Ctor.
     \tparam Node type which implement the static method set_shader_brush(WRATHShaderBrush&)
                  that sets the shader for the brush
@@ -338,7 +338,7 @@ public:
     Node::set_shader_brush(*this);
   }
 
-  /*!\fn WRATHBrush(WRATHGradient*, WRATHImage*, uint32_t)
+  /*!\fn WRATHBrush(type_tag<Node>, WRATHGradient*, WRATHImage*, uint32_t)
     Ctor.
     \tparam Node type which implement the static method set_shader_brush(WRATHShaderBrush&)
                  that sets the shader for the brush 
