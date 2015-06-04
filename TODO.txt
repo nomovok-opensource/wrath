@@ -254,5 +254,34 @@ per-node basis... I am concerned about a cache-miss fiasco....
                    without having added characters yet adds the uniform to the current
                    uniform set.
 
-20) Generic: make so that all GLSL functions, variables and macros coming from WRATH
+20) WRATHBrush API: Currently it is necessary that when constructing widgets
+                    directly that have a brush applied, that the
+                    widget(really node) method set_from_bush() is called
+                    passing the brush. For example:
+
+                    typedef WRATHLayerTranslateFamilySet FamilySet;
+                    typedef FamilySet::ImageFamily Family;
+                    typedef Family::RectWidget RectWidget;
+                    WRATHImage *image;
+                    WRATHBrush brush(type_tag<RectWidget::Node>(), image);
+                    RectWidget *widget;
+
+                    widget=WRATHNew RectWidget( RectWidget::Drawer(brush) );
+                    widget->set_from_brush(brush);
+                    
+                    That last call widget->set_from_brush() is needed to 
+                    correctly initalize the widget's node values for
+                    the image. On one hand this is consistent in that
+                    that creating the widget only specifies what "code"
+                    is used to draw it, but not what "values". On the
+                    otherhand, the API is suggestive to saying the brush
+                    is applied to the widget at ctor.
+
+                    Sighs. If one uses WRATHWidgetGenerator, the problem
+                    does not occur as it calls set_from_brush()
+
+                                        
+
+
+21) Generic: make so that all GLSL functions, variables and macros coming from WRATH
              are prefixed with wrath_, wrath_, and WRATH_ respectively.

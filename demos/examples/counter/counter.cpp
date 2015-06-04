@@ -204,8 +204,10 @@ public:
   command_line_argument_value<bool> m_save_png, m_animate_gradient;
 
   cmd_line_type(void):
-    m_virtual_height(128, "virtual_height", "Virtual height to which to scale display, negative values mean no scaling", *this),
-    m_virtual_width(256, "virtual_width", "Virtual width to which to scale display", *this),
+    m_virtual_height(128, "virtual_height", 
+                     "Virtual height to which to scale display (if 0 or virtual_width is 0 means no scaling)", *this),
+    m_virtual_width(256, "virtual_width", 
+                    "Virtual width to which to scale display (if 0 or virtual_height is 0 means no scaling)", *this),
     m_layer_count(100, "layer_count", "# of full screen blends underneath text", *this),
     m_gradient(true, "gradient", "if true, layers are painted with a radial gradient", *this),
     m_blend(true, "blend", "if true, layers are blended", *this),
@@ -256,7 +258,7 @@ private:
 
   typedef WRATHLayerTranslateFamilySet FamilySet;
   typedef FamilySet::PlainFamily::TextWidget TextWidget;
-  typedef FamilySet::ColorRadialGradientSimpleXSimpleYImageFamily::RectWidget RectWidget;
+  typedef FamilySet::ColorRadialGradientRepeatXRepeatYImageFamily::RectWidget RectWidget;
 
   WRATHTripleBufferEnabler::handle m_tr;
   WRATHLayer *m_layer;
@@ -275,6 +277,7 @@ private:
   unsigned int m_num_frames;
   std::string m_record_frame;
   bool m_save_png, m_animate_gradient;
+  bool m_no_virtual;
 };
 
 
@@ -314,6 +317,18 @@ CounterExample(cmd_line_type *cmd_line):
 
   m_child_layer=WRATHNew WRATHLayer(m_layer);
 
+  
+
+  m_image=WRATHDemo::fetch_image(cmd_line->m_image.m_value,
+                                 WRATHImage::ImageFormat()
+                                 .internal_format(GL_RGBA)
+                                 .pixel_data_format(GL_RGBA)
+                                 .pixel_type(GL_UNSIGNED_BYTE)
+                                 .magnification_filter(GL_LINEAR)
+                                 .minification_filter(GL_LINEAR),
+                                 false,
+                                 WRATHDemo::dont_flip_y);
+
   /*
     these are the transforms that will be
     applied to all elements contained in the
@@ -329,10 +344,23 @@ CounterExample(cmd_line_type *cmd_line):
     Projection will be orthographic
     */
 
-  float_orthogonal_projection_params proj_params(0, cmd_line->m_virtual_width.m_value,
-                                                 cmd_line->m_virtual_height.m_value, 0);
+  float w, h;
 
-  m_virtual_height=cmd_line->m_virtual_height.m_value;
+  m_no_virtual= cmd_line->m_virtual_width.m_value==0 
+    or cmd_line->m_virtual_height.m_value==0;
+
+
+  w=(!m_no_virtual) ? 
+    static_cast<float>(cmd_line->m_virtual_width.m_value) :
+    static_cast<float>(width());
+
+  h=(!m_no_virtual) ? 
+    static_cast<float>(cmd_line->m_virtual_height.m_value) :
+    static_cast<float>(height());
+
+  float_orthogonal_projection_params proj_params(0, w, h, 0);
+
+  m_virtual_height=h;
   m_layer->simulation_matrix(WRATHLayer::projection_matrix, float4x4(proj_params));
 
   /*
@@ -383,16 +411,6 @@ CounterExample(cmd_line_type *cmd_line):
       m_gradient=NULL;
     }
 
-  m_image=WRATHDemo::fetch_image(cmd_line->m_image.m_value,
-                                 WRATHImage::ImageFormat()
-                                 .internal_format(GL_RGBA)
-                                 .pixel_data_format(GL_RGBA)
-                                 .pixel_type(GL_UNSIGNED_BYTE)
-                                 .magnification_filter(GL_LINEAR)
-                                 .minification_filter(GL_LINEAR),
-                                 false,
-                                 WRATHDemo::dont_flip_y);
-
   //create the brush, the node type specifies the shader
   WRATHBrush brush(type_tag<RectWidget::Node>(), m_gradient, m_image);
 
@@ -415,9 +433,9 @@ CounterExample(cmd_line_type *cmd_line):
       m_rects[i]=WRATHNew RectWidget(m_child_layer, drawer);
       m_rects[i]->color(WRATHGradient::color(1.0f, 1.0f, 1.0f, alpha));
       m_rects[i]->z_order(i);
+      m_rects[i]->set_from_brush(brush);
       m_rects[i]->properties()
-        ->set_parameters(WRATHDefaultRectAttributePacker::rect_properties(cmd_line->m_virtual_width.m_value,
-                                                                          cmd_line->m_virtual_height.m_value));
+        ->set_parameters(WRATHDefaultRectAttributePacker::rect_properties(w, h));
     }
 
 }
@@ -565,6 +583,19 @@ handle_event(FURYEvent::handle ev)
     {
       FURYResizeEvent::handle rev(ev.static_cast_handle<FURYResizeEvent>());
       resize(rev->new_size().x(), rev->new_size().y());
+
+      if(m_no_virtual)
+        {
+          float w(rev->new_size().x()), h(rev->new_size().y());
+          float_orthogonal_projection_params proj_params(0, w, h, 0);
+
+          m_layer->simulation_matrix(WRATHLayer::projection_matrix, float4x4(proj_params));
+          m_virtual_height=h;
+          for(unsigned int i=0, endi=m_rects.size(); i<endi ; ++i)
+            {
+              m_rects[i]->properties()->set_parameters(WRATHDefaultRectAttributePacker::rect_properties(w, h));
+            }
+        }
     }
 }
 
