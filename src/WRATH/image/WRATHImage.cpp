@@ -2004,7 +2004,7 @@ default_texture_allocator(void)
 {
   WRATHStaticInit();
   static TextureAllocator::handle R(WRATHNew TextureAllocator(false, 
-                                                              ivec2(1024, 1024),
+                                                              ivec2(2048, 2048),
                                                               GL_CLAMP_TO_EDGE,
                                                               GL_CLAMP_TO_EDGE));
   static TextureAllocatorHandle ret(R);

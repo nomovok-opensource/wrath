@@ -764,7 +764,7 @@ public:
       textures of the texture alases for which
       each created WRATHImage resides. Changing
       this value only has affect on GL textures
-      not yet created. Default value is 1024.
+      not yet created. Default value is 2048.
       
       A caller needs to make sure that
       this value is not larger than
@@ -800,7 +800,7 @@ public:
       textures of the texture alases for which
       each created WRATHImage resides. Changing
       this value only has affect on GL textures
-      not yet created. Default value is 1024.
+      not yet created. Default value is 2048.
       This routine may be freely called from 
       multiple threads.
     */
@@ -1557,7 +1557,7 @@ public:
   static
   TextureAllocatorHandle
   create_texture_allocator(bool memeset_zero_texture_data=false,
-                           ivec2 texture_dimension=ivec2(1024, 1024),
+                           ivec2 texture_dimension=ivec2(2048, 2048),
                            GLenum texture_wrap_mode_s=GL_CLAMP_TO_EDGE,
                            GLenum texture_wrap_mode_t=GL_CLAMP_TO_EDGE);
 
