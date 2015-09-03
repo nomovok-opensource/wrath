@@ -253,11 +253,18 @@ static void RenderLonelyTriangles( wrath_GLUtesselator *tess, GLUface *f )
   GLUhalfEdge *e;
   int newState;
   int edgeState = -1;   /* force edge state output for first vertex */
+  int prev_winding_number;
 
   CALL_BEGIN_OR_BEGIN_DATA( WRATH_GLU_TRIANGLES, f->winding_number );
+  prev_winding_number = f->winding_number;
 
   for( ; f != NULL; f = f->trail ) {
     /* Loop once for each edge (there will always be 3 edges) */
+    if(prev_winding_number != f->winding_number)
+      {
+        CALL_BEGIN_OR_BEGIN_DATA( WRATH_GLU_TRIANGLES, f->winding_number );
+        prev_winding_number = f->winding_number;
+      }
 
     e = f->anEdge;
     do {

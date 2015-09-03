@@ -189,6 +189,7 @@ static void MakeFace( GLUface *newFace, GLUhalfEdge *eOrig, GLUface *fNext )
    * convenience for the common case where a face has been split in two.
    */
   fNew->inside = fNext->inside;
+  fNew->winding_number = fNext->winding_number;
 
   /* fix other edges on this face loop */
   e = eOrig;
