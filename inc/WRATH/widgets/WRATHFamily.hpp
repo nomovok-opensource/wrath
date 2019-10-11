@@ -69,54 +69,54 @@ public:
   typedef typename WidgetBase::DrawerFactory DrawerFactory;
   
   /*!\typedef NodeWidget
-    Conveniance typedef for WRATHEmptyWidget class.
+    Convenience typedef for WRATHEmptyWidget class.
     Widget type is used for transformation hierarchy
     of widgets.
    */ 
   typedef WRATHEmptyWidget<pWidgetBase> NodeWidget;
   
   /*!\typedef TextWidget
-    Conveniance typedef for WRATHTextWidget class
+    Convenience typedef for WRATHTextWidget class
    */ 
   typedef WRATHTextWidget<pWidgetBase> TextWidget;
   
   /*!\typedef RectWidget
-    Conveniance typedef for WRATHRectWidget class
+    Convenience typedef for WRATHRectWidget class
    */ 
   typedef WRATHRectWidget<pWidgetBase> RectWidget;
   
   /*!\typedef ShapeWidget
-    Conveniance typedef for WRATHShapeWidget class
+    Convenience typedef for WRATHShapeWidget class
    */ 
   typedef WRATHShapeWidget<pWidgetBase> ShapeWidget;
   
   /*!\typedef CanvasWidget
-    Conveniance typedef for WRATHCanvasWidget class
+    Convenience typedef for WRATHCanvasWidget class
    */ 
   typedef WRATHCanvasWidget<pWidgetBase> CanvasWidget;
   
   /*!\typedef NodeHandle
-    Conveniance typedef for handle class to WRATHWidgetHandle\<\ref NodeWidget\>
+    Convenience typedef for handle class to WRATHWidgetHandle\<\ref NodeWidget\>
    */
   typedef WRATHWidgetHandle<NodeWidget> NodeHandle;
   
   /*!\typedef DrawnText
-    Conveniance typedef for handle class to WRATHWidgetHandle\<\ref TextWidget\>
+    Convenience typedef for handle class to WRATHWidgetHandle\<\ref TextWidget\>
    */
   typedef WRATHWidgetHandle<TextWidget> DrawnText;
   
   /*!\typedef DrawnRect
-    Conveniance typedef for handle class to WRATHWidgetHandle\<\ref RectWidget\>
+    Convenience typedef for handle class to WRATHWidgetHandle\<\ref RectWidget\>
    */
   typedef WRATHWidgetHandle<RectWidget> DrawnRect;
   
   /*!\typedef DrawnShape
-    Conveniance typedef for handle class to WRATHWidgetHandle\<\ref ShapeWidget\>
+    Convenience typedef for handle class to WRATHWidgetHandle\<\ref ShapeWidget\>
    */
   typedef WRATHWidgetHandle<ShapeWidget> DrawnShape;
   
   /*!\typedef DrawnCanvas
-    Conveniance typedef for handle class to WRATHWidgetHandle\<\ref CanvasWidget\>
+    Convenience typedef for handle class to WRATHWidgetHandle\<\ref CanvasWidget\>
    */
   typedef WRATHWidgetHandle<CanvasWidget> DrawnCanvas;
 };
